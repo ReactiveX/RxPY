@@ -58,7 +58,7 @@ def amb(*sources: Observable[_T]) -> Observable[_T]:
         whichever emitted the first element.
     """
 
-    from .core.observable.amb import amb as amb_
+    from .core.observable.amb import amb_ as amb_
 
     return amb_(*sources)
 
@@ -629,8 +629,10 @@ def generate_with_relative_time(
 
 
 def generate(
-    initial_state: Any, condition: typing.Predicate, iterate: typing.Mapper
-) -> Observable:
+    initial_state: _TState,
+    condition: typing.Predicate[_TState],
+    iterate: typing.Mapper[_TState, _TState],
+) -> Observable[_TState]:
     """Generates an observable sequence by running a state-driven loop
     producing the sequence's elements.
 
@@ -652,9 +654,9 @@ def generate(
     Returns:
         The generated sequence.
     """
-    from .core.observable.generate import _generate
+    from .core.observable.generate import generate_
 
-    return _generate(initial_state, condition, iterate)
+    return generate_(initial_state, condition, iterate)
 
 
 def hot(

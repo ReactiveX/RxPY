@@ -1,11 +1,10 @@
 import re
 import threading
 from datetime import datetime, timedelta
-from typing import List, Mapping, Optional, Tuple
+from typing import List, Mapping, Optional, Tuple, Any, Union
 
 from rx import Observable
-from rx.core import notification
-from rx.core.abc import SchedulerBase
+from rx.core import notification, abc, typing, Notification
 from rx.core.typing import AbsoluteOrRelativeTime, RelativeTime
 from rx.disposable import CompositeDisposable, Disposable
 from rx.scheduler import NewThreadScheduler
@@ -37,10 +36,10 @@ def hot(
     string: str,
     timespan: RelativeTime = 0.1,
     duetime: AbsoluteOrRelativeTime = 0.0,
-    lookup: Optional[Mapping] = None,
+    lookup: Optional[Mapping[Union[str, float], Any]] = None,
     error: Optional[Exception] = None,
-    scheduler: Optional[SchedulerBase] = None,
-) -> Observable:
+    scheduler: Optional[abc.SchedulerBase] = None,
+) -> Observable[Any]:
 
     _scheduler = scheduler or new_thread_scheduler
 
@@ -58,9 +57,11 @@ def hot(
 
     lock = threading.RLock()
     is_stopped = False
-    observers = []
+    observers: List[abc.ObserverBase[Any]] = []
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(
+        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
         # should a hot observable already completed or on error
         # re-push on_completed/on_error at subscription time?
         if not is_stopped:
@@ -76,8 +77,8 @@ def hot(
 
         return Disposable(dispose)
 
-    def create_action(notification):
-        def action(scheduler, state=None):
+    def create_action(notification: Notification[Any]) -> typing.ScheduledAction[Any]:
+        def action(scheduler: abc.SchedulerBase, state: Any = None):
             nonlocal is_stopped
 
             with lock:
@@ -102,23 +103,25 @@ def hot(
 def from_marbles(
     string: str,
     timespan: RelativeTime = 0.1,
-    lookup: Optional[Mapping] = None,
+    lookup: Optional[Mapping[str, Any]] = None,
     error: Optional[Exception] = None,
-    scheduler: Optional[SchedulerBase] = None,
-) -> Observable:
+    scheduler: Optional[abc.SchedulerBase] = None,
+) -> Observable[Any]:
 
     messages = parse(
         string, timespan=timespan, lookup=lookup, error=error, raise_stopped=True
     )
 
-    def subscribe(observer, scheduler_):
+    def subscribe(
+        observer: abc.ObserverBase[Any], scheduler_: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or new_thread_scheduler
         disp = CompositeDisposable()
 
-        def schedule_msg(message):
+        def schedule_msg(message: Tuple[RelativeTime, Notification[Any]]) -> None:
             duetime, notification = message
 
-            def action(*_, **__):
+            def action(scheduler: abc.SchedulerBase, state: Any = None):
                 notification.accept(observer)
 
             disp.add(_scheduler.schedule_relative(duetime, action))
@@ -136,10 +139,10 @@ def parse(
     string: str,
     timespan: RelativeTime = 1.0,
     time_shift: RelativeTime = 0.0,
-    lookup: Optional[Mapping] = None,
+    lookup: Optional[Mapping[Union[str, float], Any]] = None,
     error: Optional[Exception] = None,
     raise_stopped: bool = False,
-) -> List[Tuple[RelativeTime, notification.Notification]]:
+) -> List[Tuple[RelativeTime, notification.Notification[Any]]]:
     """Convert a marble diagram string to a list of messages.
 
     Each character in the string will advance time by timespan
@@ -208,7 +211,7 @@ def parse(
     string = string.replace(" ", "")
 
     # try to cast a string to an int, then to a float
-    def try_number(element):
+    def try_number(element: str) -> Union[float, str]:
         try:
             return int(element)
         except ValueError:
@@ -217,7 +220,9 @@ def parse(
             except ValueError:
                 return element
 
-    def map_element(time, element):
+    def map_element(
+        time: typing.RelativeTime, element: str
+    ) -> Tuple[typing.RelativeTime, Notification[Any]]:
         if element == "|":
             return (time, notification.OnCompleted())
         elif element == "#":
@@ -229,7 +234,7 @@ def parse(
 
     is_stopped = False
 
-    def check_stopped(element):
+    def check_stopped(element: str) -> None:
         nonlocal is_stopped
         if raise_stopped:
             if is_stopped:
@@ -239,7 +244,7 @@ def parse(
                 is_stopped = True
 
     iframe = 0
-    messages = []
+    messages: List[Tuple[typing.RelativeTime, Notification[Any]]] = []
 
     for results in tokens.findall(string):
         timestamp = iframe * timespan + time_shift

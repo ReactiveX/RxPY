@@ -7,7 +7,7 @@ from rx.core import Observable
 _T = TypeVar("_T")
 
 
-def amb(*sources: Observable[_T]) -> Observable[_T]:
+def amb_(*sources: Observable[_T]) -> Observable[_T]:
     """Propagates the observable sequence that reacts first.
 
     Example:
@@ -29,4 +29,4 @@ def amb(*sources: Observable[_T]) -> Observable[_T]:
     return acc
 
 
-__all__ = ["amb"]
+__all__ = ["amb_"]

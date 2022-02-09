@@ -1,24 +1,32 @@
-from typing import Any
+from typing import Any, Optional, TypeVar, cast
 
-from rx.core import Observable
-from rx.core.typing import Mapper, Predicate
+from rx.core import Observable, typing, abc
 from rx.disposable import MultipleAssignmentDisposable
 from rx.scheduler import CurrentThreadScheduler
 
+_TState = TypeVar("_TState")
 
-def _generate(initial_state: Any, condition: Predicate, iterate: Mapper) -> Observable:
-    def subscribe(observer, scheduler=None):
+
+def generate_(
+    initial_state: _TState,
+    condition: typing.Predicate[_TState],
+    iterate: typing.Mapper[_TState, _TState],
+) -> Observable[_TState]:
+    def subscribe(
+        observer: abc.ObserverBase[_TState],
+        scheduler: Optional[abc.SchedulerBase] = None,
+    ) -> abc.DisposableBase:
         scheduler = scheduler or CurrentThreadScheduler.singleton()
         first = True
         state = initial_state
         mad = MultipleAssignmentDisposable()
 
-        def action(scheduler, state1=None):
+        def action(scheduler: abc.SchedulerBase, state1: Any = None):
             nonlocal first
             nonlocal state
 
             has_result = False
-            result = None
+            result: _TState = cast(_TState, None)
 
             try:
                 if first:
@@ -44,3 +52,6 @@ def _generate(initial_state: Any, condition: Predicate, iterate: Mapper) -> Obse
         return mad
 
     return Observable(subscribe)
+
+
+__all__ = ["generate_"]

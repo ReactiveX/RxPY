@@ -33,7 +33,7 @@ class ConnectableObservable(Observable[_T]):
         if not self.has_subscription:
             self.has_subscription = True
 
-            def dispose():
+            def dispose() -> None:
                 self.has_subscription = False
 
             subscription = self.source.subscribe(self.subject, scheduler=scheduler)
@@ -62,7 +62,7 @@ class ConnectableObservable(Observable[_T]):
         def subscribe(
             observer: abc.ObserverBase[_T],
             scheduler: Optional[abc.SchedulerBase] = None,
-        ):
+        ) -> abc.DisposableBase:
             count[0] += 1
             should_connect = count[0] == subscriber_count and not is_connected[0]
             subscription = source.subscribe(observer)

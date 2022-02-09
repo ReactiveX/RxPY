@@ -28,7 +28,7 @@ def fork_join_(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
         is_done = [False] * n
         has_value = [False] * n
 
-        def done(i: int):
+        def done(i: int) -> None:
             is_done[i] = True
 
             if not has_value[i]:
