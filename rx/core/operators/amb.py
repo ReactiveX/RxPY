@@ -13,7 +13,7 @@ def amb_(
 ) -> Callable[[Observable[_T]], Observable[_T]]:
 
     if isinstance(right_source, Future):
-        obs: Observable[_T] = cast(Observable[_T], from_future(right_source))
+        obs: Observable[_T] = from_future(right_source)
     else:
         obs: Observable[_T] = right_source
 
