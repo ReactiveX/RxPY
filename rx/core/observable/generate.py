@@ -1,6 +1,6 @@
 from typing import Any, Optional, TypeVar, cast
 
-from rx.core import Observable, typing, abc
+from rx.core import Observable, abc, typing
 from rx.disposable import MultipleAssignmentDisposable
 from rx.scheduler import CurrentThreadScheduler
 

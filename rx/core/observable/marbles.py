@@ -1,10 +1,10 @@
 import re
 import threading
 from datetime import datetime, timedelta
-from typing import List, Mapping, Optional, Tuple, Any, Union
+from typing import Any, List, Mapping, Optional, Tuple, Union
 
 from rx import Observable
-from rx.core import notification, abc, typing, Notification
+from rx.core import Notification, abc, notification, typing
 from rx.core.typing import AbsoluteOrRelativeTime, RelativeTime
 from rx.disposable import CompositeDisposable, Disposable
 from rx.scheduler import NewThreadScheduler
