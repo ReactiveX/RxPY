@@ -135,7 +135,7 @@ class TestScheduler(VirtualTimeScheduler):
 
     def create_cold_observable(
         self, *args: Union[Recorded[_T], List[Recorded[_T]]]
-    ) -> Observable[_T]:
+    ) -> ColdObservable[_T]:
         """Creates a cold observable using the specified timestamped
         notification messages either as an array or arguments.
 

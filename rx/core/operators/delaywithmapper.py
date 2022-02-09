@@ -35,8 +35,8 @@ def delay_with_mapper_(
         Returns:
             Time-shifted observable sequence.
         """
-
-        sub_delay, mapper = None, None
+        sub_delay: Optional[Observable[Any]] = None
+        mapper: Optional[typing.Mapper[Any, Observable[Any]]] = None
 
         if isinstance(subscription_delay, abc.ObservableBase):
             mapper = delay_duration_mapper
@@ -60,6 +60,7 @@ def delay_with_mapper_(
             def start():
                 def on_next(x: _T) -> None:
                     try:
+                        assert mapper
                         delay = mapper(x)
                     except Exception as error:  # pylint: disable=broad-except
                         observer.on_error(error)
