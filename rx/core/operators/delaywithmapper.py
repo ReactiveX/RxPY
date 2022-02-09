@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Any, Callable, Optional, TypeVar, Union
 
 from rx.core import Observable, abc, typing
 from rx.disposable import (
@@ -7,11 +7,18 @@ from rx.disposable import (
     SingleAssignmentDisposable,
 )
 
+_T = TypeVar("_T")
 
-def _delay_with_mapper(
-    subscription_delay=None, delay_duration_mapper=None
-) -> Callable[[Observable], Observable]:
-    def delay_with_mapper(source: Observable) -> Observable:
+
+def delay_with_mapper_(
+    subscription_delay: Union[
+        Observable[Any],
+        typing.Mapper[Any, Observable[Any]],
+        None,
+    ] = None,
+    delay_duration_mapper: Optional[typing.Mapper[_T, Observable[Any]]] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def delay_with_mapper(source: Observable[_T]) -> Observable[_T]:
         """Time shifts the observable sequence based on a subscription
         delay and a delay mapper function for each element.
 
@@ -37,7 +44,10 @@ def _delay_with_mapper(
         else:
             mapper = subscription_delay
 
-        def subscribe(observer, scheduler=None):
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
             delays = CompositeDisposable()
             at_end = [False]
 
@@ -48,22 +58,22 @@ def _delay_with_mapper(
             subscription = SerialDisposable()
 
             def start():
-                def on_next(x):
+                def on_next(x: _T) -> None:
                     try:
                         delay = mapper(x)
-                    except Exception as error:
+                    except Exception as error:  # pylint: disable=broad-except
                         observer.on_error(error)
                         return
 
                     d = SingleAssignmentDisposable()
                     delays.add(d)
 
-                    def on_next(_):
+                    def on_next(_: Any) -> None:
                         observer.on_next(x)
                         delays.remove(d)
                         done()
 
-                    def on_completed():
+                    def on_completed() -> None:
                         observer.on_next(x)
                         delays.remove(d)
                         done()
@@ -72,7 +82,7 @@ def _delay_with_mapper(
                         on_next, observer.on_error, on_completed, scheduler
                     )
 
-                def on_completed():
+                def on_completed() -> None:
                     at_end[0] = True
                     subscription.dispose()
                     done()
@@ -93,3 +103,6 @@ def _delay_with_mapper(
         return Observable(subscribe)
 
     return delay_with_mapper
+
+
+__all__ = ["delay_with_mapper_"]

@@ -1,15 +1,17 @@
-from typing import Callable, Optional
+from typing import Any, Callable, Optional, TypeVar
 
 import rx
 from rx import operators as ops
-from rx.core import Observable, typing
+from rx.core import Observable, typing, abc
+
+_T = TypeVar("_T")
 
 
-def _delay_subscription(
+def delay_subscription_(
     duetime: typing.AbsoluteOrRelativeTime,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable], Observable]:
-    def delay_subscription(source: Observable) -> Observable:
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def delay_subscription(source: Observable[_T]) -> Observable[_T]:
         """Time shifts the observable sequence by delaying the subscription.
 
         Exampeles.
@@ -22,7 +24,7 @@ def _delay_subscription(
             Time-shifted sequence.
         """
 
-        def mapper(_) -> Observable:
+        def mapper(_: Any) -> Observable[_T]:
             return rx.empty()
 
         return source.pipe(
@@ -30,3 +32,6 @@ def _delay_subscription(
         )
 
     return delay_subscription
+
+
+__all__ = ["delay_subscription_"]

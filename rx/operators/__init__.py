@@ -1,4 +1,5 @@
-# pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
+# pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin,import-outside-toplevel
+
 
 from asyncio import Future
 from typing import (
@@ -578,7 +579,7 @@ def default_if_empty(
 def delay_subscription(
     duetime: typing.AbsoluteOrRelativeTime,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable], Observable]:
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Time shifts the observable sequence by delaying the
     subscription.
 
@@ -601,14 +602,19 @@ def delay_subscription(
         A function that take a source observable and returns a
         time-shifted observable sequence.
     """
-    from rx.core.operators.delaysubscription import _delay_subscription
+    from rx.core.operators.delaysubscription import delay_subscription_
 
-    return _delay_subscription(duetime, scheduler=scheduler)
+    return delay_subscription_(duetime, scheduler=scheduler)
 
 
 def delay_with_mapper(
-    subscription_delay=None, delay_duration_mapper=None
-) -> Callable[[Observable], Observable]:
+    subscription_delay: Union[
+        Observable[Any],
+        typing.Mapper[Any, Observable[Any]],
+        None,
+    ] = None,
+    delay_duration_mapper: Optional[typing.Mapper[_T, Observable[Any]]] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Time shifts the observable sequence based on a subscription
     delay and a delay mapper function for each element.
 
@@ -635,9 +641,9 @@ def delay_with_mapper(
         A function that takes an observable source and returns a
         time-shifted observable sequence.
     """
-    from rx.core.operators.delaywithmapper import _delay_with_mapper
+    from rx.core.operators.delaywithmapper import delay_with_mapper_
 
-    return _delay_with_mapper(subscription_delay, delay_duration_mapper)
+    return delay_with_mapper_(subscription_delay, delay_duration_mapper)
 
 
 def dematerialize() -> Callable[[Observable[Notification[_T]]], Observable[_T]]:
@@ -650,9 +656,9 @@ def dematerialize() -> Callable[[Observable[Notification[_T]]], Observable[_T]]:
         An observable sequence exhibiting the behavior
         corresponding to the source sequence's notification values.
     """
-    from rx.core.operators.dematerialize import _dematerialize
+    from rx.core.operators.dematerialize import dematerialize_
 
-    return _dematerialize()
+    return dematerialize_()
 
 
 def delay(
@@ -690,8 +696,9 @@ def delay(
 
 
 def distinct(
-    key_mapper: Optional[Mapper] = None, comparer: Optional[Comparer] = None
-) -> Callable[[Observable], Observable]:
+    key_mapper: Optional[Mapper[_T, _TKey]] = None,
+    comparer: Optional[Comparer[_TKey]] = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns an observable sequence that contains only distinct
     elements according to the key_mapper and the comparer. Usage of
     this operator should be considered carefully due to the maintenance
@@ -721,9 +728,9 @@ def distinct(
         elements, based on a computed key value, from the source
         sequence.
     """
-    from rx.core.operators.distinct import _distinct
+    from rx.core.operators.distinct import distinct_
 
-    return _distinct(key_mapper, comparer)
+    return distinct_(key_mapper, comparer)
 
 
 def distinct_until_changed(

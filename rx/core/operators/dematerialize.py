@@ -5,7 +5,7 @@ from rx.core import Notification, Observable, abc
 _T = TypeVar("_T")
 
 
-def _dematerialize() -> Callable[[Observable[Notification[_T]]], Observable[_T]]:
+def dematerialize_() -> Callable[[Observable[Notification[_T]]], Observable[_T]]:
     def dematerialize(source: Observable[Notification[_T]]) -> Observable[_T]:
         """Partially applied dematerialize operator.
 
@@ -33,4 +33,4 @@ def _dematerialize() -> Callable[[Observable[Notification[_T]]], Observable[_T]]
     return dematerialize
 
 
-__all__ = ["_dematerialize"]
+__all__ = ["dematerialize_"]
