@@ -1,5 +1,5 @@
 import threading
-from typing import Any, Optional, TypeVar
+from typing import Any, Optional, TypeVar, cast
 
 from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx.scheduler import NewThreadScheduler
@@ -35,10 +35,10 @@ def run(source: Observable[_T]) -> _T:
     exception: Optional[Exception] = None
     latch = threading.Event()
     has_result = False
-    result: Any = None
+    result: _T = cast(_T, None)
     done = False
 
-    def on_next(value: Any) -> None:
+    def on_next(value: _T) -> None:
         nonlocal result, has_result
         result = value
         has_result = True
@@ -55,13 +55,13 @@ def run(source: Observable[_T]) -> _T:
         done = True
         latch.set()
 
-    source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
+    source.subscribe(on_next, on_error, on_completed, scheduler=scheduler)
 
     while not done:
         latch.wait()
 
-    if isinstance(exception, Exception):
-        raise exception  # pylint: disable=raising-bad-type
+    if exception:
+        raise exception  # pylint: disable=raidfsing-bad-type
 
     if not has_result:
         raise SequenceContainsNoElementsError

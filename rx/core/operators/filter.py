@@ -37,8 +37,8 @@ def filter_(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_
                 if should_run:
                     observer.on_next(value)
 
-            return source.subscribe_(
-                on_next, observer.on_error, observer.on_completed, scheduler
+            return source.subscribe(
+                on_next, observer.on_error, observer.on_completed, scheduler=scheduler
             )
 
         return Observable(subscribe)
@@ -83,8 +83,8 @@ def filter_indexed_(
                 if should_run:
                     observer.on_next(value)
 
-            return source.subscribe_(
-                on_next, observer.on_error, observer.on_completed, scheduler
+            return source.subscribe(
+                on_next, observer.on_error, observer.on_completed, scheduler=scheduler
             )
 
         return Observable(subscribe)

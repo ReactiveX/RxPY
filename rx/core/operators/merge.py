@@ -60,8 +60,8 @@ def merge_(
 
                 on_next = synchronized(source.lock)(observer.on_next)
                 on_error = synchronized(source.lock)(observer.on_error)
-                subscription.disposable = xs.subscribe_(
-                    on_next, on_error, on_completed, scheduler
+                subscription.disposable = xs.subscribe(
+                    on_next, on_error, on_completed, scheduler=scheduler
                 )
 
             def on_next(inner_source: Observable[_T]) -> None:
@@ -78,7 +78,9 @@ def merge_(
                     observer.on_completed()
 
             group.add(
-                source.subscribe_(on_next, observer.on_error, on_completed, scheduler)
+                source.subscribe(
+                    on_next, observer.on_error, on_completed, scheduler=scheduler
+                )
             )
             return group
 
@@ -129,8 +131,8 @@ def merge_all_() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
 
                 on_next: typing.OnNext[_T] = synchronized(source.lock)(observer.on_next)
                 on_error = synchronized(source.lock)(observer.on_error)
-                subscription = inner_source.subscribe_(
-                    on_next, on_error, on_completed, scheduler
+                subscription = inner_source.subscribe(
+                    on_next, on_error, on_completed, scheduler=scheduler
                 )
                 inner_subscription.disposable = subscription
 
@@ -139,8 +141,8 @@ def merge_all_() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
                 if len(group) == 1:
                     observer.on_completed()
 
-            m.disposable = source.subscribe_(
-                on_next, observer.on_error, on_completed, scheduler
+            m.disposable = source.subscribe(
+                on_next, observer.on_error, on_completed, scheduler=scheduler
             )
             return group
 

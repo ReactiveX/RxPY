@@ -32,8 +32,8 @@ def to_iterable_() -> Callable[[Observable[_T]], Observable[List[_T]]]:
                 queue = []
                 observer.on_completed()
 
-            return source.subscribe_(
-                on_next, observer.on_error, on_completed, scheduler
+            return source.subscribe(
+                on_next, observer.on_error, on_completed, scheduler=scheduler
             )
 
         return Observable(subscribe)

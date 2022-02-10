@@ -81,7 +81,9 @@ def window_with_count_(
                     q.pop(0).on_completed()
                 observer.on_completed()
 
-            m.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler)
+            m.disposable = source.subscribe(
+                on_next, on_error, on_completed, scheduler=scheduler
+            )
             return refCountDisposable
 
         return Observable(subscribe)

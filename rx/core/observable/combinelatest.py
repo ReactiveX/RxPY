@@ -62,8 +62,8 @@ def combine_latest_(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
 
             subscription = subscriptions[i]
             assert subscription
-            subscription.disposable = sources[i].subscribe_(
-                on_next, observer.on_error, on_completed, scheduler
+            subscription.disposable = sources[i].subscribe(
+                on_next, observer.on_error, on_completed, scheduler=scheduler
             )
 
         for idx in range(n):

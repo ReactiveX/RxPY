@@ -25,7 +25,9 @@ def to_set_() -> Callable[[Observable[_T]], Observable[Set[_T]]]:
                 s = set()
                 observer.on_completed()
 
-            return source.subscribe_(s.add, observer.on_error, on_completed, scheduler)
+            return source.subscribe(
+                s.add, observer.on_error, on_completed, scheduler=scheduler
+            )
 
         return Observable(subscribe)
 

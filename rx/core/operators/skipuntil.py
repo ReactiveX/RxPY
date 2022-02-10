@@ -45,8 +45,8 @@ def skip_until_(
                 if is_open[0]:
                     observer.on_completed()
 
-            subs = source.subscribe_(
-                on_next, observer.on_error, on_completed, scheduler
+            subs = source.subscribe(
+                on_next, observer.on_error, on_completed, scheduler=scheduler
             )
             subscriptions = CompositeDisposable(subs)
 
@@ -60,8 +60,8 @@ def skip_until_(
             def on_completed2():
                 right_subscription.dispose()
 
-            right_subscription.disposable = obs.subscribe_(
-                on_next2, observer.on_error, on_completed2, scheduler
+            right_subscription.disposable = obs.subscribe(
+                on_next2, observer.on_error, on_completed2, scheduler=scheduler
             )
 
             return subscriptions

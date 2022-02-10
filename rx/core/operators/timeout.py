@@ -94,8 +94,8 @@ def timeout_(
                     _id[0] += 1
                     observer.on_completed()
 
-            original.disposable = source.subscribe_(
-                on_next, on_error, on_completed, scheduler_
+            original.disposable = source.subscribe(
+                on_next, on_error, on_completed, scheduler=scheduler_
             )
             return CompositeDisposable(subscription, timer)
 

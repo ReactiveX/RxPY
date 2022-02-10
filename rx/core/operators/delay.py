@@ -108,7 +108,7 @@ def observable_delay_timespan(
 
                     mad.disposable = _scheduler.schedule_relative(duetime, action)
 
-        subscription = source.pipe(ops.materialize(), ops.timestamp()).subscribe_(
+        subscription = source.pipe(ops.materialize(), ops.timestamp()).subscribe(
             on_next, scheduler=_scheduler
         )
 

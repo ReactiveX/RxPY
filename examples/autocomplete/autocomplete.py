@@ -65,7 +65,7 @@ class WSHandler(WebSocketHandler):
         def on_error(ex: Exception) -> None:
             print(ex)
 
-        searcher.subscribe_(
+        searcher.subscribe(
             on_next=send_response, on_error=on_error, scheduler=scheduler
         )
 

@@ -74,7 +74,9 @@ def do_action_(
 
                     observer.on_completed()
 
-            return source.subscribe_(_on_next, _on_error, _on_completed, scheduler)
+            return source.subscribe(
+                _on_next, _on_error, _on_completed, scheduler=scheduler
+            )
 
         return Observable(subscribe)
 
@@ -117,7 +119,7 @@ def do_after_next(source, after_next):
             except Exception as e:  # pylint: disable=broad-except
                 observer.on_error(e)
 
-        return source.subscribe_(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe(on_next, observer.on_error, observer.on_completed)
 
     return Observable(subscribe)
 
@@ -134,8 +136,11 @@ def do_on_subscribe(source: Observable, on_subscribe):
 
     def subscribe(observer, scheduler=None):
         on_subscribe()
-        return source.subscribe_(
-            observer.on_next, observer.on_error, observer.on_completed, scheduler
+        return source.subscribe(
+            observer.on_next,
+            observer.on_error,
+            observer.on_completed,
+            scheduler=scheduler,
         )
 
     return Observable(subscribe)
@@ -158,8 +163,11 @@ def do_on_dispose(source: Observable, on_dispose):
     def subscribe(observer, scheduler=None):
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose())
-        subscription = source.subscribe_(
-            observer.on_next, observer.on_error, observer.on_completed, scheduler
+        subscription = source.subscribe(
+            observer.on_next,
+            observer.on_error,
+            observer.on_completed,
+            scheduler=scheduler,
         )
         composite_disposable.add(subscription)
         return composite_disposable
@@ -193,7 +201,9 @@ def do_on_terminate(source, on_terminate):
             else:
                 observer.on_error(exception)
 
-        return source.subscribe_(observer.on_next, on_error, on_completed, scheduler)
+        return source.subscribe(
+            observer.on_next, on_error, on_completed, scheduler=scheduler
+        )
 
     return Observable(subscribe)
 
@@ -222,7 +232,9 @@ def do_after_terminate(source, after_terminate):
             except Exception as err:  # pylint: disable=broad-except
                 observer.on_error(err)
 
-        return source.subscribe(observer.on_next, on_error, on_completed, scheduler)
+        return source.subscribe(
+            observer.on_next, on_error, on_completed, scheduler=scheduler
+        )
 
     return Observable(subscribe)
 
@@ -276,8 +288,8 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
 
             composite_disposable = CompositeDisposable()
             composite_disposable.add(OnDispose(was_invoked))
-            subscription = source.subscribe_(
-                observer.on_next, on_error, on_completed, scheduler
+            subscription = source.subscribe(
+                observer.on_next, on_error, on_completed, scheduler=scheduler
             )
             composite_disposable.add(subscription)
 

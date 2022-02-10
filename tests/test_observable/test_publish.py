@@ -100,7 +100,11 @@ class TestPublish(unittest.TestCase):
     def test_ref_count_connects_on_first(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_completed(250)
+            on_next(210, 1),
+            on_next(220, 2),
+            on_next(230, 3),
+            on_next(240, 4),
+            on_completed(250),
         )
         subject = MySubject()
         conn = ConnectableObservable(xs, subject)
@@ -110,7 +114,13 @@ class TestPublish(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        assert res.messages == [on_next(210, 1), on_next(220, 2), on_next(230, 3), on_next(240, 4), on_completed(250)]
+        assert res.messages == [
+            on_next(210, 1),
+            on_next(220, 2),
+            on_next(230, 3),
+            on_next(240, 4),
+            on_completed(250),
+        ]
         assert subject.disposed
 
     def test_ref_count_notconnected(self):
@@ -229,7 +239,11 @@ class TestPublish(unittest.TestCase):
             on_next(390, 7),
             on_next(520, 11),
         ]
-        assert xs.subscriptions == [subscribe(300, 400), subscribe(500, 550), subscribe(650, 800)]
+        assert xs.subscriptions == [
+            subscribe(300, 400),
+            subscribe(500, 550),
+            subscribe(650, 800),
+        ]
 
     def test_publish_error(self):
         ex = "ex"
@@ -445,7 +459,11 @@ class TestPublish(unittest.TestCase):
 
         scheduler.start()
         assert results.messages == [on_next(340, 8)]
-        assert xs.subscriptions == [subscribe(300, 400), subscribe(500, 550), subscribe(650, 800)]
+        assert xs.subscriptions == [
+            subscribe(300, 400),
+            subscribe(500, 550),
+            subscribe(650, 800),
+        ]
 
     def test_publish_multipleconnections(self):
         xs = rx.never()

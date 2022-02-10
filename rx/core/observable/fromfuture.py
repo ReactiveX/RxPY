@@ -14,7 +14,6 @@ def from_future_(future: "Future[_T]") -> Observable[_T]:
     Args:
         future -- A Python 3 compatible future.
             https://docs.python.org/3/library/asyncio-task.html#future
-            http://www.tornadoweb.org/en/stable/concurrent.html#tornado.concurrent.Future
 
     Returns:
         An Observable sequence which wraps the existing future success

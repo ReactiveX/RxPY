@@ -53,7 +53,7 @@ def to_future_(
                     future.set_exception(SequenceContainsNoElementsError())
             last_value = None
 
-        dis = source.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
+        dis = source.subscribe(on_next, on_error, on_completed, scheduler=scheduler)
         future.add_done_callback(lambda _: dis.dispose())
 
         return future

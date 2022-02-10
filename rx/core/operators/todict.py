@@ -51,8 +51,8 @@ def to_dict_(
                 m = dict()
                 observer.on_completed()
 
-            return source.subscribe_(
-                on_next, observer.on_error, on_completed, scheduler
+            return source.subscribe(
+                on_next, observer.on_error, on_completed, scheduler=scheduler
             )
 
         return Observable(subscribe)

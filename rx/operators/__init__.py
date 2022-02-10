@@ -362,8 +362,10 @@ def buffer_with_time_or_count(
 
 
 def catch(
-    handler: Union[Observable, Callable[[Exception, Observable], Observable]]
-) -> Callable[[Observable], Observable]:
+    handler: Union[
+        Observable[_T], Callable[[Exception, Observable[_T]], Observable[_T]]
+    ]
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
 
@@ -2496,7 +2498,8 @@ def sequence_equal(
         >>> res = sequence_equal([1,2,3])
         >>> res = sequence_equal([{ "value": 42 }], lambda x, y: x.value == y.value)
         >>> res = sequence_equal(rx.return_value(42))
-        >>> res = sequence_equal(rx.return_value({ "value": 42 }), lambda x, y: x.value == y.value)
+        >>> res = sequence_equal(
+            rx.return_value({ "value": 42 }), lambda x, y: x.value == y.value)
 
     Args:
         second: Second observable sequence or iterable to compare.
@@ -3595,7 +3598,9 @@ def timeout_with_mapper(
     Examples:
         >>> res = timeout_with_mapper(rx.timer(0.5))
         >>> res = timeout_with_mapper(rx.timer(0.5), lambda x: rx.timer(0.2))
-        >>> res = timeout_with_mapper(rx.timer(0.5), lambda x: rx.timer(0.2)), rx.return_value(42))
+        >>> res = timeout_with_mapper(
+            rx.timer(0.5), lambda x: rx.timer(0.2)), rx.return_value(42)
+        )
 
     Args:
         first_timeout: [Optional] Observable sequence that represents
@@ -3783,14 +3788,14 @@ def window(
         returns an observable sequence of windows.
 
     """
-    from rx.core.operators.window import _window
+    from rx.core.operators.window import window_
 
-    return _window(boundaries)
+    return window_(boundaries)
 
 
 def window_when(
-    closing_mapper: Callable[[], Observable]
-) -> Callable[[Observable], Observable]:
+    closing_mapper: Callable[[], Observable[Any]]
+) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
     """Projects each element of an observable sequence into zero or
     more windows.
 
@@ -3821,14 +3826,14 @@ def window_when(
         An operator function that takes an observable source and
         returns an observable sequence of windows.
     """
-    from rx.core.operators.window import _window_when
+    from rx.core.operators.window import window_when_
 
-    return _window_when(closing_mapper)
+    return window_when_(closing_mapper)
 
 
 def window_toggle(
-    openings: Observable, closing_mapper: Callable[[Any], Observable]
-) -> Callable[[Observable], Observable]:
+    openings: Observable[Any], closing_mapper: Callable[[Any], Observable[Any]]
+) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
     """Projects each element of an observable sequence into zero or
     more windows.
 
@@ -3857,9 +3862,9 @@ def window_toggle(
         An operator function that takes an observable source and
         returns an observable sequence of windows.
     """
-    from rx.core.operators.window import _window_toggle
+    from rx.core.operators.window import window_toggle_
 
-    return _window_toggle(openings, closing_mapper)
+    return window_toggle_(openings, closing_mapper)
 
 
 def window_with_count(

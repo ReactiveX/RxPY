@@ -72,8 +72,8 @@ def zip_with_iterable_(
                     result = (left, right)
                     observer.on_next(result)
 
-            return first.subscribe_(
-                on_next, observer.on_error, observer.on_completed, scheduler
+            return first.subscribe(
+                on_next, observer.on_error, observer.on_completed, scheduler=scheduler
             )
 
         return Observable(subscribe)

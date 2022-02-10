@@ -24,8 +24,8 @@ def dematerialize_() -> Callable[[Observable[Notification[_T]]], Observable[_T]]
             def on_next(value: Notification[_T]) -> None:
                 return value.accept(observer)
 
-            return source.subscribe_(
-                on_next, observer.on_error, observer.on_completed, scheduler
+            return source.subscribe(
+                on_next, observer.on_error, observer.on_completed, scheduler=scheduler
             )
 
         return Observable(subscribe)

@@ -82,7 +82,7 @@ def window_with_time_or_count_(
                 observer.on_completed()
 
             group_disposable.add(
-                source.subscribe_(on_next, on_error, on_completed, scheduler_)
+                source.subscribe(on_next, on_error, on_completed, scheduler=scheduler_)
             )
             return ref_count_disposable
 

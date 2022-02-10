@@ -45,7 +45,7 @@ def throttle_first_(
                 if emit:
                     observer.on_next(x)
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next, observer.on_error, observer.on_completed, scheduler=_scheduler
             )
 

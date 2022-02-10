@@ -46,7 +46,9 @@ def map(
                 else:
                     obv.on_next(result)
 
-            return source.subscribe_(on_next, obv.on_error, obv.on_completed, scheduler)
+            return source.subscribe(
+                on_next, obv.on_error, obv.on_completed, scheduler=scheduler
+            )
 
         return Observable(subscribe)
 
@@ -56,8 +58,8 @@ def map(
 def map_indexed(
     mapper_indexed: Optional[MapperIndexed[_T1, _T2]] = None
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
-    def _identity(value: Any, _: int) -> Any:
-        return value
+    def _identity(value: _T1, _: int) -> _T2:
+        return cast(_T2, value)
 
     _mapper_indexed = mapper_indexed or _identity
 

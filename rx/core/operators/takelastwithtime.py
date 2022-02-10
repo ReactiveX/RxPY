@@ -56,8 +56,8 @@ def take_last_with_time_(
 
                 observer.on_completed()
 
-            return source.subscribe_(
-                on_next, observer.on_error, on_completed, scheduler_
+            return source.subscribe(
+                on_next, observer.on_error, on_completed, scheduler=scheduler_
             )
 
         return Observable(subscribe)

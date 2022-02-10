@@ -1,34 +1,39 @@
-from typing import Callable, Union
+from asyncio import Future
+from typing import Callable, Optional, TypeVar, Union
 
 import rx
-from rx.core import Observable, abc, typing
+from rx.core import Observable, abc
 from rx.disposable import SerialDisposable, SingleAssignmentDisposable
-from rx.internal.utils import is_future
+
+_T = TypeVar("_T")
 
 
 def catch_handler(
-    source: Observable, handler: Callable[[Exception, Observable], Observable]
-) -> Observable:
-    def subscribe(observer, scheduler=None):
+    source: Observable[_T],
+    handler: Callable[[Exception, Observable[_T]], Union[Observable[_T], "Future[_T]"]],
+) -> Observable[_T]:
+    def subscribe(
+        observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
         d1 = SingleAssignmentDisposable()
         subscription = SerialDisposable()
 
         subscription.disposable = d1
 
-        def on_error(exception):
+        def on_error(exception: Exception) -> None:
             try:
                 result = handler(exception, source)
             except Exception as ex:  # By design. pylint: disable=W0703
                 observer.on_error(ex)
                 return
 
-            result = rx.from_future(result) if is_future(result) else result
+            result = rx.from_future(result) if isinstance(result, Future) else result
             d = SingleAssignmentDisposable()
             subscription.disposable = d
             d.disposable = result.subscribe(observer, scheduler=scheduler)
 
-        d1.disposable = source.subscribe_(
-            observer.on_next, on_error, observer.on_completed, scheduler
+        d1.disposable = source.subscribe(
+            observer.on_next, on_error, observer.on_completed, scheduler=scheduler
         )
         return subscription
 
@@ -36,9 +41,11 @@ def catch_handler(
 
 
 def _catch(
-    handler: Union[Observable, Callable[[Exception, Observable], Observable]]
-) -> Callable[[Observable], Observable]:
-    def catch(source: Observable) -> Observable:
+    handler: Union[
+        Observable[_T], Callable[[Exception, Observable[_T]], Observable[_T]]
+    ]
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    def catch(source: Observable[_T]) -> Observable[_T]:
         """Continues an observable sequence that is terminated by an
         exception with the next observable sequence.
 
@@ -64,7 +71,11 @@ def _catch(
             return rx.catch(source, handler)
         else:
             raise TypeError(
-                "catch operator takes whether an Observable or a callable handler as argument."
+                "catch operator takes whether an Observable, "
+                "or a callable handler as argument."
             )
 
     return catch
+
+
+__all__ = ["_catch"]

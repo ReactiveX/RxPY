@@ -130,8 +130,8 @@ def group_by_until_(
                     def on_completed():
                         expire()
 
-                    sad.disposable = duration.pipe(ops.take(1)).subscribe_(
-                        on_next, on_error, on_completed, scheduler
+                    sad.disposable = duration.pipe(ops.take(1)).subscribe(
+                        on_next, on_error, on_completed, scheduler=scheduler
                     )
 
                 try:
@@ -158,7 +158,7 @@ def group_by_until_(
                 observer.on_completed()
 
             group_disposable.add(
-                source.subscribe_(on_next, on_error, on_completed, scheduler)
+                source.subscribe(on_next, on_error, on_completed, scheduler=scheduler)
             )
             return ref_count_disposable
 

@@ -76,8 +76,8 @@ def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
                 queues[i].append(x)
                 next(i)
 
-            sad.disposable = source.subscribe_(
-                on_next, observer.on_error, lambda: completed(i), scheduler
+            sad.disposable = source.subscribe(
+                on_next, observer.on_error, lambda: completed(i), scheduler=scheduler
             )
             subscriptions[i] = sad
 

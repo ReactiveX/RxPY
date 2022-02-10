@@ -81,8 +81,8 @@ def expand_(
                         if active_count == 0:
                             observer.on_completed()
 
-                    sad.disposable = work.subscribe_(
-                        on_next, observer.on_error, on_complete, scheduler
+                    sad.disposable = work.subscribe(
+                        on_next, observer.on_error, on_complete, scheduler=scheduler
                     )
                     m.disposable = scheduler.schedule(action)
 

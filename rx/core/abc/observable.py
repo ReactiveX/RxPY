@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Generic, Optional, TypeVar
+from typing import Callable, Generic, Optional, TypeVar, Union
 
 from .disposable import DisposableBase
-from .observer import ObserverBase
+from .observer import ObserverBase, OnNext, OnError, OnCompleted
 from .scheduler import SchedulerBase
 
 _T_out = TypeVar("_T_out", covariant=True)
@@ -18,7 +18,9 @@ class ObservableBase(Generic[_T_out], ABC):
     @abstractmethod
     def subscribe(
         self,
-        observer: ObserverBase[_T_out],
+        on_next: Optional[Union[OnNext[_T_out], ObserverBase[_T_out]]] = None,
+        on_error: Optional[OnError] = None,
+        on_completed: Optional[OnCompleted] = None,
         *,
         scheduler: Optional[SchedulerBase] = None
     ) -> DisposableBase:

@@ -43,8 +43,8 @@ def take_last_buffer_(count: int) -> Callable[[Observable[_T]], Observable[List[
                 observer.on_next(q)
                 observer.on_completed()
 
-            return source.subscribe_(
-                on_next, observer.on_error, on_completed, scheduler
+            return source.subscribe(
+                on_next, observer.on_error, on_completed, scheduler=scheduler
             )
 
         return Observable(subscribe)

@@ -40,8 +40,8 @@ def skip_last_(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
                 if front is not None:
                     observer.on_next(front)
 
-            return source.subscribe_(
-                on_next, observer.on_error, observer.on_completed, scheduler
+            return source.subscribe(
+                on_next, observer.on_error, observer.on_completed, scheduler=scheduler
             )
 
         return Observable(subscribe)

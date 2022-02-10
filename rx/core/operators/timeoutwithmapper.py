@@ -80,8 +80,8 @@ def timeout_with_mapper_(
                     if timer_wins():
                         subscription.disposable = other.subscribe(observer)
 
-                d.disposable = timeout.subscribe_(
-                    on_next, on_error, on_completed, scheduler
+                d.disposable = timeout.subscribe(
+                    on_next, on_error, on_completed, scheduler=scheduler
                 )
 
             set_timer(first_timeout)
@@ -113,8 +113,8 @@ def timeout_with_mapper_(
                 if observer_wins():
                     observer.on_completed()
 
-            original.disposable = source.subscribe_(
-                on_next, on_error, on_completed, scheduler
+            original.disposable = source.subscribe(
+                on_next, on_error, on_completed, scheduler=scheduler
             )
             return CompositeDisposable(subscription, timer)
 

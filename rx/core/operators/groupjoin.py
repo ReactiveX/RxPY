@@ -97,8 +97,8 @@ def _group_join(
 
                     observer.on_error(error)
 
-                md.disposable = duration.pipe(ops.take(1)).subscribe_(
-                    nothing, on_error, expire, scheduler
+                md.disposable = duration.pipe(ops.take(1)).subscribe(
+                    nothing, on_error, expire, scheduler=scheduler
                 )
 
             def on_error_left(error):
@@ -108,8 +108,11 @@ def _group_join(
                 observer.on_error(error)
 
             group.add(
-                left.subscribe_(
-                    on_next_left, on_error_left, observer.on_completed, scheduler
+                left.subscribe(
+                    on_next_left,
+                    on_error_left,
+                    observer.on_completed,
+                    scheduler=scheduler,
                 )
             )
 
@@ -142,8 +145,8 @@ def _group_join(
 
                         observer.on_error(error)
 
-                md.disposable = duration.pipe(ops.take(1)).subscribe_(
-                    nothing, on_error, expire, scheduler
+                md.disposable = duration.pipe(ops.take(1)).subscribe(
+                    nothing, on_error, expire, scheduler=scheduler
                 )
 
                 with left.lock:
@@ -156,7 +159,7 @@ def _group_join(
 
                 observer.on_error(error)
 
-            group.add(right.subscribe_(send_right, on_error_right, scheduler=scheduler))
+            group.add(right.subscribe(send_right, on_error_right, scheduler=scheduler))
             return rcd
 
         return Observable(subscribe)

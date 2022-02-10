@@ -51,8 +51,8 @@ def skip_until_with_time_(
                 if open[0]:
                     observer.on_next(x)
 
-            subscription = source.subscribe_(
-                on_next, observer.on_error, observer.on_completed, scheduler_
+            subscription = source.subscribe(
+                on_next, observer.on_error, observer.on_completed, scheduler=scheduler_
             )
 
             def action(scheduler: abc.SchedulerBase, state: Any):

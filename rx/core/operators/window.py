@@ -19,9 +19,9 @@ log = logging.getLogger("Rx")
 _T = TypeVar("_T")
 
 
-def _window_toggle(
-    openings: Observable, closing_mapper: Callable[[Any], Observable]
-) -> Callable[[Observable], Observable]:
+def window_toggle_(
+    openings: Observable[Any], closing_mapper: Callable[[Any], Observable[Any]]
+) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
     """Projects each element of an observable sequence into zero or
     more windows.
 
@@ -32,7 +32,7 @@ def _window_toggle(
         An observable sequence of windows.
     """
 
-    def window_toggle(source: Observable) -> Observable:
+    def window_toggle(source: Observable[_T]) -> Observable[Observable[_T]]:
         def mapper(args):
             _, window = args
             return window
@@ -49,7 +49,7 @@ def _window_toggle(
     return window_toggle
 
 
-def _window(
+def window_(
     boundaries: Observable[Any],
 ) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
     """Projects each element of an observable sequence into zero or
@@ -84,7 +84,11 @@ def _window(
                 window_subject.on_completed()
                 observer.on_completed()
 
-            d.add(source.subscribe_(on_next_window, on_error, on_completed, scheduler))
+            d.add(
+                source.subscribe(
+                    on_next_window, on_error, on_completed, scheduler=scheduler
+                )
+            )
 
             def on_next_observer(w: Observable[_T]):
                 nonlocal window_subject
@@ -93,8 +97,8 @@ def _window(
                 observer.on_next(add_ref(window_subject, r))
 
             d.add(
-                boundaries.subscribe_(
-                    on_next_observer, on_error, on_completed, scheduler
+                boundaries.subscribe(
+                    on_next_observer, on_error, on_completed, scheduler=scheduler
                 )
             )
             return r
@@ -104,8 +108,8 @@ def _window(
     return window
 
 
-def _window_when(
-    closing_mapper: Callable[[], Observable[_T]]
+def window_when_(
+    closing_mapper: Callable[[], Observable[Any]]
 ) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
     """Projects each element of an observable sequence into zero or
     more windows.
@@ -140,7 +144,9 @@ def _window_when(
                 window.on_completed()
                 observer.on_completed()
 
-            d.add(source.subscribe_(on_next, on_error, on_completed, scheduler))
+            d.add(
+                source.subscribe(on_next, on_error, on_completed, scheduler=scheduler)
+            )
 
             def create_window_on_completed():
                 try:
@@ -158,8 +164,8 @@ def _window_when(
 
                 m1 = SingleAssignmentDisposable()
                 m.disposable = m1
-                m1.disposable = window_close.pipe(ops.take(1)).subscribe_(
-                    noop, on_error, on_completed, scheduler
+                m1.disposable = window_close.pipe(ops.take(1)).subscribe(
+                    noop, on_error, on_completed, scheduler=scheduler
                 )
 
             create_window_on_completed()
@@ -168,3 +174,6 @@ def _window_when(
         return Observable(subscribe)
 
     return window_when
+
+
+__all__ = ["window_", "window_when_", "window_toggle_"]

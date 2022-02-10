@@ -38,8 +38,8 @@ def element_at_or_default_(
                     observer.on_next(cast(_T, default_value))
                     observer.on_completed()
 
-            return source.subscribe_(
-                on_next, observer.on_error, on_completed, scheduler
+            return source.subscribe(
+                on_next, observer.on_error, on_completed, scheduler=scheduler
             )
 
         return Observable(subscribe)

@@ -48,30 +48,11 @@ class Observable(abc.ObservableBase[_T]):
     ) -> abc.DisposableBase:
         return self._subscribe(observer, scheduler) if self._subscribe else Disposable()
 
-    @overload
     def subscribe(
         self,
-        observer: abc.ObserverBase[_T],
-        *,
-        scheduler: Optional[abc.SchedulerBase] = None,
-    ) -> abc.DisposableBase:
-        ...
-
-    @overload
-    def subscribe(
-        self,
-        observer: Optional[abc.OnNext[_T]] = None,
-        *,
-        scheduler: Optional[abc.SchedulerBase] = None,
-    ) -> abc.DisposableBase:
-        ...
-
-    def subscribe(
-        self,
-        observer: Union[abc.ObserverBase[_T], abc.OnNext[_T], None] = None,
+        on_next: Optional[Union[abc.ObserverBase[_T], abc.OnNext[_T], None]] = None,
         on_error: Optional[abc.OnError] = None,
         on_completed: Optional[abc.OnCompleted] = None,
-        on_next: Optional[abc.OnNext[_T]] = None,
         *,
         scheduler: Optional[abc.SchedulerBase] = None,
     ) -> abc.DisposableBase:
@@ -107,46 +88,15 @@ class Observable(abc.ObservableBase[_T]):
             Disposable object representing an observer's subscription to
             the observable sequence.
         """
-        if observer:
-            if (
-                isinstance(observer, abc.ObserverBase)
-                or hasattr(observer, "on_next")
-                and callable(getattr(observer, "on_next"))
-            ):
-                on_next = cast(abc.ObserverBase[_T], observer).on_next
-                on_error = cast(abc.ObserverBase[_T], observer).on_error
-                on_completed = cast(abc.ObserverBase[_T], observer).on_completed
-            else:
-                on_next = observer
-        return self.subscribe_(on_next, on_error, on_completed, scheduler=scheduler)
-
-    def subscribe_(
-        self,
-        on_next: Optional[abc.OnNext[_T]] = None,
-        on_error: Optional[abc.OnError] = None,
-        on_completed: Optional[abc.OnCompleted] = None,
-        scheduler: Optional[abc.SchedulerBase] = None,
-    ) -> abc.DisposableBase:
-        """Subscribe callbacks to the observable sequence.
-
-        Examples:
-            >>> source.subscribe_(on_next)
-            >>> source.subscribe_(on_next, on_error)
-            >>> source.subscribe_(on_next, on_error, on_completed)
-
-        Args:
-            on_next: [Optional] Action to invoke for each element in the
-                observable sequence.
-            on_error: [Optional] Action to invoke upon exceptional termination
-                of the observable sequence.
-            on_completed: [Optional] Action to invoke upon graceful termination
-                of the observable sequence.
-            scheduler: [Optional] The scheduler to use for this subscription.
-
-        Returns:
-            Disposable object representing an observer's subscription to
-            the observable sequence.
-        """
+        if (
+            isinstance(on_next, abc.ObserverBase)
+            or hasattr(on_next, "on_next")
+            and callable(getattr(on_next, "on_next"))
+        ):
+            obv = cast(abc.ObserverBase[_T], on_next)
+            on_next = obv.on_next
+            on_error = obv.on_error
+            on_completed = obv.on_completed
 
         auto_detach_observer: AutoDetachObserver[_T] = AutoDetachObserver(
             on_next, on_error, on_completed

@@ -68,7 +68,7 @@ def distinct_until_changed_(
                     current_key = key
                     observer.on_next(value)
 
-            return source.subscribe_(
+            return source.subscribe(
                 on_next, observer.on_error, observer.on_completed, scheduler=scheduler
             )
 

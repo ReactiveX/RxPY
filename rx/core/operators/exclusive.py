@@ -49,7 +49,7 @@ def exclusive_() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
                         if is_stopped[0] and len(g) == 1:
                             observer.on_completed()
 
-                    inner_subscription.disposable = inner_source.subscribe_(
+                    inner_subscription.disposable = inner_source.subscribe(
                         observer.on_next,
                         observer.on_error,
                         on_completed_inner,
@@ -61,8 +61,8 @@ def exclusive_() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
                 if not has_current[0] and len(g) == 1:
                     observer.on_completed()
 
-            m.disposable = source.subscribe_(
-                on_next, observer.on_error, on_completed, scheduler
+            m.disposable = source.subscribe(
+                on_next, observer.on_error, on_completed, scheduler=scheduler
             )
             return g
 

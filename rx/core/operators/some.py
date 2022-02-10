@@ -41,7 +41,9 @@ def some_(
                 observer.on_next(False)
                 observer.on_completed()
 
-            return source.subscribe_(on_next, observer.on_error, on_error, scheduler)
+            return source.subscribe(
+                on_next, observer.on_error, on_error, scheduler=scheduler
+            )
 
         if predicate:
             return source.pipe(

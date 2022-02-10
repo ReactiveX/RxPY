@@ -69,7 +69,7 @@ def switch_latest_() -> Callable[
                         if is_stopped[0]:
                             observer.on_completed()
 
-                d.disposable = obs.subscribe_(
+                d.disposable = obs.subscribe(
                     on_next, on_error, on_completed, scheduler=scheduler
                 )
 
@@ -78,7 +78,7 @@ def switch_latest_() -> Callable[
                 if not has_latest[0]:
                     observer.on_completed()
 
-            subscription = source.subscribe_(
+            subscription = source.subscribe(
                 on_next, observer.on_error, on_completed, scheduler=scheduler
             )
             return CompositeDisposable(subscription, inner_subscription)

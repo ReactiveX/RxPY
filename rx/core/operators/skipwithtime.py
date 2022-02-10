@@ -53,8 +53,8 @@ def skip_with_time_(
                 if open[0]:
                     observer.on_next(x)
 
-            d = source.subscribe_(
-                on_next, observer.on_error, observer.on_completed, scheduler_
+            d = source.subscribe(
+                on_next, observer.on_error, observer.on_completed, scheduler=scheduler_
             )
             return CompositeDisposable(t, d)
 

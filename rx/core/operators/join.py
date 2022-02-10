@@ -60,8 +60,8 @@ def _join(
                     observer.on_error(exception)
                     return
 
-                md.disposable = duration.pipe(take(1)).subscribe_(
-                    noop, observer.on_error, lambda: expire(), scheduler
+                md.disposable = duration.pipe(take(1)).subscribe(
+                    noop, observer.on_error, lambda: expire(), scheduler=scheduler
                 )
 
                 for val in right_map.values():
@@ -75,8 +75,11 @@ def _join(
                     observer.on_completed()
 
             group.add(
-                left.subscribe_(
-                    on_next_left, observer.on_error, on_completed_left, scheduler
+                left.subscribe(
+                    on_next_left,
+                    observer.on_error,
+                    on_completed_left,
+                    scheduler=scheduler,
                 )
             )
 
@@ -103,8 +106,8 @@ def _join(
                     observer.on_error(exception)
                     return
 
-                md.disposable = duration.pipe(take(1)).subscribe_(
-                    noop, observer.on_error, lambda: expire(), scheduler
+                md.disposable = duration.pipe(take(1)).subscribe(
+                    noop, observer.on_error, lambda: expire(), scheduler=scheduler
                 )
 
                 for val in left_map.values():
@@ -118,8 +121,11 @@ def _join(
                     observer.on_completed()
 
             group.add(
-                right.subscribe_(
-                    on_next_right, observer.on_error, on_completed_right, scheduler
+                right.subscribe(
+                    on_next_right,
+                    observer.on_error,
+                    on_completed_right,
+                    scheduler=scheduler,
                 )
             )
             return group

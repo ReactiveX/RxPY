@@ -20,8 +20,8 @@ def ignore_elements_() -> Callable[[Observable[_T]], Observable[_T]]:
             observer: abc.ObserverBase[_T],
             scheduler: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
-            return source.subscribe_(
-                noop, observer.on_error, observer.on_completed, scheduler
+            return source.subscribe(
+                noop, observer.on_error, observer.on_completed, scheduler=scheduler
             )
 
         return Observable(subscribe)

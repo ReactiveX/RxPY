@@ -69,7 +69,7 @@ def debounce(
                 has_value[0] = False
                 _id[0] += 1
 
-            subscription = source.subscribe_(
+            subscription = source.subscribe(
                 on_next, on_error, on_completed, scheduler=scheduler_
             )
             return CompositeDisposable(subscription, cancelable)
@@ -140,7 +140,7 @@ def throttle_with_mapper(
                     has_value = False
                     d.dispose()
 
-                d.disposable = throttle.subscribe_(
+                d.disposable = throttle.subscribe(
                     on_next, observer.on_error, on_completed, scheduler=scheduler
                 )
 
@@ -161,7 +161,7 @@ def throttle_with_mapper(
                 has_value = False
                 _id[0] += 1
 
-            subscription = source.subscribe_(
+            subscription = source.subscribe(
                 on_next, on_error, on_completed, scheduler=scheduler
             )
             return CompositeDisposable(subscription, cancelable)

@@ -56,8 +56,8 @@ def on_error_resume_next_(
             def on_resume(state: Optional[Exception] = None):
                 scheduler.schedule(action, state)
 
-            d.disposable = current.subscribe_(
-                observer.on_next, on_resume, on_resume, scheduler
+            d.disposable = current.subscribe(
+                observer.on_next, on_resume, on_resume, scheduler=scheduler
             )
 
         cancelable.disposable = scheduler.schedule(action)

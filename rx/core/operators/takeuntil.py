@@ -39,7 +39,9 @@ def take_until_(
 
             return CompositeDisposable(
                 source.subscribe(observer),
-                obs.subscribe_(on_completed, observer.on_error, noop, scheduler),
+                obs.subscribe(
+                    on_completed, observer.on_error, noop, scheduler=scheduler
+                ),
             )
 
         return Observable(subscribe)

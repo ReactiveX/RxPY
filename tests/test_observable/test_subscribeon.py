@@ -13,14 +13,13 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class TestSubscribeOn(unittest.TestCase):
-
+class Testsubscribe_on(unittest.TestCase):
     def test_subscribe_on_normal(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
             on_next(150, 1),
             on_next(210, 2),
-            on_completed(250)
+            on_completed(250),
         )
 
         def create():
@@ -32,10 +31,10 @@ class TestSubscribeOn(unittest.TestCase):
 
     def test_subscribe_on_error(self):
         scheduler = TestScheduler()
-        ex = 'ex'
+        ex = "ex"
         xs = scheduler.create_hot_observable(
             on_next(150, 1),
-            on_error(210, ex)
+            on_error(210, ex),
         )
 
         def create():
@@ -50,7 +49,7 @@ class TestSubscribeOn(unittest.TestCase):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
             on_next(150, 1),
-            on_completed(250)
+            on_completed(250),
         )
 
         def create():
@@ -63,9 +62,7 @@ class TestSubscribeOn(unittest.TestCase):
 
     def test_subscribe_on_never(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(
-            on_next(150, 1)
-        )
+        xs = scheduler.create_hot_observable(on_next(150, 1))
 
         def create():
             return xs.pipe(ops.subscribe_on(scheduler))
@@ -76,5 +73,5 @@ class TestSubscribeOn(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 1000)]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
