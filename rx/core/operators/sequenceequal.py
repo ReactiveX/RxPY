@@ -1,4 +1,4 @@
-from typing import Callable, Iterable, List, Optional, TypeVar
+from typing import Callable, Iterable, List, Optional, TypeVar, Union
 
 import rx
 from rx.core import Observable, abc, typing
@@ -9,7 +9,8 @@ _T = TypeVar("_T")
 
 
 def sequence_equal_(
-    second: Observable[_T], comparer: Optional[typing.Comparer[_T]] = None
+    second: Union[Observable[_T], Iterable[_T]],
+    comparer: Optional[typing.Comparer[_T]] = None,
 ) -> Callable[[Observable[_T]], Observable[bool]]:
     comparer = comparer or default_comparer
     if isinstance(second, Iterable):

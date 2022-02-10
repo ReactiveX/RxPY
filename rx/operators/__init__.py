@@ -2474,7 +2474,7 @@ def scan(
 
 
 def sequence_equal(
-    second: Observable[_T], comparer: Optional[Comparer[_T]] = None
+    second: Union[Observable[_T], Iterable[_T]], comparer: Optional[Comparer[_T]] = None
 ) -> Callable[[Observable[_T]], Observable[bool]]:
     """Determines whether two sequences are equal by comparing the
     elements pairwise using a specified equality comparer.
@@ -2494,7 +2494,7 @@ def sequence_equal(
         >>> res = sequence_equal(rx.return_value({ "value": 42 }), lambda x, y: x.value == y.value)
 
     Args:
-        second: Second observable sequence or array to compare.
+        second: Second observable sequence or iterable to compare.
         comparer: [Optional] Comparer used to compare elements of both
             sequences. No guarantees on order of comparer arguments.
 
