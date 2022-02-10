@@ -18,7 +18,7 @@ class CompositeDisposable(abc.DisposableBase):
         self.lock = RLock()
         super(CompositeDisposable, self).__init__()
 
-    def add(self, item: abc.DisposableBase):
+    def add(self, item: abc.DisposableBase) -> None:
         """Adds a disposable to the CompositeDisposable or disposes the
         disposable if the CompositeDisposable is disposed
 
@@ -35,12 +35,12 @@ class CompositeDisposable(abc.DisposableBase):
         if should_dispose:
             item.dispose()
 
-    def remove(self, item: abc.DisposableBase):
+    def remove(self, item: abc.DisposableBase) -> bool:
         """Removes and disposes the first occurrence of a disposable
         from the CompositeDisposable."""
 
         if self.is_disposed:
-            return
+            return False
 
         should_dispose = False
         with self.lock:

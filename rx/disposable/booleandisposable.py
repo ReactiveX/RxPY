@@ -14,7 +14,7 @@ class BooleanDisposable(DisposableBase):
 
         super().__init__()
 
-    def dispose(self):
+    def dispose(self) -> None:
         """Sets the status to disposed"""
 
         self.is_disposed = True
