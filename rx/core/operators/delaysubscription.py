@@ -2,7 +2,7 @@ from typing import Any, Callable, Optional, TypeVar
 
 import rx
 from rx import operators as ops
-from rx.core import Observable, typing, abc
+from rx.core import Observable, abc, typing
 
 _T = TypeVar("_T")
 
