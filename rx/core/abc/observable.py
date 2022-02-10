@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Callable, Generic, Optional, TypeVar, Union
 
 from .disposable import DisposableBase
-from .observer import ObserverBase, OnNext, OnError, OnCompleted
+from .observer import ObserverBase, OnCompleted, OnError, OnNext
 from .scheduler import SchedulerBase
 
 _T_out = TypeVar("_T_out", covariant=True)
