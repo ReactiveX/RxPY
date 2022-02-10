@@ -1,4 +1,5 @@
 import os
+from typing import Dict, Union
 
 from tornado.websocket import WebSocketHandler
 from tornado.web import RequestHandler, StaticFileHandler, Application, url
@@ -18,7 +19,7 @@ class WSHandler(WebSocketHandler):
 
         # A Subject is both an observable and observer, so we can both subscribe
         # to it and also feed (on_next) it with new values
-        self.subject = Subject()
+        self.subject: Subject[Dict[str, int]] = Subject()
 
         # Now we take on our magic glasses and project the stream of bytes into
         # a ...
@@ -30,12 +31,12 @@ class WSHandler(WebSocketHandler):
             # 3. stream of booleans, True or False
             ops.flat_map(lambda win: win.pipe(ops.sequence_equal(codes))),
             # 4. stream of Trues
-            ops.filter(lambda equal: equal)
+            ops.filter(lambda equal: equal),
         )
         # 4. we then subscribe to the Trues, and signal Konami! if we see any
-        query.subscribe(lambda x: self.write_message("Konami!"))
+        query.subscribe_(on_next=lambda x: self.write_message("Konami!"))
 
-    def on_message(self, message):
+    def on_message(self, message: Union[str, bytes]):
         obj = json_decode(message)
         self.subject.on_next(obj)
 
@@ -50,15 +51,17 @@ class MainHandler(RequestHandler):
 
 def main():
     port = os.environ.get("PORT", 8080)
-    app = Application([
-        url(r"/", MainHandler),
-        (r'/ws', WSHandler),
-        (r'/static/(.*)', StaticFileHandler, {'path': "."})
-    ])
+    app = Application(
+        [
+            url(r"/", MainHandler),
+            (r"/ws", WSHandler),
+            (r"/static/(.*)", StaticFileHandler, {"path": "."}),
+        ]
+    )
     print("Starting server at port: %s" % port)
-    app.listen(port)
+    app.listen(int(port))
     ioloop.IOLoop.current().start()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
