@@ -47,6 +47,11 @@ _TKey = TypeVar("_TKey")
 _TState = TypeVar("_TState")
 _TValue = TypeVar("_TValue")
 
+_A = TypeVar("_A")
+_B = TypeVar("_B")
+_C = TypeVar("_C")
+_D = TypeVar("_D")
+
 
 def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]]:
     """Determines whether all elements of an observable sequence satisfy
@@ -2943,9 +2948,30 @@ def some(
     return some_(predicate)
 
 
+@overload
 def starmap(
-    mapper: Optional[Callable[..., _T]] = None
-) -> Callable[[Observable[Tuple[Any, ...]]], Observable[_T]]:
+    mapper: Optional[Callable[[_A, _B], _T]] = None
+) -> Callable[[Observable[Tuple[_A, _B]]], Observable[_T]]:
+    ...
+
+
+@overload
+def starmap(
+    mapper: Optional[Callable[[_A, _B, _C], _T]] = None
+) -> Callable[[Observable[Tuple[_A, _B, _C]]], Observable[_T]]:
+    ...
+
+
+@overload
+def starmap(
+    mapper: Optional[Callable[[_A, _B, _C, _D], _T]] = None
+) -> Callable[[Observable[Tuple[_A, _B, _C, _D]]], Observable[_T]]:
+    ...
+
+
+def starmap(
+    mapper: Optional[Callable[..., Any]] = None
+) -> Callable[[Observable[Tuple[Any, ...]]], Observable[Any]]:
     """The starmap operator.
 
     Unpack arguments grouped as tuple elements of an observable
@@ -2980,7 +3006,28 @@ def starmap(
     if mapper is None:
         return pipe(identity)
 
-    return pipe(map(lambda values: cast(Mapper, mapper)(*values)))
+    return pipe(map(lambda values: mapper(*values)))
+
+
+@overload
+def starmap_indexed(
+    mapper: Optional[Callable[[_A, _B, int], _T]] = None
+) -> Callable[[Observable[Tuple[_A, _B]]], Observable[_T]]:
+    ...
+
+
+@overload
+def starmap_indexed(
+    mapper: Optional[Callable[[_A, _B, _C, int], _T]] = None
+) -> Callable[[Observable[Tuple[_A, _B, _C]]], Observable[_T]]:
+    ...
+
+
+@overload
+def starmap_indexed(
+    mapper: Optional[Callable[[_A, _B, _C, _D, int], _T]] = None
+) -> Callable[[Observable[Tuple[_A, _B, _C, _D]]], Observable[_T]]:
+    ...
 
 
 def starmap_indexed(
@@ -3012,7 +3059,7 @@ def starmap_indexed(
     if mapper is None:
         return pipe(identity)
 
-    return pipe(map(lambda values: cast(MapperIndexed[Any, Any], mapper)(*values)))
+    return pipe(map(lambda values: mapper(*values)))
 
 
 def start_with(*args: _T) -> Callable[[Observable[_T]], Observable[_T]]:
