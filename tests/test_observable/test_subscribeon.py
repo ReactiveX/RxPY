@@ -13,7 +13,7 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class Testsubscribe_on(unittest.TestCase):
+class TestSubscribeOn(unittest.TestCase):
     def test_subscribe_on_normal(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
