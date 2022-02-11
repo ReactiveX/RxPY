@@ -12,7 +12,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
         loop = asyncio.get_event_loop()
         scheduler = AsyncIOThreadSafeScheduler(loop)
         diff = scheduler.now - datetime.utcfromtimestamp(loop.time())
-        assert abs(diff) < timedelta(milliseconds=2)  # NOTE: may be 1 ms in CI
+        assert abs(diff) < timedelta(milliseconds=2)  # NOTE: may take 1 ms in CI
 
     def test_asyncio_threadsafe_schedule_now_units(self):
         loop = asyncio.get_event_loop()

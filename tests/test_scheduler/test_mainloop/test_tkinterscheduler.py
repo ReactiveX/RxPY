@@ -12,7 +12,7 @@ tkinter = pytest.importorskip("tkinter")
 
 try:
     root = tkinter.Tk()
-    root.withdraw() # Don't actually draw anything
+    root.withdraw()  # Don't actually draw anything
     display = True
 except Exception:
     display = False
@@ -20,11 +20,10 @@ except Exception:
 
 @pytest.mark.skipif("display == False")
 class TestTkinterScheduler(unittest.TestCase):
-
     def test_tkinter_schedule_now(self):
         scheduler = TkinterScheduler(root)
         res = scheduler.now - default_now()
-        assert abs(res) <= timedelta(milliseconds=1)
+        assert abs(res) <= timedelta(milliseconds=2)  # NOTE: may take 1 ms in CI
 
     def test_tkinter_schedule_now_units(self):
         scheduler = TkinterScheduler(root)
