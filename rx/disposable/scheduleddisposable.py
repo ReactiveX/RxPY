@@ -2,6 +2,7 @@ from threading import RLock
 from typing import Any
 
 from rx.core import abc
+from .singleassignmentdisposable import SingleAssignmentDisposable
 
 
 class ScheduledDisposable(abc.DisposableBase):
@@ -15,27 +16,22 @@ class ScheduledDisposable(abc.DisposableBase):
         that uses a Scheduler on which to dispose the disposable."""
 
         self.scheduler = scheduler
-        self.disposable = disposable
-        self.is_disposed = False
+        self.disposable = SingleAssignmentDisposable()
+        self.disposable.disposable = disposable
         self.lock = RLock()
 
         super().__init__()
 
+    @property
+    def is_disposed(self) -> bool:
+        return self.disposable.is_disposed
+
     def dispose(self) -> None:
         """Disposes the wrapped disposable on the provided scheduler."""
-
-        parent = self
 
         def action(scheduler: abc.SchedulerBase, state: Any):
             """Scheduled dispose action"""
 
-            should_dispose = False
-
-            with self.lock:
-                if not parent.is_disposed:
-                    parent.is_disposed = True
-                    should_dispose = True
-            if should_dispose:
-                parent.disposable.dispose()
+            self.disposable.dispose()
 
         self.scheduler.schedule(action)
