@@ -2,6 +2,7 @@ from threading import RLock
 from typing import Any
 
 from rx.core import abc
+
 from .singleassignmentdisposable import SingleAssignmentDisposable
 
 
