@@ -1,7 +1,7 @@
-from typing import Callable, Optional, TypeVar, List
+from typing import Callable, List, Optional, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable, pipe, typing, abc
+from rx.core import Observable, abc, pipe, typing
 
 _T = TypeVar("_T")
 
