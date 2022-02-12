@@ -25,7 +25,7 @@ jobs:
           isort --check rx
       - name: Check type annotations (mypy)
         run: |
-          mypy rx/__init__.py rx/operators/__init__.py rx/core/abc rc/core/observer rx/disposable rx/internal
+          mypy rx/__init__.py rx/operators/__init__.py rx/core/abc rx/core/observer rx/disposable rx/internal
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
