@@ -1,6 +1,6 @@
 import asyncio
 from asyncio import Future
-from typing import Any, Optional, TypeVar
+from typing import Any, Optional, TypeVar, cast
 
 from rx.core import Observable, abc
 from rx.disposable import Disposable
@@ -26,11 +26,11 @@ def from_future_(future: "Future[_T]") -> Observable[_T]:
         def done(future: "Future[_T]"):
             try:
                 value: Any = future.result()
-            except (
-                Exception,
-                asyncio.CancelledError,
-            ) as ex:  # pylint: disable=broad-except
+            except Exception as ex:
                 observer.on_error(ex)
+            except asyncio.CancelledError as ex:  # pylint: disable=broad-except
+                # asyncio.CancelledError is a BaseException, so need to cast
+                observer.on_error(cast(Exception, ex))
             else:
                 observer.on_next(value)
                 observer.on_completed()

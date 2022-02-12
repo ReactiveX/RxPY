@@ -201,8 +201,8 @@ def parse(
 
     """
 
-    error = error or Exception("error")
-    lookup = lookup or {}
+    error_ = error or Exception("error")
+    lookup_ = lookup or {}
 
     if isinstance(timespan, timedelta):
         timespan = timespan.total_seconds()
@@ -227,10 +227,10 @@ def parse(
         if element == "|":
             return (time, notification.OnCompleted())
         elif element == "#":
-            return (time, notification.OnError(error))
+            return (time, notification.OnError(error_))
         else:
             value = try_number(element)
-            value = lookup.get(value, value)
+            value = lookup_.get(value, value)
             return (time, notification.OnNext(value))
 
     is_stopped = False

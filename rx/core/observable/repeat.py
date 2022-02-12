@@ -7,9 +7,7 @@ from rx.core import Observable
 _T = TypeVar("_T")
 
 
-def repeat_value_(
-    value: _T = None, repeat_count: Optional[int] = None
-) -> Observable[_T]:
+def repeat_value_(value: _T, repeat_count: Optional[int] = None) -> Observable[_T]:
     """Generates an observable sequence that repeats the given element
     the specified number of times.
 

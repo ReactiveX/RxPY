@@ -155,7 +155,7 @@ class CatchScheduler(PeriodicScheduler):
         parent = self
 
         def wrapped_action(
-            self: CatchScheduler, state: Optional[_TState]
+            self: abc.SchedulerBase, state: Optional[_TState]
         ) -> Optional[abc.DisposableBase]:
             try:
                 return action(parent._get_recursive_wrapper(self), state)

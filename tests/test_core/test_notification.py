@@ -1,3 +1,4 @@
+from typing import Any
 from rx.core.abc import ObserverBase
 from rx.testing import TestScheduler, ReactiveTest
 from rx.core.notification import OnNext, OnError, OnCompleted
@@ -166,19 +167,19 @@ def test_throw_tostring():
     assert "ex" in str(n1)
 
 
-class CheckOnErrorObserver(ObserverBase):
+class CheckOnErrorObserver(ObserverBase[Any]):
     def __init__(self):
         super(CheckOnErrorObserver, self).__init__()
 
         self.error = None
 
-    def on_next(value):
+    def on_next(self, value: Any) -> None:
         raise NotImplementedError()
 
-    def on_error(self, exception):
-        self.error = exception
+    def on_error(self, error: Exception) -> None:
+        self.error = error
 
-    def on_completed(self):
+    def on_completed(self) -> None:
         raise NotImplementedError()
 
 
@@ -369,7 +370,10 @@ def test_to_observable_return():
         return OnNext(42).to_observable(scheduler)
 
     res = scheduler.start(create)
-    assert res.messages == [ReactiveTest.on_next(200, 42), ReactiveTest.on_completed(200)]
+    assert res.messages == [
+        ReactiveTest.on_next(200, 42),
+        ReactiveTest.on_completed(200),
+    ]
 
 
 def test_to_observable_on_error():

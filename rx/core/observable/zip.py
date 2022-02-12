@@ -66,11 +66,11 @@ def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
         subscriptions: List[Optional[abc.DisposableBase]] = [None] * n
 
         def func(i: int):
-            source = sources[i]
+            source: Observable[Any] = sources[i]
+            if isinstance(source, Future):
+                source = from_future(source)
+
             sad = SingleAssignmentDisposable()
-            source: Observable[Any] = (
-                from_future(source) if isinstance(source, Future) else source
-            )
 
             def on_next(x: Any):
                 queues[i].append(x)

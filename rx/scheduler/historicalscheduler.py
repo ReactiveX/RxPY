@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from rx.core import typing
 
@@ -10,7 +11,7 @@ class HistoricalScheduler(VirtualTimeScheduler):
     """Provides a virtual time scheduler that uses datetime for absolute time
     and timedelta for relative time."""
 
-    def __init__(self, initial_clock: datetime = None) -> None:
+    def __init__(self, initial_clock: Optional[datetime] = None) -> None:
         """Creates a new historical scheduler with the specified initial clock
         value.
 
@@ -30,7 +31,7 @@ class HistoricalScheduler(VirtualTimeScheduler):
              The scheduler's current time, as a datetime instance.
         """
 
-        return self._clock
+        return self.to_datetime(self._clock)
 
     @classmethod
     def add(

@@ -1,8 +1,8 @@
 import logging
 import threading
 from abc import abstractmethod
-from datetime import datetime
-from typing import Optional, TypeVar
+from datetime import datetime, timedelta
+from typing import Optional, TypeVar, Union
 
 from rx.core import abc, typing
 from rx.internal import ArgumentOutOfRangeException, PriorityQueue
@@ -21,7 +21,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
     """Virtual Scheduler. This scheduler should work with either
     datetime/timespan or ticks as int/int"""
 
-    def __init__(self, initial_clock: int = 0) -> None:
+    def __init__(self, initial_clock: typing.AbsoluteTime = 0) -> None:
         """Creates a new virtual time scheduler with the specified
         initial clock value.
 
@@ -139,7 +139,10 @@ class VirtualTimeScheduler(PeriodicScheduler):
                     spinning = 0
 
                 elif spinning > MAX_SPINNING:
-                    self._clock += 1.0
+                    if isinstance(self._clock, datetime):
+                        self.clock += timedelta(microseconds=1000)
+                    else:
+                        self._clock += 1.0
                     spinning = 0
 
             if not item.is_cancelled():

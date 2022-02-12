@@ -31,7 +31,7 @@ def using_(
     def subscribe(
         observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
     ) -> abc.DisposableBase:
-        disp = Disposable()
+        disp: abc.DisposableBase = Disposable()
 
         try:
             resource = resource_factory()

@@ -4,17 +4,14 @@ from typing import Any, Optional
 from rx.core import Observable, abc, typing
 from rx.disposable import MultipleAssignmentDisposable
 from rx.scheduler import TimeoutScheduler
+from rx.scheduler.periodicscheduler import PeriodicScheduler
 
 
 def observable_timer_date(
     duetime: typing.AbsoluteTime, scheduler: Optional[abc.SchedulerBase] = None
 ) -> Observable[int]:
-    def subscribe(
-        observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None
-    ):
-        _scheduler: abc.SchedulerBase = (
-            scheduler or scheduler_ or TimeoutScheduler.singleton()
-        )
+    def subscribe(observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None):
+        _scheduler: abc.SchedulerBase = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
         def action(scheduler: abc.SchedulerBase, state: Any):
             observer.on_next(0)
@@ -26,13 +23,11 @@ def observable_timer_date(
 
 
 def observable_timer_duetime_and_period(
-    duetime: typing.AbsoluteTime,
+    duetime: typing.AbsoluteOrRelativeTime,
     period: typing.AbsoluteOrRelativeTime,
     scheduler: Optional[abc.SchedulerBase] = None,
 ) -> Observable[int]:
-    def subscribe(
-        observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None
-    ):
+    def subscribe(observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None):
         _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
         nonlocal duetime
 
@@ -67,9 +62,7 @@ def observable_timer_duetime_and_period(
 def observable_timer_timespan(
     duetime: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
 ) -> Observable[int]:
-    def subscribe(
-        observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None
-    ):
+    def subscribe(observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None):
         _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
         d = _scheduler.to_seconds(duetime)
 
@@ -95,12 +88,16 @@ def observable_timer_timespan_and_period(
             observer: abc.ObserverBase[int],
             scheduler_: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
+            _scheduler: abc.SchedulerBase = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
-            def action(count: int):
-                observer.on_next(count)
-                return count + 1
+            def action(count: Optional[int] = None) -> Optional[int]:
+                if count is not None:
+                    observer.on_next(count)
+                    return count + 1
+                return None
 
+            if not isinstance(_scheduler, PeriodicScheduler):
+                raise ValueError("Sceduler must be PeriodicScheduler")
             return _scheduler.schedule_periodic(period, action, state=0)
 
         return Observable(subscribe)

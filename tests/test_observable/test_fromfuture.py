@@ -6,7 +6,6 @@ import rx
 
 
 class TestFromFuture(unittest.TestCase):
-
     def test_future_success(self):
         loop = asyncio.get_event_loop()
         success = [False, True, False]
@@ -29,14 +28,14 @@ class TestFromFuture(unittest.TestCase):
             source.subscribe(on_next, on_error, on_completed)
 
         loop.run_until_complete(go())
-        assert(all(success))
+        assert all(success)
 
     def test_future_failure(self):
         loop = asyncio.get_event_loop()
         success = [True, False, True]
 
         async def go():
-            error = Exception('woops')
+            error = Exception("woops")
 
             future = Future()
             future.set_exception(error)

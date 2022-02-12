@@ -33,17 +33,19 @@ def if_then_(
         else_source.
     """
 
-    else_source = else_source or rx.empty()
+    else_source_: Union[Observable[_T], "Future[_T]"] = else_source or rx.empty()
 
     then_source = (
         rx.from_future(then_source) if isinstance(then_source, Future) else then_source
     )
-    else_source = (
-        rx.from_future(else_source) if isinstance(else_source, Future) else else_source
+    else_source_ = (
+        rx.from_future(else_source_)
+        if isinstance(else_source_, Future)
+        else else_source_
     )
 
-    def factory(_: abc.SchedulerBase) -> Observable[_T]:
-        return then_source if condition() else else_source
+    def factory(_: abc.SchedulerBase) -> Union[Observable[_T], "Future[_T]"]:
+        return then_source if condition() else else_source_
 
     return rx.defer(factory)
 

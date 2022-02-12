@@ -15,7 +15,7 @@ class ConnectableObservable(Observable[_T]):
     def __init__(self, source: abc.ObservableBase[_T], subject: abc.SubjectBase[_T]):
         self.subject = subject
         self.has_subscription = False
-        self.subscription = None
+        self.subscription: Optional[abc.DisposableBase] = None
         self.source = source
 
         super().__init__()
