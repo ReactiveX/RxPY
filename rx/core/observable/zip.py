@@ -36,7 +36,7 @@ def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
         is_completed = [False] * n
 
         @synchronized(lock)
-        def next(i: int):
+        def next_(i: int):
             if all(len(q) for q in queues):
                 try:
                     queued_values = [x.pop(0) for x in queues]
@@ -74,7 +74,7 @@ def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
 
             def on_next(x: Any):
                 queues[i].append(x)
-                next(i)
+                next_(i)
 
             sad.disposable = source.subscribe(
                 on_next, observer.on_error, lambda: completed(i), scheduler=scheduler
