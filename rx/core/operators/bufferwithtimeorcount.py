@@ -1,13 +1,20 @@
-from typing import Callable
+from typing import Callable, Optional, TypeVar, List
 
 from rx import operators as ops
-from rx.core import Observable, pipe
+from rx.core import Observable, pipe, typing, abc
+
+_T = TypeVar("_T")
 
 
-def _buffer_with_time_or_count(
-    timespan, count, scheduler=None
-) -> Callable[[Observable], Observable]:
+def buffer_with_time_or_count_(
+    timespan: typing.RelativeTime,
+    count: int,
+    scheduler: Optional[abc.SchedulerBase] = None,
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     return pipe(
         ops.window_with_time_or_count(timespan, count, scheduler),
-        ops.flat_map(lambda x: x.pipe(ops.to_iterable())),
+        ops.flat_map(ops.to_iterable()),
     )
+
+
+__all__ = ["buffer_with_time_or_count_"]

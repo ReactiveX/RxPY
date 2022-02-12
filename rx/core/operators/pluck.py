@@ -1,10 +1,15 @@
-from typing import Any, Callable
+from typing import Any, Callable, Dict, TypeVar
 
 from rx import operators as ops
 from rx.core import Observable
 
+_TKey = TypeVar("_TKey")
+_TValue = TypeVar("_TValue")
 
-def _pluck(key: Any) -> Callable[[Observable], Observable]:
+
+def pluck_(
+    key: _TKey,
+) -> Callable[[Observable[Dict[_TKey, _TValue]]], Observable[_TValue]]:
     """Retrieves the value of a specified key using dict-like access (as in
     element[key]) from all elements in the Observable sequence.
 
@@ -16,10 +21,13 @@ def _pluck(key: Any) -> Callable[[Observable], Observable]:
     To pluck an attribute of each element, use pluck_attr.
     """
 
-    return ops.map(lambda x: x[key])
+    def mapper(x: Dict[_TKey, _TValue]) -> _TValue:
+        return x[key]
+
+    return ops.map(mapper)
 
 
-def _pluck_attr(prop: str) -> Callable[[Observable], Observable]:
+def pluck_attr_(prop: str) -> Callable[[Observable[Any]], Observable[Any]]:
     """Retrieves the value of a specified property (using getattr) from
     all elements in the Observable sequence.
 
@@ -33,3 +41,6 @@ def _pluck_attr(prop: str) -> Callable[[Observable], Observable]:
     """
 
     return ops.map(lambda x: getattr(x, prop))
+
+
+__all__ = ["pluck_", "pluck_attr_"]

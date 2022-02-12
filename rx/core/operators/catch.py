@@ -40,7 +40,7 @@ def catch_handler(
     return Observable(subscribe)
 
 
-def _catch(
+def catch_(
     handler: Union[
         Observable[_T], Callable[[Exception, Observable[_T]], Observable[_T]]
     ]
@@ -78,4 +78,4 @@ def _catch(
     return catch
 
 
-__all__ = ["_catch"]
+__all__ = ["catch_"]

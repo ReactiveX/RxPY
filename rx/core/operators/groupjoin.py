@@ -1,9 +1,9 @@
 import logging
 from collections import OrderedDict
-from typing import Any, Callable
+from typing import Any, Callable, Optional, Tuple, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable
+from rx.core import Observable, abc
 from rx.disposable import (
     CompositeDisposable,
     RefCountDisposable,
@@ -12,14 +12,17 @@ from rx.disposable import (
 from rx.internal.utils import add_ref
 from rx.subject import Subject
 
+_T1 = TypeVar("_T1")
+_T2 = TypeVar("_T2")
+
 log = logging.getLogger("Rx")
 
 
-def _group_join(
-    right: Observable,
-    left_duration_mapper: Callable[[Any], Observable],
-    right_duration_mapper: Callable[[Any], Observable],
-) -> Callable[[Observable], Observable]:
+def group_join_(
+    right: Observable[_T2],
+    left_duration_mapper: Callable[[_T1], Observable[Any]],
+    right_duration_mapper: Callable[[_T2], Observable[Any]],
+) -> Callable[[Observable[_T1]], Observable[Tuple[_T1, _T2]]]:
     """Correlates the elements of two sequences based on overlapping
     durations, and groups the results.
 
@@ -40,8 +43,11 @@ def _group_join(
     def nothing(_):
         return None
 
-    def group_join(left: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+    def group_join(left: Observable[_T1]) -> Observable[Tuple[_T1, _T2]]:
+        def subscribe(
+            observer: abc.ObserverBase[Tuple[_T1, _T2]],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
             group = CompositeDisposable()
             rcd = RefCountDisposable(group)
             left_map = OrderedDict()
@@ -91,7 +97,7 @@ def _group_join(
                     observer.on_error(e)
                     return
 
-                def on_error(error):
+                def on_error(error: Exception) -> Any:
                     for left_value in left_map.values():
                         left_value.on_error(error)
 
@@ -101,7 +107,7 @@ def _group_join(
                     nothing, on_error, expire, scheduler=scheduler
                 )
 
-            def on_error_left(error):
+            def on_error_left(error: Exception) -> None:
                 for left_value in left_map.values():
                     left_value.on_error(error)
 
@@ -165,3 +171,6 @@ def _group_join(
         return Observable(subscribe)
 
     return group_join
+
+
+__all__ = ["group_join_"]

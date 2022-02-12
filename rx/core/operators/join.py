@@ -1,17 +1,20 @@
 from collections import OrderedDict
-from typing import Any, Callable
+from typing import Any, Callable, Optional, Tuple, TypeVar
 
-from rx.core import Observable
+from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
 from rx.internal import noop
 from rx.operators import take
 
+_T1 = TypeVar("_T1")
+_T2 = TypeVar("_T2")
 
-def _join(
-    right: Observable,
-    left_duration_mapper: Callable[[Any], Observable],
-    right_duration_mapper: Callable[[Any], Observable],
-) -> Callable[[Observable], Observable]:
+
+def join_(
+    right: Observable[_T2],
+    left_duration_mapper: Callable[[Any], Observable[Any]],
+    right_duration_mapper: Callable[[Any], Observable[Any]],
+) -> Callable[[Observable[_T1]], Observable[Tuple[_T1, _T2]]]:
     def join(source: Observable) -> Observable:
         """Correlates the elements of two sequences based on
         overlapping durations.
@@ -27,7 +30,10 @@ def _join(
 
         left = source
 
-        def subscribe(observer, scheduler=None):
+        def subscribe(
+            observer: abc.ObserverBase[Tuple[_T1, _T2]],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
             group = CompositeDisposable()
             left_done = False
             left_map = OrderedDict()
@@ -133,3 +139,6 @@ def _join(
         return Observable(subscribe)
 
     return join
+
+
+__all__ = ["join_"]

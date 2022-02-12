@@ -20,8 +20,8 @@ _TValue = TypeVar("_TValue")
 def group_by_until_(
     key_mapper: Mapper[_T, _TKey],
     element_mapper: Optional[Mapper[_T, _TValue]],
-    duration_mapper: Callable[[GroupedObservable[_TKey, _T]], Observable[Any]],
-    subject_mapper: Optional[Callable[[], Subject[_T]]] = None,
+    duration_mapper: Callable[[GroupedObservable[_TKey, _TValue]], Observable[Any]],
+    subject_mapper: Optional[Callable[[], Subject[_TValue]]] = None,
 ) -> Callable[[Observable[_T]], Observable[GroupedObservable[_TKey, _TValue]]]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function. A duration mapper function is used

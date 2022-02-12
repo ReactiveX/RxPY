@@ -11,12 +11,7 @@ def buffer_(
 ) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     return pipe(
         ops.window(boundaries),
-        ops.flat_map(
-            pipe(
-                ops.to_iterable(),
-                ops.map(list),
-            ),
-        ),
+        ops.flat_map(ops.to_list()),
     )
 
 
@@ -25,12 +20,7 @@ def buffer_when_(
 ) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     return pipe(
         ops.window_when(closing_mapper),
-        ops.flat_map(
-            pipe(
-                ops.to_iterable(),
-                ops.map(list),
-            )
-        ),
+        ops.flat_map(ops.to_list()),
     )
 
 
@@ -39,12 +29,7 @@ def buffer_toggle_(
 ) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     return pipe(
         ops.window_toggle(openings, closing_mapper),
-        ops.flat_map(
-            pipe(
-                ops.to_iterable(),
-                ops.map(list),
-            )
-        ),
+        ops.flat_map(ops.to_list()),
     )
 
 
@@ -75,8 +60,10 @@ def buffer_with_count_(
         if skip is None:
             skip = count
 
-        def mapper(value: _T) -> List[_T]:
-            return value.pipe(ops.to_iterable(), ops.map(list))
+        def mapper(value: Observable[_T]) -> Observable[List[_T]]:
+            return value.pipe(
+                ops.to_list(),
+            )
 
         def predicate(value: List[_T]) -> bool:
             return len(value) > 0

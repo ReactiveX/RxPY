@@ -120,7 +120,7 @@ def as_observable() -> Callable[[Observable[_T]], Observable[_T]]:
 
 
 def average(
-    key_mapper: Optional[Mapper[_T, _TKey]] = None
+    key_mapper: Optional[Mapper[_T, float]] = None
 ) -> Callable[[Observable[_T]], Observable[float]]:
     """The average operator.
 
@@ -217,8 +217,8 @@ def buffer_when(
 
 
 def buffer_toggle(
-    openings: Observable, closing_mapper: Callable[[Any], Observable]
-) -> Callable[[Observable], Observable]:
+    openings: Observable[Any], closing_mapper: Callable[[Any], Observable[Any]]
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     """Projects each element of an observable sequence into zero or
     more buffers.
 
@@ -254,7 +254,7 @@ def buffer_toggle(
 
 def buffer_with_count(
     count: int, skip: Optional[int] = None
-) -> Callable[[Observable[_T]], Observable[_T]]:
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on element count information.
 
@@ -288,7 +288,7 @@ def buffer_with_time(
     timespan: typing.RelativeTime,
     timeshift: Optional[typing.RelativeTime] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T]], Observable[_T]]:
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on timing information.
 
@@ -319,16 +319,16 @@ def buffer_with_time(
         An operator function that takes an observable source and
         returns an observable sequence of buffers.
     """
-    from rx.core.operators.bufferwithtime import _buffer_with_time
+    from rx.core.operators.bufferwithtime import buffer_with_time_
 
-    return _buffer_with_time(timespan, timeshift, scheduler)
+    return buffer_with_time_(timespan, timeshift, scheduler)
 
 
 def buffer_with_time_or_count(
     timespan: typing.RelativeTime,
     count: int,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T]], Observable[_T]]:
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     """Projects each element of an observable sequence into a buffer
     that is completed when either it's full or a given amount of time
     has elapsed.
@@ -356,9 +356,9 @@ def buffer_with_time_or_count(
         An operator function that takes an observable source and
         returns an observable sequence of buffers.
     """
-    from rx.core.operators.bufferwithtimeorcount import _buffer_with_time_or_count
+    from rx.core.operators.bufferwithtimeorcount import buffer_with_time_or_count_
 
-    return _buffer_with_time_or_count(timespan, count, scheduler)
+    return buffer_with_time_or_count_(timespan, count, scheduler)
 
 
 def catch(
@@ -394,9 +394,9 @@ def catch(
         followed by the elements of the handler sequence in case an
         exception occurred.
     """
-    from rx.core.operators.catch import _catch
+    from rx.core.operators.catch import catch_
 
-    return _catch(handler)
+    return catch_(handler)
 
 
 def combine_latest(
@@ -1496,7 +1496,9 @@ def group_by_until(
     Examples:
         >>> group_by_until(lambda x: x.id, None, lambda : rx.never())
         >>> group_by_until(lambda x: x.id, lambda x: x.name, lambda grp: rx.never())
-        >>> group_by_until(lambda x: x.id, lambda x: x.name, lambda grp: rx.never(), lambda: ReplaySubject())
+        >>> group_by_until(
+            lambda x: x.id, lambda x: x.name, lambda grp: rx.never(), lambda: ReplaySubject()
+        )
 
     Args:
         key_mapper: A function to extract the key for each element.
@@ -1520,10 +1522,10 @@ def group_by_until(
 
 
 def group_join(
-    right: Observable,
-    left_duration_mapper: Callable[[Any], Observable],
-    right_duration_mapper: Callable[[Any], Observable],
-) -> Callable[[Observable], Observable]:
+    right: Observable[_T2],
+    left_duration_mapper: Callable[[_T1], Observable[Any]],
+    right_duration_mapper: Callable[[_T2], Observable[Any]],
+) -> Callable[[Observable[_T1]], Observable[Tuple[_T1, _T2]]]:
     """Correlates the elements of two sequences based on overlapping
     durations, and groups the results.
 
@@ -1551,9 +1553,9 @@ def group_join(
         a tuple from source elements that have an overlapping
         duration.
     """
-    from rx.core.operators.groupjoin import _group_join
+    from rx.core.operators.groupjoin import group_join_
 
-    return _group_join(right, left_duration_mapper, right_duration_mapper)
+    return group_join_(right, left_duration_mapper, right_duration_mapper)
 
 
 def ignore_elements() -> Callable[[Observable[_T]], Observable[_T]]:
@@ -1599,10 +1601,10 @@ def is_empty() -> Callable[[Observable[Any]], Observable[bool]]:
 
 
 def join(
-    right: Observable,
-    left_duration_mapper: Callable[[Any], Observable],
-    right_duration_mapper: Callable[[Any], Observable],
-) -> Callable[[Observable], Observable]:
+    right: Observable[_T2],
+    left_duration_mapper: Callable[[Any], Observable[Any]],
+    right_duration_mapper: Callable[[Any], Observable[Any]],
+) -> Callable[[Observable[_T1]], Observable[Tuple[_T1, _T2]]]:
     """Correlates the elements of two sequences based on overlapping
     durations.
 
@@ -1629,9 +1631,9 @@ def join(
         into a tuple from source elements that have an overlapping
         duration.
     """
-    from rx.core.operators.join import _join
+    from rx.core.operators.join import join_
 
-    return _join(right, left_duration_mapper, right_duration_mapper)
+    return join_(right, left_duration_mapper, right_duration_mapper)
 
 
 def last(
@@ -1989,7 +1991,9 @@ def multicast(
 
     Examples:
         >>> res = multicast(observable)
-        >>> res = multicast(subject_factory=lambda scheduler: Subject(), mapper=lambda x: x)
+        >>> res = multicast(
+            subject_factory=lambda scheduler: Subject(), mapper=lambda x: x
+        )
 
     Args:
         subject_factory: Factory function to create an intermediate
@@ -2168,12 +2172,12 @@ def pluck(
         An operator function that takes an observable source and
         returns a new observable sequence of key values.
     """
-    from rx.core.operators.pluck import _pluck
+    from rx.core.operators.pluck import pluck_
 
-    return _pluck(key)
+    return pluck_(key)
 
 
-def pluck_attr(prop: str) -> Callable[[Observable], Observable]:
+def pluck_attr(prop: str) -> Callable[[Observable[Any]], Observable[Any]]:
     """Retrieves the value of a specified property (using getattr) from
     all elements in the Observable sequence.
 
@@ -2187,9 +2191,9 @@ def pluck_attr(prop: str) -> Callable[[Observable], Observable]:
         An operator function that takes an observable source and
         returns a new observable sequence of property values.
     """
-    from rx.core.operators.pluck import _pluck_attr
+    from rx.core.operators.pluck import pluck_attr_
 
-    return _pluck_attr(prop)
+    return pluck_attr_(prop)
 
 
 def publish(
