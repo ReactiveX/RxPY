@@ -8,7 +8,7 @@ new_thread_scheduler = NewThreadScheduler()
 
 
 def to_marbles(
-    scheduler: Optional[abc.SchedulerBase] = None, timespan: RelativeTime = 0.1
+    timespan: RelativeTime = 0.1, scheduler: Optional[abc.SchedulerBase] = None
 ):
     def to_marbles(source: Observable[Any]) -> Observable[str]:
         """Convert an observable sequence into a marble diagram string.

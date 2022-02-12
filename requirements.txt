@@ -1,6 +1,8 @@
 pytest
 pytest-xdist
+pyright
 coveralls
 flake8
 black
 isort
+mypy

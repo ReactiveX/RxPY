@@ -1,9 +1,9 @@
 from abc import abstractmethod
-from typing import Optional, TypeVar
+from typing import Optional, TypeVar, Union
 
 from .disposable import DisposableBase
 from .observable import ObservableBase
-from .observer import ObserverBase
+from .observer import ObserverBase, OnCompleted, OnError, OnNext
 from .scheduler import SchedulerBase
 
 _T = TypeVar("_T")
@@ -21,7 +21,9 @@ class SubjectBase(ObserverBase[_T], ObservableBase[_T]):
     @abstractmethod
     def subscribe(
         self,
-        observer: Optional[ObserverBase[_T]] = None,
+        on_next: Optional[Union[OnNext[_T], ObserverBase[_T]]] = None,
+        on_error: Optional[OnError] = None,
+        on_completed: Optional[OnCompleted] = None,
         *,
         scheduler: Optional[SchedulerBase] = None
     ) -> DisposableBase:

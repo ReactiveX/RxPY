@@ -2962,21 +2962,21 @@ def some(
 
 @overload
 def starmap(
-    mapper: Optional[Callable[[_A, _B], _T]] = None
+    mapper: Callable[[_A, _B], _T]
 ) -> Callable[[Observable[Tuple[_A, _B]]], Observable[_T]]:
     ...
 
 
 @overload
 def starmap(
-    mapper: Optional[Callable[[_A, _B, _C], _T]] = None
+    mapper: Callable[[_A, _B, _C], _T]
 ) -> Callable[[Observable[Tuple[_A, _B, _C]]], Observable[_T]]:
     ...
 
 
 @overload
 def starmap(
-    mapper: Optional[Callable[[_A, _B, _C, _D], _T]] = None
+    mapper: Callable[[_A, _B, _C, _D], _T]
 ) -> Callable[[Observable[Tuple[_A, _B, _C, _D]]], Observable[_T]]:
     ...
 
@@ -3018,33 +3018,37 @@ def starmap(
     if mapper is None:
         return pipe(identity)
 
-    return pipe(map(lambda values: mapper(*values)))
+    def starred(values: Tuple[Any, ...]) -> Any:
+        assert mapper  # mypy is paranoid
+        return mapper(*values)
+
+    return pipe(map(starred))
 
 
 @overload
 def starmap_indexed(
-    mapper: Optional[Callable[[_A, _B, int], _T]] = None
-) -> Callable[[Observable[Tuple[_A, _B]]], Observable[_T]]:
-    ...
-
-
-@overload
-def starmap_indexed(
-    mapper: Optional[Callable[[_A, _B, _C, int], _T]] = None
+    mapper: Callable[[_A, _B, _C, int], _T]
 ) -> Callable[[Observable[Tuple[_A, _B, _C]]], Observable[_T]]:
     ...
 
 
 @overload
 def starmap_indexed(
-    mapper: Optional[Callable[[_A, _B, _C, _D, int], _T]] = None
+    mapper: Callable[[_A, _B, int], _T]
+) -> Callable[[Observable[Tuple[_A, _B]]], Observable[_T]]:
+    ...
+
+
+@overload
+def starmap_indexed(
+    mapper: Callable[[_A, _B, _C, _D, int], _T]
 ) -> Callable[[Observable[Tuple[_A, _B, _C, _D]]], Observable[_T]]:
     ...
 
 
 def starmap_indexed(
     mapper: Optional[Callable[..., Any]] = None
-) -> Callable[[Observable[Tuple[Any, ...]]], Observable[Any]]:
+) -> Callable[[Observable[Any]], Observable[Any]]:
     """Variant of :func:`starmap` which accepts an indexed mapper.
 
     .. marble::
@@ -3071,7 +3075,11 @@ def starmap_indexed(
     if mapper is None:
         return pipe(identity)
 
-    return pipe(map(lambda values: mapper(*values)))
+    def starred(values: Tuple[Any, ...]) -> Any:
+        assert mapper  # mypy is paranoid
+        return mapper(*values)
+
+    return pipe(map(starred))
 
 
 def start_with(*args: _T) -> Callable[[Observable[_T]], Observable[_T]]:
