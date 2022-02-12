@@ -1,4 +1,4 @@
-from typing import Callable, Optional, TypeVar
+from typing import Any, Callable, List, Optional, TypeVar
 
 from rx.core import Observable, abc, typing
 from rx.disposable import CompositeDisposable
@@ -104,15 +104,17 @@ def do_(observer: abc.ObserverBase[_T]) -> Callable[[Observable[_T]], Observable
     return do_action_(observer.on_next, observer.on_error, observer.on_completed)
 
 
-def do_after_next(source, after_next):
+def do_after_next(source: Observable[_T], after_next: typing.OnNext[_T]):
     """Invokes an action with each element after it has been emitted downstream.
     This can be helpful for debugging, logging, and other side effects.
 
     after_next -- Action to invoke on each element after it has been emitted
     """
 
-    def subscribe(observer, scheduler=None):
-        def on_next(value):
+    def subscribe(
+        observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
+        def on_next(value: _T):
             try:
                 observer.on_next(value)
                 after_next(value)
@@ -124,7 +126,7 @@ def do_after_next(source, after_next):
     return Observable(subscribe)
 
 
-def do_on_subscribe(source: Observable, on_subscribe):
+def do_on_subscribe(source: Observable[Any], on_subscribe: typing.Action):
     """Invokes an action on subscription.
 
     This can be helpful for debugging, logging, and other side effects
@@ -134,7 +136,9 @@ def do_on_subscribe(source: Observable, on_subscribe):
         on_subscribe: Action to invoke on subscription
     """
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(
+        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
         on_subscribe()
         return source.subscribe(
             observer.on_next,
@@ -146,7 +150,7 @@ def do_on_subscribe(source: Observable, on_subscribe):
     return Observable(subscribe)
 
 
-def do_on_dispose(source: Observable, on_dispose):
+def do_on_dispose(source: Observable[Any], on_dispose: typing.Action):
     """Invokes an action on disposal.
 
      This can be helpful for debugging, logging, and other side effects
@@ -156,11 +160,13 @@ def do_on_dispose(source: Observable, on_dispose):
         on_dispose: Action to invoke on disposal
     """
 
-    class OnDispose(Disposable):
+    class OnDispose(abc.DisposableBase):
         def dispose(self) -> None:
             on_dispose()
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(
+        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose())
         subscription = source.subscribe(
@@ -175,7 +181,7 @@ def do_on_dispose(source: Observable, on_dispose):
     return Observable(subscribe)
 
 
-def do_on_terminate(source, on_terminate):
+def do_on_terminate(source: Observable[Any], on_terminate: typing.Action):
     """Invokes an action on an on_complete() or on_error() event.
      This can be helpful for debugging, logging, and other side effects
      when completion or an error terminates an operation.
@@ -184,7 +190,9 @@ def do_on_terminate(source, on_terminate):
     on_terminate -- Action to invoke when on_complete or throw is called
     """
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(
+        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
         def on_completed():
             try:
                 on_terminate()
@@ -193,7 +201,7 @@ def do_on_terminate(source, on_terminate):
             else:
                 observer.on_completed()
 
-        def on_error(exception):
+        def on_error(exception: Exception):
             try:
                 on_terminate()
             except Exception as err:  # pylint: disable=broad-except
@@ -208,7 +216,7 @@ def do_on_terminate(source, on_terminate):
     return Observable(subscribe)
 
 
-def do_after_terminate(source, after_terminate):
+def do_after_terminate(source: Observable[Any], after_terminate: typing.Action):
     """Invokes an action after an on_complete() or on_error() event.
      This can be helpful for debugging, logging, and other side effects
      when completion or an error terminates an operation
@@ -217,7 +225,9 @@ def do_after_terminate(source, after_terminate):
     on_terminate -- Action to invoke after on_complete or throw is called
     """
 
-    def subscribe(observer, scheduler=None):
+    def subscribe(
+        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+    ) -> abc.DisposableBase:
         def on_completed():
             observer.on_completed()
             try:
@@ -225,7 +235,7 @@ def do_after_terminate(source, after_terminate):
             except Exception as err:  # pylint: disable=broad-except
                 observer.on_error(err)
 
-        def on_error(exception):
+        def on_error(exception: Exception) -> None:
             observer.on_error(exception)
             try:
                 after_terminate()
@@ -239,7 +249,9 @@ def do_after_terminate(source, after_terminate):
     return Observable(subscribe)
 
 
-def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
+def do_finally(
+    finally_action: typing.Action,
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Invokes an action after an on_complete(), on_error(), or disposal
     event occurs.
 
@@ -254,8 +266,8 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
         or disposal is called
     """
 
-    class OnDispose(Disposable):
-        def __init__(self, was_invoked):
+    class OnDispose(abc.DisposableBase):
+        def __init__(self, was_invoked: List[bool]):
             self.was_invoked = was_invoked
 
         def dispose(self) -> None:
@@ -263,8 +275,11 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
                 finally_action()
                 self.was_invoked[0] = True
 
-    def partial(source: Observable) -> Observable:
-        def subscribe(observer, scheduler=None):
+    def partial(source: Observable[_T]) -> Observable[_T]:
+        def subscribe(
+            observer: abc.ObserverBase[_T],
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> abc.DisposableBase:
 
             was_invoked = [False]
 
@@ -277,7 +292,7 @@ def do_finally(finally_action: Callable) -> Callable[[Observable], Observable]:
                 except Exception as err:  # pylint: disable=broad-except
                     observer.on_error(err)
 
-            def on_error(exception):
+            def on_error(exception: Exception):
                 observer.on_error(exception)
                 try:
                     if not was_invoked[0]:

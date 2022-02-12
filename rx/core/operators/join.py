@@ -15,7 +15,7 @@ def join_(
     left_duration_mapper: Callable[[Any], Observable[Any]],
     right_duration_mapper: Callable[[Any], Observable[Any]],
 ) -> Callable[[Observable[_T1]], Observable[Tuple[_T1, _T2]]]:
-    def join(source: Observable) -> Observable:
+    def join(source: Observable[_T1]) -> Observable[Tuple[_T1, _T2]]:
         """Correlates the elements of two sequences based on
         overlapping durations.
 
@@ -36,13 +36,13 @@ def join_(
         ) -> abc.DisposableBase:
             group = CompositeDisposable()
             left_done = False
-            left_map = OrderedDict()
+            left_map: OrderedDict[int, _T1] = OrderedDict()
             left_id = 0
             right_done = False
-            right_map = OrderedDict()
+            right_map: OrderedDict[int, _T2] = OrderedDict()
             right_id = 0
 
-            def on_next_left(value):
+            def on_next_left(value: _T1):
                 nonlocal left_id
                 duration = None
                 current_id = left_id
@@ -58,7 +58,7 @@ def join_(
                     if not len(left_map) and left_done:
                         observer.on_completed()
 
-                    return group.remove(md)
+                    group.remove(md)
 
                 try:
                     duration = left_duration_mapper(value)
@@ -74,7 +74,7 @@ def join_(
                     result = (value, val)
                     observer.on_next(result)
 
-            def on_completed_left():
+            def on_completed_left() -> None:
                 nonlocal left_done
                 left_done = True
                 if right_done or not len(left_map):
@@ -89,7 +89,7 @@ def join_(
                 )
             )
 
-            def on_next_right(value):
+            def on_next_right(value: _T2):
                 nonlocal right_id
                 duration = None
                 current_id = right_id
@@ -104,7 +104,7 @@ def join_(
                     if not len(right_map) and right_done:
                         observer.on_completed()
 
-                    return group.remove(md)
+                    group.remove(md)
 
                 try:
                     duration = right_duration_mapper(value)

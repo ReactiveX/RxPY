@@ -378,7 +378,37 @@ def for_in(
     return concat_with_iterable(mapped)
 
 
-def fork_join(*sources: Observable[_T]) -> Observable[_T]:
+@overload
+def fork_join(a: Observable[_A], b: Observable[_B]) -> Observable[Tuple[_A, _B]]:
+    ...
+
+
+@overload
+def fork_join(
+    a: Observable[_A], b: Observable[_B], c: Observable[_C]
+) -> Observable[Tuple[_A, _B, _C]]:
+    ...
+
+
+@overload
+def fork_join(
+    a: Observable[_A], b: Observable[_B], c: Observable[_C], d: Observable[_D]
+) -> Observable[Tuple[_A, _B, _C, _D]]:
+    ...
+
+
+@overload
+def fork_join(
+    a: Observable[_A],
+    b: Observable[_B],
+    c: Observable[_C],
+    d: Observable[_D],
+    e: Observable[_E],
+) -> Observable[Tuple[_A, _B, _C, _D, _E]]:
+    ...
+
+
+def fork_join(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
     """Wait for observables to complete and then combine last values
     they emitted into a tuple. Whenever any of that observables completes
     without emitting any value, result sequence will complete at that moment as well.
@@ -436,14 +466,15 @@ def from_callable(
         invoking the given supplier function.
     """
 
-    from .core.observable.returnvalue import _from_callable
+    from .core.observable.returnvalue import from_callable_
 
-    return _from_callable(supplier, scheduler)
+    return from_callable_(supplier, scheduler)
 
 
 def from_callback(
-    func: Callable, mapper: Optional[typing.Mapper] = None
-) -> Callable[[], Observable]:
+    func: Callable[..., Callable[..., None]],
+    mapper: Optional[typing.Mapper[Any, Any]] = None,
+) -> Callable[[], Observable[Any]]:
     """Converts a callback function to an observable sequence.
 
     Args:
@@ -458,9 +489,9 @@ def from_callback(
         the callback, produces an Observable sequence with a single
         value of the arguments to the callback as a list.
     """
-    from .core.observable.fromcallback import _from_callback
+    from .core.observable.fromcallback import from_callback_
 
-    return _from_callback(func, mapper)
+    return from_callback_(func, mapper)
 
 
 def from_future(future: "Future[_T]") -> Observable[_T]:
@@ -611,7 +642,9 @@ def generate_with_relative_time(
         -1-2-3-4-|
 
     Example:
-        >>> res = rx.generate_with_relative_time(0, lambda x: True, lambda x: x + 1, lambda x: 0.5)
+        >>> res = rx.generate_with_relative_time(
+            0, lambda x: True, lambda x: x + 1, lambda x: 0.5
+        )
 
     Args:
         initial_state: Initial state.
@@ -933,10 +966,11 @@ def range(
 
     Args:
         start: The value of the first integer in the sequence.
-        stop: [Optional] Generate number up to (exclusive) the stop value. Default is `sys.maxsize`.
+        stop: [Optional] Generate number up to (exclusive) the stop
+            value. Default is `sys.maxsize`.
         step: [Optional] The step to be used (default is 1).
-        scheduler: [Optional] The scheduler to schedule the values on. If not
-            specified, the default is to use an instance of
+        scheduler: [Optional] The scheduler to schedule the values on.
+            If not specified, the default is to use an instance of
             :class:`CurrentThreadScheduler <rx.scheduler.CurrentThreadScheduler>`.
 
     Returns:

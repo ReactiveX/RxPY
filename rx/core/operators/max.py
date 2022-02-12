@@ -28,7 +28,6 @@ def max_(
         an observable sequence containing a single element with the
         maximum element in the source sequence.
     """
-
     return pipe(
         ops.max_by(identity, comparer),
         ops.map(first_only),

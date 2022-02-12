@@ -1,13 +1,13 @@
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
-from rx.core import Observable, abc
-from rx.core.typing import Mapper
+from rx.core import Observable, abc, typing
 from rx.disposable import Disposable
 
 
-def _from_callback(
-    func: Callable, mapper: Optional[Mapper] = None
-) -> Callable[[], Observable]:
+def from_callback_(
+    func: Callable[..., Callable[..., None]],
+    mapper: Optional[typing.Mapper[Any, Any]] = None,
+) -> Callable[[], Observable[Any]]:
     """Converts a callback function to an observable sequence.
 
     Args:
@@ -22,13 +22,14 @@ def _from_callback(
         the arguments to the callback as a list.
     """
 
-    def function(*args):
+    def function(*args: Any):
         arguments = list(args)
 
         def subscribe(
-            observer: abc.ObserverBase, scheduler: Optional[abc.SchedulerBase] = None
+            observer: abc.ObserverBase[Any],
+            scheduler: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
-            def handler(*args):
+            def handler(*args: Any):
                 results = list(args)
                 if mapper:
                     try:
@@ -53,3 +54,6 @@ def _from_callback(
         return Observable(subscribe)
 
     return function
+
+
+__all__ = ["from_callback_"]

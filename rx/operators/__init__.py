@@ -1497,7 +1497,10 @@ def group_by_until(
         >>> group_by_until(lambda x: x.id, None, lambda : rx.never())
         >>> group_by_until(lambda x: x.id, lambda x: x.name, lambda grp: rx.never())
         >>> group_by_until(
-            lambda x: x.id, lambda x: x.name, lambda grp: rx.never(), lambda: ReplaySubject()
+            lambda x: x.id,
+            lambda x: x.name,
+            lambda grp: rx.never(),
+            lambda: ReplaySubject()
         )
 
     Args:
@@ -2261,9 +2264,9 @@ def publish_value(
         sequence produced by multicasting the source sequence within a
         mapper function.
     """
-    from rx.core.operators.publishvalue import _publish_value
+    from rx.core.operators.publishvalue import publish_value_
 
-    return _publish_value(initial_value, mapper)
+    return publish_value_(initial_value, mapper)
 
 
 def reduce(
@@ -2348,11 +2351,11 @@ def repeat(
 
 
 def replay(
-    mapper: Optional[Mapper] = None,
+    mapper: Optional[Mapper[_T1, _T2]] = None,
     buffer_size: Optional[int] = None,
     window: Optional[typing.RelativeTime] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable], Union[Observable, ConnectableObservable]]:
+) -> Callable[[Observable[_T1]], Union[Observable[_T2], ConnectableObservable[_T2]]]:
     """The `replay` operator.
 
     Returns an observable sequence that is the result of invoking the

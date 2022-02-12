@@ -39,7 +39,7 @@ def return_value_(
     return Observable(subscribe)
 
 
-def _from_callable(
+def from_callable_(
     supplier: Callable[[], _T], scheduler: Optional[abc.SchedulerBase] = None
 ) -> Observable[_T]:
     def subscribe(
@@ -61,4 +61,4 @@ def _from_callable(
     return Observable(subscribe)
 
 
-__all__ = ["return_value_", "_from_callable"]
+__all__ = ["return_value_", "from_callable_"]

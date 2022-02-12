@@ -1,4 +1,4 @@
-from typing import Callable, Optional, Sequence, TypeVar
+from typing import Callable, List, Optional, TypeVar
 
 from rx import operators as ops
 from rx.core import Observable, pipe
@@ -9,7 +9,7 @@ from rx.internal.exceptions import SequenceContainsNoElementsError
 _T = TypeVar("_T")
 
 
-def first_only(x: Sequence[_T]) -> _T:
+def first_only(x: List[_T]) -> _T:
     if not x:
         raise SequenceContainsNoElementsError()
 
