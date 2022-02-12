@@ -1,4 +1,4 @@
-from typing import Optional, TypeVar
+from typing import Optional, TypeVar, cast
 
 from rx.core import abc
 from rx.disposable import Disposable
@@ -66,5 +66,5 @@ class BehaviorSubject(Subject[_T]):
         """
 
         with self.lock:
-            self.value = None
+            self.value = cast(_T, None)
             super().dispose()

@@ -82,5 +82,5 @@ class AsyncSubject(Subject[_T]):
         """Unsubscribe all observers and release resources."""
 
         with self.lock:
-            self.value = None
+            self.value = cast(_T, None)
             super().dispose()
