@@ -42,7 +42,7 @@ def catch_with_iterable_(sources: Iterable[Observable[_T]]) -> Observable[_T]:
         last_exception = None
         is_disposed = False
 
-        def action(action1, state: Any = None):
+        def action(scheduler: abc.SchedulerBase, state: Any = None):
             def on_error(exn: Exception) -> None:
                 nonlocal last_exception
                 last_exception = exn

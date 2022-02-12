@@ -1,4 +1,4 @@
-from typing import Any, Optional, TypeVar
+from typing import Optional, TypeVar
 
 from rx.disposable import SingleAssignmentDisposable
 from rx.internal import default_error, noop

@@ -54,9 +54,9 @@ class TestScheduler(VirtualTimeScheduler):
     def start(
         self,
         create: Optional[Callable[[], Observable[_T]]] = None,
-        created: Optional[int] = None,
-        subscribed: Optional[int] = None,
-        disposed: Optional[int] = None,
+        created: Optional[float] = None,
+        subscribed: Optional[float] = None,
+        disposed: Optional[float] = None,
     ) -> MockObserver[_T]:
         """Starts the test scheduler and uses the specified virtual
         times to invoke the factory function, subscribe to the

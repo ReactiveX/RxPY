@@ -1,6 +1,6 @@
 from collections import namedtuple
 from contextlib import contextmanager
-from typing import Dict, List, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 from warnings import warn
 
 import rx
@@ -9,7 +9,11 @@ from rx.core.notification import Notification
 from rx.core.observable.marbles import parse
 from rx.core.typing import Callable, RelativeTime
 from rx.scheduler import NewThreadScheduler
-from rx.testing import ReactiveTest, Recorded, TestScheduler
+
+from .hotobservable import HotObservable
+from .reactivetest import ReactiveTest
+from .recorded import Recorded
+from .testscheduler import TestScheduler
 
 new_thread_scheduler = NewThreadScheduler()
 
@@ -17,7 +21,7 @@ MarblesContext = namedtuple("MarblesContext", "start, cold, hot, exp")
 
 
 @contextmanager
-def marbles_testing(timespan=1.0):
+def marbles_testing(timespan: RelativeTime = 1.0):
     """
     Initialize a :class:`rx.testing.TestScheduler` and return a namedtuple
     containing the following functions that wrap its methods.
@@ -77,15 +81,16 @@ def marbles_testing(timespan=1.0):
             )
 
     def test_start(
-        create: Union[Observable, Callable[[], Observable]]
-    ) -> List[Recorded]:
+        create: Union[Observable[Any], Callable[[], Observable[Any]]]
+    ) -> List[Recorded[Any]]:
         nonlocal start_called
         check()
 
-        def default_create():
-            return create
-
         if isinstance(create, Observable):
+
+            def default_create() -> Observable[Any]:
+                return create
+
             create_function = default_create
         else:
             create_function = create
@@ -100,8 +105,10 @@ def marbles_testing(timespan=1.0):
         return mock_observer.messages
 
     def test_expected(
-        string: str, lookup: Dict = None, error: Exception = None
-    ) -> List[Recorded]:
+        string: str,
+        lookup: Optional[Dict[Union[str, float], Any]] = None,
+        error: Optional[Exception] = None,
+    ) -> List[Recorded[Any]]:
         messages = parse(
             string,
             timespan=timespan,
@@ -112,8 +119,10 @@ def marbles_testing(timespan=1.0):
         return messages_to_records(messages)
 
     def test_cold(
-        string: str, lookup: Dict = None, error: Exception = None
-    ) -> Observable:
+        string: str,
+        lookup: Optional[Dict[Union[str, float], Any]] = None,
+        error: Optional[Exception] = None,
+    ) -> Observable[Any]:
         check()
         return rx.from_marbles(
             string,
@@ -123,10 +132,12 @@ def marbles_testing(timespan=1.0):
         )
 
     def test_hot(
-        string: str, lookup: Dict = None, error: Exception = None
-    ) -> Observable:
+        string: str,
+        lookup: Optional[Dict[Union[str, float], Any]] = None,
+        error: Optional[Exception] = None,
+    ) -> Observable[Any]:
         check()
-        hot_obs = rx.hot(
+        hot_obs: HotObservable[Any] = rx.hot(
             string,
             timespan=timespan,
             duetime=subscribed,
@@ -143,15 +154,17 @@ def marbles_testing(timespan=1.0):
 
 
 def messages_to_records(
-    messages: List[Tuple[RelativeTime, Notification]]
-) -> List[Recorded]:
+    messages: List[Tuple[RelativeTime, Notification[Any]]]
+) -> List[Recorded[Any]]:
     """
     Helper function to convert messages returned by parse() to a list of
     Recorded.
     """
-    records = []
+    records: List[Recorded[Any]] = []
 
-    dispatcher = dict(
+    dispatcher: Dict[
+        str, Callable[[RelativeTime, Notification[Any]], Recorded[Any]]
+    ] = dict(
         N=lambda t, n: ReactiveTest.on_next(t, n.value),
         E=lambda t, n: ReactiveTest.on_error(t, n.exception),
         C=lambda t, n: ReactiveTest.on_completed(t),

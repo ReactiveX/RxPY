@@ -67,11 +67,11 @@ class ReactiveTest:
         return Recorded(ticks, OnNext(value))
 
     @staticmethod
-    def on_error(ticks: int, exception: Union[Exception, str]) -> Recorded[Any]:
-        if isinstance(exception, types.FunctionType):
-            return Recorded(ticks, OnErrorPredicate(exception))
+    def on_error(ticks: int, error: Union[Exception, str]) -> Recorded[Any]:
+        if isinstance(error, types.FunctionType):
+            return Recorded(ticks, OnErrorPredicate(error))
 
-        return Recorded(ticks, OnError(exception))
+        return Recorded(ticks, OnError(error))
 
     @staticmethod
     def on_completed(ticks: int) -> Recorded[Any]:

@@ -134,11 +134,11 @@ class OnNext(Notification[_T]):
 class OnError(Notification[_T]):
     """Represents an OnError notification to an observer."""
 
-    def __init__(self, exception: Exception):
+    def __init__(self, error: Union[Exception, str]):
         """Constructs a notification of an exception."""
 
         super(OnError, self).__init__()
-        self.exception = exception
+        self.exception = error
         self.kind = "E"
 
     def _accept(

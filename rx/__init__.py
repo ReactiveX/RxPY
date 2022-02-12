@@ -343,7 +343,9 @@ def empty(scheduler: Optional[abc.SchedulerBase] = None) -> Observable[Any]:
     return empty_(scheduler)
 
 
-def for_in(values: Iterable[_T1], mapper: typing.Mapper[_T1, _T2]) -> Observable[_T2]:
+def for_in(
+    values: Iterable[_T1], mapper: typing.Mapper[_T1, Observable[_T2]]
+) -> Observable[_T2]:
     """Concatenates the observable sequences obtained by running the
     specified result mapper for each element in the specified values.
 
@@ -372,7 +374,8 @@ def for_in(values: Iterable[_T1], mapper: typing.Mapper[_T1, _T2]) -> Observable
         sequences.
     """
 
-    return concat_with_iterable(map(mapper, values))
+    mapped: Iterable[Observable[_T2]] = map(mapper, values)
+    return concat_with_iterable(mapped)
 
 
 def fork_join(*sources: Observable[_T]) -> Observable[_T]:
@@ -520,7 +523,7 @@ def from_marbles(
     string: str,
     timespan: typing.RelativeTime = 0.1,
     scheduler: Optional[abc.SchedulerBase] = None,
-    lookup: Optional[Mapping[str, Any]] = None,
+    lookup: Optional[Mapping[Union[str, float], Any]] = None,
     error: Optional[Exception] = None,
 ) -> Observable[Any]:
     """Convert a marble diagram string to a cold observable sequence, using
@@ -664,9 +667,9 @@ def hot(
     timespan: typing.RelativeTime = 0.1,
     duetime: typing.AbsoluteOrRelativeTime = 0.0,
     scheduler: Optional[abc.SchedulerBase] = None,
-    lookup: Optional[Mapping] = None,
+    lookup: Optional[Mapping[Union[str, float], Any]] = None,
     error: Optional[Exception] = None,
-) -> Observable:
+) -> Observable[Any]:
     """Convert a marble diagram string to a hot observable sequence, using
     an optional scheduler to enumerate the events.
 
