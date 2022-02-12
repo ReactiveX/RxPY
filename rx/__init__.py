@@ -1013,9 +1013,7 @@ def return_value(
 just = alias("just", "Alias for :func:`rx.return_value`.", return_value)
 
 
-def repeat_value(
-    value: _T = None, repeat_count: Optional[int] = None
-) -> Observable[_T]:
+def repeat_value(value: _T, repeat_count: Optional[int] = None) -> Observable[_T]:
     """Generates an observable sequence that repeats the given element
     the specified number of times.
 
