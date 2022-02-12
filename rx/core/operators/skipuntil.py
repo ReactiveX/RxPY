@@ -1,16 +1,15 @@
 from asyncio import Future
-from typing import Any, Callable, Optional, TypeVar, Union, cast
+from typing import Any, Callable, Optional, TypeVar, Union
 
 from rx import from_future
 from rx.core import Observable, abc
 from rx.disposable import CompositeDisposable, SingleAssignmentDisposable
-from rx.internal.utils import is_future
 
 _T = TypeVar("_T")
 
 
 def skip_until_(
-    other: Union[Observable[_T], "Future[_T]"]
+    other: Union[Observable[Any], "Future[Any]"]
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the values from the source observable sequence only after
     the other observable sequence produces a value.
@@ -25,10 +24,10 @@ def skip_until_(
     propagation.
     """
 
-    if is_future(other):
+    if isinstance(other, Future):
         obs: Observable[Any] = from_future(other)
     else:
-        obs = cast(Observable[_T], other)
+        obs = other
 
     def skip_until(source: Observable[_T]) -> Observable[_T]:
         def subscribe(

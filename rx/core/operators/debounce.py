@@ -11,7 +11,7 @@ from rx.scheduler import TimeoutScheduler
 _T = TypeVar("_T")
 
 
-def debounce(
+def debounce_(
     duetime: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase]
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def debounce(source: Observable[_T]) -> Observable[_T]:
@@ -79,7 +79,7 @@ def debounce(
     return debounce
 
 
-def throttle_with_mapper(
+def throttle_with_mapper_(
     throttle_duration_mapper: Callable[[Any], Observable[Any]]
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def throttle_with_mapper(source: Observable[_T]) -> Observable[_T]:
@@ -171,4 +171,4 @@ def throttle_with_mapper(
     return throttle_with_mapper
 
 
-__all__ = ["debounce", "throttle_with_mapper"]
+__all__ = ["debounce_", "throttle_with_mapper_"]

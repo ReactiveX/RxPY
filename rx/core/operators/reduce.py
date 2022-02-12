@@ -1,4 +1,4 @@
-from typing import Any, Callable, TypeVar
+from typing import Any, Callable, Type, TypeVar, Union, cast
 
 from rx import operators as ops
 from rx.core import Observable, pipe
@@ -10,7 +10,7 @@ _TState = TypeVar("_TState")
 
 
 def reduce_(
-    accumulator: Accumulator[_TState, _T], seed: Any = NotSet
+    accumulator: Accumulator[_TState, _T], seed: Union[_TState, Type[NotSet]] = NotSet
 ) -> Callable[[Observable[_T]], Observable[_TState]]:
     """Applies an accumulator function over an observable sequence,
     returning the result of the aggregation as a single element in the
@@ -35,8 +35,9 @@ def reduce_(
         final accumulator value.
     """
     if seed is not NotSet:
-        scanner = ops.scan(accumulator, seed=seed)
-        return pipe(scanner, ops.last_or_default(default_value=seed))
+        seed_: _TState = cast(_TState, seed)
+        scanner = ops.scan(accumulator, seed=seed_)
+        return pipe(scanner, ops.last_or_default(default_value=seed_))
 
     return pipe(ops.scan(accumulator), ops.last())
 

@@ -543,9 +543,9 @@ def debounce(
         An operator function that takes the source observable and
         returns the debounced observable sequence.
     """
-    from rx.core.operators.debounce import debounce
+    from rx.core.operators.debounce import debounce_
 
-    return debounce(duetime, scheduler)
+    return debounce_(duetime, scheduler)
 
 
 throttle_with_timeout = debounce
@@ -2201,7 +2201,7 @@ def pluck_attr(prop: str) -> Callable[[Observable[Any]], Observable[Any]]:
 
 def publish(
     mapper: Optional[Mapper[_T1, _T2]] = None,
-) -> Callable[[Observable[_T2]], ConnectableObservable[_T2]]:
+) -> Callable[[Observable[_T1]], ConnectableObservable[_T2]]:
     """The `publish` operator.
 
     Returns an observable sequence that is the result of invoking the
@@ -2270,7 +2270,7 @@ def publish_value(
 
 
 def reduce(
-    accumulator: Accumulator[_TState, _T], seed: Union[_TState, NotSet] = NotSet
+    accumulator: Accumulator[_TState, _T], seed: Union[_TState, Type[NotSet]] = NotSet
 ) -> Callable[[Observable[_T]], Observable[_TState]]:
     """The reduce operator.
 
@@ -2715,7 +2715,9 @@ def skip_last_with_time(
     return skip_last_with_time_(duration, scheduler=scheduler)
 
 
-def skip_until(other: Observable[Any]) -> Callable[[Observable[_T]], Observable[_T]]:
+def skip_until(
+    other: Union[Observable[Any], "Future[Any]"]
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the values from the source observable sequence only
     after the other observable sequence produces a value.
 
@@ -2981,7 +2983,7 @@ def starmap(
 
 def starmap(
     mapper: Optional[Callable[..., Any]] = None
-) -> Callable[[Observable[Tuple[Any, ...]]], Observable[Any]]:
+) -> Callable[[Observable[Any]], Observable[Any]]:
     """The starmap operator.
 
     Unpack arguments grouped as tuple elements of an observable
@@ -3523,9 +3525,9 @@ def throttle_with_mapper(
         A partially applied operator function that takes an observable
         source and returns the throttled observable sequence.
     """
-    from rx.core.operators.debounce import throttle_with_mapper
+    from rx.core.operators.debounce import throttle_with_mapper_
 
-    return throttle_with_mapper(throttle_duration_mapper)
+    return throttle_with_mapper_(throttle_duration_mapper)
 
 
 if TYPE_CHECKING:

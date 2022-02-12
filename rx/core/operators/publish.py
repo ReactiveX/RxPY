@@ -6,12 +6,12 @@ from rx.core.typing import Mapper
 from rx.subject import Subject
 
 _T = TypeVar("_T")
-_TResult = TypeVar("_TResult")
+_T2 = TypeVar("_T2")
 
 
 def publish_(
-    mapper: Optional[Mapper[_T, _TResult]] = None,
-) -> Callable[[Observable[_T]], ConnectableObservable[_TResult]]:
+    mapper: Optional[Mapper[_T, _T2]] = None,
+) -> Callable[[Observable[_T]], ConnectableObservable[_T2]]:
     """Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single
     subscription to the underlying sequence. This operator is a

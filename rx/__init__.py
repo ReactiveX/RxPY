@@ -201,7 +201,7 @@ def combine_latest(
     ...
 
 
-def combine_latest(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
+def combine_latest(*__sources: Observable[Any]) -> Observable[Any]:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple whenever any of the observable
     sequences emits an element.
@@ -227,7 +227,7 @@ def combine_latest(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
 
     from .core.observable.combinelatest import combine_latest_
 
-    return combine_latest_(*sources)
+    return combine_latest_(*__sources)
 
 
 def concat(*sources: Observable[_T]) -> Observable[_T]:
@@ -379,36 +379,36 @@ def for_in(
 
 
 @overload
-def fork_join(a: Observable[_A], b: Observable[_B]) -> Observable[Tuple[_A, _B]]:
+def fork_join(__a: Observable[_A], __b: Observable[_B]) -> Observable[Tuple[_A, _B]]:
     ...
 
 
 @overload
 def fork_join(
-    a: Observable[_A], b: Observable[_B], c: Observable[_C]
+    __a: Observable[_A], __b: Observable[_B], __c: Observable[_C]
 ) -> Observable[Tuple[_A, _B, _C]]:
     ...
 
 
 @overload
 def fork_join(
-    a: Observable[_A], b: Observable[_B], c: Observable[_C], d: Observable[_D]
+    __a: Observable[_A], __b: Observable[_B], __c: Observable[_C], __d: Observable[_D]
 ) -> Observable[Tuple[_A, _B, _C, _D]]:
     ...
 
 
 @overload
 def fork_join(
-    a: Observable[_A],
-    b: Observable[_B],
-    c: Observable[_C],
-    d: Observable[_D],
-    e: Observable[_E],
+    __a: Observable[_A],
+    __b: Observable[_B],
+    __c: Observable[_C],
+    __d: Observable[_D],
+    __e: Observable[_E],
 ) -> Observable[Tuple[_A, _B, _C, _D, _E]]:
     ...
 
 
-def fork_join(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
+def fork_join(*sources: Observable[Any]) -> Observable[Any]:
     """Wait for observables to complete and then combine last values
     they emitted into a tuple. Whenever any of that observables completes
     without emitting any value, result sequence will complete at that moment as well.
