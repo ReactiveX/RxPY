@@ -16,8 +16,8 @@ class Notification(Generic[_T]):
     def __init__(self) -> None:
         """Default constructor used by derived types."""
         self.has_value = False
-        self.value = None
-        self.kind = ""
+        self.value: Optional[_T] = None
+        self.kind: str = ""
 
     def accept(
         self,
@@ -109,7 +109,7 @@ class OnNext(Notification[_T]):
         """Constructs a notification of a new value."""
 
         super(OnNext, self).__init__()
-        self.value = value
+        self.value: _T = value
         self.has_value = True
         self.kind = "N"
 
@@ -138,7 +138,7 @@ class OnError(Notification[_T]):
         """Constructs a notification of an exception."""
 
         super(OnError, self).__init__()
-        self.exception = error
+        self.exception: Union[Exception, str] = error
         self.kind = "E"
 
     def _accept(

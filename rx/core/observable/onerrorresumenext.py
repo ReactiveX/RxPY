@@ -1,5 +1,5 @@
 from asyncio import Future
-from typing import Any, Callable, Optional, TypeVar, Union
+from typing import Callable, Optional, TypeVar, Union
 
 import rx
 from rx.core import Observable, abc

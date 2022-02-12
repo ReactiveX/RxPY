@@ -10,7 +10,6 @@ from rx.core.observable.marbles import parse
 from rx.core.typing import Callable, RelativeTime
 from rx.scheduler import NewThreadScheduler
 
-from .hotobservable import HotObservable
 from .reactivetest import ReactiveTest
 from .recorded import Recorded
 from .testscheduler import TestScheduler
@@ -137,7 +136,7 @@ def marbles_testing(timespan: RelativeTime = 1.0):
         error: Optional[Exception] = None,
     ) -> Observable[Any]:
         check()
-        hot_obs: HotObservable[Any] = rx.hot(
+        hot_obs: Observable[Any] = rx.hot(
             string,
             timespan=timespan,
             duetime=subscribed,
@@ -162,13 +161,11 @@ def messages_to_records(
     """
     records: List[Recorded[Any]] = []
 
-    dispatcher: Dict[
-        str, Callable[[RelativeTime, Notification[Any]], Recorded[Any]]
-    ] = dict(
-        N=lambda t, n: ReactiveTest.on_next(t, n.value),
-        E=lambda t, n: ReactiveTest.on_error(t, n.exception),
-        C=lambda t, n: ReactiveTest.on_completed(t),
-    )
+    dispatcher: Dict[str, Callable[[int, Notification[Any]], Recorded[Any]]] = {
+        "N": lambda t, n: ReactiveTest.on_next(t, n.value),
+        "E": lambda t, n: ReactiveTest.on_error(t, n.exception),
+        "C": lambda t, n: ReactiveTest.on_completed(t),
+    }
 
     for message in messages:
         time, notification = message

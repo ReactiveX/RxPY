@@ -4,7 +4,7 @@ from rx.core import Notification, typing
 from rx.internal.basic import default_comparer
 
 if TYPE_CHECKING:
-    from rx.testing.reactivetest import OnErrorPredicate, OnNextPredicate
+    from .reactivetest import OnErrorPredicate, OnNextPredicate
 
 
 _T = TypeVar("_T")

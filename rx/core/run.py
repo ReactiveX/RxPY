@@ -1,5 +1,5 @@
 import threading
-from typing import Any, Optional, TypeVar, cast
+from typing import Optional, TypeVar, cast
 
 from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx.scheduler import NewThreadScheduler
@@ -61,7 +61,7 @@ def run(source: Observable[_T]) -> _T:
         latch.wait()
 
     if exception:
-        raise exception  # pylint: disable=raidfsing-bad-type
+        raise cast(Exception, exception)
 
     if not has_result:
         raise SequenceContainsNoElementsError

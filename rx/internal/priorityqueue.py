@@ -14,7 +14,7 @@ class PriorityQueue(Generic[_T1]):
         self.items: List[Tuple[_T1, int]] = []
         self.count = PriorityQueue.MIN_COUNT  # Monotonic increasing for sort stability
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Returns length of queue"""
 
         return len(self.items)
@@ -48,7 +48,7 @@ class PriorityQueue(Generic[_T1]):
 
         return False
 
-    def clear(self):
+    def clear(self) -> None:
         """Remove all items from the queue."""
         self.items = []
         self.count = PriorityQueue.MIN_COUNT
