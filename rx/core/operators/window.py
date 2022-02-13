@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, Callable, Optional, Tuple, TypeVar
 
 from rx import empty
 from rx import operators as ops
@@ -33,7 +33,7 @@ def window_toggle_(
     """
 
     def window_toggle(source: Observable[_T]) -> Observable[Observable[_T]]:
-        def mapper(args):
+        def mapper(args: Tuple[Any, Observable[_T]]):
             _, window = args
             return window
 

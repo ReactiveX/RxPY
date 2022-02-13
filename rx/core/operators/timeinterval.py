@@ -1,5 +1,6 @@
+from dataclasses import dataclass
 from datetime import timedelta
-from typing import Any, Callable, NamedTuple, Optional, TypeVar
+from typing import Callable, Generic, Optional, TypeVar
 
 from rx import operators as ops
 from rx.core import Observable, abc
@@ -8,15 +9,16 @@ from rx.scheduler import TimeoutScheduler
 _T = TypeVar("_T")
 
 
-class TimeInterval(NamedTuple):
-    value: Any
+@dataclass
+class TimeInterval(Generic[_T]):
+    value: _T
     interval: timedelta
 
 
 def time_interval_(
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    def time_interval(source: Observable[_T]) -> Observable[_T]:
+) -> Callable[[Observable[_T]], Observable[TimeInterval[_T]]]:
+    def time_interval(source: Observable[_T]) -> Observable[TimeInterval[_T]]:
         """Records the time interval between consecutive values in an
         observable sequence.
 
@@ -28,13 +30,13 @@ def time_interval_(
         """
 
         def subscribe(
-            observer: abc.ObserverBase[_T],
+            observer: abc.ObserverBase[TimeInterval[_T]],
             scheduler_: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             last = _scheduler.now
 
-            def mapper(value: _T) -> TimeInterval:
+            def mapper(value: _T) -> TimeInterval[_T]:
                 nonlocal last
 
                 now = _scheduler.now
@@ -42,7 +44,9 @@ def time_interval_(
                 last = now
                 return TimeInterval(value=value, interval=span)
 
-            return source.pipe(ops.map(mapper)).subscribe(observer, _scheduler)
+            return source.pipe(ops.map(mapper)).subscribe(
+                observer, scheduler=_scheduler
+            )
 
         return Observable(subscribe)
 

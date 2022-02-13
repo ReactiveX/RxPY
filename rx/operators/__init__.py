@@ -3688,9 +3688,13 @@ def timeout_with_mapper(
     return timeout_with_mapper_(first_timeout, timeout_duration_mapper, other)
 
 
+if TYPE_CHECKING:
+    from rx.core.operators.timeinterval import TimeInterval
+
+
 def time_interval(
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T]], Observable[_T]]:
+) -> Callable[[Observable[_T]], Observable[TimeInterval[_T]]]:
     """Records the time interval between consecutive values in an
     observable sequence.
 

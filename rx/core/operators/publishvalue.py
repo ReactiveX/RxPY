@@ -1,4 +1,4 @@
-from typing import Callable, Optional, TypeVar
+from typing import Callable, Optional, TypeVar, cast
 
 from rx import operators as ops
 from rx.core import Observable, abc
@@ -14,11 +14,15 @@ def publish_value_(
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     if mapper:
 
-        def subject_factory(scheduler: abc.SchedulerBase) -> BehaviorSubject[_T1]:
+        def subject_factory(
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> BehaviorSubject[_T1]:
             return BehaviorSubject(initial_value)
 
         return ops.multicast(subject_factory=subject_factory, mapper=mapper)
-    return ops.multicast(BehaviorSubject(initial_value))
+
+    subject = BehaviorSubject(cast(_T2, initial_value))
+    return ops.multicast(subject)
 
 
 __all__ = ["publish_value_"]

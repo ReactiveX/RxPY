@@ -98,7 +98,11 @@ def timeout_with_mapper_(
                     observer.on_next(x)
                     timeout = None
                     try:
-                        timeout = timeout_duration_mapper(x)
+                        timeout = (
+                            timeout_duration_mapper(x)
+                            if timeout_duration_mapper
+                            else rx.never()
+                        )
                     except Exception as e:
                         observer.on_error(e)
                         return
