@@ -19,12 +19,12 @@ The Reactive Extensions for Python (RxPY)
 *A library for composing asynchronous and event-based programs using observable collections and
 query operator functions in Python*
 
-RxPY v3.0
+RxPY v4.0
 ----------------
 
 For v1.X please go to the `v1 branch <https://github.com/ReactiveX/RxPY/tree/release/v1.6.x>`_.
 
-RxPY v3.x runs on `Python <http://www.python.org/>`_ 3.6 or above. To install
+RxPY v4.x runs on `Python <http://www.python.org/>`_ 3.7 or above. To install
 RxPY:
 
 .. code:: console

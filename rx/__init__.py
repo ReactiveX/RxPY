@@ -32,7 +32,7 @@ _F = TypeVar("_F")
 _G = TypeVar("_G")
 
 # Please make sure the version here remains the same as in project.cfg
-__version__ = "3.2.0"
+__version__ = "4.0.0"
 
 
 def amb(*sources: Observable[_T]) -> Observable[_T]:

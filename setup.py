@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys 
+import sys
 
 try:
     from setuptools import setup
@@ -39,7 +39,7 @@ setup(
         'download_url'
     )},
     zip_safe=True,
-    python_requires='>=3.6.0',
+    python_requires='>=3.7.0',
 
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
@@ -49,8 +49,10 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
