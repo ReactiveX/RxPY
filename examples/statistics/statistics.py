@@ -1,4 +1,5 @@
 import math
+from typing import Any
 
 from rx.core import Observable
 
@@ -22,7 +23,7 @@ def median(source: Observable) -> Observable:
     return source.to_sorted_list().map(lambda l: determine_median(l))
 
 
-def mode(source: Observable) -> Observable:
+def mode(source: Observable[Any]) -> Observable[Any]:
     """
     Returns the most frequently emitted value (or "values" if they have the same number of occurrences).
     The sequence must be finite.
