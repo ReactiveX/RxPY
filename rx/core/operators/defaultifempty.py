@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, TypeVar
+from typing import Callable, Optional, TypeVar
 
 from rx.core import Observable, abc
 
@@ -6,9 +6,9 @@ _T = TypeVar("_T")
 
 
 def default_if_empty_(
-    default_value: _T = None,
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    def default_if_empty(source: Observable[_T]) -> Observable[_T]:
+    default_value: Optional[_T] = None,
+) -> Callable[[Observable[_T]], Observable[Optional[_T]]]:
+    def default_if_empty(source: Observable[_T]) -> Observable[Optional[_T]]:
         """Returns the elements of the specified sequence or the
         specified value in a singleton sequence if the sequence is
         empty.
@@ -26,7 +26,7 @@ def default_if_empty_(
         """
 
         def subscribe(
-            observer: abc.ObserverBase[_T],
+            observer: abc.ObserverBase[Optional[_T]],
             scheduler: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
             found = [False]

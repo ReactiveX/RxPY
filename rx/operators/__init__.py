@@ -551,9 +551,21 @@ def debounce(
 throttle_with_timeout = debounce
 
 
+@overload
 def default_if_empty(
-    default_value: _T = None,
+    default_value: _T,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
+    ...
+
+
+@overload
+def default_if_empty() -> Callable[[Observable[_T]], Observable[Optional[_T]]]:
+    ...
+
+
+def default_if_empty(
+    default_value: Any = None,
+) -> Callable[[Observable[Any]], Observable[Any]]:
     """Returns the elements of the specified sequence or the specified
     value in a singleton sequence if the sequence is empty.
 
@@ -1673,9 +1685,30 @@ def last(
     return last_(predicate)
 
 
+@overload
+def last_or_default() -> Callable[[Observable[_T]], Observable[Optional[_T]]]:
+    ...
+
+
+@overload
 def last_or_default(
-    predicate: Optional[Predicate[_T]] = None, default_value: Optional[_T] = None
+    default_value: _T,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
+    ...
+
+
+@overload
+def last_or_default(
+    default_value: _T,
+    predicate: Predicate[_T],
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    ...
+
+
+def last_or_default(
+    default_value: Any = None,
+    predicate: Optional[Predicate[_T]] = None,
+) -> Callable[[Observable[_T]], Observable[Any]]:
     """The last_or_default operator.
 
     Returns the last element of an observable sequence that satisfies
@@ -1710,7 +1743,7 @@ def last_or_default(
     """
     from rx.core.operators.lastordefault import last_or_default
 
-    return last_or_default(predicate, default_value)
+    return last_or_default(default_value, predicate)
 
 
 def map(
@@ -2449,6 +2482,20 @@ def sample(
     from rx.core.operators.sample import sample_
 
     return sample_(sampler, scheduler)
+
+
+@overload
+def scan(
+    accumulator: Accumulator[_T, _T]
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    ...
+
+
+@overload
+def scan(
+    accumulator: Accumulator[_TState, _T], seed: _TState
+) -> Callable[[Observable[_T]], Observable[_TState]]:
+    ...
 
 
 def scan(

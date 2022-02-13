@@ -8,10 +8,13 @@ _T = TypeVar("_T")
 
 
 def last_or_default_async(
-    source: Observable[_T], has_default: bool = False, default_value: Any = None
-) -> Observable[_T]:
+    source: Observable[_T],
+    has_default: bool = False,
+    default_value: Optional[_T] = None,
+) -> Observable[Optional[_T]]:
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Optional[_T]],
+        scheduler: Optional[abc.SchedulerBase] = None,
     ):
         value = [default_value]
         seen_value = [False]
@@ -35,9 +38,9 @@ def last_or_default_async(
 
 
 def last_or_default(
-    predicate: Optional[typing.Predicate[_T]] = None, default_value: Any = None
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    def last_or_default(source: Observable[_T]) -> Observable[_T]:
+    default_value: Optional[_T] = None, predicate: Optional[typing.Predicate[_T]] = None
+) -> Callable[[Observable[_T]], Observable[Any]]:
+    def last_or_default(source: Observable[Any]) -> Observable[Any]:
         """Return last or default element.
 
         Examples:
@@ -54,7 +57,7 @@ def last_or_default(
         if predicate:
             return source.pipe(
                 ops.filter(predicate),
-                ops.last_or_default(None, default_value),
+                ops.last_or_default(default_value),
             )
 
         return last_or_default_async(source, True, default_value)

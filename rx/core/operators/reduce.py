@@ -37,7 +37,10 @@ def reduce_(
     if seed is not NotSet:
         seed_: _TState = cast(_TState, seed)
         scanner = ops.scan(accumulator, seed=seed_)
-        return pipe(scanner, ops.last_or_default(default_value=seed_))
+        return pipe(
+            scanner,
+            ops.last_or_default(default_value=seed_),
+        )
 
     return pipe(ops.scan(accumulator), ops.last())
 

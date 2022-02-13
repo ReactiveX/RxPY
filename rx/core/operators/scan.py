@@ -42,7 +42,11 @@ def scan_(
                 if has_accumulation:
                     accumulation = accumulator(accumulation, x)
                 else:
-                    accumulation = accumulator(seed, x) if has_seed else x
+                    accumulation = (
+                        accumulator(cast(_TState, seed), x)
+                        if has_seed
+                        else cast(_TState, x)
+                    )
                     has_accumulation = True
 
                 return accumulation
