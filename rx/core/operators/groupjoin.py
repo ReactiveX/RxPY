@@ -12,17 +12,17 @@ from rx.disposable import (
 from rx.internal.utils import add_ref
 from rx.subject import Subject
 
-_T1 = TypeVar("_T1")
-_T2 = TypeVar("_T2")
+_TLeft = TypeVar("_TLeft")
+_TRight = TypeVar("_TRight")
 
 log = logging.getLogger("Rx")
 
 
 def group_join_(
-    right: Observable[_T2],
-    left_duration_mapper: Callable[[_T1], Observable[Any]],
-    right_duration_mapper: Callable[[_T2], Observable[Any]],
-) -> Callable[[Observable[_T1]], Observable[Tuple[_T1, _T2]]]:
+    right: Observable[_TRight],
+    left_duration_mapper: Callable[[_TLeft], Observable[Any]],
+    right_duration_mapper: Callable[[_TRight], Observable[Any]],
+) -> Callable[[Observable[_TLeft]], Observable[Tuple[_TLeft, Observable[_TRight]]]]:
     """Correlates the elements of two sequences based on overlapping
     durations, and groups the results.
 
@@ -40,23 +40,25 @@ def group_join_(
     from source elements that have an overlapping duration.
     """
 
-    def nothing(_):
+    def nothing(_: Any) -> None:
         return None
 
-    def group_join(left: Observable[_T1]) -> Observable[Tuple[_T1, _T2]]:
+    def group_join(
+        left: Observable[_TLeft],
+    ) -> Observable[Tuple[_TLeft, Observable[_TRight]]]:
         def subscribe(
-            observer: abc.ObserverBase[Tuple[_T1, _T2]],
+            observer: abc.ObserverBase[Tuple[_TLeft, Observable[_TRight]]],
             scheduler: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
             group = CompositeDisposable()
             rcd = RefCountDisposable(group)
-            left_map = OrderedDict()
-            right_map = OrderedDict()
+            left_map: OrderedDict[int, Subject[_TRight]] = OrderedDict()
+            right_map: OrderedDict[int, _TRight] = OrderedDict()
             left_id = [0]
             right_id = [0]
 
-            def on_next_left(value):
-                subject = Subject()
+            def on_next_left(value: _TLeft) -> None:
+                subject: Subject[_TRight] = Subject()
 
                 with left.lock:
                     _id = left_id[0]
@@ -122,7 +124,7 @@ def group_join_(
                 )
             )
 
-            def send_right(value):
+            def send_right(value: _TRight) -> None:
                 with left.lock:
                     _id = right_id[0]
                     right_id[0] += 1
@@ -144,7 +146,7 @@ def group_join_(
                     observer.on_error(e)
                     return
 
-                def on_error(error):
+                def on_error(error: Exception):
                     with left.lock:
                         for left_value in left_map.values():
                             left_value.on_error(error)
@@ -159,7 +161,7 @@ def group_join_(
                     for left_value in left_map.values():
                         left_value.on_next(value)
 
-            def on_error_right(error):
+            def on_error_right(error: Exception) -> None:
                 for left_value in left_map.values():
                     left_value.on_error(error)
 

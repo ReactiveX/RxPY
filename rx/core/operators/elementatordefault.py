@@ -17,13 +17,14 @@ def element_at_or_default_(
             observer: abc.ObserverBase[_T],
             scheduler: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
-            i = [index]
+            index_ = index
 
             def on_next(x: _T) -> None:
+                nonlocal index_
                 found = False
                 with source.lock:
-                    if i[0]:
-                        i[0] -= 1
+                    if index_:
+                        index_ -= 1
                     else:
                         found = True
 

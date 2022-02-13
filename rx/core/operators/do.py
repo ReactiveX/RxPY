@@ -315,4 +315,13 @@ def do_finally(
     return partial
 
 
-__all__ = ["do_", "do_action_"]
+__all__ = [
+    "do_",
+    "do_action_",
+    "do_after_next",
+    "do_finally",
+    "do_on_dispose",
+    "do_on_subscribe",
+    "do_on_terminate",
+    "do_after_terminate",
+]

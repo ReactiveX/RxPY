@@ -40,7 +40,7 @@ def from_callback_(
 
                     observer.on_next(results)
                 else:
-                    if isinstance(results, list) and len(results) <= 1:
+                    if len(results) <= 1:
                         observer.on_next(*results)
                     else:
                         observer.on_next(results)

@@ -46,6 +46,8 @@ _T2 = TypeVar("_T2")
 _TKey = TypeVar("_TKey")
 _TState = TypeVar("_TState")
 _TValue = TypeVar("_TValue")
+_TRight = TypeVar("_TRight")
+_TLeft = TypeVar("_TLeft")
 
 _A = TypeVar("_A")
 _B = TypeVar("_B")
@@ -1537,10 +1539,10 @@ def group_by_until(
 
 
 def group_join(
-    right: Observable[_T2],
-    left_duration_mapper: Callable[[_T1], Observable[Any]],
-    right_duration_mapper: Callable[[_T2], Observable[Any]],
-) -> Callable[[Observable[_T1]], Observable[Tuple[_T1, _T2]]]:
+    right: Observable[_TRight],
+    left_duration_mapper: Callable[[_TLeft], Observable[Any]],
+    right_duration_mapper: Callable[[_TRight], Observable[Any]],
+) -> Callable[[Observable[_TLeft]], Observable[Tuple[_TLeft, Observable[_TRight]]]]:
     """Correlates the elements of two sequences based on overlapping
     durations, and groups the results.
 

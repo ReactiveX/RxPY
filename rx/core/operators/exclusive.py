@@ -53,7 +53,7 @@ def exclusive_() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
                         observer.on_next,
                         observer.on_error,
                         on_completed_inner,
-                        scheduler,
+                        scheduler=scheduler,
                     )
 
             def on_completed() -> None:
