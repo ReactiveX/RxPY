@@ -3694,7 +3694,7 @@ if TYPE_CHECKING:
 
 def time_interval(
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T]], Observable[TimeInterval[_T]]]:
+) -> Callable[[Observable[_T]], Observable["TimeInterval[_T]"]]:
     """Records the time interval between consecutive values in an
     observable sequence.
 
