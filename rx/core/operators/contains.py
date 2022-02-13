@@ -12,7 +12,10 @@ def contains_(
 ) -> Callable[[Observable[_T]], Observable[bool]]:
     comparer_ = comparer or default_comparer
 
-    filtering = ops.filter(lambda v: comparer_(v, value))
+    def predicate(v: _T) -> bool:
+        return comparer_(v, value)
+
+    filtering = ops.filter(predicate)
     something = ops.some()
 
     return pipe(filtering, something)
