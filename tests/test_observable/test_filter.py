@@ -1,10 +1,9 @@
 import unittest
+
 from rx import Observable
-
-from rx.testing import TestScheduler, ReactiveTest, is_prime
 from rx.disposable import SerialDisposable
-
 from rx.operators import filter, filter_indexed
+from rx.testing import ReactiveTest, TestScheduler, is_prime
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -51,7 +50,7 @@ class TestFilter(unittest.TestCase):
         )
 
         def create() -> Observable[int]:
-            def predicate(x):
+            def predicate(x: int) -> bool:
                 invoked[0] += 1
                 return is_prime(x)
 
@@ -160,7 +159,7 @@ class TestFilter(unittest.TestCase):
         )
 
         def create():
-            def predicate(x):
+            def predicate(x: int) -> bool:
                 invoked[0] += 1
                 return is_prime(x)
 
@@ -194,7 +193,7 @@ class TestFilter(unittest.TestCase):
         )
 
         def create():
-            def predicate(x):
+            def predicate(x: int) -> bool:
                 invoked[0] += 1
                 return is_prime(x)
 
@@ -235,7 +234,7 @@ class TestFilter(unittest.TestCase):
         )
 
         def create():
-            def predicate(x):
+            def predicate(x: int) -> bool:
                 invoked[0] += 1
                 if x > 5:
                     raise Exception(ex)
