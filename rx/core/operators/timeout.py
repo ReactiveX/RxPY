@@ -47,11 +47,6 @@ def timeout_(
         ) -> abc.DisposableBase:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
-            if isinstance(duetime, datetime):
-                scheduler_method = _scheduler.schedule_absolute
-            else:
-                scheduler_method = _scheduler.schedule_relative
-
             switched = [False]
             _id = [0]
 
@@ -71,7 +66,10 @@ def timeout_(
                             observer, scheduler=scheduler
                         )
 
-                timer.disposable = scheduler_method(duetime, action)
+                if isinstance(duetime, datetime):
+                    timer.disposable = _scheduler.schedule_absolute(duetime, action)
+                else:
+                    timer.disposable = _scheduler.schedule_relative(duetime, action)
 
             create_timer()
 

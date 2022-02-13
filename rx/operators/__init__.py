@@ -3181,9 +3181,19 @@ def subscribe_on(
     return subscribe_on_(scheduler)
 
 
+@overload
+def sum() -> Callable[[Observable[float]], Observable[float]]:
+    ...
+
+
+@overload
+def sum(key_mapper: Mapper[_T, float]) -> Callable[[Observable[_T]], Observable[float]]:
+    ...
+
+
 def sum(
-    key_mapper: Optional[Mapper[_T, int]] = None
-) -> Callable[[Observable[_T]], Observable[int]]:
+    key_mapper: Optional[Mapper[Any, float]] = None
+) -> Callable[[Observable[Any]], Observable[float]]:
     """Computes the sum of a sequence of values that are obtained by
     invoking an optional transform function on each element of the
     input sequence, else if not specified computes the sum on each item

@@ -33,15 +33,14 @@ def take_until_with_time_(
         ) -> abc.DisposableBase:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
-            if isinstance(end_time, datetime):
-                scheduler_method = _scheduler.schedule_absolute
-            else:
-                scheduler_method = _scheduler.schedule_relative
-
             def action(scheduler: abc.SchedulerBase, state: Any = None):
                 observer.on_completed()
 
-            task = scheduler_method(end_time, action)
+            if isinstance(end_time, datetime):
+                task = _scheduler.schedule_absolute(end_time, action)
+            else:
+                task = _scheduler.schedule_relative(end_time, action)
+
             return CompositeDisposable(
                 task, source.subscribe(observer, scheduler=scheduler_)
             )
