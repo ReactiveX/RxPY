@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Any, Callable, Optional, TypeVar, cast
 
 from rx import operators
@@ -6,16 +7,16 @@ from rx.core import Observable, typing
 _T = TypeVar("_T")
 
 
-class AverageValue(object):
-    def __init__(self, sum: float, count: int):
-        self.sum = sum
-        self.count = count
+@dataclass
+class AverageValue:
+    sum: float
+    count: int
 
 
 def average_(
     key_mapper: Optional[typing.Mapper[_T, float]] = None,
 ) -> Callable[[Observable[_T]], Observable[float]]:
-    def average(source: Observable[_T]) -> Observable[float]:
+    def average(source: Observable[Any]) -> Observable[float]:
         """Partially applied average operator.
 
         Computes the average of an observable sequence of values that
