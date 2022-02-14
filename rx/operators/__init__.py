@@ -3098,8 +3098,8 @@ def starmap(
 
 @overload
 def starmap_indexed(
-    mapper: Callable[[_A, _B, _C, int], _T]
-) -> Callable[[Observable[Tuple[_A, _B, _C]]], Observable[_T]]:
+    mapper: Callable[[_A, int], _T]
+) -> Callable[[Observable[_A]], Observable[_T]]:
     ...
 
 
@@ -3107,6 +3107,13 @@ def starmap_indexed(
 def starmap_indexed(
     mapper: Callable[[_A, _B, int], _T]
 ) -> Callable[[Observable[Tuple[_A, _B]]], Observable[_T]]:
+    ...
+
+
+@overload
+def starmap_indexed(
+    mapper: Callable[[_A, _B, _C, int], _T]
+) -> Callable[[Observable[Tuple[_A, _B, _C]]], Observable[_T]]:
     ...
 
 

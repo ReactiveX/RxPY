@@ -47,7 +47,7 @@ def multicast_(
 
     def multicast(
         source: Observable[_TSource],
-    ) -> Union[Observable[_TSource], ConnectableObservable[_TSource]]:
+    ) -> Union[Observable[_TResult], ConnectableObservable[_TSource]]:
         if subject_factory:
 
             def subscribe(
@@ -66,6 +66,9 @@ def multicast_(
                 return CompositeDisposable(subscription, connectable.connect(scheduler))
 
             return Observable(subscribe)
+
+        if not subject:
+            raise ValueError("multicast: Subject cannot be None")
         ret: ConnectableObservable[_TSource] = ConnectableObservable(source, subject)
         return ret
 
