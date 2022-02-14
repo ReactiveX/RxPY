@@ -2370,7 +2370,7 @@ def reduce(
 
 def reduce(
     accumulator: Accumulator[_TState, _T], seed: Union[_TState, Type[NotSet]] = NotSet
-) -> Callable[[Observable[_T]], Observable[Union[_T, _TState]]]:
+) -> Callable[[Observable[_T]], Observable[Any]]:
     """The reduce operator.
 
     Applies an accumulator function over an observable sequence,
