@@ -2013,13 +2013,35 @@ def min_by(
     return min_by_(key_mapper, comparer)
 
 
+@overload
+def multicast() -> Callable[[Observable[_T]], ConnectableObservable[_T]]:
+    ...
+
+
+@overload
+def multicast(
+    subject: abc.SubjectBase[_T],
+) -> Callable[[Observable[_T]], ConnectableObservable[_T]]:
+    ...
+
+
+@overload
+def multicast(
+    *,
+    subject_factory: Callable[[Optional[abc.SchedulerBase]], abc.SubjectBase[_T]],
+    mapper: Optional[Callable[[Observable[_T]], Observable[_T2]]] = None,
+) -> Callable[[Observable[_T]], Observable[_T2]]:
+    ...
+
+
 def multicast(
     subject: Optional[abc.SubjectBase[_T]] = None,
+    *,
     subject_factory: Optional[
         Callable[[Optional[abc.SchedulerBase]], abc.SubjectBase[_T]]
     ] = None,
-    mapper: Optional[Callable[[ConnectableObservable[_T]], Observable[_T]]] = None,
-) -> Callable[[Observable[_T]], Union[Observable[_T], ConnectableObservable[_T]]]:
+    mapper: Optional[Callable[[Observable[_T]], Observable[_T2]]] = None,
+) -> Callable[[Observable[_T]], Union[Observable[_T2], ConnectableObservable[_T]]]:
     """Multicasts the source sequence notifications through an
     instantiated subject into all uses of the sequence within a mapper
     function. Each subscription to the resulting sequence causes a
@@ -2051,7 +2073,7 @@ def multicast(
     """
     from rx.core.operators.multicast import multicast_
 
-    return multicast_(subject, subject_factory, mapper)
+    return multicast_(subject, subject_factory=subject_factory, mapper=mapper)
 
 
 def observe_on(

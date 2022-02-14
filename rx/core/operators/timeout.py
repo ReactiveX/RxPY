@@ -55,7 +55,7 @@ def timeout_(
             timer = SerialDisposable()
             subscription.disposable = original
 
-            def create_timer():
+            def create_timer() -> None:
                 my_id = _id[0]
 
                 def action(scheduler: abc.SchedulerBase, state: Any = None):
@@ -86,7 +86,7 @@ def timeout_(
                     _id[0] += 1
                     observer.on_error(error)
 
-            def on_completed():
+            def on_completed() -> None:
                 on_completed_wins = not switched[0]
                 if on_completed_wins:
                     _id[0] += 1

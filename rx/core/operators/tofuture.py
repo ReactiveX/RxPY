@@ -1,3 +1,4 @@
+import asyncio
 from asyncio import Future
 from typing import Callable, Optional, TypeVar, cast
 
@@ -11,7 +12,9 @@ def to_future_(
     future_ctor: Optional[Callable[[], "Future[_T]"]] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
 ) -> Callable[[Observable[_T]], "Future[_T]"]:
-    future_ctor_: Callable[[], "Future[_T]"] = future_ctor or (lambda: Future())
+    future_ctor_: Callable[[], "Future[_T]"] = (
+        future_ctor or asyncio.get_event_loop().create_future
+    )
     future: "Future[_T]" = future_ctor_()
 
     def to_future(source: Observable[_T]) -> "Future[_T]":
