@@ -2256,9 +2256,21 @@ def pluck_attr(prop: str) -> Callable[[Observable[Any]], Observable[Any]]:
     return pluck_attr_(prop)
 
 
+@overload
+def publish() -> Callable[[Observable[_T1]], ConnectableObservable[_T1]]:
+    ...
+
+
+@overload
 def publish(
-    mapper: Optional[Mapper[_T1, _T2]] = None,
-) -> Callable[[Observable[_T1]], ConnectableObservable[_T2]]:
+    mapper: Mapper[Observable[_T1], Observable[_T2]],
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    ...
+
+
+def publish(
+    mapper: Optional[Mapper[Observable[_T1], Observable[_T2]]] = None,
+) -> Callable[[Observable[_T1]], Union[Observable[_T2], ConnectableObservable[_T1]]]:
     """The `publish` operator.
 
     Returns an observable sequence that is the result of invoking the
@@ -2289,9 +2301,25 @@ def publish(
     return publish_(mapper)
 
 
+@overload
 def publish_value(
-    initial_value: _T1, mapper: Optional[Mapper[_T1, _T2]] = None
+    initial_value: _T1,
+) -> Callable[[Observable[_T1]], ConnectableObservable[_T1]]:
+    ...
+
+
+@overload
+def publish_value(
+    initial_value: _T1,
+    mapper: Mapper[Observable[_T1], Observable[_T2]],
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    ...
+
+
+def publish_value(
+    initial_value: _T1,
+    mapper: Optional[Mapper[Observable[_T1], Observable[_T2]]] = None,
+) -> Callable[[Observable[_T1]], Union[Observable[_T2], ConnectableObservable[_T1]]]:
     """Returns an observable sequence that is the result of invoking
     the mapper on a connectable observable sequence that shares a
     single subscription to the underlying sequence and starts with
@@ -2326,9 +2354,23 @@ def publish_value(
     return publish_value_(initial_value, mapper)
 
 
+@overload
+def reduce(
+    accumulator: Accumulator[_TState, _T]
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    ...
+
+
+@overload
+def reduce(
+    accumulator: Accumulator[_TState, _T], seed: _TState
+) -> Callable[[Observable[_T]], Observable[_TState]]:
+    ...
+
+
 def reduce(
     accumulator: Accumulator[_TState, _T], seed: Union[_TState, Type[NotSet]] = NotSet
-) -> Callable[[Observable[_T]], Observable[_TState]]:
+) -> Callable[[Observable[_T]], Observable[Union[_T, _TState]]]:
     """The reduce operator.
 
     Applies an accumulator function over an observable sequence,
@@ -2408,11 +2450,11 @@ def repeat(
 
 
 def replay(
-    mapper: Optional[Mapper[_T1, _T2]] = None,
+    mapper: Optional[Mapper[Observable[_T1], Observable[_T2]]] = None,
     buffer_size: Optional[int] = None,
     window: Optional[typing.RelativeTime] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T1]], Union[Observable[_T2], ConnectableObservable[_T2]]]:
+) -> Callable[[Observable[_T1]], Union[Observable[_T2], ConnectableObservable[_T1]]]:
     """The `replay` operator.
 
     Returns an observable sequence that is the result of invoking the

@@ -1,17 +1,19 @@
-from typing import Callable, Optional, TypeVar
+from typing import Callable, Optional, TypeVar, Union
 
 from rx import operators as ops
-from rx.core import ConnectableObservable, Observable, pipe
+from rx.core import ConnectableObservable, Observable, abc, pipe
 from rx.core.typing import Mapper
 from rx.subject import Subject
 
-_T = TypeVar("_T")
-_T2 = TypeVar("_T2")
+_TSource = TypeVar("_TSource")
+_TResult = TypeVar("_TResult")
 
 
 def publish_(
-    mapper: Optional[Mapper[_T, _T2]] = None,
-) -> Callable[[Observable[_T]], ConnectableObservable[_T2]]:
+    mapper: Optional[Mapper[Observable[_TSource], Observable[_TResult]]] = None,
+) -> Callable[
+    [Observable[_TSource]], Union[Observable[_TResult], ConnectableObservable[_TSource]]
+]:
     """Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single
     subscription to the underlying sequence. This operator is a
@@ -34,12 +36,17 @@ def publish_(
     """
 
     if mapper:
-        return pipe(ops.multicast(subject_factory=lambda _: Subject(), mapper=mapper))
 
-    return pipe(ops.multicast(subject=Subject()))
+        def factory(scheduler: Optional[abc.SchedulerBase] = None) -> Subject[_TSource]:
+            return Subject()
+
+        return ops.multicast(subject_factory=factory, mapper=mapper)
+
+    subject: Subject[_TSource] = Subject()
+    return ops.multicast(subject=subject)
 
 
-def share_() -> Callable[[Observable[_T]], Observable[_T]]:
+def share_() -> Callable[[Observable[_TSource]], Observable[_TSource]]:
     """Share a single subscription among multple observers.
 
     Returns a new Observable that multicasts (shares) the original
@@ -50,7 +57,10 @@ def share_() -> Callable[[Observable[_T]], Observable[_T]]:
 
     This is an alias for a composed publish() and ref_count().
     """
-    return pipe(publish_(), ops.ref_count())
+    return pipe(
+        ops.publish(),
+        ops.ref_count(),
+    )
 
 
 __all__ = ["publish_", "share_"]

@@ -39,7 +39,8 @@ def to_marbles(
                 diff = now - last
                 last = now
                 secs = scheduler.to_seconds(diff)
-                dashes = "-" * int((secs + timespan / 2.0) * (1.0 / timespan))
+                timespan_ = scheduler.to_seconds(timespan)
+                dashes = "-" * int((secs + timespan_ / 2.0) * (1.0 / timespan_))
                 result.append(dashes)
 
             def on_next(value: Any) -> None:

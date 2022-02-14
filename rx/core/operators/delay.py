@@ -1,8 +1,9 @@
-from datetime import datetime, timedelta
-from typing import Callable, Optional, TypeVar
+from datetime import datetime
+from typing import Any, Callable, List, Optional, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable, abc, typing
+from rx.core import Notification, Observable, abc, typing
+from rx.core.notification import OnError
 from rx.disposable import (
     CompositeDisposable,
     MultipleAssignmentDisposable,
@@ -11,13 +12,9 @@ from rx.disposable import (
 from rx.internal.constants import DELTA_ZERO
 from rx.scheduler import TimeoutScheduler
 
+from .timestamp import Timestamp
+
 _T = TypeVar("_T")
-
-
-class Timestamp(object):
-    def __init__(self, value, timestamp):
-        self.value = value
-        self.timestamp = timestamp
 
 
 def observable_delay_timespan(
@@ -38,19 +35,20 @@ def observable_delay_timespan(
             duetime = _scheduler.to_timedelta(duetime)
 
         cancelable = SerialDisposable()
-        exception = [None]
+        exception: Optional[Exception] = None
         active = [False]
         running = [False]
-        queue = []
+        queue: List[Timestamp[Notification[_T]]] = []
 
-        def on_next(notification):
+        def on_next(notification: Timestamp[Notification[_T]]) -> None:
+            nonlocal exception
             should_run = False
 
             with source.lock:
-                if notification.value.kind == "E":
+                if isinstance(notification.value, OnError):
                     del queue[:]
                     queue.append(notification)
-                    exception[0] = notification.value.exception
+                    exception = notification.value.exception
                     should_run = not running[0]
                 else:
                     queue.append(
@@ -63,14 +61,14 @@ def observable_delay_timespan(
                     active[0] = True
 
             if should_run:
-                if exception[0]:
-                    observer.on_error(exception[0])
+                if exception:
+                    observer.on_error(exception)
                 else:
                     mad = MultipleAssignmentDisposable()
                     cancelable.disposable = mad
 
-                    def action(scheduler, state):
-                        if exception[0]:
+                    def action(scheduler: abc.SchedulerBase, state: Any = None):
+                        if exception:
                             return
 
                         with source.lock:
@@ -91,12 +89,11 @@ def observable_delay_timespan(
                             if queue:
                                 should_continue = True
                                 diff = queue[0].timestamp - scheduler.now
-                                zero = DELTA_ZERO if isinstance(diff, timedelta) else 0
-                                recurse_duetime = max(zero, diff)
+                                recurse_duetime = max(DELTA_ZERO, diff)
                             else:
                                 active[0] = False
 
-                            ex = exception[0]
+                            ex = exception
                             running[0] = False
 
                         if ex:
@@ -108,9 +105,10 @@ def observable_delay_timespan(
 
                     mad.disposable = _scheduler.schedule_relative(duetime, action)
 
-        subscription = source.pipe(ops.materialize(), ops.timestamp()).subscribe(
-            on_next, scheduler=_scheduler
-        )
+        subscription = source.pipe(
+            ops.materialize(),
+            ops.timestamp(),
+        ).subscribe(on_next, scheduler=_scheduler)
 
         return CompositeDisposable(subscription, cancelable)
 

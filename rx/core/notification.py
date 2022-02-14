@@ -110,8 +110,8 @@ class OnNext(Notification[_T]):
 
         super(OnNext, self).__init__()
         self.value: _T = value
-        self.has_value = True
-        self.kind = "N"
+        self.has_value: bool = True
+        self.kind: str = "N"
 
     def _accept(
         self,

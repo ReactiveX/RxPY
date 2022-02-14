@@ -5,16 +5,18 @@ from rx.core import ConnectableObservable, Observable, abc, typing
 from rx.core.typing import Mapper
 from rx.subject import ReplaySubject
 
-_T1 = TypeVar("_T1")
-_T2 = TypeVar("_T2")
+_TSource = TypeVar("_TSource")
+_TResult = TypeVar("_TResult")
 
 
 def replay_(
-    mapper: Optional[Mapper[_T1, _T2]] = None,
+    mapper: Optional[Mapper[Observable[_TSource], Observable[_TResult]]] = None,
     buffer_size: Optional[int] = None,
     window: Optional[typing.RelativeTime] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T1]], Union[Observable[_T2], ConnectableObservable[_T2]]]:
+) -> Callable[
+    [Observable[_TSource]], Union[Observable[_TResult], ConnectableObservable[_TSource]]
+]:
     """Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single
     subscription to the underlying sequence replaying notifications
@@ -48,12 +50,14 @@ def replay_(
 
     if mapper:
 
-        def subject_factory(scheduler: abc.SchedulerBase) -> ReplaySubject[_T2]:
+        def subject_factory(
+            scheduler: Optional[abc.SchedulerBase] = None,
+        ) -> ReplaySubject[_TSource]:
             return ReplaySubject(buffer_size, window, scheduler)
 
         return ops.multicast(subject_factory=subject_factory, mapper=mapper)
-
-    return ops.multicast(ReplaySubject(buffer_size, window, scheduler))
+    rs: ReplaySubject[_TSource] = ReplaySubject(buffer_size, window, scheduler)
+    return ops.multicast(rs)
 
 
 __all__ = ["replay_"]

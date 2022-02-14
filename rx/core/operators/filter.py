@@ -72,13 +72,16 @@ def filter_indexed_(
 
             def on_next(value: _T):
                 nonlocal count
-                try:
-                    should_run = predicate_indexed(value, count)
-                except Exception as ex:  # pylint: disable=broad-except
-                    observer.on_error(ex)
-                    return
-                else:
-                    count += 1
+                should_run = True
+
+                if predicate_indexed:
+                    try:
+                        should_run = predicate_indexed(value, count)
+                    except Exception as ex:  # pylint: disable=broad-except
+                        observer.on_error(ex)
+                        return
+                    else:
+                        count += 1
 
                 if should_run:
                     observer.on_next(value)

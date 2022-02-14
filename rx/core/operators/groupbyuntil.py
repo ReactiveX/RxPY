@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Any, Callable, Optional, Type, TypeVar
+from typing import Any, Callable, Optional, Type, TypeVar, cast
 
 from rx import operators as ops
 from rx.core import GroupedObservable, Observable, abc
@@ -48,9 +48,9 @@ def group_by_until_(
     encountered.
     """
 
-    element_mapper = element_mapper or identity
+    element_mapper = element_mapper or cast(Mapper[_T, _TValue], identity)
 
-    default_subject_mapper: Callable[[], Subject[_T]] = lambda: Subject()
+    default_subject_mapper: Callable[[], Subject[_TValue]] = lambda: Subject()
     subject_mapper = subject_mapper or default_subject_mapper
 
     def group_by_until(
@@ -60,7 +60,7 @@ def group_by_until_(
             observer: abc.ObserverBase[GroupedObservable[_TKey, _TValue]],
             scheduler: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
-            writers: OrderedDict[_TKey, abc.ObserverBase[_TValue]] = OrderedDict()
+            writers: OrderedDict[_TKey, Subject[_TValue]] = OrderedDict()
             group_disposable = CompositeDisposable()
             ref_count_disposable = RefCountDisposable(group_disposable)
 

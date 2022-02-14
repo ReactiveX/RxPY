@@ -31,7 +31,10 @@ def partition_(
             predicate returns False.
         """
 
-        published = source.pipe(ops.publish(), ops.ref_count())
+        published = source.pipe(
+            ops.publish(),
+            ops.ref_count(),
+        )
         return [
             published.pipe(ops.filter(predicate)),
             published.pipe(ops.filter(lambda x: not predicate(x))),

@@ -11,7 +11,7 @@ _TState = TypeVar("_TState")
 
 def reduce_(
     accumulator: Accumulator[_TState, _T], seed: Union[_TState, Type[NotSet]] = NotSet
-) -> Callable[[Observable[_T]], Observable[_TState]]:
+) -> Callable[[Observable[_T]], Observable[Any]]:
     """Applies an accumulator function over an observable sequence,
     returning the result of the aggregation as a single element in the
     result sequence. The specified seed value is used as the initial
@@ -42,7 +42,10 @@ def reduce_(
             ops.last_or_default(default_value=seed_),
         )
 
-    return pipe(ops.scan(accumulator), ops.last())
+    return pipe(
+        ops.scan(accumulator),
+        ops.last(),
+    )
 
 
 __all__ = ["reduce_"]

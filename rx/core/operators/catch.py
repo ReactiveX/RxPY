@@ -67,13 +67,8 @@ def catch_(
         """
         if callable(handler):
             return catch_handler(source, handler)
-        elif isinstance(handler, abc.ObservableBase):
-            return rx.catch(source, handler)
         else:
-            raise TypeError(
-                "catch operator takes whether an Observable, "
-                "or a callable handler as argument."
-            )
+            return rx.catch(source, handler)
 
     return catch
 
