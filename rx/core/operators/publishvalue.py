@@ -1,7 +1,7 @@
-from typing import Callable, Optional, TypeVar, cast, Union
+from typing import Callable, Optional, TypeVar, Union, cast
 
 from rx import operators as ops
-from rx.core import Observable, abc, ConnectableObservable
+from rx.core import ConnectableObservable, Observable, abc
 from rx.core.typing import Mapper
 from rx.subject import BehaviorSubject
 
