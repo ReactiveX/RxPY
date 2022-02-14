@@ -1,7 +1,7 @@
-from typing import Any, Callable, Optional, TypeVar, cast
+from typing import Callable, Optional, TypeVar, cast
 
 from rx import operators as ops
-from rx.core import Observable, abc, pipe
+from rx.core import Observable, abc, pipe, typing
 from rx.core.typing import Mapper, MapperIndexed
 from rx.internal.basic import identity
 from rx.internal.utils import infinite
@@ -61,9 +61,12 @@ def map_indexed(
     def _identity(value: _T1, _: int) -> _T2:
         return cast(_T2, value)
 
-    _mapper_indexed = mapper_indexed or _identity
+    _mapper_indexed = mapper_indexed or cast(typing.MapperIndexed[_T1, _T2], _identity)
 
-    return pipe(ops.zip_with_iterable(infinite()), ops.starmap_indexed(_mapper_indexed))
+    return pipe(
+        ops.zip_with_iterable(infinite()),
+        ops.starmap_indexed(_mapper_indexed),
+    )
 
 
 __all__ = ["map", "map_indexed"]
