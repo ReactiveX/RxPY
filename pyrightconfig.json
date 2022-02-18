@@ -1,7 +1,12 @@
 {
-    "include": [
-        "rx"
-    ],
-    "typeCheckingMode": "strict",
-    "reportImportCycles": false
+  "include": [
+    "rx"
+  ],
+  "exclude": [
+    "tests"
+  ],
+  "reportImportCycles": false,
+  "reportMissingImports": false,
+  "pythonVersion": "3.9",
+  "typeCheckingMode": "basic"
 }
