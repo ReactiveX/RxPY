@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Optional, TypeVar
+from typing import Any, Callable, Optional, TypeVar
 
 from rx.core import Observable, abc, typing
 from rx.disposable import (

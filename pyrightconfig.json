@@ -1,0 +1,7 @@
+{
+    "include": [
+        "rx"
+    ],
+    "typeCheckingMode": "strict",
+    "reportImportCycles": false
+}

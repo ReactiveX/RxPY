@@ -37,13 +37,17 @@ class CurrentThreadScheduler(TrampolineScheduler):
         thread = current_thread()
         class_map = CurrentThreadScheduler._global.get(cls)
         if class_map is None:
-            class_map = WeakKeyDictionary()
-            CurrentThreadScheduler._global[cls] = class_map
+            class_map_: MutableMapping[
+                Thread, "CurrentThreadScheduler"
+            ] = WeakKeyDictionary()
+            CurrentThreadScheduler._global[cls] = class_map_
+        else:
+            class_map_ = class_map
         try:
-            self = class_map[thread]
+            self = class_map_[thread]
         except KeyError:
             self = CurrentThreadSchedulerSingleton()
-            class_map[thread] = self
+            class_map_[thread] = self
         return self
 
     # pylint: disable=super-init-not-called

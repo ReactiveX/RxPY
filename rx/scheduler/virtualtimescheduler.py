@@ -2,7 +2,7 @@ import logging
 import threading
 from abc import abstractmethod
 from datetime import datetime, timedelta
-from typing import Optional, TypeVar, Union
+from typing import Optional, TypeVar, Any
 
 from rx.core import abc, typing
 from rx.internal import ArgumentOutOfRangeException, PriorityQueue
@@ -114,7 +114,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
             self._queue.enqueue(si)
         return si.disposable
 
-    def start(self) -> None:
+    def start(self) -> Any:
         """Starts the virtual time scheduler."""
 
         with self._lock:

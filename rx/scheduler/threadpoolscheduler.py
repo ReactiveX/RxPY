@@ -1,5 +1,5 @@
 from concurrent.futures import Future, ThreadPoolExecutor
-from typing import Optional
+from typing import Optional, Any
 
 from rx.core import abc, typing
 
@@ -17,7 +17,7 @@ class ThreadPoolScheduler(NewThreadScheduler):
         ):
             self.executor: ThreadPoolExecutor = executor
             self.target: typing.StartableTarget = target
-            self.future: Optional[Future] = None
+            self.future: Optional["Future[Any]"] = None
 
         def start(self) -> None:
             self.future = self.executor.submit(self.target)

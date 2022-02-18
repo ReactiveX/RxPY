@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from concurrent.futures import Future
-from typing import TYPE_CHECKING, List, Optional, TypeVar
+from typing import List, Optional, TypeVar
 
 from rx.core import abc, typing
 from rx.disposable import CompositeDisposable, Disposable, SingleAssignmentDisposable
@@ -17,16 +17,6 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
     """A scheduler that schedules work via the asyncio mainloop. This is a
     subclass of AsyncIOScheduler which uses the threadsafe asyncio methods.
     """
-
-    def __init__(self, loop: asyncio.AbstractEventLoop) -> None:
-        """Create a new AsyncIOThreadSafeScheduler.
-
-        Args:
-            loop: Instance of asyncio event loop to use; typically, you would
-                get this by asyncio.get_event_loop()
-        """
-
-        super().__init__(loop)
 
     def schedule(
         self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None

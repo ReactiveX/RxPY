@@ -1,12 +1,9 @@
-from collections import namedtuple
 from contextlib import contextmanager
-from datetime import timedelta
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, NamedTuple
 from warnings import warn
 
 import rx
 from rx.core import Observable, typing
-from rx.core.abc.scheduler import SchedulerBase
 from rx.core.notification import Notification, OnError, OnNext
 from rx.core.observable.marbles import parse
 from rx.core.typing import Callable, RelativeTime
@@ -18,7 +15,23 @@ from .testscheduler import TestScheduler
 
 new_thread_scheduler = NewThreadScheduler()
 
-MarblesContext = namedtuple("MarblesContext", "start, cold, hot, exp")
+
+class MarblesContext(NamedTuple):
+    start: Callable[
+        [Union[Observable[Any], Callable[[], Observable[Any]]]], List[Recorded[Any]]
+    ]
+    cold: Callable[
+        [str, Optional[Dict[Union[str, float], Any]], Optional[Exception]],
+        Observable[Any],
+    ]
+    hot: Callable[
+        [str, Optional[Dict[Union[str, float], Any]], Optional[Exception]],
+        Observable[Any],
+    ]
+    exp: Callable[
+        [str, Optional[Dict[Union[str, float], Any]], Optional[Exception]],
+        List[Recorded[Any]],
+    ]
 
 
 @contextmanager

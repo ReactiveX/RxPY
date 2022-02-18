@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Callable, Optional, TypeVar, cast
 
 from rx.core import abc, typing
-from rx.core.abc.scheduler import ScheduledAction, SchedulerBase
+from rx.core.abc.scheduler import SchedulerBase
 from rx.disposable import Disposable, SingleAssignmentDisposable
 
 from .periodicscheduler import PeriodicScheduler
