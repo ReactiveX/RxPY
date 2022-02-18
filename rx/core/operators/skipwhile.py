@@ -1,4 +1,4 @@
-from typing import Callable, Optional, TypeVar, Tuple
+from typing import Callable, Optional, Tuple, TypeVar
 
 from rx import operators as ops
 from rx.core import Observable, abc, pipe, typing

@@ -7,7 +7,7 @@ from warnings import warn
 import rx
 from rx.core import Observable, typing
 from rx.core.abc.scheduler import SchedulerBase
-from rx.core.notification import Notification, OnNext, OnError
+from rx.core.notification import Notification, OnError, OnNext
 from rx.core.observable.marbles import parse
 from rx.core.typing import Callable, RelativeTime
 from rx.scheduler import NewThreadScheduler
