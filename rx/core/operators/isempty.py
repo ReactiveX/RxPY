@@ -12,7 +12,13 @@ def is_empty_() -> Callable[[Observable[Any]], Observable[bool]]:
         determining whether the source sequence is empty.
     """
 
-    return pipe(ops.some(), ops.map(lambda b: not b))
+    def mapper(b: bool) -> bool:
+        return not b
+
+    return pipe(
+        ops.some(),
+        ops.map(mapper),
+    )
 
 
 __all__ = ["is_empty_"]

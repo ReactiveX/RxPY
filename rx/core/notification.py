@@ -125,7 +125,7 @@ class OnNext(Notification[_T]):
         return observer.on_next(self.value)
 
     def __str__(self) -> str:
-        val = self.value
+        val: Any = self.value
         if isinstance(val, int):
             val = float(val)
         return "OnNext(%s)" % str(val)
@@ -138,7 +138,9 @@ class OnError(Notification[_T]):
         """Constructs a notification of an exception."""
 
         super(OnError, self).__init__()
-        self.exception: Union[Exception, str] = error
+        self.exception: Exception = (
+            error if isinstance(error, Exception) else Exception(error)
+        )
         self.kind = "E"
 
     def _accept(

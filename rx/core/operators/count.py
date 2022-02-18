@@ -12,8 +12,10 @@ def count_(
 ) -> Callable[[Observable[_T]], Observable[int]]:
 
     if predicate:
-        filtering = ops.filter(predicate)
-        return pipe(filtering, ops.count())
+        return pipe(
+            ops.filter(predicate),
+            ops.count(),
+        )
 
     def reducer(n: int, _: _T) -> int:
         return n + 1

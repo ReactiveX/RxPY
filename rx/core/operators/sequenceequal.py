@@ -12,9 +12,8 @@ def sequence_equal_(
     second: Union[Observable[_T], Iterable[_T]],
     comparer: Optional[typing.Comparer[_T]] = None,
 ) -> Callable[[Observable[_T]], Observable[bool]]:
-    comparer = comparer or default_comparer
-    if isinstance(second, Iterable):
-        second = rx.from_iterable(second)
+    comparer_ = comparer or default_comparer
+    second_ = rx.from_iterable(second) if isinstance(second, Iterable) else second
 
     def sequence_equal(source: Observable[_T]) -> Observable[bool]:
         """Determines whether two sequences are equal by comparing the
@@ -50,7 +49,7 @@ def sequence_equal_(
                 if len(qr) > 0:
                     v = qr.pop(0)
                     try:
-                        equal = comparer(v, x)
+                        equal = comparer_(v, x)
                     except Exception as e:
                         observer.on_error(e)
                         return
@@ -79,7 +78,7 @@ def sequence_equal_(
                 if len(ql) > 0:
                     v = ql.pop(0)
                     try:
-                        equal = comparer(v, x)
+                        equal = comparer_(v, x)
                     except Exception as exception:
                         observer.on_error(exception)
                         return
@@ -107,7 +106,7 @@ def sequence_equal_(
             subscription1 = first.subscribe(
                 on_next1, observer.on_error, on_completed1, scheduler=scheduler
             )
-            subscription2 = second.subscribe(
+            subscription2 = second_.subscribe(
                 on_next2, observer.on_error, on_completed2, scheduler=scheduler
             )
             return CompositeDisposable(subscription1, subscription2)

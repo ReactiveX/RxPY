@@ -35,10 +35,9 @@ def window_with_count_(
     if count <= 0:
         raise ArgumentOutOfRangeException()
 
-    if skip is None:
-        skip = count
+    skip_ = skip if skip is not None else count
 
-    if skip <= 0:
+    if skip_ <= 0:
         raise ArgumentOutOfRangeException()
 
     def window_with_count(source: Observable[_T]) -> Observable[Observable[_T]]:
@@ -63,12 +62,12 @@ def window_with_count_(
                     item.on_next(x)
 
                 c = n[0] - count + 1
-                if c >= 0 and c % skip == 0:
+                if c >= 0 and c % skip_ == 0:
                     s = q.pop(0)
                     s.on_completed()
 
                 n[0] += 1
-                if (n[0] % skip) == 0:
+                if (n[0] % skip_) == 0:
                     create_window()
 
             def on_error(exception: Exception) -> None:

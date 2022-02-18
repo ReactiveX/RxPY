@@ -13,8 +13,8 @@ def distinct_until_changed_(
     comparer: Optional[Comparer[_TKey]] = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
 
-    key_mapper = key_mapper or cast(Callable[[_T], _TKey], identity)
-    comparer = comparer or default_comparer
+    key_mapper_ = key_mapper or cast(Callable[[_T], _TKey], identity)
+    comparer_ = comparer or default_comparer
 
     def distinct_until_changed(source: Observable[_T]) -> Observable[_T]:
         """Returns an observable sequence that contains only distinct
@@ -51,14 +51,14 @@ def distinct_until_changed_(
                 nonlocal has_current_key, current_key
                 comparer_equals = False
                 try:
-                    key = key_mapper(value)
+                    key = key_mapper_(value)
                 except Exception as exception:  # pylint: disable=broad-except
                     observer.on_error(exception)
                     return
 
                 if has_current_key:
                     try:
-                        comparer_equals = comparer(current_key, key)
+                        comparer_equals = comparer_(current_key, key)
                     except Exception as exception:  # pylint: disable=broad-except
                         observer.on_error(exception)
                         return

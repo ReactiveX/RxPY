@@ -1,7 +1,6 @@
-from typing import TYPE_CHECKING, Any, Generic, Optional, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, Union, cast
 
-from rx.core import Notification, typing
-from rx.internal.basic import default_comparer
+from rx.core import Notification
 
 if TYPE_CHECKING:
     from .reactivetest import OnErrorPredicate, OnNextPredicate
@@ -15,20 +14,21 @@ class Recorded(Generic[_T]):
         self,
         time: int,
         value: Union[Notification[_T], "OnNextPredicate[_T]", "OnErrorPredicate[_T]"],
-        comparer: Optional[typing.Comparer[_T]] = None,
+        # comparer: Optional[typing.Comparer[_T]] = None,
     ):
         self.time = time
         self.value = value
-        self.comparer = comparer or default_comparer
+        # self.comparer = comparer or default_comparer
 
     def __eq__(self, other: Any) -> bool:
         """Returns true if a recorded value matches another recorded value"""
 
         if isinstance(other, Recorded):
-            time_match = self.time == other.time
-            return time_match and self.comparer(
-                self.value, cast(Recorded[_T], other).value
-            )
+            other_ = cast(Recorded[_T], other)
+            time_match = self.time == other_.time
+            if not time_match:
+                return False
+            return self.value == other_.value
 
         return False
 

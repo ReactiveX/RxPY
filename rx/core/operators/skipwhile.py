@@ -1,4 +1,4 @@
-from typing import Callable, Optional, TypeVar
+from typing import Callable, Optional, TypeVar, Tuple
 
 from rx import operators as ops
 from rx.core import Observable, abc, pipe, typing
@@ -58,10 +58,19 @@ def skip_while_(
 def skip_while_indexed_(
     predicate: typing.PredicateIndexed[_T],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
+    def indexer(x: _T, i: int) -> Tuple[_T, int]:
+        return (x, i)
+
+    def skipper(x: Tuple[_T, int]) -> bool:
+        return predicate(*x)
+
+    def mapper(x: Tuple[_T, int]) -> _T:
+        return x[0]
+
     return pipe(
-        ops.map_indexed(lambda x, i: (x, i)),
-        ops.skip_while(lambda x: predicate(*x)),
-        ops.map(lambda x: x[0]),
+        ops.map_indexed(indexer),
+        ops.skip_while(skipper),
+        ops.map(mapper),
     )
 
 

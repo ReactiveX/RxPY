@@ -41,6 +41,8 @@ class ColdObservable(Observable[_T]):
 
         for message in self.messages:
             notification = message.value
+            if not isinstance(notification, Notification):
+                raise ValueError("Must be notification")
 
             # Don't make closures within a loop
             action = get_action(notification)
@@ -49,7 +51,7 @@ class ColdObservable(Observable[_T]):
         def dispose() -> None:
             start = self.subscriptions[index].subscribe
             end = self.scheduler.to_seconds(self.scheduler.now)
-            self.subscriptions[index] = Subscription(start, end)
+            self.subscriptions[index] = Subscription(start, int(end))
             disp.dispose()
 
         return Disposable(dispose)

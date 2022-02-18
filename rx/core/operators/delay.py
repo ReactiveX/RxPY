@@ -30,9 +30,9 @@ def observable_delay_timespan(
         _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
         if isinstance(duetime, datetime):
-            duetime = _scheduler.to_datetime(duetime) - _scheduler.now
+            duetime_ = _scheduler.to_datetime(duetime) - _scheduler.now
         else:
-            duetime = _scheduler.to_timedelta(duetime)
+            duetime_ = _scheduler.to_timedelta(duetime)
 
         cancelable = SerialDisposable()
         exception: Optional[Exception] = None
@@ -54,7 +54,7 @@ def observable_delay_timespan(
                     queue.append(
                         Timestamp(
                             value=notification.value,
-                            timestamp=notification.timestamp + duetime,
+                            timestamp=notification.timestamp + duetime_,
                         )
                     )
                     should_run = not active[0]
@@ -103,7 +103,7 @@ def observable_delay_timespan(
                                 recurse_duetime, action
                             )
 
-                    mad.disposable = _scheduler.schedule_relative(duetime, action)
+                    mad.disposable = _scheduler.schedule_relative(duetime_, action)
 
         subscription = source.pipe(
             ops.materialize(),

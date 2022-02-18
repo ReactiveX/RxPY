@@ -34,6 +34,8 @@ class HotObservable(Observable[_T]):
 
         for message in self.messages:
             notification = message.value
+            if not isinstance(notification, Notification):
+                raise ValueError("Must be notification")
 
             # Warning: Don't make closures within a loop
             action = get_action(notification)

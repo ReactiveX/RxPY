@@ -70,7 +70,7 @@ class TestScan(unittest.TestCase):
         assert len(results) == 1
         assert (
             results[0].value.kind == "E"
-            and results[0].value.exception == ex
+            and str(results[0].value.exception) == ex
             and results[0].time == 250
         )
 
@@ -175,7 +175,7 @@ class TestScan(unittest.TestCase):
         assert (
             results[0].value.kind == "E"
             and results[0].time == 250
-            and results[0].value.exception == ex
+            and str(results[0].value.exception) == ex
         )
 
     def test_scan_noseed_somedata(self):

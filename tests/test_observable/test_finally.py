@@ -20,6 +20,7 @@ class TestFinally(unittest.TestCase):
         def action():
             invasserte_count[0] += 1
             return invasserte_count
+
         some_observable = rx.empty().pipe(ops.finally_action(action))
 
         d = some_observable.subscribe()
@@ -36,16 +37,19 @@ class TestFinally(unittest.TestCase):
             def action():
                 invasserted[0] = True
                 return invasserted[0]
+
             return xs.pipe(ops.finally_action(action))
 
         results = scheduler.start(create).messages
         self.assertEqual(1, len(results))
-        assert(results[0].value.kind == 'C' and results[0].time == 250)
-        assert(invasserted[0])
+        assert results[0].value.kind == "C" and results[0].time == 250
+        assert invasserted[0]
 
     def test_finally_return(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1), on_next(210, 2), on_completed(250)
+        )
         invasserted = [False]
 
         def create():
@@ -57,12 +61,16 @@ class TestFinally(unittest.TestCase):
 
         results = scheduler.start(create).messages
         self.assertEqual(2, len(results))
-        assert(results[0].value.kind == 'N' and results[0].time == 210 and results[0].value.value == 2)
-        assert(results[1].value.kind == 'C' and results[1].time == 250)
-        assert(invasserted[0])
+        assert (
+            results[0].value.kind == "N"
+            and results[0].time == 210
+            and results[0].value.value == 2
+        )
+        assert results[1].value.kind == "C" and results[1].time == 250
+        assert invasserted[0]
 
     def test_finally_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
         invasserted = [False]
@@ -76,5 +84,9 @@ class TestFinally(unittest.TestCase):
 
         results = scheduler.start(create).messages
         self.assertEqual(1, len(results))
-        assert(results[0].value.kind == 'E' and results[0].time == 250 and results[0].value.exception == ex)
-        assert(invasserted[0])
+        assert (
+            results[0].value.kind == "E"
+            and results[0].time == 250
+            and str(results[0].value.exception) == ex
+        )
+        assert invasserted[0]

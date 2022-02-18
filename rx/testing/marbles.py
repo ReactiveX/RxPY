@@ -1,11 +1,13 @@
 from collections import namedtuple
 from contextlib import contextmanager
+from datetime import timedelta
 from typing import Any, Dict, List, Optional, Tuple, Union
 from warnings import warn
 
 import rx
-from rx.core import Observable
-from rx.core.notification import Notification
+from rx.core import Observable, typing
+from rx.core.abc.scheduler import SchedulerBase
+from rx.core.notification import Notification, OnNext, OnError
 from rx.core.observable.marbles import parse
 from rx.core.typing import Callable, RelativeTime
 from rx.scheduler import NewThreadScheduler
@@ -153,7 +155,7 @@ def marbles_testing(timespan: RelativeTime = 1.0):
 
 
 def messages_to_records(
-    messages: List[Tuple[RelativeTime, Notification[Any]]]
+    messages: List[Tuple[typing.RelativeTime, Notification[Any]]]
 ) -> List[Recorded[Any]]:
     """
     Helper function to convert messages returned by parse() to a list of
@@ -161,16 +163,19 @@ def messages_to_records(
     """
     records: List[Recorded[Any]] = []
 
-    dispatcher: Dict[str, Callable[[int, Notification[Any]], Recorded[Any]]] = {
-        "N": lambda t, n: ReactiveTest.on_next(t, n.value),
-        "E": lambda t, n: ReactiveTest.on_error(t, n.exception),
-        "C": lambda t, n: ReactiveTest.on_completed(t),
-    }
-
     for message in messages:
         time, notification = message
-        kind = notification.kind
-        record = dispatcher[kind](time, notification)
+        if isinstance(time, float):
+            time_ = int(time)
+        else:
+            time_ = time.microseconds // 1000
+
+        if isinstance(notification, OnNext):
+            record = ReactiveTest.on_next(time_, notification.value)
+        elif isinstance(notification, OnError):
+            record = ReactiveTest.on_error(time_, notification.exception)
+        else:
+            record = ReactiveTest.on_completed(time_)
         records.append(record)
 
     return records

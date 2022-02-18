@@ -48,10 +48,10 @@ def group_by_until_(
     encountered.
     """
 
-    element_mapper = element_mapper or cast(Mapper[_T, _TValue], identity)
+    element_mapper_ = element_mapper or cast(Mapper[_T, _TValue], identity)
 
     default_subject_mapper: Callable[[], Subject[_TValue]] = lambda: Subject()
-    subject_mapper = subject_mapper or default_subject_mapper
+    subject_mapper_ = subject_mapper or default_subject_mapper
 
     def group_by_until(
         source: Observable[_T],
@@ -81,7 +81,7 @@ def group_by_until_(
                 writer = writers.get(key)
                 if not writer:
                     try:
-                        writer = subject_mapper()
+                        writer = subject_mapper_()
                     except Exception as e:
                         for wrt in writers.values():
                             wrt.on_error(e)
@@ -135,7 +135,7 @@ def group_by_until_(
                     )
 
                 try:
-                    element = element_mapper(x)
+                    element = element_mapper_(x)
                 except Exception as error:
                     for wrt in writers.values():
                         wrt.on_error(error)

@@ -140,7 +140,7 @@ def test_throw_ctor_and_props():
     n = OnError(e)
     assert "E" == n.kind
     assert not n.has_value
-    assert e == n.exception
+    assert e == str(n.exception)
 
 
 def test_throw_equality():
@@ -177,7 +177,7 @@ class CheckOnErrorObserver(ObserverBase[Any]):
         raise NotImplementedError()
 
     def on_error(self, error: Exception) -> None:
-        self.error = error
+        self.error = str(error)
 
     def on_completed(self) -> None:
         raise NotImplementedError()

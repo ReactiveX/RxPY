@@ -8,12 +8,17 @@ _T = TypeVar("_T")
 
 
 def all_(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]]:
+    def filter(v: _T):
+        return not predicate(v)
 
-    filtering = ops.filter(lambda v: not predicate(v))
-    mapping = ops.map(lambda b: not b)
-    some = ops.some()
+    def mapping(b: bool) -> bool:
+        return not b
 
-    return pipe(filtering, some, mapping)
+    return pipe(
+        ops.filter(filter),
+        ops.some(),
+        ops.map(mapping),
+    )
 
 
 __all__ = ["all_"]
