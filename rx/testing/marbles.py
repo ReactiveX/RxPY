@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Any, Dict, List, Optional, Tuple, Union, NamedTuple
+from typing import Any, Dict, List, NamedTuple, Optional, Tuple, Union
 from warnings import warn
 
 import rx

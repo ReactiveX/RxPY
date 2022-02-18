@@ -2,7 +2,7 @@ import logging
 import threading
 from abc import abstractmethod
 from datetime import datetime, timedelta
-from typing import Optional, TypeVar, Any
+from typing import Any, Optional, TypeVar
 
 from rx.core import abc, typing
 from rx.internal import ArgumentOutOfRangeException, PriorityQueue

@@ -1,6 +1,6 @@
+from .basic import default_comparer, default_error, noop
 from .concurrency import default_thread_factory, synchronized
 from .constants import DELTA_ZERO, UTC_ZERO
-from .basic import default_comparer, default_error, noop
 from .exceptions import (
     ArgumentOutOfRangeException,
     DisposedException,

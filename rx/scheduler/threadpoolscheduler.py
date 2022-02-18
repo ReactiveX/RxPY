@@ -1,5 +1,5 @@
 from concurrent.futures import Future, ThreadPoolExecutor
-from typing import Optional, Any
+from typing import Any, Optional
 
 from rx.core import abc, typing
 
