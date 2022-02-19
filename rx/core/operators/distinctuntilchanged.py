@@ -45,7 +45,7 @@ def distinct_until_changed_(
             scheduler: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
             has_current_key = False
-            current_key: Optional[_TKey] = None
+            current_key: _TKey = cast(_TKey, None)
 
             def on_next(value: _T) -> None:
                 nonlocal has_current_key, current_key

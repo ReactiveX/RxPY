@@ -15,10 +15,10 @@ def contains_(
     def predicate(v: _T) -> bool:
         return comparer_(v, value)
 
-    filtering = ops.filter(predicate)
-    something = ops.some()
-
-    return pipe(filtering, something)
+    return pipe(
+        ops.filter(predicate),
+        ops.some(),
+    )
 
 
 __all__ = ["contains_"]

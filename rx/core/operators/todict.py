@@ -35,13 +35,14 @@ def to_dict_(
                     observer.on_error(ex)
                     return
 
-                element = x
                 if element_mapper:
                     try:
                         element = element_mapper(x)
                     except Exception as ex:  # pylint: disable=broad-except
                         observer.on_error(ex)
                         return
+                else:
+                    element = cast(_TValue, x)
 
                 m[key] = cast(_TValue, element)
 

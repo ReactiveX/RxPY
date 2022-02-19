@@ -45,12 +45,6 @@ class TestScheduler(VirtualTimeScheduler):
         duetime = duetime if isinstance(duetime, float) else self.to_seconds(duetime)
         return super().schedule_absolute(duetime, action, state)
 
-    @classmethod
-    def add(cls, absolute, relative):
-        """Adds a relative virtual time to an absolute virtual time value"""
-
-        return absolute + relative
-
     def start(
         self,
         create: Optional[Callable[[], Observable[_T]]] = None,
@@ -78,34 +72,35 @@ class TestScheduler(VirtualTimeScheduler):
         """
 
         # Defaults
-        create = create or rx.never
         created = created or ReactiveTest.created
         subscribed = subscribed or ReactiveTest.subscribed
         disposed = disposed or ReactiveTest.disposed
 
         observer = self.create_observer()
-        subscription: List[Optional[abc.DisposableBase]] = [None]
-        source: List[Optional[abc.ObservableBase[_T]]] = [None]
+        subscription: Optional[abc.DisposableBase] = None
+        source: Optional[abc.ObservableBase[_T]] = None
 
         def action_create(scheduler: abc.SchedulerBase, state: Any = None):
             """Called at create time. Defaults to 100"""
-            source[0] = create()
+            nonlocal source
+            source = create() if create is not None else rx.never()
             return Disposable()
 
         self.schedule_absolute(created, action_create)
 
         def action_subscribe(scheduler: abc.SchedulerBase, state: Any = None):
             """Called at subscribe time. Defaults to 200"""
-            assert source[0]
-            subscription[0] = source[0].subscribe(observer, scheduler=scheduler)
+            nonlocal subscription
+            if source:
+                subscription = source.subscribe(observer, scheduler=scheduler)
             return Disposable()
 
         self.schedule_absolute(subscribed, action_subscribe)
 
         def action_dispose(scheduler: abc.SchedulerBase, state: Any = None):
             """Called at dispose time. Defaults to 1000"""
-            assert subscription[0]
-            subscription[0].dispose()
+            if subscription:
+                subscription.dispose()
             return Disposable()
 
         self.schedule_absolute(disposed, action_dispose)

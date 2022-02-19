@@ -101,9 +101,10 @@ def marbles_testing(timespan: RelativeTime = 1.0):
         check()
 
         if isinstance(create, Observable):
+            create_ = create
 
             def default_create() -> Observable[Any]:
-                return create
+                return create_
 
             create_function = default_create
         else:

@@ -10,7 +10,9 @@ from rx.internal.utils import infinite
 _T = TypeVar("_T")
 
 
-def while_do_(condition: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
+def while_do_(
+    condition: Predicate[Observable[_T]],
+) -> Callable[[Observable[_T]], Observable[_T]]:
     def while_do(source: Union[Observable[_T], "Future[_T]"]) -> Observable[_T]:
         """Repeats source as long as condition holds emulating a while
         loop.

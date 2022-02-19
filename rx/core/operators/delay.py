@@ -85,7 +85,7 @@ def observable_delay_timespan(
                                     break
 
                             should_continue = False
-                            recurse_duetime = 0
+                            recurse_duetime: typing.RelativeTime = 0
                             if queue:
                                 should_continue = True
                                 diff = queue[0].timestamp - scheduler.now

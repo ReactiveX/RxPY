@@ -38,8 +38,8 @@ def timeout_with_mapper_(
     of a timeout.
     """
 
-    first_timeout = first_timeout or rx.never()
-    other = other or rx.throw(Exception("Timeout"))
+    first_timeout_ = first_timeout or rx.never()
+    other_ = other or rx.throw(Exception("Timeout"))
 
     def timeout_with_mapper(source: Observable[_T]) -> Observable[_T]:
         def subscribe(
@@ -66,7 +66,7 @@ def timeout_with_mapper_(
 
                 def on_next(x: Any) -> None:
                     if timer_wins():
-                        subscription.disposable = other.subscribe(
+                        subscription.disposable = other_.subscribe(
                             observer, scheduler=scheduler
                         )
 
@@ -78,13 +78,13 @@ def timeout_with_mapper_(
 
                 def on_completed() -> None:
                     if timer_wins():
-                        subscription.disposable = other.subscribe(observer)
+                        subscription.disposable = other_.subscribe(observer)
 
                 d.disposable = timeout.subscribe(
                     on_next, on_error, on_completed, scheduler=scheduler
                 )
 
-            set_timer(first_timeout)
+            set_timer(first_timeout_)
 
             def observer_wins():
                 res = not switched

@@ -15,7 +15,7 @@ def amb_(
     if isinstance(right_source, Future):
         obs: Observable[_T] = from_future(right_source)
     else:
-        obs: Observable[_T] = right_source
+        obs = right_source
 
     def amb(left_source: Observable[_T]) -> Observable[_T]:
         def subscribe(

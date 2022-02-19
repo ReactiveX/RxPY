@@ -36,11 +36,11 @@ def timestamp_(
 
         def factory(scheduler_: Optional[abc.SchedulerBase] = None):
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
-            mapper = operators.map(
-                lambda value: Timestamp(value=value, timestamp=_scheduler.now)
-            )
 
-            return source.pipe(mapper)
+            def mapper(value: _T) -> Timestamp[_T]:
+                return Timestamp(value=value, timestamp=_scheduler.now)
+
+            return source.pipe(operators.map(mapper))
 
         return defer(factory)
 

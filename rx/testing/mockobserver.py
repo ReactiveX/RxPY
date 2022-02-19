@@ -11,7 +11,7 @@ _T = TypeVar("_T")
 
 class MockObserver(abc.ObserverBase[_T]):
     def __init__(self, scheduler: VirtualTimeScheduler) -> None:
-        self.scheduler: VirtualTimeScheduler = scheduler
+        self.scheduler = scheduler
         self.messages: List[Recorded[_T]] = []
 
     def on_next(self, value: _T) -> None:

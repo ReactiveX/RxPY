@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from datetime import datetime
 from typing import Optional, TypeVar
 
@@ -59,62 +58,3 @@ class PeriodicScheduler(Scheduler, abc.PeriodicSchedulerBase):
 
         disp.disposable = self.schedule_relative(period, periodic, state=state)
         return disp
-
-    @abstractmethod
-    def schedule(
-        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
-    ) -> abc.DisposableBase:
-        """Schedules an action to be executed.
-
-        Args:
-            action: Action to be executed.
-            state: [Optional] state to be given to the action function.
-
-        Returns:
-            The disposable object used to cancel the scheduled action
-            (best effort).
-        """
-
-        return NotImplemented
-
-    @abstractmethod
-    def schedule_relative(
-        self,
-        duetime: typing.RelativeTime,
-        action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
-    ) -> abc.DisposableBase:
-        """Schedules an action to be executed after duetime.
-
-        Args:
-            duetime: Relative time after which to execute the action.
-            action: Action to be executed.
-            state: [Optional] state to be given to the action function.
-
-        Returns:
-            The disposable object used to cancel the scheduled action
-            (best effort).
-        """
-
-        return NotImplemented
-
-    @abstractmethod
-    def schedule_absolute(
-        self,
-        duetime: typing.AbsoluteTime,
-        action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
-    ) -> abc.DisposableBase:
-        """Schedules an action to be executed at duetime.
-
-        Args:
-            duetime: Absolute time at which to execute the action.
-            action: Action to be executed.
-            state: [Optional] state to be given to the action function.
-
-        Returns:
-            The disposable object used to cancel the scheduled action
-            (best effort).
-        """
-
-        return NotImplemented

@@ -862,7 +862,9 @@ def do_action(
     return do_action_(on_next, on_error, on_completed)
 
 
-def do_while(condition: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
+def do_while(
+    condition: Predicate[Observable[_T]],
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Repeats source as long as condition holds emulating a do while
     loop.
 
@@ -3891,7 +3893,9 @@ def to_set() -> Callable[[Observable[_T]], Observable[Set[_T]]]:
     return to_set_()
 
 
-def while_do(condition: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
+def while_do(
+    condition: Predicate[Observable[_T]],
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Repeats source as long as condition holds emulating a while
     loop.
 

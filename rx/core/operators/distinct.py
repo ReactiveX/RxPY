@@ -32,7 +32,7 @@ def distinct_(
     key_mapper: Optional[typing.Mapper[_T, _TKey]] = None,
     comparer: Optional[typing.Comparer[_TKey]] = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
-    comparer = comparer or default_comparer
+    comparer_ = comparer or default_comparer
 
     def distinct(source: Observable[_T]) -> Observable[_T]:
         """Returns an observable sequence that contains only distinct
@@ -57,7 +57,7 @@ def distinct_(
             observer: abc.ObserverBase[_T],
             scheduler: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
-            hashset = HashSet(comparer)
+            hashset = HashSet(comparer_)
 
             def on_next(x: _T) -> None:
                 key = cast(_TKey, x)

@@ -1,6 +1,5 @@
 import logging
 import threading
-from abc import abstractmethod
 from datetime import datetime, timedelta
 from typing import Any, Optional, TypeVar
 
@@ -87,7 +86,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
             (best effort).
         """
 
-        time: typing.AbsoluteTime = self.add(self._clock, self.to_seconds(duetime))
+        time: typing.AbsoluteTime = self.add(self._clock, duetime)
         return self.schedule_absolute(time, action, state=state)
 
     def schedule_absolute(
@@ -235,7 +234,6 @@ class VirtualTimeScheduler(PeriodicScheduler):
                 self._clock = self.to_seconds(dt)
 
     @classmethod
-    @abstractmethod
     def add(
         cls, absolute: typing.AbsoluteTime, relative: typing.RelativeTime
     ) -> typing.AbsoluteTime:
@@ -248,4 +246,5 @@ class VirtualTimeScheduler(PeriodicScheduler):
         Returns:
             The resulting absolute virtual time sum value.
         """
-        raise NotImplementedError
+
+        return cls.to_datetime(absolute) + cls.to_timedelta(relative)

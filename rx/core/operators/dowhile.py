@@ -7,7 +7,7 @@ _T = TypeVar("_T")
 
 
 def do_while_(
-    condition: Callable[[_T], bool]
+    condition: Callable[[Observable[_T]], bool]
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Repeats source as long as condition holds emulating a do while
     loop.
@@ -22,7 +22,13 @@ def do_while_(
     """
 
     def do_while(source: Observable[_T]) -> Observable[_T]:
-        return source.pipe(ops.concat(source.pipe(ops.while_do(condition))))
+        return source.pipe(
+            ops.concat(
+                source.pipe(
+                    ops.while_do(condition),
+                ),
+            )
+        )
 
     return do_while
 

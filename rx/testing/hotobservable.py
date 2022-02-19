@@ -17,7 +17,7 @@ class HotObservable(Observable[_T]):
     ) -> None:
         super().__init__()
 
-        self.scheduler: VirtualTimeScheduler = scheduler
+        self.scheduler = scheduler
         self.messages = messages
         self.subscriptions: List[Subscription] = []
         self.observers: List[abc.ObserverBase[_T]] = []

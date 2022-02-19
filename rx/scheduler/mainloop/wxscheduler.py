@@ -27,8 +27,8 @@ class WxScheduler(PeriodicScheduler):
         timer_class: Any = self._wx.Timer
 
         class Timer(timer_class):
-            def __init__(self, callback) -> None:
-                super().__init__()
+            def __init__(self, callback: typing.Action) -> None:
+                super().__init__()  # type: ignore
                 self.callback = callback
 
             def Notify(self):
@@ -44,7 +44,7 @@ class WxScheduler(PeriodicScheduler):
         accessing dead wx objects in actions that might be pending.
         """
         for timer in self._timers:
-            timer.Stop()
+            timer.Stop()  # type: ignore
 
     def _wxtimer_schedule(
         self,
@@ -71,13 +71,13 @@ class WxScheduler(PeriodicScheduler):
         log.debug("timeout wx: %s", msecs)
 
         timer = self._timer_class(interval)
-        timer.Start(
+        timer.Start(  # type: ignore
             msecs, self._wx.TIMER_CONTINUOUS if periodic else self._wx.TIMER_ONE_SHOT
         )
         self._timers.add(timer)
 
         def dispose() -> None:
-            timer.Stop()
+            timer.Stop()  # type: ignore
             self._timers.remove(timer)
 
         return CompositeDisposable(sad, Disposable(dispose))
