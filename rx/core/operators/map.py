@@ -10,8 +10,7 @@ _T1 = TypeVar("_T1")
 _T2 = TypeVar("_T2")
 
 
-# pylint: disable=redefined-builtin
-def map(
+def map_(
     mapper: Optional[Mapper[_T1, _T2]] = None
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
 
@@ -55,7 +54,7 @@ def map(
     return map
 
 
-def map_indexed(
+def map_indexed_(
     mapper_indexed: Optional[MapperIndexed[_T1, _T2]] = None
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     def _identity(value: _T1, _: int) -> _T2:
@@ -69,4 +68,4 @@ def map_indexed(
     )
 
 
-__all__ = ["map", "map_indexed"]
+__all__ = ["map_", "map_indexed_"]

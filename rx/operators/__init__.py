@@ -1777,9 +1777,9 @@ def map(
         the result of invoking the transform function on each element
         of the source.
     """
-    from rx.core.operators.map import map
+    from rx.core.operators.map import map_
 
-    return map(mapper)
+    return map_(mapper)
 
 
 def map_indexed(
@@ -1809,9 +1809,9 @@ def map_indexed(
         the result of invoking the transform function on each element
         of the source.
     """
-    from rx.core.operators.map import map_indexed
+    from rx.core.operators.map import map_indexed_
 
-    return map_indexed(mapper_indexed)
+    return map_indexed_(mapper_indexed)
 
 
 def materialize() -> Callable[[Observable[_T]], Observable[Notification[_T]]]:
