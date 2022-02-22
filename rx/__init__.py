@@ -13,6 +13,7 @@ from typing import (
     overload,
 )
 
+from ._version import __version__
 from .core import Observable, abc, pipe, typing
 from .internal.utils import alias
 from .subject import Subject
@@ -30,9 +31,6 @@ _D = TypeVar("_D")
 _E = TypeVar("_E")
 _F = TypeVar("_F")
 _G = TypeVar("_G")
-
-# Please make sure the version here remains the same as in project.cfg
-__version__ = "4.0.0"
 
 
 def amb(*sources: Observable[_T]) -> Observable[_T]:
@@ -1320,4 +1318,5 @@ __all__ = [
     "using",
     "with_latest_from",
     "zip",
+    "__version__",
 ]

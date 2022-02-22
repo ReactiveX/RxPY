@@ -22,7 +22,7 @@ class ObservableBase(Generic[_T_out], ABC):
         on_error: Optional[OnError] = None,
         on_completed: Optional[OnCompleted] = None,
         *,
-        scheduler: Optional[SchedulerBase] = None
+        scheduler: Optional[SchedulerBase] = None,
     ) -> DisposableBase:
         """Subscribe an observer to the observable sequence.
 
