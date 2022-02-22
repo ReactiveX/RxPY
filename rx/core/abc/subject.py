@@ -25,7 +25,7 @@ class SubjectBase(ObserverBase[_T], ObservableBase[_T]):
         on_error: Optional[OnError] = None,
         on_completed: Optional[OnCompleted] = None,
         *,
-        scheduler: Optional[SchedulerBase] = None
+        scheduler: Optional[SchedulerBase] = None,
     ) -> DisposableBase:
         """Subscribe an observer to the observable sequence.
 

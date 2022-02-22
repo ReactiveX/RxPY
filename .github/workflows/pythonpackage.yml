@@ -16,44 +16,55 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          pip install poetry
+          poetry install
+
       - name: Check formatting
         run: |
-          black --check --verbose rx
-          isort --check rx
+          poetry run black --check --verbose rx
+          poetry run isort --check rx
+
       - name: Check type annotations (mypy & pyright)
         run: |
-          pyright rx
-          mypy rx/__init__.py rx/operators rx/core/abc rx/core/observer rx/core/observable rx/disposable rx/internal rx/subject rx/scheduler
+          poetry run pyright rx
+          poetry run mypy
+
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7 --show-source --statistics
+          poetry run flake8 . --count --select=E9,F63,F7 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
       - name: Test with pytest
         run: |
-          pytest -n auto
+          poetry run pytest -n auto
 
   coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
+
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          pip install poetry
+          poetry install
+
       - name: Run coverage tests
         run: |
-          coverage run -m pytest
+          poetry run coverage run -m pytest
+
       - name: Coveralls
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_SERVICE_NAME: github
         run: |
-          coveralls
+          poetry run coveralls
