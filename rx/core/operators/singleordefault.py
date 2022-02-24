@@ -73,7 +73,9 @@ def single_or_default_(
     """
 
     if predicate:
-        return compose(ops.filter(predicate), ops.single_or_default(None, default_value))
+        return compose(
+            ops.filter(predicate), ops.single_or_default(None, default_value)
+        )
     else:
         return single_or_default_async_(True, default_value)
 
