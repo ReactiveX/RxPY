@@ -1,7 +1,7 @@
 from typing import Callable, Optional, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable, pipe, typing
+from rx.core import Observable, compose, typing
 from rx.internal.basic import default_comparer
 
 _T = TypeVar("_T")
@@ -15,7 +15,7 @@ def contains_(
     def predicate(v: _T) -> bool:
         return comparer_(v, value)
 
-    return pipe(
+    return compose(
         ops.filter(predicate),
         ops.some(),
     )

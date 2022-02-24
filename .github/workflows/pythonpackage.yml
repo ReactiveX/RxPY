@@ -29,7 +29,7 @@ jobs:
 
       - name: Check type annotations (mypy & pyright)
         run: |
-          poetry run pyright rx
+          poetry run pyright
           poetry run mypy
 
       - name: Lint with flake8

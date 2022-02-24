@@ -25,7 +25,7 @@ from rx.core import (
     Notification,
     Observable,
     abc,
-    pipe,
+    compose,
     typing,
 )
 from rx.core.typing import (
@@ -3131,13 +3131,13 @@ def starmap(
     """
 
     if mapper is None:
-        return pipe(identity)
+        return compose(identity)
 
     def starred(values: Tuple[Any, ...]) -> Any:
         assert mapper  # mypy is paranoid
         return mapper(*values)
 
-    return pipe(map(starred))
+    return compose(map(starred))
 
 
 @overload
@@ -3195,13 +3195,13 @@ def starmap_indexed(
     """
 
     if mapper is None:
-        return pipe(identity)
+        return compose(identity)
 
     def starred(values: Tuple[Any, ...]) -> Any:
         assert mapper  # mypy is paranoid
         return mapper(*values)
 
-    return pipe(map(starred))
+    return compose(map(starred))
 
 
 def start_with(*args: _T) -> Callable[[Observable[_T]], Observable[_T]]:

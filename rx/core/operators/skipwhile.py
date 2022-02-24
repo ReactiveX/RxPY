@@ -1,7 +1,7 @@
 from typing import Callable, Optional, Tuple, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable, abc, pipe, typing
+from rx.core import Observable, abc, compose, typing
 
 _T = TypeVar("_T")
 
@@ -67,7 +67,7 @@ def skip_while_indexed_(
     def mapper(x: Tuple[_T, int]) -> _T:
         return x[0]
 
-    return pipe(
+    return compose(
         ops.map_indexed(indexer),
         ops.skip_while(skipper),
         ops.map(mapper),

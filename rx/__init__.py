@@ -14,7 +14,7 @@ from typing import (
 )
 
 from ._version import __version__
-from .core import Observable, abc, pipe, typing
+from .core import Observable, abc, compose, pipe, typing
 from .internal.utils import alias
 from .subject import Subject
 
@@ -1292,6 +1292,7 @@ __all__ = [
     "catch_with_iterable",
     "create",
     "combine_latest",
+    "compose",
     "concat",
     "concat_with_iterable",
     "defer",

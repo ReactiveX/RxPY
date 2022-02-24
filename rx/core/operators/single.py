@@ -1,7 +1,7 @@
 from typing import Callable, Optional, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable, pipe
+from rx.core import Observable, compose
 from rx.core.typing import Predicate
 
 _T = TypeVar("_T")
@@ -28,7 +28,7 @@ def single_(
     """
 
     if predicate:
-        return pipe(ops.filter(predicate), ops.single())
+        return compose(ops.filter(predicate), ops.single())
     else:
         return ops.single_or_default_async(False)
 
