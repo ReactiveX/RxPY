@@ -58,20 +58,11 @@ float_to_top=true
 [tool.mypy]
 python_version = "3.9"
 follow_imports = "silent"
-files = [
-    "rx/__init__.py",
-    "rx/core/abc",
-    "rx/core/observer",
-    "rx/core/observable",
-    "rx/disposable",
-    "rx/internal",
-    "rx/operators",
-    "rx/subject",
-    "rx/scheduler"
-]
+files = ["rx"]
+exclude = ["rx/core/operators"]
 
 [tool.pytest.ini_options]
-testpaths = [ "tests" ]
+testpaths = ["tests"]
 asyncio_mode = "strict"
 #addopts = "-n auto"
 
