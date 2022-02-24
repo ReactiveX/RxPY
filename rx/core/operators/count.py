@@ -1,7 +1,7 @@
 from typing import Callable, Optional, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable, pipe
+from rx.core import Observable, compose
 from rx.core.typing import Predicate
 
 _T = TypeVar("_T")
@@ -12,7 +12,7 @@ def count_(
 ) -> Callable[[Observable[_T]], Observable[int]]:
 
     if predicate:
-        return pipe(
+        return compose(
             ops.filter(predicate),
             ops.count(),
         )

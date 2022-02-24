@@ -29,7 +29,10 @@ def _flat_map_internal(
             result = from_(mapper_result)
         return result
 
-    return source.pipe(ops.map_indexed(projection), ops.merge_all())
+    return source.pipe(
+        ops.map_indexed(projection),
+        ops.merge_all(),
+    )
 
 
 def flat_map_(
@@ -115,7 +118,10 @@ def flat_map_latest_(
             inner observable sequence that has been received.
         """
 
-        return source.pipe(ops.map(mapper), ops.switch_latest())
+        return source.pipe(
+            ops.map(mapper),
+            ops.switch_latest(),
+        )
 
     return flat_map_latest
 

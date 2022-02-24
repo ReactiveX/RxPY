@@ -1,7 +1,7 @@
 from typing import Any, Callable, List, Optional, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable, pipe
+from rx.core import Observable, compose
 
 _T = TypeVar("_T")
 
@@ -9,7 +9,7 @@ _T = TypeVar("_T")
 def buffer_(
     boundaries: Observable[Any],
 ) -> Callable[[Observable[_T]], Observable[List[_T]]]:
-    return pipe(
+    return compose(
         ops.window(boundaries),
         ops.flat_map(ops.to_list()),
     )
@@ -18,7 +18,7 @@ def buffer_(
 def buffer_when_(
     closing_mapper: Callable[[], Observable[Any]]
 ) -> Callable[[Observable[_T]], Observable[List[_T]]]:
-    return pipe(
+    return compose(
         ops.window_when(closing_mapper),
         ops.flat_map(ops.to_list()),
     )
@@ -27,7 +27,7 @@ def buffer_when_(
 def buffer_toggle_(
     openings: Observable[Any], closing_mapper: Callable[[Any], Observable[Any]]
 ) -> Callable[[Observable[_T]], Observable[List[_T]]]:
-    return pipe(
+    return compose(
         ops.window_toggle(openings, closing_mapper),
         ops.flat_map(ops.to_list()),
     )

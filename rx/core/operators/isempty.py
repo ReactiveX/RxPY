@@ -1,7 +1,7 @@
 from typing import Any, Callable
 
 from rx import operators as ops
-from rx.core import Observable, pipe
+from rx.core import Observable, compose
 
 
 def is_empty_() -> Callable[[Observable[Any]], Observable[bool]]:
@@ -15,7 +15,7 @@ def is_empty_() -> Callable[[Observable[Any]], Observable[bool]]:
     def mapper(b: bool) -> bool:
         return not b
 
-    return pipe(
+    return compose(
         ops.some(),
         ops.map(mapper),
     )

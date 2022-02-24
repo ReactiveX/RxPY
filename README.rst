@@ -3,33 +3,36 @@ The Reactive Extensions for Python (RxPY)
 ==========================================
 
 .. image:: https://github.com/ReactiveX/RxPY/workflows/Python%20package/badge.svg
-        :target: https://github.com/ReactiveX/RxPY/actions
+    :target: https://github.com/ReactiveX/RxPY/actions
+    :alt: Build Status
 
 .. image:: https://img.shields.io/coveralls/ReactiveX/RxPY.svg
-        :target: https://coveralls.io/github/ReactiveX/RxPY
+    :target: https://coveralls.io/github/ReactiveX/RxPY
+    :alt: Coverage Status
 
 .. image:: https://img.shields.io/pypi/v/rx.svg
-        :target: https://pypi.python.org/pypi/Rx
+    :target: https://pypi.python.org/pypi/Rx
+    :alt: PyPY Package Version
 
 .. image:: https://img.shields.io/readthedocs/rxpy.svg
-        :target: https://readthedocs.org/projects/rxpy/builds/
-        :alt: Documentation Status
+    :target: https://readthedocs.org/projects/rxpy/builds/
+    :alt: Documentation Status
 
 
 *A library for composing asynchronous and event-based programs using observable collections and
 query operator functions in Python*
 
-RxPY v4.0
-----------------
+ReactiveX for Python (RxPY) v4.0
+--------------------------------
 
-For v1.X please go to the `v1 branch <https://github.com/ReactiveX/RxPY/tree/release/v1.6.x>`_.
+For v3.X please go to the `v3 branch <https://github.com/ReactiveX/RxPY/tree/master>`_.
 
 RxPY v4.x runs on `Python <http://www.python.org/>`_ 3.7 or above. To install
 RxPY:
 
 .. code:: console
 
-    pip3 install rx
+    pip3 install reactivex
 
 
 About ReactiveX
@@ -106,7 +109,7 @@ Thus .NET code such as:
     var group = source.GroupBy(i => i % 3);
 
 
-need to be written with an `_` in Python:
+need to be written with an ``_`` in Python:
 
 .. code:: python
 

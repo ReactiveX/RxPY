@@ -1,7 +1,7 @@
 from typing import Callable, Optional, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable, pipe
+from rx.core import Observable, compose
 from rx.core.typing import Predicate
 
 from .firstordefault import first_or_default_async_
@@ -32,7 +32,7 @@ def first_(
     """
 
     if predicate:
-        return pipe(ops.filter(predicate), ops.first())
+        return compose(ops.filter(predicate), ops.first())
 
     return first_or_default_async_(False)
 

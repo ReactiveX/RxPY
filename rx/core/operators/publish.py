@@ -1,7 +1,7 @@
 from typing import Callable, Optional, TypeVar, Union
 
 from rx import operators as ops
-from rx.core import ConnectableObservable, Observable, abc, pipe
+from rx.core import ConnectableObservable, Observable, abc, compose
 from rx.core.typing import Mapper
 from rx.subject import Subject
 
@@ -57,7 +57,7 @@ def share_() -> Callable[[Observable[_TSource]], Observable[_TSource]]:
 
     This is an alias for a composed publish() and ref_count().
     """
-    return pipe(
+    return compose(
         ops.publish(),
         ops.ref_count(),
     )

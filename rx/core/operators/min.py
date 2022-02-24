@@ -1,7 +1,7 @@
 from typing import Callable, List, Optional, TypeVar
 
 from rx import operators as ops
-from rx.core import Observable, pipe
+from rx.core import Observable, compose
 from rx.core.typing import Comparer
 from rx.internal.basic import identity
 from rx.internal.exceptions import SequenceContainsNoElementsError
@@ -35,7 +35,7 @@ def min_(
         An observable sequence containing a single element
         with the minimum element in the source sequence.
     """
-    return pipe(
+    return compose(
         ops.min_by(identity, comparer),
         ops.map(first_only),
     )

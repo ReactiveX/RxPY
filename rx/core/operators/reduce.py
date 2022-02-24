@@ -1,7 +1,7 @@
 from typing import Any, Callable, Type, TypeVar, Union, cast
 
 from rx import operators as ops
-from rx.core import Observable, pipe
+from rx.core import Observable, compose
 from rx.core.typing import Accumulator
 from rx.internal.utils import NotSet
 
@@ -37,12 +37,12 @@ def reduce_(
     if seed is not NotSet:
         seed_: _TState = cast(_TState, seed)
         scanner = ops.scan(accumulator, seed=seed_)
-        return pipe(
+        return compose(
             scanner,
             ops.last_or_default(default_value=seed_),
         )
 
-    return pipe(
+    return compose(
         ops.scan(accumulator),
         ops.last(),
     )

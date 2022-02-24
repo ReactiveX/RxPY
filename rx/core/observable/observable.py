@@ -228,9 +228,9 @@ class Observable(abc.ObservableBase[_T]):
         Returns:
              The composed observable.
         """
-        from ..pipe import pipe
+        from ..pipe import pipe as pipe_
 
-        return pipe(*operators)(self)
+        return pipe_(self, *operators)
 
     def run(self) -> Any:
         """Run source synchronously.

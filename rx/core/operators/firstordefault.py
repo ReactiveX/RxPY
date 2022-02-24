@@ -1,7 +1,7 @@
 from typing import Callable, Optional, TypeVar, cast
 
 from rx import operators as ops
-from rx.core import Observable, abc, pipe
+from rx.core import Observable, abc, compose
 from rx.core.typing import Predicate
 from rx.internal.exceptions import SequenceContainsNoElementsError
 
@@ -64,7 +64,7 @@ def first_or_default_(
     """
 
     if predicate:
-        return pipe(ops.filter(predicate), ops.first_or_default(None, default_value))
+        return compose(ops.filter(predicate), ops.first_or_default(None, default_value))
     return first_or_default_async_(True, default_value)
 
 
