@@ -1,19 +1,25 @@
-import unittest
-
 import asyncio
+import os
 import threading
+import unittest
 from datetime import datetime, timedelta
+
+import pytest
 
 from rx.scheduler.eventloop import AsyncIOThreadSafeScheduler
 
+CI = os.getenv("CI") is not None
+
 
 class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_asyncio_threadsafe_schedule_now(self):
         loop = asyncio.get_event_loop()
         scheduler = AsyncIOThreadSafeScheduler(loop)
         diff = scheduler.now - datetime.utcfromtimestamp(loop.time())
-        assert abs(diff) < timedelta(milliseconds=2)  # NOTE: may take 1 ms in CI
+        assert abs(diff) < timedelta(milliseconds=2)
 
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_asyncio_threadsafe_schedule_now_units(self):
         loop = asyncio.get_event_loop()
         scheduler = AsyncIOThreadSafeScheduler(loop)
