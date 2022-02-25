@@ -24,7 +24,7 @@ jobs:
             ~/.cache/pypoetry
             ~/Library/Caches/pypoetry
             C:\Users\*\AppData\Local\pypoetry\Cache
-          key: poetry-cache-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ env.POETRY_VERSION }}
+          key: poetry-cache-${{ runner.os }}-${{ matrix.python-version }}-${{ env.POETRY_VERSION }}
 
       - name: Install dependencies
         run: |
