@@ -1,12 +1,12 @@
-import pytest
+import os
 import unittest
-
 from datetime import timedelta
 from time import sleep
 
-from rx.scheduler.mainloop import TkinterScheduler
-from rx.internal.basic import default_now
+import pytest
 
+from rx.internal.basic import default_now
+from rx.scheduler.mainloop import TkinterScheduler
 
 tkinter = pytest.importorskip("tkinter")
 
@@ -17,14 +17,18 @@ try:
 except Exception:
     display = False
 
+CI = os.getenv("CI") is not None
+
 
 @pytest.mark.skipif("display == False")
 class TestTkinterScheduler(unittest.TestCase):
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_tkinter_schedule_now(self):
         scheduler = TkinterScheduler(root)
         res = scheduler.now - default_now()
-        assert abs(res) <= timedelta(milliseconds=2)  # NOTE: may take 1 ms in CI
+        assert abs(res) <= timedelta(milliseconds=1)
 
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_tkinter_schedule_now_units(self):
         scheduler = TkinterScheduler(root)
         diff = scheduler.now

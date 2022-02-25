@@ -1,15 +1,18 @@
-import pytest
-import unittest
-
+import os
 import threading
+import unittest
 from datetime import timedelta
 from time import sleep
 
+import pytest
+
 from rx.disposable import Disposable
-from rx.scheduler import ImmediateScheduler
 from rx.internal.basic import default_now
 from rx.internal.constants import DELTA_ZERO
 from rx.internal.exceptions import WouldBlockException
+from rx.scheduler import ImmediateScheduler
+
+CI = os.getenv("CI") is not None
 
 
 class TestImmediateScheduler(unittest.TestCase):
@@ -44,11 +47,13 @@ class TestImmediateScheduler(unittest.TestCase):
         assert scheduler[0] is scheduler[1]
         assert scheduler[0] is not scheduler[2]
 
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_immediate_now(self):
         scheduler = ImmediateScheduler()
         diff = scheduler.now - default_now()
-        assert abs(diff) <= timedelta(milliseconds=2)  # NOTE: may take 1 ms in CI
+        assert abs(diff) <= timedelta(milliseconds=1)
 
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_immediate_now_units(self):
         scheduler = ImmediateScheduler()
         diff = scheduler.now
