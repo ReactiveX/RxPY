@@ -1,12 +1,11 @@
-import pytest
 import unittest
-
 from datetime import timedelta
 from time import sleep
 
-from rx.scheduler.mainloop import PyGameScheduler
-from rx.internal.basic import default_now
+import pytest
 
+from rx.internal.basic import default_now
+from rx.scheduler.mainloop import PyGameScheduler
 
 pygame = pytest.importorskip("pygame")
 

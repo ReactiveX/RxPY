@@ -1,8 +1,8 @@
 import pytest
 
-from rx.testing import TestScheduler, ReactiveTest
-from rx.subject import AsyncSubject
 from rx.internal.exceptions import DisposedException
+from rx.subject import AsyncSubject
+from rx.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

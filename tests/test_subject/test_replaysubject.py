@@ -1,9 +1,10 @@
 import sys
+
 import pytest
 
-from rx.testing import TestScheduler, ReactiveTest
-from rx.subject import ReplaySubject
 from rx.internal.exceptions import DisposedException
+from rx.subject import ReplaySubject
+from rx.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

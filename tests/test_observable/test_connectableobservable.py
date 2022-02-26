@@ -2,11 +2,10 @@ import unittest
 
 import rx
 from rx import operators as ops
-from rx.core import Observable
+from rx.core import ConnectableObservable, Observable
 from rx.core.abc import ObserverBase
-from rx.testing import TestScheduler, ReactiveTest
 from rx.subject import Subject
-from rx.core import ConnectableObservable
+from rx.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

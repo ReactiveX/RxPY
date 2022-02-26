@@ -1,6 +1,6 @@
 import asyncio
-from asyncio import Future
 import unittest
+from asyncio import Future
 
 import rx
 

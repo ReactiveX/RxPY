@@ -1,7 +1,7 @@
 import unittest
-from rx.core.observable.observable import Observable
 
-from rx.testing import TestScheduler, ReactiveTest
+from rx.core.observable.observable import Observable
+from rx.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

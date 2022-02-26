@@ -1,18 +1,17 @@
-import pytest
-
 from datetime import datetime, timedelta
 from time import sleep
 
-twisted = pytest.importorskip("twisted")
-
-from twisted.internet import reactor, defer
-from twisted.trial import unittest
+import pytest
 
 from rx.scheduler.eventloop import TwistedScheduler
 
+twisted = pytest.importorskip("twisted")
+from twisted.internet import defer, reactor  # isort: skip
+from twisted.trial import unittest  # isort: skip
+
+
 
 class TestTwistedScheduler(unittest.TestCase):
-
     def test_twisted_schedule_now(self):
         scheduler = TwistedScheduler(reactor)
         diff = scheduler.now - datetime.utcfromtimestamp(float(reactor.seconds()))
@@ -36,7 +35,7 @@ class TestTwistedScheduler(unittest.TestCase):
             ran = True
 
         def done():
-            promise.callback('Done')
+            promise.callback("Done")
 
         scheduler.schedule(action)
         reactor.callLater(0.1, done)
@@ -56,7 +55,7 @@ class TestTwistedScheduler(unittest.TestCase):
             endtime = reactor.seconds()
 
         def done():
-            promise.callback('Done')
+            promise.callback("Done")
 
         scheduler.schedule_relative(0.2, action)
         reactor.callLater(0.3, done)
@@ -76,7 +75,7 @@ class TestTwistedScheduler(unittest.TestCase):
             ran = True
 
         def done():
-            promise.callback('Done')
+            promise.callback("Done")
 
         d = scheduler.schedule_relative(0.01, action)
         d.dispose()

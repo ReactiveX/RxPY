@@ -1,7 +1,11 @@
-from rx.disposable import Disposable
-from rx.disposable import BooleanDisposable, SingleAssignmentDisposable
-from rx.disposable import CompositeDisposable, SerialDisposable
-from rx.disposable import RefCountDisposable
+from rx.disposable import (
+    BooleanDisposable,
+    CompositeDisposable,
+    Disposable,
+    RefCountDisposable,
+    SerialDisposable,
+    SingleAssignmentDisposable,
+)
 
 
 def test_Disposable_create():

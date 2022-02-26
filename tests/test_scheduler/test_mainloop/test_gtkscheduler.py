@@ -1,30 +1,30 @@
-import pytest
-import unittest
-
 import os
 import threading
+import unittest
 from datetime import timedelta
 from time import sleep
 
-from rx.scheduler.mainloop import GtkScheduler
+import pytest
+
 from rx.internal.basic import default_now
+from rx.scheduler.mainloop import GtkScheduler
+
+gi = pytest.importorskip("gi")
+from gi.repository import GLib, Gtk  # isort: skip
 
 
-gi = pytest.importorskip('gi')
-gi.require_version('Gtk', '3.0')
-from gi.repository import GLib, Gtk
+gi.require_version("Gtk", "3.0")
 
 
 # Removing GNOME_DESKTOP_SESSION_ID from environment
 # prevents QtScheduler test from failing with message
 #   Gtk-ERROR **: GTK+ 2.x symbols detected.
 #   Using GTK+ 2.x and GTK+ 3 in the same process is not supported
-if 'GNOME_DESKTOP_SESSION_ID' in os.environ:
-    del os.environ['GNOME_DESKTOP_SESSION_ID']
+if "GNOME_DESKTOP_SESSION_ID" in os.environ:
+    del os.environ["GNOME_DESKTOP_SESSION_ID"]
 
 
 class TestGtkScheduler(unittest.TestCase):
-
     def test_gtk_schedule_now(self):
         scheduler = GtkScheduler(GLib)
         diff = scheduler.now - default_now()

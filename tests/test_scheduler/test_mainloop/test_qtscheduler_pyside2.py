@@ -1,13 +1,14 @@
-import pytest
-
 import threading
 from datetime import timedelta
 from time import sleep
 
+import pytest
+
+from rx.internal.basic import default_now
+from rx.scheduler.mainloop import QtScheduler
+
 QtCore = pytest.importorskip('PySide2.QtCore')
 
-from rx.scheduler.mainloop import QtScheduler
-from rx.internal.basic import default_now
 
 
 @pytest.fixture(scope="module")

@@ -1,10 +1,11 @@
+import unittest
 from datetime import timedelta
 from time import sleep
-import unittest
+
 import pytest
 
-from rx.scheduler.mainloop import WxScheduler
 from rx.internal.basic import default_now
+from rx.scheduler.mainloop import WxScheduler
 
 wx = pytest.importorskip('wx')
 

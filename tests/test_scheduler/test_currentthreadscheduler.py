@@ -1,12 +1,12 @@
-import pytest
-import unittest
-
 import threading
+import unittest
 from datetime import timedelta
 from time import sleep
 
-from rx.scheduler import CurrentThreadScheduler
+import pytest
+
 from rx.internal.basic import default_now
+from rx.scheduler import CurrentThreadScheduler
 
 
 class TestCurrentThreadScheduler(unittest.TestCase):
