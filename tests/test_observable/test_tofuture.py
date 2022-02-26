@@ -1,12 +1,12 @@
 
-import unittest
 import asyncio
+import unittest
 
 import rx
 import rx.operators as ops
 from rx.internal.exceptions import SequenceContainsNoElementsError
-from rx.testing import ReactiveTest
 from rx.subject import Subject
+from rx.testing import ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

@@ -1,9 +1,10 @@
 import unittest
+
 import pytest
 
 import rx
-from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx import operators as ops
+from rx.internal.exceptions import SequenceContainsNoElementsError
 from rx.testing import ReactiveTest
 
 on_next = ReactiveTest.on_next

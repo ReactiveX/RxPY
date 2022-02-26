@@ -1,7 +1,9 @@
 import unittest
 
-from rx import empty, never, throw, operators as _
-from rx.testing import TestScheduler, ReactiveTest
+from rx import empty, never
+from rx import operators as _
+from rx import throw
+from rx.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

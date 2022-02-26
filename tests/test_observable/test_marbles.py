@@ -1,3 +1,4 @@
+import datetime
 import unittest
 
 import rx
@@ -5,7 +6,6 @@ from rx.core import notification
 from rx.core.observable.marbles import parse
 from rx.testing import TestScheduler
 from rx.testing.reactivetest import ReactiveTest
-import datetime
 
 
 def mess_on_next(time, value):

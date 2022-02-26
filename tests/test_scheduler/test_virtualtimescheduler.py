@@ -1,9 +1,10 @@
-import pytest
 import unittest
 
-from rx.scheduler import VirtualTimeScheduler
+import pytest
+
 from rx.internal import ArgumentOutOfRangeException
 from rx.internal.constants import DELTA_ZERO, UTC_ZERO
+from rx.scheduler import VirtualTimeScheduler
 
 
 class VirtualSchedulerTestScheduler(VirtualTimeScheduler):

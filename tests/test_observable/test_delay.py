@@ -3,7 +3,7 @@ import unittest
 from datetime import datetime
 
 from rx.operators import delay
-from rx.testing import TestScheduler, ReactiveTest
+from rx.testing import ReactiveTest, TestScheduler
 
 FORMAT = '%(asctime)-15s %(threadName)s %(message)s'
 logging.basicConfig(filename='rx.log', format=FORMAT, level=logging.DEBUG)

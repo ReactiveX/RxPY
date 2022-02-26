@@ -1,10 +1,9 @@
-import pytest
 import unittest
-
 from datetime import datetime, timedelta
 
-from rx.scheduler.eventloop import GEventScheduler
+import pytest
 
+from rx.scheduler.eventloop import GEventScheduler
 
 gevent = pytest.importorskip("gevent")
 

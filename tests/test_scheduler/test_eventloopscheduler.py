@@ -1,13 +1,13 @@
-import pytest
-import unittest
-
 import threading
+import unittest
 from datetime import timedelta
 from time import sleep
 
-from rx.scheduler import EventLoopScheduler
+import pytest
+
 from rx.internal import DisposedException
 from rx.internal.basic import default_now
+from rx.scheduler import EventLoopScheduler
 
 
 class TestEventLoopScheduler(unittest.TestCase):

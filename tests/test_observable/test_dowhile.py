@@ -1,7 +1,7 @@
 import unittest
 
 from rx import operators as ops
-from rx.testing import TestScheduler, ReactiveTest
+from rx.testing import ReactiveTest, TestScheduler
 
 
 class TestDoWhile(ReactiveTest, unittest.TestCase):

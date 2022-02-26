@@ -1,7 +1,7 @@
 import unittest
 
 import rx
-from rx.testing import TestScheduler, ReactiveTest, MockDisposable
+from rx.testing import MockDisposable, ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

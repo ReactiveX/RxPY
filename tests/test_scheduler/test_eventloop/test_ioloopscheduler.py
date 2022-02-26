@@ -1,13 +1,14 @@
-import pytest
 import unittest
-
 from datetime import datetime, timedelta
 from time import sleep
 
-tornado = pytest.importorskip("tornado")
+import pytest
 from tornado import ioloop
 
 from rx.scheduler.eventloop import IOLoopScheduler
+
+tornado = pytest.importorskip("tornado")
+
 
 
 class TestIOLoopScheduler(unittest.TestCase):

@@ -1,11 +1,10 @@
-import pytest
 import unittest
-
 from datetime import datetime, timedelta
 from time import sleep
 
-from rx.scheduler.eventloop import EventletScheduler
+import pytest
 
+from rx.scheduler.eventloop import EventletScheduler
 
 eventlet = pytest.importorskip("eventlet")
 
