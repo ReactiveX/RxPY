@@ -29,40 +29,37 @@ class TestFromCallback(unittest.TestCase):
             self.assertEqual(r, True)
 
         def on_error(err):
-            assert(False)
+            assert False
 
         def on_completed():
-            assert(True)
+            assert True
 
         res.subscribe(on_next, on_error, on_completed)
 
     def test_from_callback_single(self):
-        res = rx.from_callback(lambda file, cb: cb(file))('file.txt')
+        res = rx.from_callback(lambda file, cb: cb(file))("file.txt")
 
         def on_next(r):
-            self.assertEqual(r, 'file.txt')
+            self.assertEqual(r, "file.txt")
 
         def on_error(err):
-            assert(False)
+            assert False
 
         def on_completed():
-            assert(True)
+            assert True
 
         res.subscribe(on_next, on_error, on_completed)
 
     def test_from_node_callback_mapper(self):
-        res = rx.from_callback(
-            lambda f, s, t, cb: cb(f, s, t),
-            lambda r: r[0]
-        )(1, 2, 3)
+        res = rx.from_callback(lambda f, s, t, cb: cb(f, s, t), lambda r: r[0])(1, 2, 3)
 
         def on_next(r):
             self.assertEqual(r, 1)
 
         def on_error(err):
-            assert(False)
+            assert False
 
         def on_completed():
-            assert(True)
+            assert True
 
         res.subscribe(on_next, on_error, on_completed)

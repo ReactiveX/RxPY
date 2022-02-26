@@ -15,11 +15,16 @@ created = ReactiveTest.created
 class TestIf_then(unittest.TestCase):
     def test_if_true(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(250, 2), on_completed(300))
-        ys = scheduler.create_hot_observable(on_next(310, 3), on_next(350, 4), on_completed(400))
+        xs = scheduler.create_hot_observable(
+            on_next(210, 1), on_next(250, 2), on_completed(300)
+        )
+        ys = scheduler.create_hot_observable(
+            on_next(310, 3), on_next(350, 4), on_completed(400)
+        )
 
         def create():
             return rx.if_then(lambda: True, xs, ys)
+
         results = scheduler.start(create=create)
 
         assert results.messages == [on_next(210, 1), on_next(250, 2), on_completed(300)]
@@ -28,11 +33,16 @@ class TestIf_then(unittest.TestCase):
 
     def test_if_false(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(250, 2), on_completed(300))
-        ys = scheduler.create_hot_observable(on_next(310, 3), on_next(350, 4), on_completed(400))
+        xs = scheduler.create_hot_observable(
+            on_next(210, 1), on_next(250, 2), on_completed(300)
+        )
+        ys = scheduler.create_hot_observable(
+            on_next(310, 3), on_next(350, 4), on_completed(400)
+        )
 
         def create():
             return rx.if_then(lambda: False, xs, ys)
+
         results = scheduler.start(create=create)
 
         assert results.messages == [on_next(310, 3), on_next(350, 4), on_completed(400)]
@@ -40,15 +50,21 @@ class TestIf_then(unittest.TestCase):
         assert ys.subscriptions == [subscribe(200, 400)]
 
     def test_if_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(250, 2), on_completed(300))
-        ys = scheduler.create_hot_observable(on_next(310, 3), on_next(350, 4), on_completed(400))
+        xs = scheduler.create_hot_observable(
+            on_next(210, 1), on_next(250, 2), on_completed(300)
+        )
+        ys = scheduler.create_hot_observable(
+            on_next(310, 3), on_next(350, 4), on_completed(400)
+        )
 
         def create():
             def condition():
                 raise Exception(ex)
+
             return rx.if_then(condition, xs, ys)
+
         results = scheduler.start(create=create)
 
         assert results.messages == [on_error(200, ex)]
@@ -58,10 +74,13 @@ class TestIf_then(unittest.TestCase):
     def test_if_dispose(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(210, 1), on_next(250, 2))
-        ys = scheduler.create_hot_observable(on_next(310, 3), on_next(350, 4), on_completed(400))
+        ys = scheduler.create_hot_observable(
+            on_next(310, 3), on_next(350, 4), on_completed(400)
+        )
 
         def create():
             return rx.if_then(lambda: True, xs, ys)
+
         results = scheduler.start(create=create)
 
         assert results.messages == [on_next(210, 1), on_next(250, 2)]
@@ -71,35 +90,45 @@ class TestIf_then(unittest.TestCase):
     def test_if_default_completed(self):
         b = [False]
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(220, 2), on_next(330, 3), on_completed(440))
+        xs = scheduler.create_hot_observable(
+            on_next(110, 1), on_next(220, 2), on_next(330, 3), on_completed(440)
+        )
 
         def action(scheduler, state):
             b[0] = True
+
         scheduler.schedule_absolute(150, action)
 
         def create():
             def condition():
                 return b[0]
+
             return rx.if_then(condition, xs)
+
         results = scheduler.start(create)
 
         assert results.messages == [on_next(220, 2), on_next(330, 3), on_completed(440)]
         assert xs.subscriptions == [subscribe(200, 440)]
 
     def test_if_default_error(self):
-        ex = 'ex'
+        ex = "ex"
         b = [False]
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(220, 2), on_next(330, 3), on_error(440, ex))
+        xs = scheduler.create_hot_observable(
+            on_next(110, 1), on_next(220, 2), on_next(330, 3), on_error(440, ex)
+        )
 
         def action(scheduler, state):
             b[0] = True
+
         scheduler.schedule_absolute(150, action)
 
         def create():
             def condition():
                 return b[0]
+
             return rx.if_then(condition, xs)
+
         results = scheduler.start(create)
 
         assert results.messages == [on_next(220, 2), on_next(330, 3), on_error(440, ex)]
@@ -108,16 +137,21 @@ class TestIf_then(unittest.TestCase):
     def test_if_default_never(self):
         b = [False]
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(110, 1), on_next(220, 2), on_next(330, 3))
+        xs = scheduler.create_hot_observable(
+            on_next(110, 1), on_next(220, 2), on_next(330, 3)
+        )
 
         def action(scheduler, state):
             b[0] = True
+
         scheduler.schedule_absolute(150, action)
 
         def create():
             def condition():
                 return b[0]
+
             return rx.if_then(condition, xs)
+
         results = scheduler.start(create)
 
         assert results.messages == [on_next(220, 2), on_next(330, 3)]
@@ -127,16 +161,20 @@ class TestIf_then(unittest.TestCase):
         b = [True]
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-                on_next(110, 1), on_next(220, 2), on_next(330, 3), on_error(440, 'ex'))
+            on_next(110, 1), on_next(220, 2), on_next(330, 3), on_error(440, "ex")
+        )
 
         def action(scheduler, state):
             b[0] = False
+
         scheduler.schedule_absolute(150, action)
 
         def create():
             def condition():
                 return b[0]
+
             return rx.if_then(condition, xs)
+
         results = scheduler.start(create)
 
         assert results.messages == [on_completed(200)]

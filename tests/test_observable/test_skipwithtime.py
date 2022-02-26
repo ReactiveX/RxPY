@@ -15,7 +15,9 @@ created = ReactiveTest.created
 class TestSkipWithTime(unittest.TestCase):
     def test_skip_zero(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
+        xs = scheduler.create_hot_observable(
+            on_next(210, 1), on_next(220, 2), on_completed(230)
+        )
 
         def create():
             return xs.pipe(ops.skip_with_time(0))
@@ -27,7 +29,9 @@ class TestSkipWithTime(unittest.TestCase):
 
     def test_skip_some(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
+        xs = scheduler.create_hot_observable(
+            on_next(210, 1), on_next(220, 2), on_completed(230)
+        )
 
         def create():
             return xs.pipe(ops.skip_with_time(15))
@@ -39,7 +43,9 @@ class TestSkipWithTime(unittest.TestCase):
 
     def test_skip_late(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2), on_completed(230))
+        xs = scheduler.create_hot_observable(
+            on_next(210, 1), on_next(220, 2), on_completed(230)
+        )
 
         def create():
             return xs.pipe(ops.skip_with_time(50))
@@ -50,7 +56,7 @@ class TestSkipWithTime(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 230)]
 
     def test_skip_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_error(210, ex))
 
@@ -77,35 +83,55 @@ class TestSkipWithTime(unittest.TestCase):
     def test_skip_twice1(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-                on_next(210, 1), on_next(220, 2), on_next(230, 3),
-                on_next(240, 4), on_next(250, 5), on_next(260, 6),
-                on_completed(270))
+            on_next(210, 1),
+            on_next(220, 2),
+            on_next(230, 3),
+            on_next(240, 4),
+            on_next(250, 5),
+            on_next(260, 6),
+            on_completed(270),
+        )
 
         def create():
             return xs.pipe(
-                    ops.skip_with_time(15),
-                    ops.skip_with_time(30),
-                    )
+                ops.skip_with_time(15),
+                ops.skip_with_time(30),
+            )
 
         res = scheduler.start(create)
 
-        assert res.messages == [on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270)]
+        assert res.messages == [
+            on_next(240, 4),
+            on_next(250, 5),
+            on_next(260, 6),
+            on_completed(270),
+        ]
         assert xs.subscriptions == [subscribe(200, 270)]
 
     def test_skip_twice2(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-                on_next(210, 1), on_next(220, 2), on_next(230, 3),
-                on_next(240, 4), on_next(250, 5), on_next(260, 6),
-                on_completed(270))
+            on_next(210, 1),
+            on_next(220, 2),
+            on_next(230, 3),
+            on_next(240, 4),
+            on_next(250, 5),
+            on_next(260, 6),
+            on_completed(270),
+        )
 
         def create():
             return xs.pipe(
-                    ops.skip_with_time(30),
-                    ops.skip_with_time(15),
-                    )
+                ops.skip_with_time(30),
+                ops.skip_with_time(15),
+            )
 
         res = scheduler.start(create)
 
-        assert res.messages == [on_next(240, 4), on_next(250, 5), on_next(260, 6), on_completed(270)]
+        assert res.messages == [
+            on_next(240, 4),
+            on_next(250, 5),
+            on_next(260, 6),
+            on_completed(270),
+        ]
         assert xs.subscriptions == [subscribe(200, 270)]

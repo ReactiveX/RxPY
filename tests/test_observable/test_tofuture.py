@@ -1,4 +1,3 @@
-
 import asyncio
 import unittest
 
@@ -67,7 +66,9 @@ class TestToFuture(unittest.TestCase):
             source = rx.empty()
             result = await source
 
-        self.assertRaises(SequenceContainsNoElementsError, loop.run_until_complete, go())
+        self.assertRaises(
+            SequenceContainsNoElementsError, loop.run_until_complete, go()
+        )
 
     def test_await_with_delay(self):
         loop = asyncio.get_event_loop()

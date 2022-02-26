@@ -10,12 +10,11 @@ from rx.scheduler import CurrentThreadScheduler
 
 
 class TestCurrentThreadScheduler(unittest.TestCase):
-
     def test_currentthread_singleton(self):
         scheduler = [
             CurrentThreadScheduler(),
             CurrentThreadScheduler.singleton(),
-            CurrentThreadScheduler.singleton()
+            CurrentThreadScheduler.singleton(),
         ]
         assert scheduler[0] is not scheduler[1]
         assert scheduler[1] is scheduler[2]
@@ -108,6 +107,7 @@ class TestCurrentThreadScheduler(unittest.TestCase):
                 ran = True
 
             return scheduler.schedule(inner_action)
+
         scheduler.schedule(action)
 
         assert ran is True

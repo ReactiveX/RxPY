@@ -41,18 +41,20 @@ class TestUsing(unittest.TestCase):
                 _d[0] = d
                 create_invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
-                        on_next(100, scheduler.clock), on_completed(200))
+                    on_next(100, scheduler.clock), on_completed(200)
+                )
                 return xs[0]
+
             return rx.using(create_resources, create_observable)
 
         results = scheduler.start(create)
 
-        assert (disp[0] == _d[0])
+        assert disp[0] == _d[0]
         assert results.messages == [on_next(300, 200), on_completed(400)]
-        assert (1 == create_invoked[0])
-        assert (1 == dispose_invoked[0])
+        assert 1 == create_invoked[0]
+        assert 1 == dispose_invoked[0]
         assert xs[0].subscriptions == [subscribe(200, 400)]
-        assert (disp[0] is None)
+        assert disp[0] is None
 
     def test_using_complete(self):
         disp = [None]
@@ -72,8 +74,10 @@ class TestUsing(unittest.TestCase):
                 _d[0] = d
                 create_invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
-                        on_next(100, scheduler.clock), on_completed(200))
+                    on_next(100, scheduler.clock), on_completed(200)
+                )
                 return xs[0]
+
             return rx.using(create_resource, create_observable)
 
         results = scheduler.start(create)
@@ -89,7 +93,7 @@ class TestUsing(unittest.TestCase):
         scheduler = TestScheduler()
         dispose_invoked = [0]
         create_invoked = [0]
-        ex = 'ex'
+        ex = "ex"
         disp = [None]
         xs = [None]
         _d = [None]
@@ -104,9 +108,12 @@ class TestUsing(unittest.TestCase):
                 _d[0] = d
                 create_invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
-                        on_next(100, scheduler.clock), on_error(200, ex))
+                    on_next(100, scheduler.clock), on_error(200, ex)
+                )
                 return xs[0]
+
             return rx.using(create_resource, create_observable)
+
         results = scheduler.start(create)
 
         assert disp[0] == _d[0]
@@ -134,10 +141,12 @@ class TestUsing(unittest.TestCase):
                 _d[0] = d
                 create_invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
-                        on_next(100, scheduler.clock),
-                        on_next(1000, scheduler.clock + 1))
+                    on_next(100, scheduler.clock), on_next(1000, scheduler.clock + 1)
+                )
                 return xs[0]
+
             return rx.using(create_resource, create_observable)
+
         results = scheduler.start(create)
 
         assert disp[0] == _d[0]
@@ -151,7 +160,7 @@ class TestUsing(unittest.TestCase):
         scheduler = TestScheduler()
         dispose_invoked = [0]
         create_invoked = [0]
-        ex = 'ex'
+        ex = "ex"
 
         def create():
             def create_resource():
@@ -163,18 +172,19 @@ class TestUsing(unittest.TestCase):
                 return rx.never()
 
             return rx.using(create_resource, create_observable)
+
         results = scheduler.start(create)
 
         assert results.messages == [on_error(200, ex)]
-        assert(0 == create_invoked[0])
-        assert(1 == dispose_invoked[0])
+        assert 0 == create_invoked[0]
+        assert 1 == dispose_invoked[0]
 
     def test_using_throw_resource_usage(self):
         scheduler = TestScheduler()
         dispose_invoked = [0]
         create_invoked = [0]
         disp = [None]
-        ex = 'ex'
+        ex = "ex"
 
         def create():
             def create_resource():
@@ -187,6 +197,7 @@ class TestUsing(unittest.TestCase):
                 _raise(ex)
 
             return rx.using(create_resource, create_observable)
+
         results = scheduler.start(create)
 
         assert results.messages == [on_error(200, ex)]

@@ -7,7 +7,7 @@ import pytest
 from rx.internal.basic import default_now
 from rx.scheduler.mainloop import WxScheduler
 
-wx = pytest.importorskip('wx')
+wx = pytest.importorskip("wx")
 
 
 def make_app():
@@ -17,7 +17,6 @@ def make_app():
 
 
 class AppExit(wx.Timer):
-
     def __init__(self, app) -> None:
         super().__init__()
         self.app = app
@@ -27,7 +26,6 @@ class AppExit(wx.Timer):
 
 
 class TestWxScheduler(unittest.TestCase):
-
     def test_wx_schedule_now(self):
         scheduler = WxScheduler(wx)
         diff = scheduler.now - default_now()

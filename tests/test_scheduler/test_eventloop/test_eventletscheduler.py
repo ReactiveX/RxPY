@@ -10,7 +10,6 @@ eventlet = pytest.importorskip("eventlet")
 
 
 class TestEventletScheduler(unittest.TestCase):
-
     def test_eventlet_schedule_now(self):
         scheduler = EventletScheduler(eventlet)
         hub = eventlet.hubs.get_hub()

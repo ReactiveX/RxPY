@@ -7,8 +7,7 @@ import pytest
 from rx.internal.basic import default_now
 from rx.scheduler.mainloop import QtScheduler
 
-QtCore = pytest.importorskip('PySide2.QtCore')
-
+QtCore = pytest.importorskip("PySide2.QtCore")
 
 
 @pytest.fixture(scope="module")
@@ -19,8 +18,7 @@ def app():
     # teardown
 
 
-class TestQtSchedulerPySide2():
-
+class TestQtSchedulerPySide2:
     def test_pyside2_schedule_now(self):
         scheduler = QtScheduler(QtCore)
         diff = scheduler.now - default_now()

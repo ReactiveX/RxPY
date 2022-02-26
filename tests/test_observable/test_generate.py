@@ -27,10 +27,11 @@ class TestGenerate(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.generate(0,
-                               lambda x: x <= 3,
-                               lambda x: x + 1,
-                               )
+            return rx.generate(
+                0,
+                lambda x: x <= 3,
+                lambda x: x + 1,
+            )
 
         results = scheduler.start(create)
 
@@ -39,45 +40,49 @@ class TestGenerate(unittest.TestCase):
             on_next(200, 1),
             on_next(200, 2),
             on_next(200, 3),
-            on_completed(200)]
+            on_completed(200),
+        ]
 
     def test_generate_throw_condition(self):
         scheduler = TestScheduler()
-        ex = 'ex'
+        ex = "ex"
 
         def create():
-            return rx.generate(0,
-                               lambda x: _raise('ex'),
-                               lambda x: x + 1,
-                               )
+            return rx.generate(
+                0,
+                lambda x: _raise("ex"),
+                lambda x: x + 1,
+            )
+
         results = scheduler.start(create)
 
         assert results.messages == [on_error(200, ex)]
 
     def test_generate_throw_iterate(self):
         scheduler = TestScheduler()
-        ex = 'ex'
+        ex = "ex"
 
         def create():
-            return rx.generate(0,
-                               lambda x: True,
-                               lambda x: _raise(ex),
-                               )
+            return rx.generate(
+                0,
+                lambda x: True,
+                lambda x: _raise(ex),
+            )
+
         results = scheduler.start(create)
 
-        assert results.messages == [
-            on_next(200, 0),
-            on_error(200, ex)]
+        assert results.messages == [on_next(200, 0), on_error(200, ex)]
 
     def test_generate_dispose(self):
         scheduler = TestScheduler()
-        ex = 'ex'
+        ex = "ex"
 
         def create():
-            return rx.generate(0,
-                               lambda x: True,
-                               lambda x: x + 1,
-                               )
+            return rx.generate(
+                0,
+                lambda x: True,
+                lambda x: x + 1,
+            )
 
         results = scheduler.start(create, disposed=200)
         assert results.messages == []
@@ -86,11 +91,11 @@ class TestGenerate(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.generate(0,
-                               lambda x: x <= 3,
-                               lambda x: x + 1,
-                               ) \
-                .pipe(ops.repeat(2))
+            return rx.generate(
+                0,
+                lambda x: x <= 3,
+                lambda x: x + 1,
+            ).pipe(ops.repeat(2))
 
         results = scheduler.start(create)
 
@@ -103,4 +108,5 @@ class TestGenerate(unittest.TestCase):
             on_next(200, 1),
             on_next(200, 2),
             on_next(200, 3),
-            on_completed(200)]
+            on_completed(200),
+        ]

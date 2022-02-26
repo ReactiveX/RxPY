@@ -10,9 +10,7 @@ from rx.scheduler.eventloop import IOLoopScheduler
 tornado = pytest.importorskip("tornado")
 
 
-
 class TestIOLoopScheduler(unittest.TestCase):
-
     def test_ioloop_schedule_now(self):
         loop = ioloop.IOLoop.instance()
         scheduler = IOLoopScheduler(loop)

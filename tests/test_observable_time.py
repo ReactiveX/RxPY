@@ -2,9 +2,9 @@ import logging
 
 from rx.testing import ReactiveTest
 
-FORMAT = '%(asctime)-15s %(threadName)s %(message)s'
-logging.basicConfig(filename='rx.log', format=FORMAT, level=logging.DEBUG)
-log = logging.getLogger('Rx')
+FORMAT = "%(asctime)-15s %(threadName)s %(message)s"
+logging.basicConfig(filename="rx.log", format=FORMAT, level=logging.DEBUG)
+log = logging.getLogger("Rx")
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -22,7 +22,6 @@ class RxException(Exception):
 # Helper function for raising exceptions within lambdas
 def _raise(ex):
     raise RxException(ex)
-
 
 
 # // TakeLastBuffer
@@ -210,8 +209,6 @@ def _raise(ex):
 
 #     assert res.messages == [on_next(210, 1), on_next(220, 2), on_next(230, 3), on_completed(235)]
 #     assert xs.subscriptions == [subscribe(200, 235)]
-
-
 
 
 # // TakeLast

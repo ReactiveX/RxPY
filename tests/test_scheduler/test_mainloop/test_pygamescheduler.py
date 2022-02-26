@@ -11,7 +11,6 @@ pygame = pytest.importorskip("pygame")
 
 
 class TestPyGameScheduler(unittest.TestCase):
-
     def test_pygame_schedule_now(self):
         scheduler = PyGameScheduler(pygame)
         diff = scheduler.now - default_now()

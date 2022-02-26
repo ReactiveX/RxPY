@@ -39,7 +39,7 @@ def test_infinite():
         on_next(710, 9),
         on_next(870, 10),
         on_next(940, 11),
-        on_next(1020, 12)
+        on_next(1020, 12),
     )
 
     results1 = scheduler.create_observer()
@@ -48,56 +48,59 @@ def test_infinite():
 
     def action1(scheduler, state=None):
         s[0] = Subject()
+
     scheduler.schedule_absolute(100, action1)
 
     def action2(scheduler, state=None):
         subscription[0] = xs.subscribe(s[0])
+
     scheduler.schedule_absolute(200, action2)
 
     def action3(scheduler, state=None):
         subscription[0].dispose()
+
     scheduler.schedule_absolute(1000, action3)
 
     def action4(scheduler, state=None):
         subscription1[0] = s[0].subscribe(results1)
+
     scheduler.schedule_absolute(300, action4)
 
     def action5(scheduler, state=None):
         subscription2[0] = s[0].subscribe(results2)
+
     scheduler.schedule_absolute(400, action5)
 
     def action6(scheduler, state=None):
         subscription3[0] = s[0].subscribe(results3)
+
     scheduler.schedule_absolute(900, action6)
 
     def action7(scheduler, state=None):
         subscription1[0].dispose()
+
     scheduler.schedule_absolute(600, action7)
 
     def action8(scheduler, state=None):
         subscription2[0].dispose()
+
     scheduler.schedule_absolute(700, action8)
 
     def action9(scheduler, state=None):
         subscription1[0].dispose()
+
     scheduler.schedule_absolute(800, action9)
 
     def action10(scheduler, state=None):
         subscription3[0].dispose()
+
     scheduler.schedule_absolute(950, action10)
 
     scheduler.start()
 
-    assert results1.messages == [
-        on_next(340, 5),
-        on_next(410, 6),
-        on_next(520, 7)]
-    assert results2.messages == [
-        on_next(410, 6),
-        on_next(520, 7),
-        on_next(630, 8)]
-    assert results3.messages == [
-        on_next(940, 11)]
+    assert results1.messages == [on_next(340, 5), on_next(410, 6), on_next(520, 7)]
+    assert results2.messages == [on_next(410, 6), on_next(520, 7), on_next(630, 8)]
+    assert results3.messages == [on_next(940, 11)]
 
 
 def test_finite():
@@ -119,7 +122,7 @@ def test_finite():
         on_completed(630),
         on_next(640, 9),
         on_completed(650),
-        on_error(660, 'error')
+        on_error(660, "error"),
     )
 
     results1 = scheduler.create_observer()
@@ -128,56 +131,59 @@ def test_finite():
 
     def action1(scheduler, state=None):
         s[0] = Subject()
+
     scheduler.schedule_absolute(100, action1)
 
     def action2(scheduler, state=None):
         subscription[0] = xs.subscribe(s[0])
+
     scheduler.schedule_absolute(200, action2)
 
     def action3(scheduler, state=None):
         subscription[0].dispose()
+
     scheduler.schedule_absolute(1000, action3)
 
     def action4(scheduler, state=None):
         subscription1[0] = s[0].subscribe(results1)
+
     scheduler.schedule_absolute(300, action4)
 
     def action5(scheduler, state=None):
         subscription2[0] = s[0].subscribe(results2)
+
     scheduler.schedule_absolute(400, action5)
 
     def action6(scheduler, state=None):
         subscription3[0] = s[0].subscribe(results3)
+
     scheduler.schedule_absolute(900, action6)
 
     def action7(scheduler, state=None):
         subscription1[0].dispose()
+
     scheduler.schedule_absolute(600, action7)
 
     def action8(scheduler, state=None):
         subscription2[0].dispose()
+
     scheduler.schedule_absolute(700, action8)
 
     def action9(scheduler, state=None):
         subscription1[0].dispose()
+
     scheduler.schedule_absolute(800, action9)
 
     def action10(scheduler, state=None):
         subscription3[0].dispose()
+
     scheduler.schedule_absolute(950, action10)
 
     scheduler.start()
 
-    assert results1.messages == [
-        on_next(340, 5),
-        on_next(410, 6),
-        on_next(520, 7)]
-    assert results2.messages == [
-        on_next(410, 6),
-        on_next(520, 7),
-        on_completed(630)]
-    assert results3.messages == [
-        on_completed(900)]
+    assert results1.messages == [on_next(340, 5), on_next(410, 6), on_next(520, 7)]
+    assert results2.messages == [on_next(410, 6), on_next(520, 7), on_completed(630)]
+    assert results3.messages == [on_completed(900)]
 
 
 def test_error():
@@ -186,7 +192,7 @@ def test_error():
     subscription1 = [None]
     subscription2 = [None]
     subscription3 = [None]
-    ex = 'ex'
+    ex = "ex"
 
     scheduler = TestScheduler()
 
@@ -201,7 +207,7 @@ def test_error():
         on_error(630, ex),
         on_next(640, 9),
         on_completed(650),
-        on_error(660, 'foo')
+        on_error(660, "foo"),
     )
 
     results1 = scheduler.create_observer()
@@ -210,42 +216,52 @@ def test_error():
 
     def action(scheduler, state=None):
         s[0] = Subject()
+
     scheduler.schedule_absolute(100, action)
 
     def action1(scheduler, state=None):
         subscription[0] = xs.subscribe(s[0])
+
     scheduler.schedule_absolute(200, action1)
 
     def action2(scheduler, state=None):
         subscription[0].dispose()
+
     scheduler.schedule_absolute(1000, action2)
 
     def action3(scheduler, state=None):
         subscription1[0] = s[0].subscribe(results1)
+
     scheduler.schedule_absolute(300, action3)
 
     def action4(scheduler, state=None):
         subscription2[0] = s[0].subscribe(results2)
+
     scheduler.schedule_absolute(400, action4)
 
     def action5(scheduler, state=None):
         subscription3[0] = s[0].subscribe(results3)
+
     scheduler.schedule_absolute(900, action5)
 
     def action6(scheduler, state=None):
         subscription1[0].dispose()
+
     scheduler.schedule_absolute(600, action6)
 
     def action7(scheduler, state=None):
         subscription2[0].dispose()
+
     scheduler.schedule_absolute(700, action7)
 
     def action8(scheduler, state=None):
         subscription1[0].dispose()
+
     scheduler.schedule_absolute(800, action8)
 
     def action9(scheduler, state=None):
         subscription3[0].dispose()
+
     scheduler.schedule_absolute(950, action9)
 
     scheduler.start()
@@ -264,10 +280,7 @@ def test_canceled():
 
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(
-        on_completed(630),
-        on_next(640, 9),
-        on_completed(650),
-        on_error(660, 'ex')
+        on_completed(630), on_next(640, 9), on_completed(650), on_error(660, "ex")
     )
 
     results1 = scheduler.create_observer()
@@ -276,42 +289,52 @@ def test_canceled():
 
     def action1(scheduler, state=None):
         s[0] = Subject()
+
     scheduler.schedule_absolute(100, action1)
 
     def action2(scheduler, state=None):
         subscription[0] = xs.subscribe(s[0])
+
     scheduler.schedule_absolute(200, action2)
 
     def action3(scheduler, state=None):
         subscription[0].dispose()
+
     scheduler.schedule_absolute(1000, action3)
 
     def action4(scheduler, state=None):
         subscription1[0] = s[0].subscribe(results1)
+
     scheduler.schedule_absolute(300, action4)
 
     def action5(scheduler, state=None):
         subscription2[0] = s[0].subscribe(results2)
+
     scheduler.schedule_absolute(400, action5)
 
     def action6(scheduler, state=None):
         subscription3[0] = s[0].subscribe(results3)
+
     scheduler.schedule_absolute(900, action6)
 
     def action7(scheduler, state=None):
         subscription1[0].dispose()
+
     scheduler.schedule_absolute(600, action7)
 
     def action8(scheduler, state=None):
         subscription2[0].dispose()
+
     scheduler.schedule_absolute(700, action8)
 
     def action9(scheduler, state=None):
         subscription1[0].dispose()
+
     scheduler.schedule_absolute(800, action9)
 
     def action10(scheduler, state=None):
         subscription3[0].dispose()
+
     scheduler.schedule_absolute(950, action10)
 
     scheduler.start()

@@ -26,6 +26,7 @@ class TestFirst_or_default(unittest.TestCase):
     def test_first_or_default_async_empty(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
+
         def create():
             return xs.pipe(ops.first_or_default(None, 0))
 
@@ -36,7 +37,9 @@ class TestFirst_or_default(unittest.TestCase):
 
     def test_first_or_default_async_one(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1), on_next(210, 2), on_completed(250)
+        )
 
         def create():
             return xs.pipe(ops.first_or_default(None, 0))
@@ -48,7 +51,9 @@ class TestFirst_or_default(unittest.TestCase):
 
     def test_first_or_default_async_many(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_completed(250))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1), on_next(210, 2), on_next(220, 3), on_completed(250)
+        )
 
         def create():
             return xs.pipe(ops.first_or_default(None, 0))
@@ -59,7 +64,7 @@ class TestFirst_or_default(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_first_or_default_async_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
 
@@ -73,7 +78,14 @@ class TestFirst_or_default(unittest.TestCase):
 
     def test_first_or_default_async_predicate(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(220, 3),
+            on_next(230, 4),
+            on_next(240, 5),
+            on_completed(250),
+        )
 
         def create():
             def predicate(x):
@@ -88,7 +100,14 @@ class TestFirst_or_default(unittest.TestCase):
 
     def test_first_or_default_async_predicate_none(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(220, 3),
+            on_next(230, 4),
+            on_next(240, 5),
+            on_completed(250),
+        )
 
         def create():
             def predicate(x):
@@ -101,11 +120,12 @@ class TestFirst_or_default(unittest.TestCase):
         assert res.messages == [on_next(250, 0), on_completed(250)]
         assert xs.subscriptions == [subscribe(200, 250)]
 
-
     def test_first_or_default_async_predicate_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_error(220, ex))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1), on_next(210, 2), on_error(220, ex)
+        )
 
         def create():
             def predicate(x):
@@ -118,11 +138,17 @@ class TestFirst_or_default(unittest.TestCase):
         assert res.messages == [on_error(220, ex)]
         assert xs.subscriptions == [subscribe(200, 220)]
 
-
     def test_first_or_default_async_predicate_throws(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(220, 3),
+            on_next(230, 4),
+            on_next(240, 5),
+            on_completed(250),
+        )
 
         def create():
             def predicate(x):
@@ -137,4 +163,3 @@ class TestFirst_or_default(unittest.TestCase):
 
         assert res.messages == [on_error(230, ex)]
         assert xs.subscriptions == [subscribe(200, 230)]
-

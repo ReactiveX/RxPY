@@ -28,6 +28,7 @@ class TestRange(unittest.TestCase):
 
         def create():
             return rx.range(0, 1)
+
         results = scheduler.start(create)
 
         assert results.messages == [on_next(200, 0), on_completed(200)]
@@ -40,12 +41,14 @@ class TestRange(unittest.TestCase):
 
         results = scheduler.start(create)
 
-        assert results.messages == [on_next(200, 10),
-                                    on_next(200, 11),
-                                    on_next(200, 12),
-                                    on_next(200, 13),
-                                    on_next(200, 14),
-                                    on_completed(200)]
+        assert results.messages == [
+            on_next(200, 10),
+            on_next(200, 11),
+            on_next(200, 12),
+            on_next(200, 13),
+            on_next(200, 14),
+            on_completed(200),
+        ]
 
     def test_range_dispose(self):
         scheduler = TestScheduler()
@@ -61,10 +64,15 @@ class TestRange(unittest.TestCase):
         obs = rx.range(1, 4)
 
         results = scheduler.start(lambda: obs.pipe(ops.concat(obs)))
-        assert results.messages == [on_next(200, 1), on_next(200, 2),
-                                    on_next(200, 3), on_next(200, 1),
-                                    on_next(200, 2), on_next(200, 3),
-                                    on_completed(200)]
+        assert results.messages == [
+            on_next(200, 1),
+            on_next(200, 2),
+            on_next(200, 3),
+            on_next(200, 1),
+            on_next(200, 2),
+            on_next(200, 3),
+            on_completed(200),
+        ]
 
     def test_range_only_start(self):
         scheduler = TestScheduler()
@@ -73,12 +81,14 @@ class TestRange(unittest.TestCase):
             return rx.range(5)
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(200, 0),
-                                    on_next(200, 1),
-                                    on_next(200, 2),
-                                    on_next(200, 3),
-                                    on_next(200, 4),
-                                    on_completed(200)]
+        assert results.messages == [
+            on_next(200, 0),
+            on_next(200, 1),
+            on_next(200, 2),
+            on_next(200, 3),
+            on_next(200, 4),
+            on_completed(200),
+        ]
 
     def test_range_step_also(self):
         scheduler = TestScheduler()
@@ -87,9 +97,11 @@ class TestRange(unittest.TestCase):
             return rx.range(0, 10, 2)
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(200, 0),
-                                    on_next(200, 2),
-                                    on_next(200, 4),
-                                    on_next(200, 6),
-                                    on_next(200, 8),
-                                    on_completed(200)]
+        assert results.messages == [
+            on_next(200, 0),
+            on_next(200, 2),
+            on_next(200, 4),
+            on_next(200, 6),
+            on_next(200, 8),
+            on_completed(200),
+        ]

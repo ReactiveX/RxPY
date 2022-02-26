@@ -11,7 +11,6 @@ from rx.scheduler import EventLoopScheduler
 
 
 class TestEventLoopScheduler(unittest.TestCase):
-
     def test_event_loop_now(self):
         scheduler = EventLoopScheduler()
         diff = scheduler.now - default_now()
