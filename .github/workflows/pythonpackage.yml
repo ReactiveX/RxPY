@@ -29,6 +29,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install poetry
+          poetry config installer.parallel false
           poetry install
 
       - name: Check formatting
