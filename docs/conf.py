@@ -20,8 +20,6 @@ import sys
 import guzzle_sphinx_theme
 import tomli
 
-from configparser import ConfigParser
-
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root)
 
