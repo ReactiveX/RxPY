@@ -9,7 +9,6 @@ gevent = pytest.importorskip("gevent")
 
 
 class TestGEventScheduler(unittest.TestCase):
-
     def test_gevent_schedule_now(self):
         scheduler = GEventScheduler(gevent)
         hub = gevent.get_hub()

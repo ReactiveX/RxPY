@@ -8,13 +8,11 @@ from rx.scheduler import VirtualTimeScheduler
 
 
 class VirtualSchedulerTestScheduler(VirtualTimeScheduler):
-
     def add(self, absolute, relative):
         return absolute + relative
 
 
 class TestVirtualTimeScheduler(unittest.TestCase):
-
     def test_virtual_now_noarg(self):
         scheduler = VirtualSchedulerTestScheduler()
         assert scheduler.clock == 0.0

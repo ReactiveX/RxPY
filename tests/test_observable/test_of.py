@@ -18,14 +18,14 @@ class TestOf(unittest.TestCase):
 
         rx.of(1, 2, 3, 4, 5).subscribe(results.append)
 
-        assert(str([1, 2, 3, 4, 5]) == str(results))
+        assert str([1, 2, 3, 4, 5]) == str(results)
 
     def test_of_empty(self):
         results = []
 
         rx.of().subscribe(results.append)
 
-        assert(len(results) == 0)
+        assert len(results) == 0
 
     def teest_of_with_scheduler(self):
         scheduler = TestScheduler()
@@ -41,7 +41,8 @@ class TestOf(unittest.TestCase):
             on_next(203, 3),
             on_next(204, 4),
             on_next(205, 5),
-            on_completed(206)]
+            on_completed(206),
+        ]
 
     def teest_of_with_scheduler_empty(self):
         scheduler = TestScheduler()
@@ -51,5 +52,4 @@ class TestOf(unittest.TestCase):
 
         results = scheduler.start(create=create)
 
-        assert results.messages == [
-            on_completed(201)]
+        assert results.messages == [on_completed(201)]

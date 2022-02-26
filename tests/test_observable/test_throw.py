@@ -24,7 +24,7 @@ def _raise(ex):
 class TestThrow(unittest.TestCase):
     def test_throw_exception_basic(self):
         scheduler = TestScheduler()
-        ex = 'ex'
+        ex = "ex"
 
         def factory():
             return throw(ex)
@@ -36,14 +36,16 @@ class TestThrow(unittest.TestCase):
         scheduler = TestScheduler()
 
         def factory():
-            return throw('ex')
+            return throw("ex")
 
         results = scheduler.start(factory, disposed=200)
         assert results.messages == []
 
     def test_throw_observer_throws(self):
         scheduler = TestScheduler()
-        xs = throw('ex')
-        xs.subscribe(lambda x: None, lambda ex: _raise('ex'), lambda: None, scheduler=scheduler)
+        xs = throw("ex")
+        xs.subscribe(
+            lambda x: None, lambda ex: _raise("ex"), lambda: None, scheduler=scheduler
+        )
 
         self.assertRaises(RxException, scheduler.start)

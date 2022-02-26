@@ -30,7 +30,6 @@ def from_days(days):
 
 
 class Timestamped(object):
-
     def __init__(self, value, timestamp):
         self.value = value
         self.timestamp = timestamp
@@ -49,7 +48,6 @@ class Timestamped(object):
 
 
 class TestHistoricalScheduler(unittest.TestCase):
-
     def test_ctor(self):
         s = HistoricalScheduler()
         self.assertEqual(UTC_ZERO, s.clock)
@@ -87,12 +85,15 @@ class TestHistoricalScheduler(unittest.TestCase):
         self.assertEqual(time(6), s.now)
         self.assertEqual(time(6), s.clock)
 
-        assert_equals(list, [
-            Timestamped(1, time(0)),
-            Timestamped(2, time(1)),
-            Timestamped(3, time(3)),
-            Timestamped(4, time(6))
-        ])
+        assert_equals(
+            list,
+            [
+                Timestamped(1, time(0)),
+                Timestamped(2, time(1)),
+                Timestamped(3, time(3)),
+                Timestamped(4, time(6)),
+            ],
+        )
 
     def test_order(self):
         s = HistoricalScheduler()
@@ -108,19 +109,24 @@ class TestHistoricalScheduler(unittest.TestCase):
 
         s.start()
 
-        assert_equals(list, [
-            Timestamped(0, time(1)),
-            Timestamped(1, time(1)),
-            Timestamped(2, time(2)),
-            Timestamped(3, time(3))
-        ])
+        assert_equals(
+            list,
+            [
+                Timestamped(0, time(1)),
+                Timestamped(1, time(1)),
+                Timestamped(2, time(2)),
+                Timestamped(3, time(3)),
+            ],
+        )
 
     def test_cancellation(self):
         s = HistoricalScheduler()
 
         list = []
 
-        d = s.schedule_absolute(time(2), lambda a, b: list.append(Timestamped(2, s.now)))
+        d = s.schedule_absolute(
+            time(2), lambda a, b: list.append(Timestamped(2, s.now))
+        )
 
         def action(scheduler, state):
             list.append(Timestamped(0, s.now))
@@ -130,9 +136,7 @@ class TestHistoricalScheduler(unittest.TestCase):
 
         s.start()
 
-        assert_equals(list, [
-            Timestamped(0, time(1))
-        ])
+        assert_equals(list, [Timestamped(0, time(1))])
 
     def test_advance_to(self):
         s = HistoricalScheduler()
@@ -150,22 +154,20 @@ class TestHistoricalScheduler(unittest.TestCase):
         self.assertEqual(time(8), s.now)
         self.assertEqual(time(8), s.clock)
 
-        assert_equals(list, [
-            Timestamped(0, time(0)),
-            Timestamped(1, time(1)),
-            Timestamped(2, time(2))
-        ])
+        assert_equals(
+            list,
+            [Timestamped(0, time(0)), Timestamped(1, time(1)), Timestamped(2, time(2))],
+        )
 
         s.advance_to(time(8))
 
         self.assertEqual(time(8), s.now)
         self.assertEqual(time(8), s.clock)
 
-        assert_equals(list, [
-            Timestamped(0, time(0)),
-            Timestamped(1, time(1)),
-            Timestamped(2, time(2))
-        ])
+        assert_equals(
+            list,
+            [Timestamped(0, time(0)), Timestamped(1, time(1)), Timestamped(2, time(2))],
+        )
 
         s.schedule_absolute(time(7), lambda a, b: list.append(Timestamped(7, s.now)))
         s.schedule_absolute(time(8), lambda a, b: list.append(Timestamped(8, s.now)))
@@ -173,40 +175,45 @@ class TestHistoricalScheduler(unittest.TestCase):
         self.assertEqual(time(8), s.now)
         self.assertEqual(time(8), s.clock)
 
-        assert_equals(list, [
-            Timestamped(0, time(0)),
-            Timestamped(1, time(1)),
-            Timestamped(2, time(2))
-        ])
+        assert_equals(
+            list,
+            [Timestamped(0, time(0)), Timestamped(1, time(1)), Timestamped(2, time(2))],
+        )
 
         s.advance_to(time(10))
 
         self.assertEqual(time(10), s.now)
         self.assertEqual(time(10), s.clock)
 
-        assert_equals(list, [
-            Timestamped(0, time(0)),
-            Timestamped(1, time(1)),
-            Timestamped(2, time(2)),
-            Timestamped(7, time(8)),
-            Timestamped(8, time(8)),
-            Timestamped(10, time(10))
-        ])
+        assert_equals(
+            list,
+            [
+                Timestamped(0, time(0)),
+                Timestamped(1, time(1)),
+                Timestamped(2, time(2)),
+                Timestamped(7, time(8)),
+                Timestamped(8, time(8)),
+                Timestamped(10, time(10)),
+            ],
+        )
 
         s.advance_to(time(100))
 
         self.assertEqual(time(100), s.now)
         self.assertEqual(time(100), s.clock)
 
-        assert_equals(list, [
-            Timestamped(0, time(0)),
-            Timestamped(1, time(1)),
-            Timestamped(2, time(2)),
-            Timestamped(7, time(8)),
-            Timestamped(8, time(8)),
-            Timestamped(10, time(10)),
-            Timestamped(11, time(11))
-        ])
+        assert_equals(
+            list,
+            [
+                Timestamped(0, time(0)),
+                Timestamped(1, time(1)),
+                Timestamped(2, time(2)),
+                Timestamped(7, time(8)),
+                Timestamped(8, time(8)),
+                Timestamped(10, time(10)),
+                Timestamped(11, time(11)),
+            ],
+        )
 
     def test_advance_by(self):
         s = HistoricalScheduler()
@@ -224,11 +231,10 @@ class TestHistoricalScheduler(unittest.TestCase):
         self.assertEqual(time(8), s.now)
         self.assertEqual(time(8), s.clock)
 
-        assert_equals(list, [
-            Timestamped(0, time(0)),
-            Timestamped(1, time(1)),
-            Timestamped(2, time(2))
-        ])
+        assert_equals(
+            list,
+            [Timestamped(0, time(0)), Timestamped(1, time(1)), Timestamped(2, time(2))],
+        )
 
         s.schedule_absolute(time(7), lambda a, b: list.append(Timestamped(7, s.now)))
         s.schedule_absolute(time(8), lambda a, b: list.append(Timestamped(8, s.now)))
@@ -236,51 +242,55 @@ class TestHistoricalScheduler(unittest.TestCase):
         self.assertEqual(time(8), s.now)
         self.assertEqual(time(8), s.clock)
 
-        assert_equals(list, [
-            Timestamped(0, time(0)),
-            Timestamped(1, time(1)),
-            Timestamped(2, time(2))
-        ])
+        assert_equals(
+            list,
+            [Timestamped(0, time(0)), Timestamped(1, time(1)), Timestamped(2, time(2))],
+        )
 
         s.advance_by(timedelta(0))
 
         self.assertEqual(time(8), s.now)
         self.assertEqual(time(8), s.clock)
 
-        assert_equals(list, [
-            Timestamped(0, time(0)),
-            Timestamped(1, time(1)),
-            Timestamped(2, time(2))
-        ])
+        assert_equals(
+            list,
+            [Timestamped(0, time(0)), Timestamped(1, time(1)), Timestamped(2, time(2))],
+        )
 
         s.advance_by(from_days(2))
 
         self.assertEqual(time(10), s.now)
         self.assertEqual(time(10), s.clock)
 
-        assert_equals(list, [
-            Timestamped(0, time(0)),
-            Timestamped(1, time(1)),
-            Timestamped(2, time(2)),
-            Timestamped(7, time(8)),
-            Timestamped(8, time(8)),
-            Timestamped(10, time(10))
-        ])
+        assert_equals(
+            list,
+            [
+                Timestamped(0, time(0)),
+                Timestamped(1, time(1)),
+                Timestamped(2, time(2)),
+                Timestamped(7, time(8)),
+                Timestamped(8, time(8)),
+                Timestamped(10, time(10)),
+            ],
+        )
 
         s.advance_by(from_days(90))
 
         self.assertEqual(time(100), s.now)
         self.assertEqual(time(100), s.clock)
 
-        assert_equals(list, [
-            Timestamped(0, time(0)),
-            Timestamped(1, time(1)),
-            Timestamped(2, time(2)),
-            Timestamped(7, time(8)),
-            Timestamped(8, time(8)),
-            Timestamped(10, time(10)),
-            Timestamped(11, time(11))
-        ])
+        assert_equals(
+            list,
+            [
+                Timestamped(0, time(0)),
+                Timestamped(1, time(1)),
+                Timestamped(2, time(2)),
+                Timestamped(7, time(8)),
+                Timestamped(8, time(8)),
+                Timestamped(10, time(10)),
+                Timestamped(11, time(11)),
+            ],
+        )
 
     def test_is_enabled(self):
         s = HistoricalScheduler()
@@ -323,7 +333,7 @@ class TestHistoricalScheduler(unittest.TestCase):
         s.advance_to(s.now + timedelta(5 * 6000))
 
         self.assertEqual(2, n[0])
-    
+
     def test_schedule_relative_with_timedelta(self):
         s = HistoricalScheduler()
         n = 0
@@ -331,7 +341,7 @@ class TestHistoricalScheduler(unittest.TestCase):
         def action(scheduler, state):
             nonlocal n
             n += 1
-        
+
         s.schedule_relative(timedelta(2), action)
 
         s.advance_by(timedelta(1))
@@ -349,7 +359,7 @@ class TestHistoricalScheduler(unittest.TestCase):
         def action(scheduler, state):
             nonlocal n
             n += 1
-        
+
         s.schedule_relative(1.0, action)
 
         s.advance_by(0.5)

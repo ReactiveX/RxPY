@@ -10,7 +10,6 @@ from rx.scheduler.scheduler import Scheduler
 
 
 class ScheduledItemTestScheduler(Scheduler):
-
     def __init__(self):
         super()
         self.action = None
@@ -34,7 +33,6 @@ class ScheduledItemTestScheduler(Scheduler):
 
 
 class TestScheduledItem(unittest.TestCase):
-
     def test_scheduleditem_invoke(self):
         scheduler = ScheduledItemTestScheduler()
         disposable = Disposable()

@@ -10,7 +10,6 @@ thread_pool_scheduler = ThreadPoolScheduler()
 
 
 class TestThreadPoolScheduler(unittest.TestCase):
-
     def test_threadpool_now(self):
         scheduler = ThreadPoolScheduler()
         diff = scheduler.now - default_now()

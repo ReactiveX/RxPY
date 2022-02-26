@@ -18,7 +18,9 @@ class Timestamp(object):
     def __init__(self, value, timestamp):
         if isinstance(timestamp, datetime):
             timestamp = timestamp - datetime.utcfromtimestamp(0)
-            timestamp = int(timestamp.seconds)  # FIXME: Must fix when tests run at fraction of seconds.
+            timestamp = int(
+                timestamp.seconds
+            )  # FIXME: Must fix when tests run at fraction of seconds.
 
         self.value = value
         self.timestamp = timestamp
@@ -31,13 +33,17 @@ class Timestamp(object):
 
 
 class TestTimeInterval(unittest.TestCase):
-
     def test_timestamp_regular(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-                on_next(150, 1), on_next(210, 2), on_next(230, 3),
-                on_next(260, 4), on_next(300, 5), on_next(350, 6),
-                on_completed(400))
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(230, 3),
+            on_next(260, 4),
+            on_next(300, 5),
+            on_next(350, 6),
+            on_completed(400),
+        )
 
         def create():
             def mapper(x):
@@ -50,9 +56,12 @@ class TestTimeInterval(unittest.TestCase):
 
         results = scheduler.start(create)
         assert results.messages == [
-            on_next(210, Timestamp(2, 210)), on_next(230, Timestamp(3, 230)),
-            on_next(260, Timestamp(4, 260)), on_next(300, Timestamp(5, 300)),
-            on_next(350, Timestamp(6, 350)), on_completed(400)
+            on_next(210, Timestamp(2, 210)),
+            on_next(230, Timestamp(3, 230)),
+            on_next(260, Timestamp(4, 260)),
+            on_next(300, Timestamp(5, 300)),
+            on_next(350, Timestamp(6, 350)),
+            on_completed(400),
         ]
 
     def test_timestamp_empty(self):
@@ -65,7 +74,7 @@ class TestTimeInterval(unittest.TestCase):
         assert results.messages == [on_completed(200)]
 
     def test_timestamp_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
 
         def create():

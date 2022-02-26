@@ -21,7 +21,9 @@ class TestCount(unittest.TestCase):
 
     def test_count_empty_ii(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1), on_next(210, 2), on_completed(250)
+        )
 
         def create():
             return xs.pipe(_.count())
@@ -36,12 +38,13 @@ class TestCount(unittest.TestCase):
             on_next(210, 2),
             on_next(220, 3),
             on_next(230, 4),
-            on_completed(250))
+            on_completed(250),
+        )
         res = scheduler.start(create=lambda: xs.pipe(_.count())).messages
         assert res == [on_next(250, 3), on_completed(250)]
 
     def test_count_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
         res = scheduler.start(create=lambda: xs.pipe(_.count())).messages
@@ -79,7 +82,9 @@ class TestCount(unittest.TestCase):
 
     def test_count_predicate_return_true(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1), on_next(210, 2), on_completed(250)
+        )
 
         def create():
             return xs.pipe(_.count(lambda _: True))
@@ -91,7 +96,9 @@ class TestCount(unittest.TestCase):
 
     def test_count_predicate_return_false(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1), on_next(210, 2), on_completed(250)
+        )
 
         def create():
             return xs.pipe(_.count(lambda _: False))
@@ -108,7 +115,8 @@ class TestCount(unittest.TestCase):
             on_next(210, 2),
             on_next(220, 3),
             on_next(230, 4),
-            on_completed(250))
+            on_completed(250),
+        )
 
         def create():
             return xs.pipe(_.count(lambda x: x < 10))
@@ -125,7 +133,8 @@ class TestCount(unittest.TestCase):
             on_next(210, 2),
             on_next(220, 3),
             on_next(230, 4),
-            on_completed(250))
+            on_completed(250),
+        )
 
         def create():
             return xs.pipe(_.count(lambda x: x > 10))
@@ -142,7 +151,8 @@ class TestCount(unittest.TestCase):
             on_next(210, 2),
             on_next(220, 3),
             on_next(230, 4),
-            on_completed(250))
+            on_completed(250),
+        )
 
         def create():
             return xs.pipe(_.count(lambda x: x % 2 == 0))
@@ -153,7 +163,7 @@ class TestCount(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_count_predicate_throw_true(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
 
@@ -166,7 +176,7 @@ class TestCount(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_count_predicate_throw_false(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
 
@@ -191,9 +201,11 @@ class TestCount(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_count_predicate_predicate_throws(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(230, 3), on_completed(240))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1), on_next(210, 2), on_next(230, 3), on_completed(240)
+        )
 
         def create():
             def predicate(x):

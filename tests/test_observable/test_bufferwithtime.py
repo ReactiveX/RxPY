@@ -25,12 +25,13 @@ class TestBufferWithCount(unittest.TestCase):
             on_next(381, 7),
             on_next(421, 8),
             on_next(471, 9),
-            on_completed(600))
+            on_completed(600),
+        )
 
         def create():
             return xs.pipe(
                 ops.buffer_with_time(100, 70),
-                ops.map(lambda x: ",".join([str(a) for a in x]))
+                ops.map(lambda x: ",".join([str(a) for a in x])),
             )
 
         results = scheduler.start(create)
@@ -42,11 +43,12 @@ class TestBufferWithCount(unittest.TestCase):
             on_next(510, "8,9"),
             on_next(580, ""),
             on_next(600, ""),
-            on_completed(600)]
+            on_completed(600),
+        ]
         assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_buffer_with_time_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
             on_next(100, 1),
@@ -58,12 +60,13 @@ class TestBufferWithCount(unittest.TestCase):
             on_next(380, 7),
             on_next(420, 8),
             on_next(470, 9),
-            on_error(600, ex))
+            on_error(600, ex),
+        )
 
         def create():
             return xs.pipe(
                 ops.buffer_with_time(100, 70),
-                ops.map(lambda x: ",".join([str(a) for a in x]))
+                ops.map(lambda x: ",".join([str(a) for a in x])),
             )
 
         results = scheduler.start(create)
@@ -74,7 +77,8 @@ class TestBufferWithCount(unittest.TestCase):
             on_next(440, "6,7,8"),
             on_next(510, "8,9"),
             on_next(580, ""),
-            on_error(600, ex)]
+            on_error(600, ex),
+        ]
         assert xs.subscriptions == [subscribe(200, 600)]
 
     def test_buffer_with_time_disposed(self):
@@ -89,12 +93,13 @@ class TestBufferWithCount(unittest.TestCase):
             on_next(381, 7),
             on_next(421, 8),
             on_next(471, 9),
-            on_completed(600))
+            on_completed(600),
+        )
 
         def create():
             return xs.pipe(
                 ops.buffer_with_time(100, 70),
-                ops.map(lambda x: ",".join([str(a) for a in x]))
+                ops.map(lambda x: ",".join([str(a) for a in x])),
             )
 
         results = scheduler.start(create, disposed=370)
@@ -113,12 +118,13 @@ class TestBufferWithCount(unittest.TestCase):
             on_next(380, 7),
             on_next(420, 8),
             on_next(470, 9),
-            on_completed(600))
+            on_completed(600),
+        )
 
         def create():
             return xs.pipe(
                 ops.buffer_with_time(100),
-                ops.map(lambda x: ",".join([str(a) for a in x]))
+                ops.map(lambda x: ",".join([str(a) for a in x])),
             )
 
         results = scheduler.start(create)
@@ -128,5 +134,6 @@ class TestBufferWithCount(unittest.TestCase):
             on_next(400, "5,6,7"),
             on_next(500, "8,9"),
             on_next(600, ""),
-            on_completed(600)]
+            on_completed(600),
+        ]
         assert xs.subscriptions == [subscribe(200, 600)]

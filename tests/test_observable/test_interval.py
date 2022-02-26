@@ -30,11 +30,16 @@ class TestTimeInterval(unittest.TestCase):
 
         results = scheduler.start(create)
         assert results.messages == [
-                on_next(300, 0), on_next(400, 1), on_next(500, 2),
-                on_next(600, 3), on_next(700, 4), on_next(800, 5),
-                on_next(900, 6)]
+            on_next(300, 0),
+            on_next(400, 1),
+            on_next(500, 2),
+            on_next(600, 3),
+            on_next(700, 4),
+            on_next(800, 5),
+            on_next(900, 6),
+        ]
 
-    #def test_interval_timespan_zero(self):
+    # def test_interval_timespan_zero(self):
     #    scheduler = TestScheduler()
 
     #    def create():
@@ -46,7 +51,7 @@ class TestTimeInterval(unittest.TestCase):
     #            on_next(204, 3), on_next(205, 4), on_next(206, 5),
     #            on_next(207, 6), on_next(208, 7), on_next(209, 8)]
 
-    #def test_interval_timespan_negative(self):
+    # def test_interval_timespan_negative(self):
     #    scheduler = TestScheduler()
 
     #    def create():

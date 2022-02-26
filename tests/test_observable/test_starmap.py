@@ -18,6 +18,7 @@ created = ReactiveTest.created
 class RxException(Exception):
     pass
 
+
 # Helper function for raising exceptions within lambdas
 
 
@@ -26,7 +27,6 @@ def _raise(ex):
 
 
 class TestSelect(unittest.TestCase):
-
     def test_starmap_never(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable()
@@ -51,7 +51,7 @@ class TestSelect(unittest.TestCase):
             # 100 create
             # 200 subscribe
             on_completed(300),
-            )
+        )
 
         invoked = [0]
 
@@ -71,27 +71,21 @@ class TestSelect(unittest.TestCase):
         mapper = ops.starmap(lambda x, y: (x, y))
 
         with self.assertRaises(RxException):
-            return_value((1, 10)).pipe(
-                mapper
-            ).subscribe(lambda x: _raise("ex"))
+            return_value((1, 10)).pipe(mapper).subscribe(lambda x: _raise("ex"))
 
         with self.assertRaises(RxException):
-            throw('ex').pipe(
-                mapper
-            ).subscribe(on_error=lambda ex: _raise(ex))
+            throw("ex").pipe(mapper).subscribe(on_error=lambda ex: _raise(ex))
 
         with self.assertRaises(RxException):
-            empty().pipe(
-                mapper
-            ).subscribe(lambda x: x, lambda ex: ex, lambda: _raise('ex'))
+            empty().pipe(mapper).subscribe(
+                lambda x: x, lambda ex: ex, lambda: _raise("ex")
+            )
 
         def subscribe(observer, scheduler=None):
-            _raise('ex')
+            _raise("ex")
 
         with self.assertRaises(RxException):
-            create(subscribe).pipe(
-                mapper
-            ).subscribe()
+            create(subscribe).pipe(mapper).subscribe()
 
     def test_starmap_dispose_inside_mapper(self):
         scheduler = TestScheduler()
@@ -101,7 +95,8 @@ class TestSelect(unittest.TestCase):
             # 200 subscribe
             on_next(210, (2, 20)),
             on_next(310, (3, 30)),
-            on_next(410, (4, 40)))
+            on_next(410, (4, 40)),
+        )
 
         results = scheduler.create_observer()
         d = SerialDisposable()
@@ -113,9 +108,7 @@ class TestSelect(unittest.TestCase):
                 d.dispose()
             return x + y
 
-        d.disposable = xs.pipe(
-            ops.starmap(mapper)
-        ).subscribe(results, scheduler)
+        d.disposable = xs.pipe(ops.starmap(mapper)).subscribe(results, scheduler)
 
         def action(scheduler, state):
             return d.dispose()
@@ -123,9 +116,7 @@ class TestSelect(unittest.TestCase):
         scheduler.schedule_absolute(ReactiveTest.disposed, action)
         scheduler.start()
 
-        assert results.messages == [
-                on_next(110, 11),
-                on_next(210, 22)]
+        assert results.messages == [on_next(110, 11), on_next(210, 22)]
 
         assert xs.subscriptions == [ReactiveTest.subscribe(0, 310)]
         assert invoked[0] == 3
@@ -143,7 +134,8 @@ class TestSelect(unittest.TestCase):
             on_completed(400),
             on_next(410, (-1, -10)),
             on_completed(420),
-            on_error(430, 'ex'))
+            on_error(430, "ex"),
+        )
 
         invoked = [0]
 
@@ -160,7 +152,8 @@ class TestSelect(unittest.TestCase):
             on_next(240, 33),
             on_next(290, 44),
             on_next(350, 55),
-            on_completed(400)]
+            on_completed(400),
+        ]
 
         assert xs.subscriptions == [ReactiveTest.subscribe(200, 400)]
         assert invoked[0] == 4
@@ -175,7 +168,8 @@ class TestSelect(unittest.TestCase):
             on_next(210, (2, 20)),
             on_next(240, (3, 30)),
             on_next(290, (4, 40)),
-            on_next(350, (5, 50)))
+            on_next(350, (5, 50)),
+        )
 
         def factory():
             def mapper(x, y):
@@ -189,7 +183,8 @@ class TestSelect(unittest.TestCase):
             on_next(210, 22),
             on_next(240, 33),
             on_next(290, 44),
-            on_next(350, 55)]
+            on_next(350, 55),
+        ]
 
         assert xs.subscriptions == [subscribe(200, 1000)]
         assert invoked[0] == 4
@@ -207,7 +202,8 @@ class TestSelect(unittest.TestCase):
             on_completed(400),
             on_next(410, (-1, -10)),
             on_completed(420),
-            on_error(430, 'ex'))
+            on_error(430, "ex"),
+        )
 
         def factory():
             return xs.pipe(ops.starmap())
@@ -218,10 +214,10 @@ class TestSelect(unittest.TestCase):
             on_next(240, (3, 30)),
             on_next(290, (4, 40)),
             on_next(350, (5, 50)),
-            on_completed(400)]
+            on_completed(400),
+        ]
 
         assert xs.subscriptions == [ReactiveTest.subscribe(200, 400)]
-
 
     def test_starmap_mapper_with_one_element(self):
         scheduler = TestScheduler()
@@ -236,7 +232,8 @@ class TestSelect(unittest.TestCase):
             on_completed(400),
             on_next(410, (-1,)),
             on_completed(420),
-            on_error(430, 'ex'))
+            on_error(430, "ex"),
+        )
 
         invoked = [0]
 
@@ -253,7 +250,8 @@ class TestSelect(unittest.TestCase):
             on_next(240, 30),
             on_next(290, 40),
             on_next(350, 50),
-            on_completed(400)]
+            on_completed(400),
+        ]
 
         assert xs.subscriptions == [ReactiveTest.subscribe(200, 400)]
         assert invoked[0] == 4
@@ -271,7 +269,8 @@ class TestSelect(unittest.TestCase):
             on_completed(400),
             on_next(410, (-1, -10, -100)),
             on_completed(420),
-            on_error(430, 'ex'))
+            on_error(430, "ex"),
+        )
 
         invoked = [0]
 
@@ -288,7 +287,8 @@ class TestSelect(unittest.TestCase):
             on_next(240, 333),
             on_next(290, 444),
             on_next(350, 555),
-            on_completed(400)]
+            on_completed(400),
+        ]
 
         assert xs.subscriptions == [ReactiveTest.subscribe(200, 400)]
         assert invoked[0] == 4
@@ -306,7 +306,8 @@ class TestSelect(unittest.TestCase):
             on_completed(400),
             on_next(410, (-1, -10)),
             on_completed(420),
-            on_error(430, 'ex'))
+            on_error(430, "ex"),
+        )
 
         invoked = [0]
 
@@ -323,14 +324,15 @@ class TestSelect(unittest.TestCase):
             on_next(240, 33),
             on_next(290, 44),
             on_next(350, 55),
-            on_completed(400)]
+            on_completed(400),
+        ]
 
         assert xs.subscriptions == [ReactiveTest.subscribe(200, 400)]
         assert invoked[0] == 4
 
     def test_starmap_error(self):
         scheduler = TestScheduler()
-        ex = 'ex'
+        ex = "ex"
         invoked = [0]
         xs = scheduler.create_hot_observable(
             # 100 create
@@ -343,12 +345,14 @@ class TestSelect(unittest.TestCase):
             on_error(400, ex),
             on_next(410, (-1, -10)),
             on_completed(420),
-            on_error(430, ex))
+            on_error(430, ex),
+        )
 
         def factory():
             def mapper(x, y):
                 invoked[0] += 1
                 return x + y
+
             return xs.pipe(ops.starmap(mapper))
 
         results = scheduler.start(factory)
@@ -357,7 +361,8 @@ class TestSelect(unittest.TestCase):
             on_next(240, 33),
             on_next(290, 44),
             on_next(350, 55),
-            on_error(400, ex)]
+            on_error(400, ex),
+        ]
 
         assert xs.subscriptions == [subscribe(200, 400)]
         assert invoked[0] == 4
@@ -365,7 +370,7 @@ class TestSelect(unittest.TestCase):
     def test_starmap_mapper_error(self):
         scheduler = TestScheduler()
         invoked = [0]
-        ex = 'ex'
+        ex = "ex"
         xs = scheduler.create_hot_observable(
             # 100 create
             on_next(180, (1, 10)),
@@ -377,7 +382,8 @@ class TestSelect(unittest.TestCase):
             on_completed(400),
             on_next(410, (-1, -10)),
             on_completed(420),
-            on_error(430, ex))
+            on_error(430, ex),
+        )
 
         def factory():
             def mapper(x, y):
@@ -386,17 +392,19 @@ class TestSelect(unittest.TestCase):
                     raise Exception(ex)
 
                 return x + y
+
             return xs.pipe(ops.starmap(mapper))
 
         results = scheduler.start(factory)
         assert results.messages == [
             on_next(210, 22),
             on_next(240, 33),
-            on_error(290, ex)]
+            on_error(290, ex),
+        ]
 
         assert xs.subscriptions == [subscribe(200, 290)]
         assert invoked[0] == 3
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

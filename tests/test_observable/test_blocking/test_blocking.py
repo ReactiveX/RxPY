@@ -26,7 +26,6 @@ def _raise(ex):
 
 
 class TestBlocking(unittest.TestCase):
-
     def test_run_empty(self):
         with pytest.raises(SequenceContainsNoElementsError):
             rx.empty().run()

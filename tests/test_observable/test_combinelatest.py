@@ -23,7 +23,6 @@ def _raise(ex):
 
 
 class TestCombineLatest(unittest.TestCase):
-
     def test_combine_latest_never_never(self):
         scheduler = TestScheduler()
         e1 = rx.never()
@@ -33,7 +32,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -48,7 +47,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -63,7 +62,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.pipe(
                 ops.combine_latest(e1),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -79,7 +78,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.pipe(
                 ops.combine_latest(e1),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(210)]
@@ -95,7 +94,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(215)]
@@ -111,7 +110,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.pipe(
                 ops.combine_latest(e1),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(215)]
@@ -126,7 +125,7 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -141,7 +140,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.pipe(
                 ops.combine_latest(e1),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -157,13 +156,13 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_next(220, 2 + 3), on_completed(240)]
 
     def test_combine_latest_empty_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_completed(230)]
         msgs2 = [on_next(150, 1), on_error(220, ex)]
@@ -174,13 +173,13 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
 
     def test_combine_latest_error_empty(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_completed(230)]
         msgs2 = [on_next(150, 1), on_error(220, ex)]
@@ -191,13 +190,13 @@ class TestCombineLatest(unittest.TestCase):
             return e2.pipe(
                 ops.combine_latest(e1),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
 
     def test_combine_latest_return_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(230)]
         msgs2 = [on_next(150, 1), on_error(220, ex)]
@@ -208,13 +207,13 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
 
     def test_combine_latest_throw_return(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(230)]
         msgs2 = [on_next(150, 1), on_error(220, ex)]
@@ -225,14 +224,14 @@ class TestCombineLatest(unittest.TestCase):
             return e2.pipe(
                 ops.combine_latest(e1),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
 
     def test_combine_latest_throw_on_error(self):
-        ex1 = 'ex1'
-        ex2 = 'ex2'
+        ex1 = "ex1"
+        ex2 = "ex2"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_error(220, ex1)]
         msgs2 = [on_next(150, 1), on_error(230, ex2)]
@@ -243,14 +242,14 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex1)]
 
     def test_combine_latest_error_on_error(self):
-        ex1 = 'ex1'
-        ex2 = 'ex2'
+        ex1 = "ex1"
+        ex2 = "ex2"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_error(220, ex1)]
         msgs2 = [on_next(150, 1), on_error(230, ex2)]
@@ -261,14 +260,14 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex1)]
 
     def test_combine_latest_throw_error(self):
-        ex1 = 'ex1'
-        ex2 = 'ex2'
+        ex1 = "ex1"
+        ex2 = "ex2"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_error(220, ex1)]
         msgs2 = [on_next(150, 1), on_error(230, ex2)]
@@ -279,13 +278,13 @@ class TestCombineLatest(unittest.TestCase):
             return e2.pipe(
                 ops.combine_latest(e1),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex1)]
 
     def test_combine_latest_never_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_error(220, ex)]
         e1 = rx.never()
@@ -295,13 +294,13 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
 
     def test_combine_latest_throw_never(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_error(220, ex)]
         e1 = rx.never()
@@ -311,13 +310,13 @@ class TestCombineLatest(unittest.TestCase):
             return e2.pipe(
                 ops.combine_latest(e1),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
 
     def test_combine_latest_some_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(230)]
         msgs2 = [on_next(150, 1), on_error(220, ex)]
@@ -328,13 +327,13 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
 
     def test_combine_latest_throw_some(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(230)]
         msgs2 = [on_next(150, 1), on_error(220, ex)]
@@ -345,13 +344,13 @@ class TestCombineLatest(unittest.TestCase):
             return e2.pipe(
                 ops.combine_latest(e1),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
 
     def test_combine_latest_throw_after_complete_left(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(220)]
         msgs2 = [on_next(150, 1), on_error(230, ex)]
@@ -362,13 +361,13 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(230, ex)]
 
     def test_combine_latest_throw_after_complete_right(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(220)]
         msgs2 = [on_next(150, 1), on_error(230, ex)]
@@ -379,7 +378,7 @@ class TestCombineLatest(unittest.TestCase):
             return e2.pipe(
                 ops.combine_latest(e1),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(230, ex)]
@@ -387,8 +386,14 @@ class TestCombineLatest(unittest.TestCase):
     def test_combine_latest_interleaved_with_tail(self):
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(215, 2), on_next(225, 4), on_completed(230)]
-        msgs2 = [on_next(150, 1), on_next(220, 3), on_next(230, 5),
-                 on_next(235, 6), on_next(240, 7), on_completed(250)]
+        msgs2 = [
+            on_next(150, 1),
+            on_next(220, 3),
+            on_next(230, 5),
+            on_next(235, 6),
+            on_next(240, 7),
+            on_completed(250),
+        ]
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
 
@@ -396,12 +401,17 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [
-                on_next(220, 2 + 3), on_next(225, 3 + 4), on_next(230, 4 + 5),
-                on_next(235, 4 + 6), on_next(240, 4 + 7), on_completed(250)]
+            on_next(220, 2 + 3),
+            on_next(225, 3 + 4),
+            on_next(230, 4 + 5),
+            on_next(235, 4 + 6),
+            on_next(240, 4 + 7),
+            on_completed(250),
+        ]
 
     def test_combine_latest_consecutive(self):
         scheduler = TestScheduler()
@@ -414,13 +424,17 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(235, 4 + 6), on_next(240, 4 + 7), on_completed(250)]
+        assert results.messages == [
+            on_next(235, 4 + 6),
+            on_next(240, 4 + 7),
+            on_completed(250),
+        ]
 
     def test_combine_latest_consecutive_end_with_error_left(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(215, 2), on_next(225, 4), on_error(230, ex)]
         msgs2 = [on_next(150, 1), on_next(235, 6), on_next(240, 7), on_completed(250)]
@@ -431,13 +445,13 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(230, ex)]
 
     def test_combine_latest_consecutive_end_with_error_right(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(215, 2), on_next(225, 4), on_completed(230)]
         msgs2 = [on_next(150, 1), on_next(235, 6), on_next(240, 7), on_error(245, ex)]
@@ -448,13 +462,17 @@ class TestCombineLatest(unittest.TestCase):
             return e2.pipe(
                 ops.combine_latest(e1),
                 ops.map(sum),
-                )
+            )
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(235, 4 + 6), on_next(240, 4 + 7), on_error(245, ex)]
+        assert results.messages == [
+            on_next(235, 4 + 6),
+            on_next(240, 4 + 7),
+            on_error(245, ex),
+        ]
 
     def test_combine_latest_mapper_throws(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(230)]
         msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(240)]
@@ -465,11 +483,11 @@ class TestCombineLatest(unittest.TestCase):
             return e1.pipe(
                 ops.combine_latest(e2),
                 ops.map(lambda xy: _raise(ex)),
-                )
+            )
 
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

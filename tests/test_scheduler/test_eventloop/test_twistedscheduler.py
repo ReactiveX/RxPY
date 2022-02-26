@@ -10,7 +10,6 @@ from twisted.internet import defer, reactor  # isort: skip
 from twisted.trial import unittest  # isort: skip
 
 
-
 class TestTwistedScheduler(unittest.TestCase):
     def test_twisted_schedule_now(self):
         scheduler = TwistedScheduler(reactor)

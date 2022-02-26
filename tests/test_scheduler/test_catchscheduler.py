@@ -9,7 +9,6 @@ class MyException(Exception):
 
 
 class CatchSchedulerTestScheduler(VirtualTimeScheduler):
-
     def __init__(self, initial_clock=0.0):
         super().__init__(initial_clock)
         self.exc = None
@@ -26,6 +25,7 @@ class CatchSchedulerTestScheduler(VirtualTimeScheduler):
                 self.exc = e
             finally:
                 return ret
+
         return _action
 
     def schedule_absolute(self, duetime, action, state=None):
@@ -34,7 +34,6 @@ class CatchSchedulerTestScheduler(VirtualTimeScheduler):
 
 
 class TestCatchScheduler(unittest.TestCase):
-
     def test_catch_now(self):
         wrapped = CatchSchedulerTestScheduler()
         scheduler = CatchScheduler(wrapped, lambda ex: True)
@@ -321,4 +320,3 @@ class TestCatchScheduler(unittest.TestCase):
         assert counter == 0
         assert handled is True
         assert isinstance(wrapped.exc, MyException)
-
