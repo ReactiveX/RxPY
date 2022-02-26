@@ -3,39 +3,6 @@ name: Python package
 on: [push, pull_request]
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        platform: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.7, 3.8, 3.9, "3.10", pypy-3.8]
-    runs-on: ${{ matrix.platform }}
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Cache Poetry
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cache/pypoetry
-            ~/Library/Caches/pypoetry
-            C:\Users\*\AppData\Local\pypoetry\Cache
-          key: poetry-cache-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-
-      - name: Install dependencies
-        run: |
-          pip install poetry
-          poetry config installer.parallel false
-          poetry install
-
-      - name: Test with pytest
-        run: |
-          poetry run pytest -n auto
-
   code-quality:
     runs-on: ubuntu-latest
     steps:
@@ -74,6 +41,39 @@ jobs:
           poetry run flake8 . --count --select=E9,F63,F7 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  build:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.7, 3.8, 3.9, "3.10", pypy-3.8]
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache Poetry
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/pypoetry
+            ~/Library/Caches/pypoetry
+            C:\Users\*\AppData\Local\pypoetry\Cache
+          key: poetry-cache-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry config installer.parallel false
+          poetry install
+
+      - name: Test with pytest
+        run: |
+          poetry run pytest -n auto
 
   coverage:
     runs-on: ubuntu-latest

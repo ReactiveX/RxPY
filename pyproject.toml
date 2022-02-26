@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "reactivex"
-version = "4.0.0a2"  # Make sure the version here is the same as in _version.py
+version = "4.0.0a3"  # Make sure the version here is the same as in _version.py
 description = "Reactive Extensions (Rx) for Python"
 readme = "README.rst"
 authors = ["Dag Brattli <dag@brattli.net>"]
