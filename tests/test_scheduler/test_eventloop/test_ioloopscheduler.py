@@ -3,11 +3,11 @@ from datetime import datetime, timedelta
 from time import sleep
 
 import pytest
-from tornado import ioloop
 
 from rx.scheduler.eventloop import IOLoopScheduler
 
 tornado = pytest.importorskip("tornado")
+from tornado import ioloop  # isort: skip
 
 
 class TestIOLoopScheduler(unittest.TestCase):
