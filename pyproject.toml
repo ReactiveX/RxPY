@@ -58,8 +58,8 @@ float_to_top=true
 [tool.mypy]
 python_version = "3.9"
 follow_imports = "silent"
-files = ["rx"]
-exclude = ["rx/core/operators"]
+files = ["reactivex"]
+exclude = ["reactivex/core/operators"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

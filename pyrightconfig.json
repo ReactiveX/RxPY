@@ -1,6 +1,6 @@
 {
   "include": [
-    "rx"
+    "reactivex"
   ],
   "exclude": [
     "tests"
