@@ -1,6 +1,6 @@
-==========================================
-The Reactive Extensions for Python (RxPY)
-==========================================
+===============================
+The ReactiveX for Python (RxPY)
+===============================
 
 .. image:: https://github.com/ReactiveX/RxPY/workflows/Python%20package/badge.svg
     :target: https://github.com/ReactiveX/RxPY/actions
@@ -19,8 +19,8 @@ The Reactive Extensions for Python (RxPY)
     :alt: Documentation Status
 
 
-*A library for composing asynchronous and event-based programs using observable collections and
-query operator functions in Python*
+*A library for composing asynchronous and event-based programs using observable
+collections and query operator functions in Python*
 
 ReactiveX for Python (RxPY) v4.0
 --------------------------------
@@ -36,13 +36,13 @@ RxPY:
 
 
 About ReactiveX
-------------------
+---------------
 
-Reactive Extensions for Python (RxPY) is a set of libraries for composing
-asynchronous and event-based programs using observable sequences and pipable
-query operators in Python. Using Rx, developers represent asynchronous data
-streams with Observables, query asynchronous data streams using operators, and
-parameterize concurrency in data/event streams using Schedulers.
+ReactiveX for Python (RxPY) is a set of libraries for composing asynchronous and
+event-based programs using observable sequences and pipable query operators in Python.
+Using Rx, developers represent asynchronous data streams with Observables, query
+asynchronous data streams using operators, and parameterize concurrency in data/event
+streams using Schedulers.
 
 .. code:: python
 
@@ -58,8 +58,8 @@ parameterize concurrency in data/event streams using Schedulers.
     composed.subscribe(lambda value: print("Received {0}".format(value)))
 
 
-Learning RxPY
---------------
+Learning ReactiveX
+------------------
 
 Read the `documentation
 <https://rxpy.readthedocs.io/en/latest/>`_ to learn
@@ -91,7 +91,7 @@ Please follow the community guidelines and terms of service.
 Differences from .NET and RxJS
 ------------------------------
 
-RxPY is a fairly complete implementation of
+ReactiveX for Python is a fairly complete implementation of
 `Rx <http://reactivex.io/>`_ with more than
 `120 operators <https://rxpy.readthedocs.io/en/latest/operators.html>`_, and
 over `1300 passing unit-tests <https://coveralls.io/github/ReactiveX/RxPY>`_. RxPY
