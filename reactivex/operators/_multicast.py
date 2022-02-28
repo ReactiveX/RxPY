@@ -27,7 +27,9 @@ def multicast_(
 
     Examples:
         >>> res = multicast(observable)
-        >>> res = multicast(subject_factory=lambda scheduler: Subject(), mapper=lambda x: x)
+        >>> res = multicast(
+            subject_factory=lambda scheduler: Subject(), mapper=lambda x: x
+        )
 
     Args:
         subject_factory: Factory function to create an intermediate
@@ -51,7 +53,7 @@ def multicast_(
         if subject_factory:
 
             def subscribe(
-                observer: abc.ObserverBase[_TSource],
+                observer: abc.ObserverBase[_TResult],
                 scheduler: Optional[abc.SchedulerBase] = None,
             ) -> abc.DisposableBase:
                 assert subject_factory

@@ -100,7 +100,11 @@ def pipe(value: _A, __fn1: Callable[[_A], _B]) -> _B:
 
 
 @overload
-def pipe(value: _A, __fn1: Callable[[_A], _B], __fn2: Callable[[_B], _C]) -> _C:
+def pipe(
+    value: _A,
+    __fn1: Callable[[_A], _B],
+    __fn2: Callable[[_B], _C],
+) -> _C:
     ...
 
 
