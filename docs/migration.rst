@@ -1,14 +1,35 @@
 .. _migration:
 
-Migration
-=========
+Migration v4
+============
 
-RxPY v3 is a major evolution from reactivexPY v1. This release brings many
+ReactiveX for Python v4 is yet annother major evolution of RxPY v3:
+
+- Project main module renamed from `rx` to `reactivex`.
+- Type annotation. Code now type checks with pyright / pylance at strict
+  settings
+- RxPY is now a modern Python project using Poetry, Black formatter and
+  isort.
+
+.. code:: python
+
+    import reactivex
+    from reactivex import operators as ops
+
+    reactivex.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+        ops.map(lambda s: len(s)),
+        ops.filter(lambda i: i >= 5)
+    ).subscribe(lambda value: print("Received {0}".format(value)))
+
+Migration v3
+============
+
+RxPY v3 is a major evolution from RxPY v1. This release brings many
 improvements, some of the most important ones being:
 
 * A better integration in IDEs via autocompletion support.
 * New operators can be implemented outside of RxPY.
-* Operator chains are now built via the :func:`pipe <reactivex.Observable.pipe>` operator.
+* Operator chains are now built via the :func:`pipe <rx.Observable.pipe>` operator.
 * A default scheduler can be provided in an operator chain.
 
 Pipe Based Operator Chaining
@@ -20,24 +41,24 @@ using the existing Observable methods:
 
 .. code:: python
 
-    from reactivex import Observable
+    from rx import Observable
 
     Observable.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon") \
         .map(lambda s: len(s)) \
         .filter(lambda i: i >= 5) \
         .subscribe(lambda value: print("Received {0}".format(value)))
 
-Chaining in RxPY v3 is based on the :func:`pipe <reactivex.Observable.pipe>` operator.
+Chaining in RxPY v3 is based on the :func:`pipe <rx.Observable.pipe>` operator.
 This operator is now one of the only methods of the
-:class:`Observable <reactivex.Observable>` class. In RxPY v3, operators are implemented
+:class:`Observable <rx.Observable>` class. In RxPY v3, operators are implemented
 as functions:
 
 .. code:: python
 
-    import reactivex
-    from reactivex import operators as ops
+    import rx
+    from rx import operators as ops
 
-    reactivex.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+    rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
         ops.map(lambda s: len(s)),
         ops.filter(lambda i: i >= 5)
     ).subscribe(lambda value: print("Received {0}".format(value)))
@@ -51,18 +72,18 @@ Removal Of The Result Mapper
 
 The mapper function is removed in operators that combine the values of several
 observables. This change applies to the following operators:
-:func:`combine_latest <reactivex.operators.combine_latest>`,
-:func:`group_join <reactivex.operators.group_join>`,
-:func:`join <reactivex.operators.join>`,
-:func:`with_latest_from <reactivex.operators.with_latest_from>`,
-:func:`zip <reactivex.operators.zip>`, and
-:func:`zip_with_iterable <reactivex.operators.zip_with_iterable>`.
+:func:`combine_latest <rx.operators.combine_latest>`,
+:func:`group_join <rx.operators.group_join>`,
+:func:`join <rx.operators.join>`,
+:func:`with_latest_from <rx.operators.with_latest_from>`,
+:func:`zip <rx.operators.zip>`, and
+:func:`zip_with_iterable <rx.operators.zip_with_iterable>`.
 
 In RxPY v1, these operators were used the following way:
 
 .. code:: python
 
-    from reactivex import Observable
+    from rx import Observable
     import operator
 
     a = Observable.of(1, 2, 3, 4)
@@ -76,12 +97,12 @@ the source Observables:
 
 .. code:: python
 
-    import reactivex
-    from reactivex import operators as ops
+    import rx
+    from rx import operators as ops
     import operator
 
-    a = reactivex.of(1, 2, 3, 4)
-    b = reactivex.of(2, 2, 4, 4)
+    a = rx.of(1, 2, 3, 4)
+    b = rx.of(2, 2, 4, 4)
 
     a.pipe(
         ops.zip(b), # returns a tuple with the items of a and b
@@ -93,12 +114,12 @@ unpacks the tuple to args:
 
 .. code:: python
 
-    import reactivex
-    from reactivex import operators as ops
+    import rx
+    from rx import operators as ops
     import operator
 
-    a = reactivex.of(1, 2, 3, 4)
-    b = reactivex.of(2, 2, 4, 4)
+    a = rx.of(1, 2, 3, 4)
+    b = rx.of(2, 2, 4, 4)
 
     a.pipe(
         ops.zip(b),
@@ -109,7 +130,7 @@ unpacks the tuple to args:
 Scheduler Parameter In Create Operator
 ---------------------------------------
 
-The subscription function provided to the :func:`create <reactivex.create>` operator
+The subscription function provided to the :func:`create <rx.create>` operator
 now takes two parameters: An observer and a scheduler. The scheduler parameter
 is new: If a scheduler has been set in the call to subscribe, then this
 scheduler is passed to the subscription function. Otherwise this parameter is
@@ -125,14 +146,14 @@ Removal Of List Of Observables
 
 The support of list of Observables as a parameter has been removed in the
 following operators:
-:func:`merge <reactivex.merge>`,
+:func:`merge <rx.merge>`,
 :func:`zip <rx.zip>`, and
 :func:`combine_latest <rx.combine_latest>`.
 For example in RxPY v1 the *merge* operator could be called with a list:
 
 .. code:: python
 
-    from reactivex import Observable
+    from rx import Observable
 
     obs1 = Observable.from_([1, 2, 3, 4])
     obs2 = Observable.from_([5, 6, 7, 8])
@@ -145,12 +166,12 @@ explicitly:
 
 .. code:: python
 
-    import reactivex, operator as op
+    import rx, operator as op
 
-    obs1 = reactivex.from_([1, 2, 3, 4])
-    obs2 = reactivex.from_([5, 6, 7, 8])
+    obs1 = rx.from_([1, 2, 3, 4])
+    obs2 = rx.from_([5, 6, 7, 8])
 
-    res = reactivex.merge(obs1, obs2)
+    res = rx.merge(obs1, obs2)
     res.subscribe(print)
 
 If for any reason the Observables are only available as a list, then they can be
@@ -158,15 +179,15 @@ unpacked:
 
 .. code:: python
 
-    import reactivex
-    from reactivex import operators as ops
+    import rx
+    from rx import operators as ops
 
-    obs1 = reactivex.from_([1, 2, 3, 4])
-    obs2 = reactivex.from_([5, 6, 7, 8])
+    obs1 = rx.from_([1, 2, 3, 4])
+    obs2 = rx.from_([5, 6, 7, 8])
 
     obs_list = [obs1, obs2]
 
-    res = reactivex.merge(*obs_list)
+    res = rx.merge(*obs_list)
     res.subscribe(print)
 
 
@@ -174,23 +195,23 @@ unpacked:
 Blocking Observable
 -------------------
 
-BlockingObservables have been removed from reactivexPY v3. In RxPY v1, blocking until
+BlockingObservables have been removed from rxPY v3. In RxPY v1, blocking until
 an Observable completes was done the following way:
 
 .. code:: python
 
-    from reactivex import Observable
+    from rx import Observable
 
     res = Observable.from_([1, 2, 3, 4]).to_blocking().last()
     print(res)
 
-This is now done with the :func:`run <reactivex.Observable.run>` operator:
+This is now done with the :func:`run <rx.Observable.run>` operator:
 
 .. code:: python
 
-    import reactivex
+    import rx
 
-    res = reactivex.from_([1, 2, 3, 4]).run()
+    res = rx.from_([1, 2, 3, 4]).run()
     print(res)
 
 The *run* operator returns only the last value emitted by the source
@@ -241,7 +262,7 @@ Some packages were renamed:
 +-----------------------+-------------------------+
 | *rx.disposables*      | *rx.disposable*         |
 +-----------------------+-------------------------+
-| *reactivex.subjects*         | *reactivex.subject*            |
+| *rx.subjects*         | *rx.subject*            |
 +-----------------------+-------------------------+
 
 Furthermore, the package formerly known as *rx.concurrency.mainloopscheduler*
