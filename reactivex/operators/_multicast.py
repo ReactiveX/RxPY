@@ -28,7 +28,8 @@ def multicast_(
     Examples:
         >>> res = multicast(observable)
         >>> res = multicast(
-            subject_factory=lambda scheduler: Subject(), mapper=lambda x: x
+            subject_factory=lambda scheduler: Subject(),
+            mapper=lambda x: x
         )
 
     Args:
@@ -38,8 +39,8 @@ def multicast_(
         subject: Subject to push source elements into.
         mapper: [Optional] Mapper function which can use the
             multicasted source sequence subject to the policies enforced
-            by the created subject. Specified only if subject_factory" is a
-            factory function.
+            by the created subject. Specified only if subject_factory"
+            is a factory function.
 
     Returns:
         An observable sequence that contains the elements of a sequence
