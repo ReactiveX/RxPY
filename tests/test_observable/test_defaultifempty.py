@@ -1,9 +1,9 @@
 import unittest
 from typing import Optional
 
-from rx import Observable
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
+from reactivex import Observable
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

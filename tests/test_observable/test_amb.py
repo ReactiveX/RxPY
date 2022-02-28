@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -16,8 +16,8 @@ created = ReactiveTest.created
 class TestAmb(unittest.TestCase):
     def test_amb_never2(self):
         scheduler = TestScheduler()
-        l = rx.never()
-        r = rx.never()
+        l = reactivex.never()
+        r = reactivex.never()
 
         def create():
             return l.pipe(ops.amb(r))
@@ -27,12 +27,12 @@ class TestAmb(unittest.TestCase):
 
     def test_amb_never3(self):
         scheduler = TestScheduler()
-        n1 = rx.never()
-        n2 = rx.never()
-        n3 = rx.never()
+        n1 = reactivex.never()
+        n2 = reactivex.never()
+        n3 = reactivex.never()
 
         def create():
-            return rx.amb(n1, n2, n3)
+            return reactivex.amb(n1, n2, n3)
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -40,7 +40,7 @@ class TestAmb(unittest.TestCase):
     def test_amb_never_empty(self):
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_completed(225)]
-        n = rx.never()
+        n = reactivex.never()
         e = scheduler.create_hot_observable(r_msgs)
 
         def create():
@@ -52,7 +52,7 @@ class TestAmb(unittest.TestCase):
     def test_amb_empty_never(self):
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_completed(225)]
-        n = rx.never()
+        n = reactivex.never()
         e = scheduler.create_hot_observable(r_msgs)
 
         def create():

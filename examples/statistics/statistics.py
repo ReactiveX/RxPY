@@ -1,7 +1,7 @@
 import math
 from typing import Any
 
-from rx.core import Observable
+from reactivex import Observable
 
 
 def determine_median(sorted_list):

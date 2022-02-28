@@ -3,5 +3,5 @@
 Operators
 =========
 
-.. automodule:: rx.operators
+.. automodule:: reactivex.operators
     :members:

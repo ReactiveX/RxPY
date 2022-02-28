@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -25,8 +25,8 @@ def _raise(ex):
 class TestCombineLatest(unittest.TestCase):
     def test_combine_latest_never_never(self):
         scheduler = TestScheduler()
-        e1 = rx.never()
-        e2 = rx.never()
+        e1 = reactivex.never()
+        e2 = reactivex.never()
 
         def create():
             return e1.pipe(
@@ -40,7 +40,7 @@ class TestCombineLatest(unittest.TestCase):
     def test_combine_latest_never_empty(self):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_completed(210)]
-        e1 = rx.never()
+        e1 = reactivex.never()
         e2 = scheduler.create_hot_observable(msgs)
 
         def create():
@@ -55,7 +55,7 @@ class TestCombineLatest(unittest.TestCase):
     def test_combine_latest_empty_never(self):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_completed(210)]
-        e1 = rx.never()
+        e1 = reactivex.never()
         e2 = scheduler.create_hot_observable(msgs)
 
         def create():
@@ -119,7 +119,7 @@ class TestCombineLatest(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_next(215, 2), on_completed(220)]
         e1 = scheduler.create_hot_observable(msgs)
-        e2 = rx.never()
+        e2 = reactivex.never()
 
         def create():
             return e1.pipe(
@@ -134,7 +134,7 @@ class TestCombineLatest(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_next(215, 2), on_completed(210)]
         e1 = scheduler.create_hot_observable(msgs)
-        e2 = rx.never()
+        e2 = reactivex.never()
 
         def create():
             return e2.pipe(
@@ -287,7 +287,7 @@ class TestCombineLatest(unittest.TestCase):
         ex = "ex"
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_error(220, ex)]
-        e1 = rx.never()
+        e1 = reactivex.never()
         e2 = scheduler.create_hot_observable(msgs)
 
         def create():
@@ -303,7 +303,7 @@ class TestCombineLatest(unittest.TestCase):
         ex = "ex"
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_error(220, ex)]
-        e1 = rx.never()
+        e1 = reactivex.never()
         e2 = scheduler.create_hot_observable(msgs)
 
         def create():

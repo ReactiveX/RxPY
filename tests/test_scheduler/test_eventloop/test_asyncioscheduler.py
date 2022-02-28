@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from rx.scheduler.eventloop import AsyncIOScheduler
+from reactivex.scheduler.eventloop import AsyncIOScheduler
 
 CI = os.getenv("CI") is not None
 

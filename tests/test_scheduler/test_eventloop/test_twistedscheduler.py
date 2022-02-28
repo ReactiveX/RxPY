@@ -3,7 +3,7 @@ from time import sleep
 
 import pytest
 
-from rx.scheduler.eventloop import TwistedScheduler
+from reactivex.scheduler.eventloop import TwistedScheduler
 
 twisted = pytest.importorskip("twisted")
 from twisted.internet import defer, reactor  # isort: skip

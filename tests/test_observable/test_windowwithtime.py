@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -35,7 +35,9 @@ class TestWindowWithTime(unittest.TestCase):
                 def proj(y):
                     return "%s %s" % (i, y)
 
-                return ys.pipe(ops.map(proj), ops.concat(rx.return_value("%s end" % i)))
+                return ys.pipe(
+                    ops.map(proj), ops.concat(reactivex.return_value("%s end" % i))
+                )
 
             return xs.pipe(
                 ops.window_with_time(100), ops.map_indexed(mapper), ops.merge_all()
@@ -81,7 +83,9 @@ class TestWindowWithTime(unittest.TestCase):
                 def proj(y):
                     return "%s %s" % (i, y)
 
-                return ys.pipe(ops.map(proj), ops.concat(rx.return_value("%s end" % i)))
+                return ys.pipe(
+                    ops.map(proj), ops.concat(reactivex.return_value("%s end" % i))
+                )
 
             return xs.pipe(
                 ops.window_with_time(100, 50), ops.map_indexed(mapper), ops.merge_all()

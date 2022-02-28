@@ -1,6 +1,6 @@
 import unittest
 
-from rx.internal import PriorityQueue
+from reactivex.internal import PriorityQueue
 
 
 class TestItem:

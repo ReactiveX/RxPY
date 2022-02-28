@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -40,7 +40,7 @@ class TestConcat(unittest.TestCase):
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_completed(230)]
         e1 = scheduler.create_hot_observable(msgs1)
-        e2 = rx.never()
+        e2 = reactivex.never()
 
         def create():
             return e1.pipe(ops.concat(e2))
@@ -52,7 +52,7 @@ class TestConcat(unittest.TestCase):
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_completed(230)]
         e1 = scheduler.create_hot_observable(msgs1)
-        e2 = rx.never()
+        e2 = reactivex.never()
 
         def create():
             return e2.pipe(ops.concat(e1))
@@ -62,8 +62,8 @@ class TestConcat(unittest.TestCase):
 
     def test_concat_never_never(self):
         scheduler = TestScheduler()
-        e1 = rx.never()
-        e2 = rx.never()
+        e1 = reactivex.never()
+        e2 = reactivex.never()
 
         def create():
             return e1.pipe(ops.concat(e2))
@@ -143,7 +143,7 @@ class TestConcat(unittest.TestCase):
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(230)]
         e1 = scheduler.create_hot_observable(msgs1)
-        e2 = rx.never()
+        e2 = reactivex.never()
 
         def create():
             return e1.pipe(ops.concat(e2))
@@ -155,7 +155,7 @@ class TestConcat(unittest.TestCase):
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(230)]
         e1 = scheduler.create_hot_observable(msgs1)
-        e2 = rx.never()
+        e2 = reactivex.never()
 
         def create():
             return e2.pipe(ops.concat(e1))
@@ -235,8 +235,8 @@ class TestConcat(unittest.TestCase):
             subscribe_schedulers["e2"] = scheduler
             observer.on_completed()
 
-        e1 = rx.create(subscribe_e1)
-        e2 = rx.create(subscribe_e2)
+        e1 = reactivex.create(subscribe_e1)
+        e2 = reactivex.create(subscribe_e2)
 
         stream = e1.pipe(ops.concat(e2))
         stream.subscribe(scheduler=scheduler)
@@ -255,8 +255,8 @@ class TestConcat(unittest.TestCase):
             subscribe_schedulers["e2"] = scheduler
             observer.on_completed()
 
-        e1 = rx.create(subscribe_e1)
-        e2 = rx.create(subscribe_e2)
+        e1 = reactivex.create(subscribe_e1)
+        e2 = reactivex.create(subscribe_e2)
 
         stream = e1.pipe(ops.concat(e2))
         stream.subscribe()

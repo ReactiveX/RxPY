@@ -46,10 +46,10 @@ parameterize concurrency in data/event streams using Schedulers.
 
 .. code:: python
 
-    import rx
-    from rx import operators as ops
+    import reactivex
+    from reactivex import operators as ops
 
-    source = rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
+    source = reactivex.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
     composed = source.pipe(
         ops.map(lambda s: len(s)),
@@ -80,7 +80,7 @@ Join the conversation on Slack!
 
 The gracious folks at `PySlackers <https://pyslackers.com/>`_ have given us a home
 in the `#rxpy <https://pythondev.slack.com/messages/rxpy>`_ Slack channel. Please
-join us there for questions, conversations, and all things related to RxPy.
+join us there for questions, conversations, and all things related to RxPY.
 
 To join, navigate the page above to receive an email invite. After signing up,
 join us in the #rxpy channel.
@@ -95,7 +95,7 @@ RxPY is a fairly complete implementation of
 `Rx <http://reactivex.io/>`_ with more than
 `120 operators <https://rxpy.readthedocs.io/en/latest/operators.html>`_, and
 over `1300 passing unit-tests <https://coveralls.io/github/ReactiveX/RxPY>`_. RxPY
-is mostly a direct port of RxJS, but also borrows a bit from RxNET and RxJava in
+is mostly a direct port of RxJS, but also borrows a bit from Rx.NET and RxJava in
 terms of threading and blocking operators.
 
 RxPY follows `PEP 8 <http://legacy.python.org/dev/peps/pep-0008/>`_, so all

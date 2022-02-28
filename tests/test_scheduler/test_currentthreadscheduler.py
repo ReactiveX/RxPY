@@ -5,8 +5,8 @@ from time import sleep
 
 import pytest
 
-from rx.internal.basic import default_now
-from rx.scheduler import CurrentThreadScheduler
+from reactivex.internal.basic import default_now
+from reactivex.scheduler import CurrentThreadScheduler
 
 
 class TestCurrentThreadScheduler(unittest.TestCase):

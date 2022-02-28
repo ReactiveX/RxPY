@@ -3,19 +3,19 @@
 Get Started
 ============
 
-An :class:`Observable <rx.Observable>` is the core type in ReactiveX. It
+An :class:`Observable <reactivex.Observable>` is the core type in ReactiveX. It
 serially pushes items, known as *emissions*, through a series of operators until
 it finally arrives at an Observer, where they are
 consumed.
 
 Push-based (rather than pull-based) iteration opens up powerful new
 possibilities to express code and concurrency much more quickly. Because an
-:class:`Observable <rx.Observable>` treats events as data and data as events,
+:class:`Observable <reactivex.Observable>` treats events as data and data as events,
 composing the two together becomes trivial.
 
-There are many ways to create an :class:`Observable <rx.Observable>` that hands
+There are many ways to create an :class:`Observable <reactivex.Observable>` that hands
 items to an Observer. You can use a :func:`create()
-<rx.create>` factory and pass it functions that handle items:
+<reactivex.create>` factory and pass it functions that handle items:
 
 * The *on_next* function is called each time the Observable emits an item.
 * The *on_completed* function is called when the Observable completes.
@@ -31,7 +31,7 @@ Let's consider the following example:
 
 .. code:: python
 
-    from rx import create
+    from reactivex import create
 
     def push_five_strings(observer, scheduler):
         observer.on_next("Alpha")
@@ -67,14 +67,14 @@ Output:
 
 However, there are many :ref:`Observable factories
 <reference_observable_factory>` for common sources of emissions. To simply push
-five items, we can rid the :func:`create() <rx.create>` and its backing
-function, and use :func:`of() <rx.of>`. This factory accepts an argument list,
+five items, we can rid the :func:`create() <reactivex.create>` and its backing
+function, and use :func:`of() <reactivex.of>`. This factory accepts an argument list,
 iterates on each argument to emit them as items, and the completes. Therefore,
 we can simply pass these five Strings as arguments to it:
 
 .. code:: python
 
-    from rx import of
+    from reactivex import of
 
     source = of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
@@ -89,7 +89,7 @@ and error are ignored:
 
 .. code:: python
 
-    from rx import of
+    from reactivex import of
 
     source = of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
@@ -109,15 +109,15 @@ Operators and Chaining
 --------------------------
 
 You can also derive new Observables using over 130 operators available in RxPY.
-Each operator will yield a new :class:`Observable <rx.Observable>` that
+Each operator will yield a new :class:`Observable <reactivex.Observable>` that
 transforms emissions from the source in some way. For example, we can
-:func:`map() <rx.operators.map>` each `String` to its length, then
-:func:`filter() <rx.operators.filter>` for lengths being at least 5. These will
+:func:`map() <reactivex.operators.map>` each `String` to its length, then
+:func:`filter() <reactivex.operators.filter>` for lengths being at least 5. These will
 yield two separate Observables built off each other.
 
 .. code:: python
 
-    from rx import of, operators as op
+    from reactivex import of, operators as op
 
     source = of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
@@ -143,7 +143,7 @@ operations. That way your code is readable and tells a story much more easily.
 
 .. code:: python
 
-    from rx import of, operators as op
+    from reactivex import of, operators as op
 
     of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
         op.map(lambda s: len(s)),
@@ -161,8 +161,8 @@ other operators, then the implementation is straightforward, thanks to the
 
 .. code:: python
 
-    import rx
-    from rx import operators as ops
+    import reactivex
+    from reactivex import operators as ops
 
     def length_more_than_5():
         return rx.pipe(
@@ -170,7 +170,7 @@ other operators, then the implementation is straightforward, thanks to the
             ops.filter(lambda i: i >= 5),
         )
 
-    rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+    reactivex.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
         length_more_than_5()
     ).subscribe(lambda value: print("Received {0}".format(value)))
 
@@ -183,7 +183,7 @@ emissions:
 
  .. code:: python
 
-    import rx
+    import reactivex
 
     def lowercase():
         def _lowercase(source):
@@ -196,10 +196,10 @@ emissions:
                     observer.on_error,
                     observer.on_completed,
                     scheduler)
-            return rx.create(subscribe)
+            return reactivex.create(subscribe)
         return _lowercase
 
-    rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+    reactivex.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
             lowercase()
          ).subscribe(lambda value: print("Received {0}".format(value)))
 
@@ -227,7 +227,7 @@ CPU Concurrency
 ................
 
 To achieve concurrency, you use two operators: :func:`subscribe_on()
-<rx.operators.subscribe_on>` and :func:`observe_on() <rx.operators.observe_on>`.
+<reactivex.operators.subscribe_on>` and :func:`observe_on() <reactivex.operators.observe_on>`.
 Both need a :ref:`Scheduler <reference_scheduler>` which provides a thread for
 each subscription to do work (see section on Schedulers below). The
 :class:`ThreadPoolScheduler <rx.scheduler.ThreadPoolScheduler>` is a good
@@ -243,21 +243,21 @@ choice to create a pool of reusable worker threads.
     degree. Just be sure to test your application with concurrency and ensure there
     is a performance gain.
 
-The :func:`subscribe_on() <rx.operators.subscribe_on>` instructs the source
-:class:`Observable <rx.Observable>` at the start of the chain which scheduler to
+The :func:`subscribe_on() <reactivex.operators.subscribe_on>` instructs the source
+:class:`Observable <reactivex.Observable>` at the start of the chain which scheduler to
 use (and it does not matter where you put this operator). The
-:func:`observe_on() <rx.operators.observe_on>`, however, will switch to a
+:func:`observe_on() <reactivex.operators.observe_on>`, however, will switch to a
 different *Scheduler* **at that point** in the *Observable* chain, effectively
 moving an emission from one thread to another. Some :ref:`Observable factories
 <reference_observable_factory>` and :ref:`operators
-<reference_operators>`, like :func:`interval() <rx.interval>` and
-:func:`delay() <rx.operators.delay>`, already have a default *Scheduler* and
-thus will ignore any :func:`subscribe_on() <rx.operators.subscribe_on>` you
+<reference_operators>`, like :func:`interval() <reactivex.interval>` and
+:func:`delay() <reactivex.operators.delay>`, already have a default *Scheduler* and
+thus will ignore any :func:`subscribe_on() <reactivex.operators.subscribe_on>` you
 specify (although you can pass a *Scheduler* usually as an argument).
 
 Below, we run three different processes concurrently rather than sequentially
-using :func:`subscribe_on() <rx.operators.subscribe_on>` as well as an
-:func:`observe_on() <rx.operators.observe_on>`.
+using :func:`subscribe_on() <reactivex.operators.subscribe_on>` as well as an
+:func:`observe_on() <reactivex.operators.observe_on>`.
 
 .. code:: python
 
@@ -266,9 +266,9 @@ using :func:`subscribe_on() <rx.operators.subscribe_on>` as well as an
     import time
     from threading import current_thread
 
-    import rx
-    from rx.scheduler import ThreadPoolScheduler
-    from rx import operators as ops
+    import reactivex
+    from reactivex.scheduler import ThreadPoolScheduler
+    from reactivex import operators as ops
 
 
     def intense_calculation(value):
@@ -282,7 +282,7 @@ using :func:`subscribe_on() <rx.operators.subscribe_on>` as well as an
     pool_scheduler = ThreadPoolScheduler(optimal_thread_count)
 
     # Create Process 1
-    rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+    reactivex.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
         ops.map(lambda s: intense_calculation(s)), ops.subscribe_on(pool_scheduler)
     ).subscribe(
         on_next=lambda s: print("PROCESS 1: {0} {1}".format(current_thread().name, s)),
@@ -291,7 +291,7 @@ using :func:`subscribe_on() <rx.operators.subscribe_on>` as well as an
     )
 
     # Create Process 2
-    rx.range(1, 10).pipe(
+    reactivex.range(1, 10).pipe(
         ops.map(lambda s: intense_calculation(s)), ops.subscribe_on(pool_scheduler)
     ).subscribe(
         on_next=lambda i: print("PROCESS 2: {0} {1}".format(current_thread().name, i)),
@@ -300,7 +300,7 @@ using :func:`subscribe_on() <rx.operators.subscribe_on>` as well as an
     )
 
     # Create Process 3, which is infinite
-    rx.interval(1).pipe(
+    reactivex.interval(1).pipe(
         ops.map(lambda i: i * 100),
         ops.observe_on(pool_scheduler),
         ops.map(lambda s: intense_calculation(s)),
@@ -346,10 +346,10 @@ the coroutine.
 
     from collections import namedtuple
     import asyncio
-    import rx
-    import rx.operators as ops
-    from rx.subject import Subject
-    from rx.scheduler.eventloop import AsyncIOScheduler
+    import reactivex
+    import reactivex.operators as ops
+    from reactivex.subject import Subject
+    from reactivex.scheduler.eventloop import AsyncIOScheduler
 
     EchoItem = namedtuple('EchoItem', ['future', 'data'])
 
@@ -387,7 +387,7 @@ the coroutine.
                 on_error=observer.on_error,
                 on_completed=observer.on_completed)
 
-        return rx.create(on_subscribe)
+        return reactivex.create(on_subscribe)
 
 
     loop = asyncio.get_event_loop()

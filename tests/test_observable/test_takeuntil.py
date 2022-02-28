@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -101,7 +101,7 @@ class TestTakeUntil(unittest.TestCase):
             on_completed(250),
         ]
         l = scheduler.create_hot_observable(l_msgs)
-        r = rx.never()
+        r = reactivex.never()
 
         def create():
             return l.pipe(ops.take_until(r))
@@ -118,7 +118,7 @@ class TestTakeUntil(unittest.TestCase):
     def test_take_until_preempt_never_next(self):
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_next(225, 2), on_completed(250)]
-        l = rx.never()
+        l = reactivex.never()
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
@@ -131,7 +131,7 @@ class TestTakeUntil(unittest.TestCase):
         ex = "ex"
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_error(225, ex)]
-        l = rx.never()
+        l = reactivex.never()
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
@@ -143,7 +143,7 @@ class TestTakeUntil(unittest.TestCase):
     def test_take_until_nopreempt_never_empty(self):
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_completed(225)]
-        l = rx.never()
+        l = reactivex.never()
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
@@ -154,8 +154,8 @@ class TestTakeUntil(unittest.TestCase):
 
     def test_take_until_nopreempt_never_never(self):
         scheduler = TestScheduler()
-        l = rx.never()
-        r = rx.never()
+        l = reactivex.never()
+        r = reactivex.never()
 
         def create():
             return l.pipe(ops.take_until(r))

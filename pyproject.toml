@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "reactivex"
-version = "4.0.0a3"  # Make sure the version here is the same as in _version.py
+version = "4.0.0a4"  # Make sure the version here is the same as in _version.py
 description = "Reactive Extensions (Rx) for Python"
 readme = "README.rst"
 authors = ["Dag Brattli <dag@brattli.net>"]
@@ -23,8 +23,8 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 packages = [
-    { include = "rx" },
-    { include = "rx/py.typed" }
+    { include = "reactivex" },
+    { include = "reactivex/py.typed" }
 ]
 
 [tool.poetry.dependencies]

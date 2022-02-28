@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -68,7 +68,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         o3 = scheduler.create_hot_observable(msgs3)
 
         def create():
-            return rx.on_error_resume_next(o1, o2, o3)
+            return reactivex.on_error_resume_next(o1, o2, o3)
 
         results = scheduler.start(create)
 
@@ -89,7 +89,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         o5 = scheduler.create_hot_observable(msgs5)
 
         def create():
-            return rx.on_error_resume_next(o1, o2, o3, o4, o5)
+            return reactivex.on_error_resume_next(o1, o2, o3, o4, o5)
 
         results = scheduler.start(create)
 
@@ -123,7 +123,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         o1 = scheduler.create_hot_observable(msgs1)
 
         def create():
-            return rx.on_error_resume_next(o1)
+            return reactivex.on_error_resume_next(o1)
 
         results = scheduler.start(create)
 
@@ -133,10 +133,10 @@ class TestOnErrorResumeNext(unittest.TestCase):
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(220)]
         o1 = scheduler.create_hot_observable(msgs1)
-        o2 = rx.never()
+        o2 = reactivex.never()
 
         def create():
-            return rx.on_error_resume_next(o1, o2)
+            return reactivex.on_error_resume_next(o1, o2)
 
         results = scheduler.start(create)
 
@@ -145,11 +145,11 @@ class TestOnErrorResumeNext(unittest.TestCase):
     def test_on_error_resume_next_start_with_never(self):
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_completed(220)]
-        o1 = rx.never()
+        o1 = reactivex.never()
         o2 = scheduler.create_hot_observable(msgs1)
 
         def create():
-            return rx.on_error_resume_next(o1, o2)
+            return reactivex.on_error_resume_next(o1, o2)
 
         results = scheduler.start(create)
 
@@ -167,7 +167,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
             return o2
 
         def create():
-            return rx.on_error_resume_next(o1, factory)
+            return reactivex.on_error_resume_next(o1, factory)
 
         results = scheduler.start(create)
 

@@ -6,8 +6,8 @@ from tornado.web import RequestHandler, StaticFileHandler, Application, url
 from tornado.escape import json_decode
 from tornado import ioloop
 
-from rx import operators as ops
-from rx.subject import Subject
+from reactivex import operators as ops
+from reactivex.subject import Subject
 
 UP, DOWN, LEFT, RIGHT, B, A = 38, 40, 37, 39, 66, 65
 codes = [UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, B, A]

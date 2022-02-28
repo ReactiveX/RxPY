@@ -1,9 +1,9 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.scheduler import ImmediateScheduler
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.scheduler import ImmediateScheduler
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -83,7 +83,7 @@ class TestObserveOn(unittest.TestCase):
             actual_subscribe_scheduler = scheduler
             observer.on_completed()
 
-        xs = rx.create(subscribe)
+        xs = reactivex.create(subscribe)
 
         xs.pipe(ops.observe_on(scheduler)).subscribe(
             scheduler=expected_subscribe_scheduler

@@ -6,8 +6,8 @@ from time import sleep
 
 import pytest
 
-from rx.internal.basic import default_now
-from rx.scheduler import TimeoutScheduler
+from reactivex.internal.basic import default_now
+from reactivex.scheduler import TimeoutScheduler
 
 CI = os.getenv("CI") is not None
 

@@ -1,8 +1,8 @@
 from typing import Any
 
-from rx.core.abc import ObserverBase
-from rx.core.notification import OnCompleted, OnError, OnNext
-from rx.testing import ReactiveTest, TestScheduler
+from reactivex.abc import ObserverBase
+from reactivex.notification import OnCompleted, OnError, OnNext
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

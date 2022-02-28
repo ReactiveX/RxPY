@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -15,13 +15,6 @@ created = ReactiveTest.created
 
 class RxException(Exception):
     pass
-
-
-# Helper function for raising exceptions within lambdas
-
-
-def _raise(ex):
-    raise RxException(ex)
 
 
 class TestGroupBy(unittest.TestCase):
@@ -598,7 +591,9 @@ class TestGroupBy(unittest.TestCase):
         results = [None]
 
         def action1(scheduler, state):
-            xs[0] = rx.from_iterable(["alpha", "apple", "beta", "bat", "gamma"]).pipe(
+            xs[0] = reactivex.from_iterable(
+                ["alpha", "apple", "beta", "bat", "gamma"]
+            ).pipe(
                 ops.group_by(lambda s: s[0]),
                 ops.map(lambda xs: xs.pipe(ops.to_iterable(), ops.map(list))),
                 ops.merge_all(),
@@ -642,7 +637,7 @@ class TestGroupBy(unittest.TestCase):
                 ops.group_by(
                     key_mapper=lambda x: x % 2,
                     element_mapper=None,
-                    subject_mapper=lambda: rx.subject.ReplaySubject(2),
+                    subject_mapper=lambda: reactivex.subject.ReplaySubject(2),
                 )
             )
             return source.subscribe(observer_groups, scheduler=scheduler)

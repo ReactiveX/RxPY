@@ -1,8 +1,8 @@
 import unittest
 from datetime import datetime, timedelta
 
-from rx.internal.constants import UTC_ZERO
-from rx.scheduler import HistoricalScheduler
+from reactivex.internal.constants import UTC_ZERO
+from reactivex.scheduler import HistoricalScheduler
 
 
 def assert_equals(first, second):

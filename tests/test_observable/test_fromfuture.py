@@ -2,7 +2,7 @@ import asyncio
 import unittest
 from asyncio import Future
 
-import rx
+import reactivex
 
 
 class TestFromFuture(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestFromFuture(unittest.TestCase):
             future = Future()
             future.set_result(42)
 
-            source = rx.from_future(future)
+            source = reactivex.from_future(future)
 
             def on_next(x):
                 success[0] = x == 42
@@ -40,7 +40,7 @@ class TestFromFuture(unittest.TestCase):
             future = Future()
             future.set_exception(error)
 
-            source = rx.from_future(future)
+            source = reactivex.from_future(future)
 
             def on_next(x):
                 success[0] = False
@@ -62,7 +62,7 @@ class TestFromFuture(unittest.TestCase):
 
         async def go():
             future = Future()
-            source = rx.from_future(future)
+            source = reactivex.from_future(future)
 
             def on_next(x):
                 success[0] = False
@@ -87,7 +87,7 @@ class TestFromFuture(unittest.TestCase):
             future = Future()
             future.set_result(42)
 
-            source = rx.from_future(future)
+            source = reactivex.from_future(future)
 
             def on_next(x):
                 success[0] = False

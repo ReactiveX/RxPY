@@ -5,9 +5,9 @@ from time import sleep
 
 import pytest
 
-from rx.internal import DisposedException
-from rx.internal.basic import default_now
-from rx.scheduler import EventLoopScheduler
+from reactivex.internal import DisposedException
+from reactivex.internal.basic import default_now
+from reactivex.scheduler import EventLoopScheduler
 
 
 class TestEventLoopScheduler(unittest.TestCase):

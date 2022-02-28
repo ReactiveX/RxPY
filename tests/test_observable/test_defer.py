@@ -1,7 +1,7 @@
 import unittest
 
-import rx
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -35,7 +35,7 @@ class TestDefer(unittest.TestCase):
                 )
                 return xs[0]
 
-            return rx.defer(defer)
+            return reactivex.defer(defer)
 
         results = scheduler.start(create)
         assert results.messages == [on_next(300, 200), on_completed(400)]
@@ -56,7 +56,7 @@ class TestDefer(unittest.TestCase):
                 )
                 return xs[0]
 
-            return rx.defer(defer)
+            return reactivex.defer(defer)
 
         results = scheduler.start(create)
 
@@ -79,7 +79,7 @@ class TestDefer(unittest.TestCase):
                 )
                 return xs[0]
 
-            return rx.defer(defer)
+            return reactivex.defer(defer)
 
         results = scheduler.start(create)
         assert results.messages == [on_next(300, 200), on_next(400, 1)]
@@ -96,7 +96,7 @@ class TestDefer(unittest.TestCase):
                 invoked[0] += 1
                 raise Exception(ex)
 
-            return rx.defer(defer)
+            return reactivex.defer(defer)
 
         results = scheduler.start(create)
 

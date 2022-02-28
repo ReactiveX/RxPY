@@ -6,11 +6,11 @@ from time import sleep
 
 import pytest
 
-from rx.disposable import Disposable
-from rx.internal.basic import default_now
-from rx.internal.constants import DELTA_ZERO
-from rx.internal.exceptions import WouldBlockException
-from rx.scheduler import ImmediateScheduler
+from reactivex.disposable import Disposable
+from reactivex.internal.basic import default_now
+from reactivex.internal.constants import DELTA_ZERO
+from reactivex.internal.exceptions import WouldBlockException
+from reactivex.scheduler import ImmediateScheduler
 
 CI = os.getenv("CI") is not None
 

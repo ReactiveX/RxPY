@@ -4,7 +4,7 @@ from time import sleep
 
 import pytest
 
-from rx.scheduler.eventloop import EventletScheduler
+from reactivex.scheduler.eventloop import EventletScheduler
 
 eventlet = pytest.importorskip("eventlet")
 

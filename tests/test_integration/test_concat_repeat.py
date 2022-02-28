@@ -1,7 +1,7 @@
 import unittest
 
-from rx import operators as ops
-from rx.testing.marbles import marbles_testing
+from reactivex import operators as ops
+from reactivex.testing.marbles import marbles_testing
 
 
 class TestConcatIntegration(unittest.TestCase):

@@ -1,7 +1,7 @@
 import unittest
 
-import rx
-from rx.testing import MockDisposable, ReactiveTest, TestScheduler
+import reactivex
+from reactivex.testing import MockDisposable, ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -45,7 +45,7 @@ class TestUsing(unittest.TestCase):
                 )
                 return xs[0]
 
-            return rx.using(create_resources, create_observable)
+            return reactivex.using(create_resources, create_observable)
 
         results = scheduler.start(create)
 
@@ -78,7 +78,7 @@ class TestUsing(unittest.TestCase):
                 )
                 return xs[0]
 
-            return rx.using(create_resource, create_observable)
+            return reactivex.using(create_resource, create_observable)
 
         results = scheduler.start(create)
 
@@ -112,7 +112,7 @@ class TestUsing(unittest.TestCase):
                 )
                 return xs[0]
 
-            return rx.using(create_resource, create_observable)
+            return reactivex.using(create_resource, create_observable)
 
         results = scheduler.start(create)
 
@@ -145,7 +145,7 @@ class TestUsing(unittest.TestCase):
                 )
                 return xs[0]
 
-            return rx.using(create_resource, create_observable)
+            return reactivex.using(create_resource, create_observable)
 
         results = scheduler.start(create)
 
@@ -169,9 +169,9 @@ class TestUsing(unittest.TestCase):
 
             def create_observable(d):
                 create_invoked[0] += 1
-                return rx.never()
+                return reactivex.never()
 
-            return rx.using(create_resource, create_observable)
+            return reactivex.using(create_resource, create_observable)
 
         results = scheduler.start(create)
 
@@ -196,7 +196,7 @@ class TestUsing(unittest.TestCase):
                 create_invoked[0] += 1
                 _raise(ex)
 
-            return rx.using(create_resource, create_observable)
+            return reactivex.using(create_resource, create_observable)
 
         results = scheduler.start(create)
 

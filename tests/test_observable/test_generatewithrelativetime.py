@@ -2,8 +2,8 @@ import unittest
 
 import pytest
 
-import rx
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -28,7 +28,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.generate_with_relative_time(
+            return reactivex.generate_with_relative_time(
                 0, lambda x: x <= 3, lambda x: x + 1, lambda x: x + 1
             )
 
@@ -46,7 +46,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.generate_with_relative_time(
+            return reactivex.generate_with_relative_time(
                 0, lambda x: _raise(ex), lambda x: x + 1, lambda x: x + 1
             )
 
@@ -58,7 +58,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.generate_with_relative_time(
+            return reactivex.generate_with_relative_time(
                 0, lambda x: True, lambda x: _raise(ex), lambda x: x + 1
             )
 
@@ -70,7 +70,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.generate_with_relative_time(
+            return reactivex.generate_with_relative_time(
                 0, lambda x: True, lambda x: x + 1, lambda x: _raise(ex)
             )
 
@@ -81,7 +81,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.generate_with_relative_time(
+            return reactivex.generate_with_relative_time(
                 0, lambda x: True, lambda x: x + 1, lambda x: x + 1
             )
 
@@ -92,7 +92,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.generate_with_relative_time(
+            return reactivex.generate_with_relative_time(
                 0, lambda x: x <= 3, lambda x: x + 1, lambda x: x + 1
             )
 
@@ -110,7 +110,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.generate_with_relative_time(
+            return reactivex.generate_with_relative_time(
                 0, lambda x: _raise(ex), lambda x: x + 1, lambda x: x + 1
             )
 
@@ -122,7 +122,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.generate_with_relative_time(
+            return reactivex.generate_with_relative_time(
                 0, lambda x: True, lambda x: _raise(ex), lambda x: x + 1
             )
 
@@ -134,7 +134,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.generate_with_relative_time(
+            return reactivex.generate_with_relative_time(
                 0, lambda x: True, lambda x: x + 1, lambda x: _raise(ex)
             )
 
@@ -145,7 +145,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.generate_with_relative_time(
+            return reactivex.generate_with_relative_time(
                 0, lambda x: True, lambda x: x + 1, lambda x: x + 1
             )
 

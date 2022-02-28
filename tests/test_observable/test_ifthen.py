@@ -1,7 +1,7 @@
 import unittest
 
-import rx
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -23,7 +23,7 @@ class TestIf_then(unittest.TestCase):
         )
 
         def create():
-            return rx.if_then(lambda: True, xs, ys)
+            return reactivex.if_then(lambda: True, xs, ys)
 
         results = scheduler.start(create=create)
 
@@ -41,7 +41,7 @@ class TestIf_then(unittest.TestCase):
         )
 
         def create():
-            return rx.if_then(lambda: False, xs, ys)
+            return reactivex.if_then(lambda: False, xs, ys)
 
         results = scheduler.start(create=create)
 
@@ -63,7 +63,7 @@ class TestIf_then(unittest.TestCase):
             def condition():
                 raise Exception(ex)
 
-            return rx.if_then(condition, xs, ys)
+            return reactivex.if_then(condition, xs, ys)
 
         results = scheduler.start(create=create)
 
@@ -79,7 +79,7 @@ class TestIf_then(unittest.TestCase):
         )
 
         def create():
-            return rx.if_then(lambda: True, xs, ys)
+            return reactivex.if_then(lambda: True, xs, ys)
 
         results = scheduler.start(create=create)
 
@@ -103,7 +103,7 @@ class TestIf_then(unittest.TestCase):
             def condition():
                 return b[0]
 
-            return rx.if_then(condition, xs)
+            return reactivex.if_then(condition, xs)
 
         results = scheduler.start(create)
 
@@ -127,7 +127,7 @@ class TestIf_then(unittest.TestCase):
             def condition():
                 return b[0]
 
-            return rx.if_then(condition, xs)
+            return reactivex.if_then(condition, xs)
 
         results = scheduler.start(create)
 
@@ -150,7 +150,7 @@ class TestIf_then(unittest.TestCase):
             def condition():
                 return b[0]
 
-            return rx.if_then(condition, xs)
+            return reactivex.if_then(condition, xs)
 
         results = scheduler.start(create)
 
@@ -173,7 +173,7 @@ class TestIf_then(unittest.TestCase):
             def condition():
                 return b[0]
 
-            return rx.if_then(condition, xs)
+            return reactivex.if_then(condition, xs)
 
         results = scheduler.start(create)
 

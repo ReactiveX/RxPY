@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from rx.scheduler.eventloop import AsyncIOThreadSafeScheduler
+from reactivex.scheduler.eventloop import AsyncIOThreadSafeScheduler
 
 CI = os.getenv("CI") is not None
 

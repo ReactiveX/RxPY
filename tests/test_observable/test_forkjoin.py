@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -20,46 +20,46 @@ class RxException(Exception):
 class TestForkJoin(unittest.TestCase):
     def test_fork_join_never_never(self):
         scheduler = TestScheduler()
-        e1 = rx.never()
-        e2 = rx.never()
+        e1 = reactivex.never()
+        e2 = reactivex.never()
 
-        results = scheduler.start(lambda: rx.fork_join(e1, e2))
+        results = scheduler.start(lambda: reactivex.fork_join(e1, e2))
         assert results.messages == []
 
     def test_fork_join_never_empty(self):
         scheduler = TestScheduler()
-        e1 = rx.never()
-        e2 = rx.empty()
+        e1 = reactivex.never()
+        e2 = reactivex.empty()
 
-        results = scheduler.start(lambda: rx.fork_join(e1, e2))
+        results = scheduler.start(lambda: reactivex.fork_join(e1, e2))
         assert results.messages == [on_completed(200)]
 
     def test_fork_join_never_non_empty(self):
         scheduler = TestScheduler()
-        e1 = rx.never()
+        e1 = reactivex.never()
         e2 = scheduler.create_hot_observable(
             [on_next(150, 1), on_next(230, 2), on_completed(300)]
         )
 
-        results = scheduler.start(lambda: rx.fork_join(e1, e2))
+        results = scheduler.start(lambda: reactivex.fork_join(e1, e2))
         assert results.messages == []
 
     def test_fork_join_empty_empty(self):
         scheduler = TestScheduler()
-        e1 = rx.empty()
-        e2 = rx.empty()
+        e1 = reactivex.empty()
+        e2 = reactivex.empty()
 
-        results = scheduler.start(lambda: rx.fork_join(e1, e2))
+        results = scheduler.start(lambda: reactivex.fork_join(e1, e2))
         assert results.messages == [on_completed(200)]
 
     def test_fork_join_empty_non_empty(self):
         scheduler = TestScheduler()
-        e1 = rx.empty()
+        e1 = reactivex.empty()
         e2 = scheduler.create_hot_observable(
             [on_next(150, 1), on_next(230, 2), on_completed(300)]
         )
 
-        results = scheduler.start(lambda: rx.fork_join(e1, e2))
+        results = scheduler.start(lambda: reactivex.fork_join(e1, e2))
         assert results.messages == [on_completed(200)]
 
     def test_fork_join_non_empty_non_empty_right_last(self):
@@ -71,7 +71,7 @@ class TestForkJoin(unittest.TestCase):
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
 
-        results = scheduler.start(lambda: rx.fork_join(e1, e2))
+        results = scheduler.start(lambda: reactivex.fork_join(e1, e2))
         assert results.messages == [on_next(240, (2, 3)), on_completed(240)]
 
     def test_fork_join_non_empty_non_empty_left_last(self):
@@ -83,31 +83,31 @@ class TestForkJoin(unittest.TestCase):
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
 
-        results = scheduler.start(lambda: rx.fork_join(e1, e2))
+        results = scheduler.start(lambda: reactivex.fork_join(e1, e2))
         assert results.messages == [on_next(300, (2, 3)), on_completed(300)]
 
     def test_fork_join_empty_error(self):
         ex = RxException()
 
         scheduler = TestScheduler()
-        e1 = rx.empty()
+        e1 = reactivex.empty()
         e2 = scheduler.create_hot_observable(
             [on_next(150, 1), on_next(230, 2), on_error(300, ex)]
         )
 
-        results = scheduler.start(lambda: rx.fork_join(e1, e2))
+        results = scheduler.start(lambda: reactivex.fork_join(e1, e2))
         assert results.messages == [on_completed(200)]
 
     def test_fork_join_never_error(self):
         ex = RxException()
 
         scheduler = TestScheduler()
-        e1 = rx.never()
+        e1 = reactivex.never()
         e2 = scheduler.create_hot_observable(
             [on_next(150, 1), on_next(230, 2), on_error(300, ex)]
         )
 
-        results = scheduler.start(lambda: rx.fork_join(e1, e2))
+        results = scheduler.start(lambda: reactivex.fork_join(e1, e2))
         assert results.messages == [on_error(300, ex)]
 
     def test_fork_join_non_empty_error_left_last(self):
@@ -120,7 +120,7 @@ class TestForkJoin(unittest.TestCase):
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
 
-        results = scheduler.start(lambda: rx.fork_join(e1, e2))
+        results = scheduler.start(lambda: reactivex.fork_join(e1, e2))
         assert results.messages == [on_error(300, ex)]
 
     def test_fork_join_non_empty_error_right_last(self):
@@ -133,7 +133,7 @@ class TestForkJoin(unittest.TestCase):
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
 
-        results = scheduler.start(lambda: rx.fork_join(e1, e2))
+        results = scheduler.start(lambda: reactivex.fork_join(e1, e2))
         assert results.messages == [on_error(330, ex)]
 
     def test_fork_join_error_error_left_last(self):
@@ -146,7 +146,7 @@ class TestForkJoin(unittest.TestCase):
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
 
-        results = scheduler.start(lambda: rx.fork_join(e1, e2))
+        results = scheduler.start(lambda: reactivex.fork_join(e1, e2))
         assert results.messages == [on_error(330, ex)]
 
     def test_fork_join_error_error_right_last(self):
@@ -159,7 +159,7 @@ class TestForkJoin(unittest.TestCase):
         e1 = scheduler.create_hot_observable(msgs1)
         e2 = scheduler.create_hot_observable(msgs2)
 
-        results = scheduler.start(lambda: rx.fork_join(e1, e2))
+        results = scheduler.start(lambda: reactivex.fork_join(e1, e2))
         assert results.messages == [on_error(340, ex)]
 
     def test_fork_join_many(self):
@@ -209,7 +209,7 @@ class TestForkJoin(unittest.TestCase):
             scheduler.create_hot_observable(x)
             for x in [msgs1, msgs2, msgs3, msgs4, msgs5]
         ]
-        results = scheduler.start(lambda: rx.fork_join(*xs))
+        results = scheduler.start(lambda: reactivex.fork_join(*xs))
         assert results.messages == [on_next(905, (9, 3, 2, 3, 99)), on_completed(905)]
 
     def test_fork_join_many_ops(self):

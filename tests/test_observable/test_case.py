@@ -1,7 +1,7 @@
 import unittest
 
-import rx
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -27,7 +27,7 @@ class TestCase(unittest.TestCase):
         map = {1: xs, 2: ys}
 
         def create():
-            return rx.case(lambda: 1, map, zs)
+            return reactivex.case(lambda: 1, map, zs)
 
         results = scheduler.start(create)
 
@@ -55,7 +55,7 @@ class TestCase(unittest.TestCase):
         map = {1: xs, 2: ys}
 
         def create():
-            return rx.case(lambda: 2, map, zs)
+            return reactivex.case(lambda: 2, map, zs)
 
         results = scheduler.start(create)
 
@@ -83,7 +83,7 @@ class TestCase(unittest.TestCase):
         map = {1: xs, 2: ys}
 
         def create():
-            return rx.case(lambda: 3, map, zs)
+            return reactivex.case(lambda: 3, map, zs)
 
         results = scheduler.start(create)
 
@@ -115,7 +115,7 @@ class TestCase(unittest.TestCase):
             def mapper():
                 raise Exception(ex)
 
-            return rx.case(mapper, map, zs)
+            return reactivex.case(mapper, map, zs)
 
         results = scheduler.start(create)
 
@@ -135,7 +135,7 @@ class TestCase(unittest.TestCase):
         map = {1: xs, 2: ys}
 
         def create():
-            return rx.case(lambda: 1, map)
+            return reactivex.case(lambda: 1, map)
 
         results = scheduler.start(create=create)
 
@@ -159,7 +159,7 @@ class TestCase(unittest.TestCase):
         map = {1: xs, 2: ys}
 
         def create():
-            return rx.case(lambda: 2, map)
+            return reactivex.case(lambda: 2, map)
 
         results = scheduler.start(create=create)
 
@@ -183,7 +183,7 @@ class TestCase(unittest.TestCase):
         map = {1: xs, 2: ys}
 
         def create():
-            return rx.case(lambda: 3, map)
+            return reactivex.case(lambda: 3, map)
 
         results = scheduler.start(create=create)
 
@@ -206,7 +206,7 @@ class TestCase(unittest.TestCase):
             def mapper():
                 raise Exception(ex)
 
-            return rx.case(mapper, map)
+            return reactivex.case(mapper, map)
 
         results = scheduler.start(create)
 

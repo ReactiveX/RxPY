@@ -1,10 +1,10 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.core import ConnectableObservable, Observable
-from rx.core.abc import ObserverBase
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex import ConnectableObservable, Observable
+from reactivex.abc import ObserverBase
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -136,9 +136,9 @@ class TestPublish(unittest.TestCase):
 
                 return func
 
-            return rx.create(create)
+            return reactivex.create(create)
 
-        xs = rx.defer(factory)
+        xs = reactivex.defer(factory)
 
         subject = MySubject()
         conn = ConnectableObservable(xs, subject)
@@ -466,7 +466,7 @@ class TestPublish(unittest.TestCase):
         ]
 
     def test_publish_multipleconnections(self):
-        xs = rx.never()
+        xs = reactivex.never()
         ys = xs.pipe(ops.publish())
         connection1 = ys.connect()
         connection2 = ys.connect()

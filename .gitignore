@@ -82,3 +82,4 @@ _build
 .ionide/
 
 .python-version
+__pycache__

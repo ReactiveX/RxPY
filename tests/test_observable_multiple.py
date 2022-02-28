@@ -1,4 +1,4 @@
-from rx.testing import ReactiveTest
+from reactivex.testing import ReactiveTest
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -18,10 +18,10 @@ def _raise(ex: Exception):
     raise RxException(ex)
 
 
-# test("Rx.Observable.catchException() does not lose subscription to underlying observable", 12, function () {
+# test("reactivex.Observable.catchException() does not lose subscription to underlying observable", 12, function () {
 #     var subscribes = 0,
 #             unsubscribes = 0,
-#             tracer = Rx.Observable.create(function (observer) { ++subscribes return function () { ++unsubscribes } ,
+#             tracer = reactivex.Observable.create(function (observer) { ++subscribes return function () { ++unsubscribes } ,
 #             s
 
 #     // Try it without catchException()
@@ -34,7 +34,7 @@ def _raise(ex: Exception):
 
 #     // Now try again with catchException(Observable):
 #     subscribes = unsubscribes = 0
-#     s = tracer.catchException(Rx.rx.never()).subscribe()
+#     s = tracer.catchException(Rx.reactivex.never()).subscribe()
 #     strictEqual(subscribes, 1, "catchException(Observable): 1 subscribes")
 #     strictEqual(unsubscribes, 0, "catchException(Observable): 0 unsubscribes")
 #     s.dispose()
@@ -43,7 +43,7 @@ def _raise(ex: Exception):
 
 #     // And now try again with catchException(function()):
 #     subscribes = unsubscribes = 0
-#     s = tracer.catchException(function () { return Rx.rx.never() .subscribe()
+#     s = tracer.catchException(function () { return Rx.reactivex.never() .subscribe()
 #     strictEqual(subscribes, 1, "catchException(function): 1 subscribes")
 #     strictEqual(unsubscribes, 0, "catchException(function): 0 unsubscribes")
 #     s.dispose()
