@@ -27,8 +27,8 @@ jobs:
 
       - name: Check formatting
         run: |
-          poetry run black --check --verbose rx
-          poetry run isort --check rx
+          poetry run black --check reactivex
+          poetry run isort --check reactivex
 
       - name: Check type annotations (mypy & pyright)
         run: |
