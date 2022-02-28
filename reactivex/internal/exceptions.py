@@ -6,9 +6,7 @@ from typing import Optional
 
 class SequenceContainsNoElementsError(Exception):
     def __init__(self, msg: Optional[str] = None):
-        super(SequenceContainsNoElementsError, self).__init__(
-            msg or "Sequence contains no elements"
-        )
+        super().__init__(msg or "Sequence contains no elements")
 
 
 class ArgumentOutOfRangeException(ValueError):
