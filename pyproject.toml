@@ -59,7 +59,7 @@ float_to_top=true
 python_version = "3.9"
 follow_imports = "silent"
 files = ["reactivex"]
-exclude = ["reactivex/core/operators"]
+exclude = ["reactivex/operators/_\\w.*\\.py$"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
