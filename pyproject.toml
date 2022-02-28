@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "reactivex"
 version = "4.0.0a4"  # Make sure the version here is the same as in _version.py
-description = "Reactive Extensions (Rx) for Python"
+description = "ReactiveX (Rx) for Python"
 readme = "README.rst"
 authors = ["Dag Brattli <dag@brattli.net>"]
 license = "MIT License"
@@ -59,7 +59,7 @@ float_to_top=true
 python_version = "3.9"
 follow_imports = "silent"
 files = ["reactivex"]
-exclude = ["reactivex/operators/_\\w.*\\.py$"]
+exclude = ["reactivex/operators/_\\w.*\\.py$"] # mypy will eventually catch up
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

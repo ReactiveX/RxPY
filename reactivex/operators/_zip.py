@@ -7,11 +7,10 @@ _T = TypeVar("_T")
 _TOther = TypeVar("_TOther")
 
 
-# pylint: disable=redefined-builtin
 def zip_(
     *args: Observable[Any],
 ) -> Callable[[Observable[Any]], Observable[Tuple[Any, ...]]]:
-    def zip(source: Observable[Any]) -> Observable[Tuple[Any, ...]]:
+    def _zip(source: Observable[Any]) -> Observable[Tuple[Any, ...]]:
         """Merges the specified observable sequences into one observable
         sequence by creating a tuple whenever all of the
         observable sequences have produced an element at a corresponding
@@ -29,7 +28,7 @@ def zip_(
         """
         return reactivex.zip(source, *args)
 
-    return zip
+    return _zip
 
 
 def zip_with_iterable_(
