@@ -2,9 +2,9 @@ import unittest
 
 import pytest
 
-from rx.internal import ArgumentOutOfRangeException
-from rx.internal.constants import DELTA_ZERO, UTC_ZERO
-from rx.scheduler import VirtualTimeScheduler
+from reactivex.internal import ArgumentOutOfRangeException
+from reactivex.internal.constants import DELTA_ZERO, UTC_ZERO
+from reactivex.scheduler import VirtualTimeScheduler
 
 
 class VirtualSchedulerTestScheduler(VirtualTimeScheduler):

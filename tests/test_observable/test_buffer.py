@@ -1,8 +1,8 @@
 import unittest
 
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
-from rx.testing.marbles import marbles_testing
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
+from reactivex.testing.marbles import marbles_testing
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

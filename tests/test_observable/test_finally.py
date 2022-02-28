@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -21,7 +21,7 @@ class TestFinally(unittest.TestCase):
             invasserte_count[0] += 1
             return invasserte_count
 
-        some_observable = rx.empty().pipe(ops.finally_action(action))
+        some_observable = reactivex.empty().pipe(ops.finally_action(action))
 
         d = some_observable.subscribe()
         d.dispose()

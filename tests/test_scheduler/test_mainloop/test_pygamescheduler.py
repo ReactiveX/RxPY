@@ -4,8 +4,8 @@ from time import sleep
 
 import pytest
 
-from rx.internal.basic import default_now
-from rx.scheduler.mainloop import PyGameScheduler
+from reactivex.internal.basic import default_now
+from reactivex.scheduler.mainloop import PyGameScheduler
 
 pygame = pytest.importorskip("pygame")
 

@@ -3,5 +3,5 @@
 Observable
 ===========
 
-.. autoclass:: rx.Observable
+.. autoclass:: reactivex.Observable
     :members:

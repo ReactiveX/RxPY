@@ -1,4 +1,4 @@
-from rx.disposable import (
+from reactivex.disposable import (
     BooleanDisposable,
     CompositeDisposable,
     Disposable,

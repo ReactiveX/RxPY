@@ -1,11 +1,11 @@
 import datetime
 import unittest
 
-import rx
-from rx.core import notification
-from rx.core.observable.marbles import parse
-from rx.testing import TestScheduler
-from rx.testing.reactivetest import ReactiveTest
+import reactivex
+from reactivex import notification
+from reactivex.observable.marbles import parse
+from reactivex.testing import TestScheduler
+from reactivex.testing.reactivetest import ReactiveTest
 
 
 def mess_on_next(time, value):
@@ -221,7 +221,7 @@ class TestFromMarble(unittest.TestCase):
 
     def test_from_marbles_on_error(self):
         string = "#"
-        obs = rx.from_marbles(string)
+        obs = reactivex.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
 
@@ -231,7 +231,7 @@ class TestFromMarble(unittest.TestCase):
     def test_from_marbles_on_error_specified(self):
         string = "#"
         ex = Exception("Foo")
-        obs = rx.from_marbles(string, error=ex)
+        obs = reactivex.from_marbles(string, error=ex)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
 
@@ -240,7 +240,7 @@ class TestFromMarble(unittest.TestCase):
 
     def test_from_marbles_on_complete(self):
         string = "|"
-        obs = rx.from_marbles(string)
+        obs = reactivex.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [ReactiveTest.on_completed(200.0)]
@@ -248,7 +248,7 @@ class TestFromMarble(unittest.TestCase):
 
     def test_from_marbles_on_next(self):
         string = "a"
-        obs = rx.from_marbles(string)
+        obs = reactivex.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [ReactiveTest.on_next(200.0, "a")]
@@ -258,7 +258,7 @@ class TestFromMarble(unittest.TestCase):
         string = "a--b---c"
         "         012345678901234567890"
         ts = 0.5
-        obs = rx.from_marbles(string, timespan=ts)
+        obs = reactivex.from_marbles(string, timespan=ts)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
@@ -271,7 +271,7 @@ class TestFromMarble(unittest.TestCase):
     def test_from_marbles_marble_completed(self):
         string = "-ab-c--|"
         "         012345678901234567890"
-        obs = rx.from_marbles(string)
+        obs = reactivex.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
@@ -285,7 +285,7 @@ class TestFromMarble(unittest.TestCase):
         string = "-ab-c--#--"
         "         012345678901234567890"
         ex = Exception("ex")
-        obs = rx.from_marbles(string, error=ex)
+        obs = reactivex.from_marbles(string, error=ex)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
@@ -299,7 +299,7 @@ class TestFromMarble(unittest.TestCase):
         string = "-ab(12)#--"
         "         012345678901234567890"
         ex = Exception("ex")
-        obs = rx.from_marbles(string, error=ex)
+        obs = reactivex.from_marbles(string, error=ex)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
@@ -312,7 +312,7 @@ class TestFromMarble(unittest.TestCase):
     def test_from_marbles_marble_with_space(self):
         string = " -a  b- c-  - |"
         "          01  23 45  6 78901234567890"
-        obs = rx.from_marbles(string)
+        obs = reactivex.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
@@ -325,7 +325,7 @@ class TestFromMarble(unittest.TestCase):
     def test_from_marbles_marble_with_group(self):
         string = "-(ab)-c-(12.5,def)--(6,|)"
         "         012345678901234567890"
-        obs = rx.from_marbles(string)
+        obs = reactivex.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
@@ -347,7 +347,7 @@ class TestFromMarble(unittest.TestCase):
             12: "1122",
             3: 33,
         }
-        obs = rx.from_marbles(string, lookup=lookup)
+        obs = reactivex.from_marbles(string, lookup=lookup)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
@@ -362,7 +362,7 @@ class TestFromMarble(unittest.TestCase):
     def test_from_marbles_reuse(self):
         string = "a--b---c--|"
         "         012345678901234567890"
-        obs = rx.from_marbles(string)
+        obs = reactivex.from_marbles(string)
         scheduler = TestScheduler()
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
@@ -404,7 +404,7 @@ class TestHot(unittest.TestCase):
     def test_hot_on_error(self):
         string = "#"
         scheduler = TestScheduler()
-        obs = rx.hot(string, 0.1, 200.1, scheduler=scheduler)
+        obs = reactivex.hot(string, 0.1, 200.1, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
 
         expected = [ReactiveTest.on_error(200.1, Exception("error"))]
@@ -414,7 +414,7 @@ class TestHot(unittest.TestCase):
         string = "#"
         ex = Exception("Foo")
         scheduler = TestScheduler()
-        obs = rx.hot(string, 0.1, 200.1, error=ex, scheduler=scheduler)
+        obs = reactivex.hot(string, 0.1, 200.1, error=ex, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
 
         expected = [ReactiveTest.on_error(200.1, ex)]
@@ -423,7 +423,7 @@ class TestHot(unittest.TestCase):
     def test_hot_on_complete(self):
         string = "|"
         scheduler = TestScheduler()
-        obs = rx.hot(string, 0.1, 200.1, scheduler=scheduler)
+        obs = reactivex.hot(string, 0.1, 200.1, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [ReactiveTest.on_completed(200.1)]
         assert results == expected
@@ -431,7 +431,7 @@ class TestHot(unittest.TestCase):
     def test_hot_on_next(self):
         string = "a"
         scheduler = TestScheduler()
-        obs = rx.hot(string, 0.1, 200.1, scheduler=scheduler)
+        obs = reactivex.hot(string, 0.1, 200.1, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [ReactiveTest.on_next(200.1, "a")]
         assert results == expected
@@ -439,7 +439,7 @@ class TestHot(unittest.TestCase):
     def test_hot_skipped_at_200(self):
         string = "a"
         scheduler = TestScheduler()
-        obs = rx.hot(string, 0.1, 200.0, scheduler=scheduler)
+        obs = reactivex.hot(string, 0.1, 200.0, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
         expected = []
         assert results == expected
@@ -449,7 +449,7 @@ class TestHot(unittest.TestCase):
         "         012345678901234567890"
         ts = 0.5
         scheduler = TestScheduler()
-        obs = rx.hot(string, ts, 200.0, scheduler=scheduler)
+        obs = reactivex.hot(string, ts, 200.0, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
             ReactiveTest.on_next(1 * ts + 200.0, "a"),
@@ -462,7 +462,7 @@ class TestHot(unittest.TestCase):
         string = "-ab-c--|"
         "         012345678901234567890"
         scheduler = TestScheduler()
-        obs = rx.hot(string, 0.1, 200.0, scheduler=scheduler)
+        obs = reactivex.hot(string, 0.1, 200.0, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
             ReactiveTest.on_next(200.1, "ab"),
@@ -476,7 +476,7 @@ class TestHot(unittest.TestCase):
         "         012345678901234567890"
         ex = Exception("ex")
         scheduler = TestScheduler()
-        obs = rx.hot(string, 0.1, 200.0, error=ex, scheduler=scheduler)
+        obs = reactivex.hot(string, 0.1, 200.0, error=ex, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
             ReactiveTest.on_next(200.1, "ab"),
@@ -490,7 +490,7 @@ class TestHot(unittest.TestCase):
         "         012345678901234567890"
         ex = Exception("ex")
         scheduler = TestScheduler()
-        obs = rx.hot(string, 0.1, 200.0, error=ex, scheduler=scheduler)
+        obs = reactivex.hot(string, 0.1, 200.0, error=ex, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
             ReactiveTest.on_next(200.1, "ab"),
@@ -503,7 +503,7 @@ class TestHot(unittest.TestCase):
         string = " -a  b- c-  - |"
         "          01  23 45  6 78901234567890"
         scheduler = TestScheduler()
-        obs = rx.hot(string, 0.1, 200.0, scheduler=scheduler)
+        obs = reactivex.hot(string, 0.1, 200.0, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
             ReactiveTest.on_next(200.1, "ab"),
@@ -516,7 +516,7 @@ class TestHot(unittest.TestCase):
         string = "-(ab)-c-(12.5,def)--(6,|)"
         "         01234567890123456789012345"
         scheduler = TestScheduler()
-        obs = rx.hot(string, 0.1, 200.0, scheduler=scheduler)
+        obs = reactivex.hot(string, 0.1, 200.0, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
             ReactiveTest.on_next(200.1, "ab"),
@@ -538,7 +538,7 @@ class TestHot(unittest.TestCase):
             3: 33,
         }
         scheduler = TestScheduler()
-        obs = rx.hot(string, 0.1, 200.0, lookup=lookup, scheduler=scheduler)
+        obs = reactivex.hot(string, 0.1, 200.0, lookup=lookup, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
             ReactiveTest.on_next(200.1, "aabb"),
@@ -555,7 +555,7 @@ class TestHot(unittest.TestCase):
         scheduler = TestScheduler()
         duetime = scheduler.now + datetime.timedelta(seconds=300.0)
 
-        obs = rx.hot(string, 0.1, duetime, scheduler=scheduler)
+        obs = reactivex.hot(string, 0.1, duetime, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
             ReactiveTest.on_next(300.1, "ab"),
@@ -570,7 +570,7 @@ class TestHot(unittest.TestCase):
         scheduler = TestScheduler()
         duetime = datetime.timedelta(seconds=300.0)
 
-        obs = rx.hot(string, 0.1, duetime, scheduler=scheduler)
+        obs = reactivex.hot(string, 0.1, duetime, scheduler=scheduler)
         results = scheduler.start(self.create_factory(obs)).messages
         expected = [
             ReactiveTest.on_next(300.1, "ab"),

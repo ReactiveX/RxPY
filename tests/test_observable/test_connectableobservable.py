@@ -1,11 +1,11 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.core import ConnectableObservable, Observable
-from rx.core.abc import ObserverBase
-from rx.subject import Subject
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex import ConnectableObservable, Observable
+from reactivex.abc import ObserverBase
+from reactivex.subject import Subject
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -58,7 +58,7 @@ class TestConnectableObservable(unittest.TestCase):
         y = [0]
 
         s2 = Subject()
-        co2 = ConnectableObservable(rx.return_value(1), s2)
+        co2 = ConnectableObservable(reactivex.return_value(1), s2)
 
         def on_next(x):
             y[0] = x
@@ -260,7 +260,7 @@ class TestConnectableObservable(unittest.TestCase):
             nonlocal subscribe_scheduler
             subscribe_scheduler = scheduler
 
-        xs = rx.create(subscribe)
+        xs = reactivex.create(subscribe)
         subject = MySubject()
 
         conn = ConnectableObservable(xs, subject)

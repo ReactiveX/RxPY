@@ -1,6 +1,6 @@
 import logging
 
-from rx.testing import ReactiveTest
+from reactivex.testing import ReactiveTest
 
 FORMAT = "%(asctime)-15s %(threadName)s %(message)s"
 logging.basicConfig(filename="rx.log", format=FORMAT, level=logging.DEBUG)

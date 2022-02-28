@@ -4,7 +4,7 @@ from time import sleep
 
 import pytest
 
-from rx.scheduler.eventloop import IOLoopScheduler
+from reactivex.scheduler.eventloop import IOLoopScheduler
 
 tornado = pytest.importorskip("tornado")
 from tornado import ioloop  # isort: skip

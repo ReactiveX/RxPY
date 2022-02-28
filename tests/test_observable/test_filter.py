@@ -1,9 +1,9 @@
 import unittest
 
-from rx import Observable
-from rx.disposable import SerialDisposable
-from rx.operators import filter, filter_indexed
-from rx.testing import ReactiveTest, TestScheduler, is_prime
+from reactivex import Observable
+from reactivex.disposable import SerialDisposable
+from reactivex.operators import filter, filter_indexed
+from reactivex.testing import ReactiveTest, TestScheduler, is_prime
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

@@ -3,8 +3,8 @@ import unittest
 from datetime import timedelta
 from time import sleep
 
-from rx.internal.basic import default_now
-from rx.scheduler import NewThreadScheduler
+from reactivex.internal.basic import default_now
+from reactivex.scheduler import NewThreadScheduler
 
 
 class TestNewThreadScheduler(unittest.TestCase):

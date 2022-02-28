@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx.core.observable.observable import Observable
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex.observable.observable import Observable
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -26,7 +26,7 @@ class TestForIn(unittest.TestCase):
                     on_completed(x * 100 + 40),
                 )
 
-            return rx.for_in([1, 2, 3], mapper)
+            return reactivex.for_in([1, 2, 3], mapper)
 
         results = scheduler.start(create=create)
         assert results.messages == [
@@ -50,7 +50,7 @@ class TestForIn(unittest.TestCase):
             def mapper(x: int):
                 raise Exception(ex)
 
-            return rx.for_in([1, 2, 3], mapper)
+            return reactivex.for_in([1, 2, 3], mapper)
 
         results = scheduler.start(create=create)
         assert results.messages == [on_error(200, ex)]

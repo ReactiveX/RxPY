@@ -1,9 +1,9 @@
 import asyncio
 import unittest
 
-from rx import operators as ops
-from rx.scheduler.eventloop import AsyncIOScheduler
-from rx.subject import Subject
+from reactivex import operators as ops
+from reactivex.scheduler.eventloop import AsyncIOScheduler
+from reactivex.subject import Subject
 
 
 class TestFlatMapAsync(unittest.TestCase):

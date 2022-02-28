@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from rx.scheduler.eventloop import GEventScheduler
+from reactivex.scheduler.eventloop import GEventScheduler
 
 gevent = pytest.importorskip("gevent")
 

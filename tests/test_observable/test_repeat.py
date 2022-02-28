@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -27,7 +27,7 @@ class TestRepeat(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.repeat_value(42, 0)
+            return reactivex.repeat_value(42, 0)
 
         results = scheduler.start(create)
 
@@ -37,7 +37,7 @@ class TestRepeat(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.repeat_value(42, 1)
+            return reactivex.repeat_value(42, 1)
 
         results = scheduler.start(create)
         assert results.messages == [on_next(200, 42), on_completed(200)]
@@ -46,7 +46,7 @@ class TestRepeat(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.repeat_value(42, 10)
+            return reactivex.repeat_value(42, 10)
 
         results = scheduler.start(create)
         assert results.messages == [
@@ -67,7 +67,7 @@ class TestRepeat(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.repeat_value(42, 10)
+            return reactivex.repeat_value(42, 10)
 
         results = scheduler.start(create, disposed=200)
         assert results.messages == []
@@ -76,7 +76,7 @@ class TestRepeat(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return rx.repeat_value(42, -1)
+            return reactivex.repeat_value(42, -1)
 
         results = scheduler.start(create, disposed=201)
         assert results.messages[:6] == [
@@ -142,21 +142,21 @@ class TestRepeat(unittest.TestCase):
 
     def test_repeat_observable_throws(self):
         scheduler1 = TestScheduler()
-        xs = rx.return_value(11).pipe(ops.repeat())
+        xs = reactivex.return_value(11).pipe(ops.repeat())
         xs.subscribe(lambda x: _raise("ex"), scheduler=scheduler1)
 
         with self.assertRaises(RxException):
             scheduler1.start()
 
         scheduler2 = TestScheduler()
-        ys = rx.throw("ex").pipe(ops.repeat())
+        ys = reactivex.throw("ex").pipe(ops.repeat())
         ys.subscribe(lambda ex: _raise("ex"), scheduler=scheduler2)
 
         with self.assertRaises(Exception):
             scheduler2.start()
 
         scheduler3 = TestScheduler()
-        zs = rx.return_value(1).pipe(ops.repeat())
+        zs = reactivex.return_value(1).pipe(ops.repeat())
         d = zs.subscribe(on_completed=lambda: _raise("ex"), scheduler=scheduler3)
 
         scheduler3.schedule_absolute(210, lambda sc, st: d.dispose())
@@ -235,21 +235,21 @@ class TestRepeat(unittest.TestCase):
 
     def test_repeat_observable_repeat_count_throws(self):
         scheduler1 = TestScheduler()
-        xs = rx.return_value(1).pipe(ops.repeat(3))
+        xs = reactivex.return_value(1).pipe(ops.repeat(3))
         xs.subscribe(lambda x: _raise("ex"), scheduler=scheduler1)
 
         with self.assertRaises(RxException):
             scheduler1.start()
 
         scheduler2 = TestScheduler()
-        ys = rx.throw("ex1").pipe(ops.repeat(3))
+        ys = reactivex.throw("ex1").pipe(ops.repeat(3))
         ys.subscribe(on_error=lambda ex: _raise("ex2"), scheduler=scheduler2)
 
         with self.assertRaises(RxException):
             scheduler2.start()
 
         # scheduler3 = TestScheduler()
-        # zs = rx.return_value(1).repeat(100)
+        # zs = reactivex.return_value(1).repeat(100)
         # d = zs.subscribe(on_completed=lambda: _raise('ex3'), scheduler=scheduler3)
 
         # scheduler3.schedule_absolute(10, lambda sc, st: d.dispose())

@@ -2,10 +2,10 @@ from typing import Any, Tuple
 from tkinter import Tk, Label, Frame, Event
 import tkinter
 
-import rx
-from rx import operators as ops, Observable
-from rx.subject import Subject
-from rx.scheduler.mainloop import TkinterScheduler
+import reactivex
+from reactivex import operators as ops, Observable
+from reactivex.subject import Subject
+from reactivex.scheduler.mainloop import TkinterScheduler
 
 
 def main():
@@ -37,7 +37,7 @@ def main():
     def char2label(char: str) -> Label:
         return Label(frame, text=char)
 
-    rx.from_(text).pipe(
+    reactivex.from_(text).pipe(
         ops.map(char2label),
         ops.flat_map_indexed(label2stream),
     ).subscribe(on_next, on_error=print, scheduler=scheduler)

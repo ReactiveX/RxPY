@@ -19,9 +19,9 @@ from tornado.httpclient import AsyncHTTPClient, HTTPResponse
 from tornado.web import RequestHandler, StaticFileHandler, Application, url
 from tornado.websocket import WebSocketHandler
 
-from rx import operators as ops
-from rx.scheduler.eventloop import AsyncIOScheduler
-from rx.subject import Subject
+from reactivex import operators as ops
+from reactivex.scheduler.eventloop import AsyncIOScheduler
+from reactivex.subject import Subject
 
 
 def search_wikipedia(term: str) -> Future[HTTPResponse]:

@@ -5,8 +5,8 @@ from time import sleep
 
 import pytest
 
-from rx.internal.basic import default_now
-from rx.scheduler.mainloop import TkinterScheduler
+from reactivex.internal.basic import default_now
+from reactivex.scheduler.mainloop import TkinterScheduler
 
 tkinter = pytest.importorskip("tkinter")
 

@@ -1,6 +1,6 @@
 import unittest
 
-from rx import __version__
+from reactivex import __version__
 
 
 class VersionTest(unittest.TestCase):

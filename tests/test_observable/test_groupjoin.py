@@ -1,9 +1,9 @@
 import unittest
 from datetime import timedelta
 
-import rx
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -238,8 +238,12 @@ class TestGroup_join(unittest.TestCase):
             return xs.pipe(
                 ops.group_join(
                     ys,
-                    lambda x: rx.timer(x.interval).pipe(ops.filter(lambda _: False)),
-                    lambda y: rx.timer(y.interval).pipe(ops.filter(lambda _: False)),
+                    lambda x: reactivex.timer(x.interval).pipe(
+                        ops.filter(lambda _: False)
+                    ),
+                    lambda y: reactivex.timer(y.interval).pipe(
+                        ops.filter(lambda _: False)
+                    ),
                 ),
                 ops.flat_map(mapper),
             )
@@ -307,8 +311,8 @@ class TestGroup_join(unittest.TestCase):
             return xs.pipe(
                 ops.group_join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.flat_map(mapper),
             )
@@ -375,8 +379,8 @@ class TestGroup_join(unittest.TestCase):
             return xs.pipe(
                 ops.group_join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.flat_map(mapper),
             )
@@ -444,8 +448,8 @@ class TestGroup_join(unittest.TestCase):
             return xs.pipe(
                 ops.group_join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.flat_map(mapper),
             )
@@ -500,8 +504,12 @@ class TestGroup_join(unittest.TestCase):
             return xs.pipe(
                 ops.group_join(
                     ys,
-                    lambda x: rx.timer(x.interval).pipe(ops.filter(lambda _: False)),
-                    lambda y: rx.timer(y.interval).pipe(ops.filter(lambda _: False)),
+                    lambda x: reactivex.timer(x.interval).pipe(
+                        ops.filter(lambda _: False)
+                    ),
+                    lambda y: reactivex.timer(y.interval).pipe(
+                        ops.filter(lambda _: False)
+                    ),
                 ),
                 ops.flat_map(mapper),
             )
@@ -527,8 +535,8 @@ class TestGroup_join(unittest.TestCase):
             return xs.pipe(
                 ops.group_join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.flat_map(mapper),
             )
@@ -573,8 +581,8 @@ class TestGroup_join(unittest.TestCase):
             return xs.pipe(
                 ops.group_join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.flat_map(mapper),
             )
@@ -628,8 +636,8 @@ class TestGroup_join(unittest.TestCase):
             return xs.pipe(
                 ops.group_join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.flat_map(mapper),
             )
@@ -681,8 +689,8 @@ class TestGroup_join(unittest.TestCase):
             return xs.pipe(
                 ops.group_join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.flat_map(mapper),
             )
@@ -745,10 +753,12 @@ class TestGroup_join(unittest.TestCase):
             return xs.pipe(
                 ops.group_join(
                     ys,
-                    lambda x: rx.timer(x.interval).pipe(
-                        ops.flat_map(rx.throw(ex) if x.value == 6 else rx.empty())
+                    lambda x: reactivex.timer(x.interval).pipe(
+                        ops.flat_map(
+                            reactivex.throw(ex) if x.value == 6 else reactivex.empty()
+                        )
                     ),
-                    lambda y: rx.timer(y.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.flat_map(mapper),
             )
@@ -814,9 +824,13 @@ class TestGroup_join(unittest.TestCase):
             return xs.pipe(
                 ops.group_join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval).pipe(
-                        ops.flat_map(rx.throw(ex) if y.value == "tin" else rx.empty())
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval).pipe(
+                        ops.flat_map(
+                            reactivex.throw(ex)
+                            if y.value == "tin"
+                            else reactivex.empty()
+                        )
                     ),
                 ),
                 ops.flat_map(mapper),
@@ -878,7 +892,7 @@ class TestGroup_join(unittest.TestCase):
                 if x.value >= 0:
                     raise Exception(ex)
                 else:
-                    return rx.empty()
+                    return reactivex.empty()
 
             def mapper(x_yy):
                 x, yy = x_yy
@@ -888,7 +902,7 @@ class TestGroup_join(unittest.TestCase):
                 ops.group_join(
                     ys,
                     left_duration_mapper,
-                    lambda y: rx.timer(y.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.flat_map(mapper),
             )
@@ -931,7 +945,7 @@ class TestGroup_join(unittest.TestCase):
                 if len(y.value) >= 0:
                     raise Exception(ex)
                 else:
-                    return rx.empty()
+                    return reactivex.empty()
 
             def mapper(x_yy):
                 x, yy = x_yy
@@ -940,7 +954,7 @@ class TestGroup_join(unittest.TestCase):
             return xs.pipe(
                 ops.group_join(
                     ys,
-                    lambda x: rx.timer(x.interval),
+                    lambda x: reactivex.timer(x.interval),
                     right_duration_mapper,
                 ),
                 ops.flat_map(mapper),

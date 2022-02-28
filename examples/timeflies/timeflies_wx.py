@@ -1,13 +1,12 @@
-import rx
-from rx import operators as ops
-from rx.subject import Subject
-from rx.scheduler.mainloop import WxScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.subject import Subject
+from reactivex.scheduler.mainloop import WxScheduler
 
 import wx
 
 
 class Frame(wx.Frame):
-
     def __init__(self):
         super(Frame, self).__init__(None)
         self.SetTitle("Rx for Python rocks")
@@ -29,11 +28,11 @@ def main():
     app.TopWindow = frame = Frame()
     frame.Show()
 
-    text = 'TIME FLIES LIKE AN ARROW'
+    text = "TIME FLIES LIKE AN ARROW"
 
     def on_next(info):
         label, (x, y), i = info
-        label.Move(x + i*12 + 15, y)
+        label.Move(x + i * 12 + 15, y)
         label.Show()
 
     def handle_label(label, i):
@@ -43,7 +42,7 @@ def main():
         return frame.mousemove.pipe(
             delayer,
             mapper,
-            )
+        )
 
     def make_label(char):
         label = wx.StaticText(frame, label=char)
@@ -53,7 +52,7 @@ def main():
     mapper = ops.map(make_label)
     labeler = ops.flat_map_indexed(handle_label)
 
-    rx.from_(text).pipe(
+    reactivex.from_(text).pipe(
         mapper,
         labeler,
     ).subscribe(on_next, on_error=print, scheduler=scheduler)
@@ -62,5 +61,5 @@ def main():
     app.MainLoop()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

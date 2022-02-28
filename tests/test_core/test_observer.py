@@ -1,5 +1,5 @@
-from rx.core import Observer
-from rx.core.notification import OnCompleted, OnError, OnNext, from_notifier
+from reactivex import Observer
+from reactivex.notification import OnCompleted, OnError, OnNext, from_notifier
 
 
 class MyObserver(Observer):

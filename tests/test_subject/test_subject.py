@@ -1,5 +1,5 @@
-from rx.subject import Subject
-from rx.testing import ReactiveTest, TestScheduler
+from reactivex.subject import Subject
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

@@ -1,7 +1,7 @@
 import unittest
 from datetime import timedelta
 
-from rx.scheduler import CatchScheduler, VirtualTimeScheduler
+from reactivex.scheduler import CatchScheduler, VirtualTimeScheduler
 
 
 class MyException(Exception):

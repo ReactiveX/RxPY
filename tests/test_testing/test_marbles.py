@@ -1,9 +1,9 @@
 import unittest
 
-from rx.testing.marbles import marbles_testing
-from rx.testing.reactivetest import ReactiveTest
+from reactivex.testing.marbles import marbles_testing
+from reactivex.testing.reactivetest import ReactiveTest
 
-# from rx.scheduler import timeout_scheduler, new_thread_scheduler
+# from reactivex.scheduler import timeout_scheduler, new_thread_scheduler
 
 # marble sequences to test:
 # tested_marbles = '0-1-(10)|', '0|', '(10)-(20)|', '(abc)-|'

@@ -1,9 +1,9 @@
 import unittest
 from datetime import timedelta
 
-import rx
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -76,8 +76,8 @@ class TestJoin(unittest.TestCase):
             return xs.pipe(
                 ops.join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.map(mapper),
             )
@@ -145,8 +145,8 @@ class TestJoin(unittest.TestCase):
             return xs.pipe(
                 ops.join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.map(mapper),
             )
@@ -213,8 +213,12 @@ class TestJoin(unittest.TestCase):
             return xs.pipe(
                 ops.join(
                     ys,
-                    lambda x: rx.timer(x.interval).pipe(ops.filter(lambda _: False)),
-                    lambda y: rx.timer(y.interval).pipe(ops.filter(lambda _: False)),
+                    lambda x: reactivex.timer(x.interval).pipe(
+                        ops.filter(lambda _: False)
+                    ),
+                    lambda y: reactivex.timer(y.interval).pipe(
+                        ops.filter(lambda _: False)
+                    ),
                 ),
                 ops.map(mapper),
             )
@@ -281,8 +285,8 @@ class TestJoin(unittest.TestCase):
             return xs.pipe(
                 ops.join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.map(mapper),
             )
@@ -349,8 +353,8 @@ class TestJoin(unittest.TestCase):
             return xs.pipe(
                 ops.join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.map(mapper),
             )
@@ -418,8 +422,8 @@ class TestJoin(unittest.TestCase):
             return xs.pipe(
                 ops.join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.map(mapper),
             )
@@ -487,8 +491,8 @@ class TestJoin(unittest.TestCase):
             return xs.pipe(
                 ops.join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.map(mapper),
             )
@@ -542,8 +546,8 @@ class TestJoin(unittest.TestCase):
             return xs.pipe(
                 ops.join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.map(mapper),
             )
@@ -595,8 +599,8 @@ class TestJoin(unittest.TestCase):
             return xs.pipe(
                 ops.join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval),
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.map(mapper),
             )
@@ -660,10 +664,12 @@ class TestJoin(unittest.TestCase):
             return xs.pipe(
                 ops.join(
                     ys,
-                    lambda x: rx.timer(x.interval).pipe(
-                        ops.flat_map(rx.throw(ex) if x.value == 6 else rx.empty())
+                    lambda x: reactivex.timer(x.interval).pipe(
+                        ops.flat_map(
+                            reactivex.throw(ex) if x.value == 6 else reactivex.empty()
+                        )
                     ),
-                    lambda y: rx.timer(y.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.map(mapper),
             )
@@ -730,9 +736,13 @@ class TestJoin(unittest.TestCase):
             return xs.pipe(
                 ops.join(
                     ys,
-                    lambda x: rx.timer(x.interval),
-                    lambda y: rx.timer(y.interval).pipe(
-                        ops.flat_map(rx.throw(ex) if y.value == "tin" else rx.empty())
+                    lambda x: reactivex.timer(x.interval),
+                    lambda y: reactivex.timer(y.interval).pipe(
+                        ops.flat_map(
+                            reactivex.throw(ex)
+                            if y.value == "tin"
+                            else reactivex.empty()
+                        )
                     ),
                 ),
                 ops.map(mapper),
@@ -794,7 +804,7 @@ class TestJoin(unittest.TestCase):
                 if x.value >= 0:
                     raise Exception(ex)
                 else:
-                    return rx.empty()
+                    return reactivex.empty()
 
             def mapper(xy):
                 x, y = xy
@@ -804,7 +814,7 @@ class TestJoin(unittest.TestCase):
                 ops.join(
                     ys,
                     left_duration_mapper,
-                    lambda y: rx.timer(y.interval),
+                    lambda y: reactivex.timer(y.interval),
                 ),
                 ops.map(mapper),
             )
@@ -848,7 +858,7 @@ class TestJoin(unittest.TestCase):
                 if len(y.value) >= 0:
                     raise Exception(ex)
                 else:
-                    return rx.empty()
+                    return reactivex.empty()
 
             def mapper(xy):
                 x, y = xy
@@ -857,7 +867,7 @@ class TestJoin(unittest.TestCase):
             return xs.pipe(
                 ops.join(
                     ys,
-                    lambda x: rx.timer(x.interval),
+                    lambda x: reactivex.timer(x.interval),
                     right_duration_mapper,
                 ),
                 ops.map(mapper),
@@ -893,10 +903,10 @@ class TestJoin(unittest.TestCase):
         def subscribe_duration_y(observer, scheduler="not_set"):
             subscribe_schedulers["duration_y"] = scheduler
 
-        xs = rx.create(subscribe_x)
-        ys = rx.create(subscribe_y)
-        duration_x = rx.create(subscribe_duration_x)
-        duration_y = rx.create(subscribe_duration_y)
+        xs = reactivex.create(subscribe_x)
+        ys = reactivex.create(subscribe_y)
+        duration_x = reactivex.create(subscribe_duration_x)
+        duration_y = reactivex.create(subscribe_duration_y)
 
         def create():
             return xs.pipe(
@@ -938,10 +948,10 @@ class TestJoin(unittest.TestCase):
         def subscribe_duration_y(observer, scheduler="not_set"):
             subscribe_schedulers["duration_y"] = scheduler
 
-        xs = rx.create(subscribe_x)
-        ys = rx.create(subscribe_y)
-        duration_x = rx.create(subscribe_duration_x)
-        duration_y = rx.create(subscribe_duration_y)
+        xs = reactivex.create(subscribe_x)
+        ys = reactivex.create(subscribe_y)
+        duration_x = reactivex.create(subscribe_duration_x)
+        duration_y = reactivex.create(subscribe_duration_y)
 
         stream = xs.pipe(
             ops.join(

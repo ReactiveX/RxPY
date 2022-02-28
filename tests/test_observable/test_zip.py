@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.testing import ReactiveTest, TestScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -16,8 +16,8 @@ created = ReactiveTest.created
 class TestZip(unittest.TestCase):
     def test_zip_never_never(self):
         scheduler = TestScheduler()
-        o1 = rx.never()
-        o2 = rx.never()
+        o1 = reactivex.never()
+        o2 = reactivex.never()
 
         def create():
             return o1.pipe(ops.zip(o2))
@@ -28,7 +28,7 @@ class TestZip(unittest.TestCase):
     def test_zip_never_empty(self):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_completed(210)]
-        o1 = rx.never()
+        o1 = reactivex.never()
         o2 = scheduler.create_hot_observable(msgs)
 
         def create():
@@ -80,7 +80,7 @@ class TestZip(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_next(215, 2), on_completed(220)]
         e1 = scheduler.create_hot_observable(msgs)
-        e2 = rx.never()
+        e2 = reactivex.never()
 
         def create():
             return e2.pipe(ops.zip(e1), ops.map(sum))
@@ -92,7 +92,7 @@ class TestZip(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_next(215, 2), on_completed(220)]
         e1 = scheduler.create_hot_observable(msgs)
-        e2 = rx.never()
+        e2 = reactivex.never()
 
         def create():
             return e1.pipe(ops.zip(e2), ops.map(sum))
@@ -175,7 +175,7 @@ class TestZip(unittest.TestCase):
         ex = "ex"
         scheduler = TestScheduler()
         msgs2 = [on_next(150, 1), on_error(220, ex)]
-        e1 = rx.never()
+        e1 = reactivex.never()
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():
@@ -188,7 +188,7 @@ class TestZip(unittest.TestCase):
         ex = "ex"
         scheduler = TestScheduler()
         msgs2 = [on_next(150, 1), on_error(220, ex)]
-        e1 = rx.never()
+        e1 = reactivex.never()
         e2 = scheduler.create_hot_observable(msgs2)
 
         def create():

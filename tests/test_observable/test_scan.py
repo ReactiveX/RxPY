@@ -1,8 +1,8 @@
 import unittest
 
-from rx import Observable, never
-from rx import operators as _
-from rx.testing import ReactiveTest, TestScheduler
+from reactivex import Observable, never
+from reactivex import operators as _
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

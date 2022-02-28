@@ -1,7 +1,7 @@
 import unittest
 
-from rx.internal.constants import DELTA_ZERO, UTC_ZERO
-from rx.scheduler.scheduler import Scheduler
+from reactivex.internal.constants import DELTA_ZERO, UTC_ZERO
+from reactivex.scheduler.scheduler import Scheduler
 
 
 class TestScheduler(unittest.TestCase):
