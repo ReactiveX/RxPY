@@ -650,7 +650,9 @@ def delay_with_mapper(
         >>> # with mapper only
         >>> res = source.delay_with_mapper(lambda x: Scheduler.timer(5.0))
         >>> # with delay and mapper
-        >>> res = source.delay_with_mapper(reactivex.timer(2.0), lambda x: reactivex.timer(x))
+        >>> res = source.delay_with_mapper(
+            reactivex.timer(2.0), lambda x: reactivex.timer(x)
+        )
 
     Args:
         subscription_delay: [Optional] Sequence indicating the delay
@@ -1218,13 +1220,6 @@ def first_or_default(
 
 @overload
 def flat_map(
-    mapper: Optional["Future[_T2]"] = None,
-) -> Callable[[Observable[Any]], Observable[_T2]]:
-    ...
-
-
-@overload
-def flat_map(
     mapper: Optional[Iterable[_T2]] = None,
 ) -> Callable[[Observable[Any]], Observable[_T2]]:
     ...
@@ -1234,13 +1229,6 @@ def flat_map(
 def flat_map(
     mapper: Optional[Observable[_T2]] = None,
 ) -> Callable[[Observable[Any]], Observable[_T2]]:
-    ...
-
-
-@overload
-def flat_map(
-    mapper: Optional[Mapper[_T1, "Future[_T2]"]] = None
-) -> Callable[[Observable[_T1]], Observable[_T2]]:
     ...
 
 
@@ -1305,13 +1293,6 @@ def flat_map(
 
 @overload
 def flat_map_indexed(
-    mapper_indexed: Optional["Future[_T2]"] = None,
-) -> Callable[[Observable[Any]], Observable[_T2]]:
-    ...
-
-
-@overload
-def flat_map_indexed(
     mapper_indexed: Optional[Iterable[_T2]] = None,
 ) -> Callable[[Observable[Any]], Observable[_T2]]:
     ...
@@ -1321,13 +1302,6 @@ def flat_map_indexed(
 def flat_map_indexed(
     mapper_indexed: Optional[Observable[_T2]] = None,
 ) -> Callable[[Observable[Any]], Observable[_T2]]:
-    ...
-
-
-@overload
-def flat_map_indexed(
-    mapper_indexed: Optional[MapperIndexed[_T1, "Future[_T2]"]] = None
-) -> Callable[[Observable[_T1]], Observable[_T2]]:
     ...
 
 
@@ -1511,7 +1485,9 @@ def group_by_until(
 
     Examples:
         >>> group_by_until(lambda x: x.id, None, lambda : reactivex.never())
-        >>> group_by_until(lambda x: x.id, lambda x: x.name, lambda grp: reactivex.never())
+        >>> group_by_until(
+            lambda x: x.id, lambda x: x.name, lambda grp: reactivex.never()
+        )
         >>> group_by_until(
             lambda x: x.id,
             lambda x: x.name,
@@ -3747,9 +3723,13 @@ def timeout_with_mapper(
 
     Examples:
         >>> res = timeout_with_mapper(reactivex.timer(0.5))
-        >>> res = timeout_with_mapper(reactivex.timer(0.5), lambda x: reactivex.timer(0.2))
         >>> res = timeout_with_mapper(
-            reactivex.timer(0.5), lambda x: reactivex.timer(0.2)), reactivex.return_value(42)
+            reactivex.timer(0.5), lambda x: reactivex.timer(0.2)
+        )
+        >>> res = timeout_with_mapper(
+            reactivex.timer(0.5),
+            lambda x: reactivex.timer(0.2),
+            reactivex.return_value(42)
         )
 
     Args:
