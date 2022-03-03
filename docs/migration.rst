@@ -3,18 +3,20 @@
 Migration v4
 ============
 
-ReactiveX for Python v4 is yet another evolution of RxPY v3:
+ReactiveX for Python v4 is an evolution of RxPY v3 to modenize it to
+current Python standards:
 
 - Project main module renamed from ``rx`` to ``reactivex``. This is done
   to give it a unique name different from the obsolete `Reactive Extensions
   (RxPY) <https://github.com/Reactive-Extensions/RxPy>`_
 - Generic type annotations. Code now type checks with pyright / pylance
-  at strict settings. It also for most type checks with mypy. Mypy
+  at strict settings. It also mostly type checks with mypy. Mypy
   should eventually catch up.
 - The ``pipe`` function has been renamed to ``compose``. There is now a
   new function ``pipe`` that works similar to the ``pipe`` method.
-- RxPY is now a modern Python project using ``pyproject.toml``, Poetry,
-  Black formatter and isort.
+- RxPY is now a modern Python project using ``pyproject.toml`` instead
+  of ``setup.py``, and using modern tools such as Poetry, Black
+  formatter and isort.
 
 .. code:: python
 
