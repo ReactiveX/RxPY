@@ -27,7 +27,7 @@ jobs:
 
       - name: Code checks
         run: |
-          pre-commit run --all-files --show-diff-on-failure
+          poetry run pre-commit run --all-files --show-diff-on-failure
 
   build:
     strategy:
