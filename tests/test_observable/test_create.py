@@ -1,7 +1,6 @@
 import unittest
 
 import reactivex
-from reactivex.disposable import BooleanDisposable, Disposable
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next

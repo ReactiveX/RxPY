@@ -1,7 +1,5 @@
 import unittest
 
-import pytest
-
 import reactivex
 from reactivex.testing import ReactiveTest, TestScheduler
 

@@ -25,7 +25,10 @@ def sequence_equal_(
             >>> res = sequence_equal([1,2,3])
             >>> res = sequence_equal([{ "value": 42 }], lambda x, y: x.value == y.value)
             >>> res = sequence_equal(reactivex.return_value(42))
-            >>> res = sequence_equal(reactivex.return_value({ "value": 42 }), lambda x, y: x.value == y.value)
+            >>> res = sequence_equal(
+                reactivex.return_value({ "value": 42 }),
+                lambda x, y: x.value == y.value
+            )
 
         Args:
             source: Source obserable to compare.

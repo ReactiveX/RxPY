@@ -3,14 +3,16 @@ The automcomplete example rewritten for bottle / gevent.
 - Requires besides bottle and gevent also the geventwebsocket pip package
 - Instead of a future we create the inner stream for flat_map_latest manually
 """
-from bottle import request, Bottle, abort
+import json
+
 import gevent
+import requests
+from bottle import Bottle, abort, request
 from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
-import json, requests
-import reactivex
-from reactivex.subject import Subject
+
 from reactivex.scheduler.eventloop import GEventScheduler
+from reactivex.subject import Subject
 
 
 class WikiFinder:

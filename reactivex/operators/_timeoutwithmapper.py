@@ -21,7 +21,11 @@ def timeout_with_mapper_(
 
         res = timeout_with_mapper(reactivex.timer(500))
         res = timeout_with_mapper(reactivex.timer(500), lambda x: reactivex.timer(200))
-        res = timeout_with_mapper(reactivex.timer(500), lambda x: reactivex.timer(200)), reactivex.return_value(42))
+        res = timeout_with_mapper(
+            reactivex.timer(500),
+            lambda x: reactivex.timer(200)),
+            reactivex.return_value(42)
+        )
 
     Args:
         first_timeout -- [Optional] Observable sequence that represents the

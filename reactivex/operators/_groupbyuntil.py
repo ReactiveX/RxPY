@@ -32,8 +32,15 @@ def group_by_until_(
 
     Examples:
         >>> group_by_until(lambda x: x.id, None, lambda : reactivex.never())
-        >>> group_by_until(lambda x: x.id,lambda x: x.name, lambda grp: reactivex.never())
-        >>> group_by_until(lambda x: x.id, lambda x: x.name, lambda grp: reactivex.never(), lambda: ReplaySubject())
+        >>> group_by_until(
+            lambda x: x.id,lambda x: x.name, lambda grp: reactivex.never()
+        )
+        >>> group_by_until(
+            lambda x: x.id,
+            lambda x: x.name,
+            lambda grp: reactivex.never(),
+            lambda: ReplaySubject()
+        )
 
     Args:
         key_mapper: A function to extract the key for each element.

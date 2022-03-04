@@ -1,7 +1,6 @@
 import math
 import unittest
 
-import reactivex
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
 

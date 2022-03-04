@@ -1,8 +1,8 @@
 import unittest
 from typing import Any, List, Optional
 
-from reactivex import operators as ops
 from reactivex import abc
+from reactivex import operators as ops
 from reactivex.observable.connectableobservable import ConnectableObservable
 from reactivex.subject import Subject
 from reactivex.testing import ReactiveTest, TestScheduler

@@ -24,7 +24,9 @@ class GtkScheduler(PeriodicScheduler):
 
         Args:
             glib: The GLib module to use; typically, you would get this by
-                import gi; gi.require_version('Gtk', '3.0'); from gi.repository import GLib
+                >>> import gi
+                >>> gi.require_version('Gtk', '3.0')
+                >>> from gi.repository import GLib
         """
 
         super().__init__()

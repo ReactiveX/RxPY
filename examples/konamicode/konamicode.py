@@ -1,10 +1,10 @@
 import os
 from typing import Dict, Union
 
-from tornado.websocket import WebSocketHandler
-from tornado.web import RequestHandler, StaticFileHandler, Application, url
-from tornado.escape import json_decode
 from tornado import ioloop
+from tornado.escape import json_decode
+from tornado.web import Application, RequestHandler, StaticFileHandler, url
+from tornado.websocket import WebSocketHandler
 
 from reactivex import operators as ops
 from reactivex.subject import Subject

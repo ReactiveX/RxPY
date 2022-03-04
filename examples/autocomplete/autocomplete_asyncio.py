@@ -7,16 +7,16 @@ http://localhost:8080
 Uses the RxPY AsyncIOScheduler (Python 3.4 is required)
 """
 
-import os
 import asyncio
+import os
 from asyncio import Future
 from typing import Dict, Union
 
-from tornado.platform.asyncio import AsyncIOMainLoop
 from tornado.escape import json_decode
-from tornado.httputil import url_concat
 from tornado.httpclient import AsyncHTTPClient, HTTPResponse
-from tornado.web import RequestHandler, StaticFileHandler, Application, url
+from tornado.httputil import url_concat
+from tornado.platform.asyncio import AsyncIOMainLoop
+from tornado.web import Application, RequestHandler, StaticFileHandler, url
 from tornado.websocket import WebSocketHandler
 
 from reactivex import operators as ops

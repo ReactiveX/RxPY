@@ -1,8 +1,6 @@
 import unittest
 from datetime import timedelta
-from typing import Optional
 
-from reactivex import typing
 from reactivex.disposable import Disposable
 from reactivex.internal.basic import default_now
 from reactivex.scheduler.scheduleditem import ScheduledItem

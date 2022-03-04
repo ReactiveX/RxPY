@@ -1,6 +1,6 @@
 import unittest
 
-from reactivex import Observable, create, empty, return_value, throw
+from reactivex import create, empty, return_value, throw
 from reactivex.disposable import SerialDisposable
 from reactivex.operators import map, map_indexed
 from reactivex.testing import ReactiveTest, TestScheduler

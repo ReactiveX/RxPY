@@ -41,6 +41,8 @@ pyright = "^0.0.13"
 mypy = "^0.931"
 flake8 = "^4.0.1"
 coveralls = "^3.3.1"
+pre-commit = "^2.17.0"
+autoflake = "^1.4"
 
 [tool.black]
 line-length = 88

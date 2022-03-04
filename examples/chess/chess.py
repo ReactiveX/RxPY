@@ -4,9 +4,8 @@ from os.path import dirname, join
 import pygame
 
 from reactivex import operators as ops
-from reactivex.subject import Subject
 from reactivex.scheduler.mainloop import PyGameScheduler
-
+from reactivex.subject import Subject
 
 # FORMAT = '%(asctime)-15s %(threadName)s %(message)s'
 # logging.basicConfig(format=FORMAT, level=logging.DEBUG)
