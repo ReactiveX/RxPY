@@ -1,12 +1,16 @@
 # Helpers.
 # Run this cell always after kernel restarts. All other cells are autonomous.
 from __future__ import print_function
-import reactivex
-import time
+
 import inspect
 import logging
+
+# getting the current thread
+import threading
+import time
 from random import randint
-from reactivex.testing import marbles
+
+import reactivex
 
 logging.basicConfig(format="%(threadName)s:%(message)s")
 log = logging.getLogger("Rx")
@@ -118,9 +122,6 @@ def subs(src, **kw):
     return subscription
 
 
-# getting the current thread
-import threading
-
 threads = []
 
 
@@ -136,11 +137,6 @@ def cur_thread():
     # threads = ' '.join([t.name for t in threading.enumerate()])
     # return '%s of %s' % (_cur(), threads)
     return _cur()
-
-
-from reactivex.scheduler import new_thread_scheduler, timeout_scheduler
-from reactivex.subject import Subject
-from reactivex.testing import marbles, dump
 
 
 def marble_stream(s):

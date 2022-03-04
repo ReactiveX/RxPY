@@ -1,17 +1,16 @@
 import asyncio
 from asyncio import Future
 
-import rx
-from rx import operators as ops
-from rx import Observable
-from rx.scheduler.eventloop import AsyncIOScheduler
+import reactivex
+from reactivex import Observable
+from reactivex import operators as ops
+from reactivex.scheduler.eventloop import AsyncIOScheduler
 
 
 def to_async_iterable():
     def _to_async_iterable(source: Observable):
         class AIterable:
             def __aiter__(self):
-
                 class AIterator:
                     def __init__(self):
                         self.notifications = []
@@ -25,9 +24,11 @@ def to_async_iterable():
 
                         notification = self.notifications.pop(0)
                         dispatch = {
-                            'N': lambda: self.future.set_result(notification.value),
-                            'E': lambda: self.future.set_exception(notification.exception),
-                            'C': lambda: self.future.set_exception(StopAsyncIteration)
+                            "N": lambda: self.future.set_result(notification.value),
+                            "E": lambda: self.future.set_exception(
+                                notification.exception
+                            ),
+                            "C": lambda: self.future.set_exception(StopAsyncIteration),
                         }
 
                         dispatch[notification.kind]()
@@ -44,14 +45,16 @@ def to_async_iterable():
                         return value
 
                 return AIterator()
+
         return AIterable()
+
     return _to_async_iterable
 
 
 async def go(loop):
     scheduler = AsyncIOScheduler(loop)
 
-    ai = rx.range(0, 10, scheduler=scheduler).pipe(to_async_iterable())
+    ai = reactivex.range(0, 10, scheduler=scheduler).pipe(to_async_iterable())
     async for x in ai:
         print("got %s" % x)
 
@@ -61,5 +64,5 @@ def main():
     loop.run_until_complete(go(loop))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
