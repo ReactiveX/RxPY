@@ -1,3 +1,4 @@
+import os
 import threading
 import unittest
 from datetime import timedelta
@@ -9,6 +10,8 @@ from reactivex.internal import DisposedException
 from reactivex.internal.basic import default_now
 from reactivex.scheduler import EventLoopScheduler
 
+CI = os.getenv("CI") is not None
+
 
 class TestEventLoopScheduler(unittest.TestCase):
     def test_event_loop_now(self):
@@ -16,6 +19,7 @@ class TestEventLoopScheduler(unittest.TestCase):
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=5)
 
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_event_loop_now_units(self):
         scheduler = EventLoopScheduler()
         diff = scheduler.now
