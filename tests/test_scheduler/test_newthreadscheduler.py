@@ -1,10 +1,15 @@
+import os
 import threading
 import unittest
 from datetime import timedelta
 from time import sleep
 
+import pytest
+
 from reactivex.internal.basic import default_now
 from reactivex.scheduler import NewThreadScheduler
+
+CI = os.getenv("CI") is not None
 
 
 class TestNewThreadScheduler(unittest.TestCase):
@@ -13,6 +18,7 @@ class TestNewThreadScheduler(unittest.TestCase):
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=5)
 
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_new_thread_now_units(self):
         scheduler = NewThreadScheduler()
         diff = scheduler.now
