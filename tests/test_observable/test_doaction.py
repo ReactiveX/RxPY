@@ -161,6 +161,7 @@ class TestDo(unittest.TestCase):
 #     sum = [2 + 3 + 4 + 5]
 #     saw_error = False
 #     scheduler.start(create)
+#     def create():
 #         return xs.do_action(function (x) {
 #             i[0] += 1
 #             sum -= x

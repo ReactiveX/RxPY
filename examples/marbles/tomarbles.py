@@ -1,5 +1,4 @@
 import reactivex
-from reactivex import scheduler as ccy
 from reactivex import operators as ops
 
 source0 = reactivex.cold("a-----d---1--------4-|", timespan=0.1)

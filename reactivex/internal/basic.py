@@ -6,7 +6,6 @@ _T = TypeVar("_T")
 
 def noop(*args: Any, **kw: Any):
     """No operation. Returns nothing"""
-    pass
 
 
 def identity(x: _T) -> _T:

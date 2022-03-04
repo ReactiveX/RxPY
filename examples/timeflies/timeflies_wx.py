@@ -1,9 +1,9 @@
+import wx
+
 import reactivex
 from reactivex import operators as ops
-from reactivex.subject import Subject
 from reactivex.scheduler.mainloop import WxScheduler
-
-import wx
+from reactivex.subject import Subject
 
 
 class Frame(wx.Frame):

@@ -2,8 +2,8 @@ import sys
 
 import reactivex
 from reactivex import operators as ops
-from reactivex.subject import Subject
 from reactivex.scheduler.mainloop import QtScheduler
+from reactivex.subject import Subject
 
 try:
     from PySide2 import QtCore
@@ -11,7 +11,7 @@ try:
 except ImportError:
     try:
         from PyQt5 import QtCore
-        from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+        from PyQt5.QtWidgets import QApplication, QLabel, QWidget
     except ImportError:
         raise ImportError("Please ensure either PySide2 or PyQt5 is available!")
 

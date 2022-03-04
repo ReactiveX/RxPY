@@ -1,4 +1,4 @@
-# pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin,import-outside-toplevel
+# pylint: disable=too-many-lines,redefined-builtin,import-outside-toplevel
 
 
 from asyncio import Future

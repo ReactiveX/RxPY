@@ -1,6 +1,6 @@
 import asyncio
-import reactivex
 
+import reactivex
 
 stream = reactivex.just("Hello, world!")
 

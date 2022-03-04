@@ -1,11 +1,12 @@
-from typing import Any, Tuple
-from tkinter import Tk, Label, Frame, Event
 import tkinter
+from tkinter import Event, Frame, Label, Tk
+from typing import Any, Tuple
 
 import reactivex
-from reactivex import operators as ops, Observable
-from reactivex.subject import Subject
+from reactivex import Observable
+from reactivex import operators as ops
 from reactivex.scheduler.mainloop import TkinterScheduler
+from reactivex.subject import Subject
 
 
 def main():

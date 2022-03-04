@@ -2,7 +2,7 @@ import unittest
 
 import reactivex
 from reactivex import operators as ops
-from reactivex.testing import ReactiveTest, TestScheduler, is_prime
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed

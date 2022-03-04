@@ -6,20 +6,20 @@ populate the autocomplete dropdown in the web UI. Start using
 Uses the RxPY IOLoopScheduler.
 """
 
-from asyncio import Future
 import os
+from asyncio import Future
 from typing import Any, Dict, Union
 
-from tornado.websocket import WebSocketHandler
-from tornado.web import RequestHandler, StaticFileHandler, Application, url
+from tornado import ioloop
+from tornado.escape import json_decode
 from tornado.httpclient import AsyncHTTPClient, HTTPResponse
 from tornado.httputil import url_concat
-from tornado.escape import json_decode
-from tornado import ioloop
+from tornado.web import Application, RequestHandler, StaticFileHandler, url
+from tornado.websocket import WebSocketHandler
 
 from reactivex import operators as ops
-from reactivex.subject import Subject
 from reactivex.scheduler.eventloop import IOLoopScheduler
+from reactivex.subject import Subject
 
 scheduler = IOLoopScheduler(ioloop.IOLoop.current())
 
