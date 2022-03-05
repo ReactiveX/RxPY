@@ -23,8 +23,8 @@ jobs:
       - name: Install dependencies
         run: |
           pip install poetry
-          poetry version $(dunamai from any --no-metadata --style pep440)
           poetry install
+          poetry version $(dunamai from any --no-metadata --style pep440)
 
       - name: Build package
         run: poetry build
