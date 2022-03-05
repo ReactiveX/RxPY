@@ -20,10 +20,9 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install dependencies
+      - name: Install dependencies and set version
         run: |
-          pip install poetry
-          poetry install
+          pip install poetry dunamai
           poetry version $(dunamai from any --no-metadata --style pep440)
 
       - name: Build package
