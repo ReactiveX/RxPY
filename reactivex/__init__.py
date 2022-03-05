@@ -335,7 +335,7 @@ def empty(scheduler: Optional[abc.SchedulerBase] = None) -> Observable[Any]:
     Args:
         scheduler: [Optional] Scheduler instance to send the termination call
             on. By default, this will use an instance of
-            :class:`ImmediateScheduler <rx.scheduler.ImmediateScheduler>`.
+            :class:`ImmediateScheduler <reactivex.scheduler.ImmediateScheduler>`.
 
     Returns:
         An observable sequence with no elements.
@@ -462,7 +462,8 @@ def from_callable(
         supplier: Function which is invoked to obtain the single element.
         scheduler: [Optional] Scheduler instance to schedule the values on.
             If not specified, the default is to use an instance of
-            :class:`CurrentThreadScheduler <rx.scheduler.CurrentThreadScheduler>`.
+            :class:`CurrentThreadScheduler
+            <reactivex.scheduler.CurrentThreadScheduler>`.
 
     Returns:
         An observable sequence containing the single element obtained by
@@ -538,7 +539,8 @@ def from_iterable(
         iterable: An Iterable to change into an observable sequence.
         scheduler: [Optional] Scheduler instance to schedule the values on.
             If not specified, the default is to use an instance of
-            :class:`CurrentThreadScheduler <rx.scheduler.CurrentThreadScheduler>`.
+            :class:`CurrentThreadScheduler
+            <reactivex.scheduler.CurrentThreadScheduler>`.
 
     Returns:
         The observable sequence whose elements are pulled from the
@@ -610,7 +612,7 @@ def from_marbles(
         scheduler: [Optional] Scheduler to run the the input sequence
             on. If not specified, defaults to the subscribe scheduler
             if defined, else to an instance of
-            :class:`NewThreadScheduler <rx.scheduler.NewThreadScheduler`.
+            :class:`NewThreadScheduler <reactivex.scheduler.NewThreadScheduler`.
         lookup: [Optional] A dict used to convert an element into a specified
             value. If not specified, defaults to :code:`{}`.
         error: [Optional] Exception that will be use in place of the :code:`#`
@@ -758,7 +760,7 @@ def hot(
             determines when to start the emission of elements.
         scheduler: [Optional] Scheduler to run the the input sequence
             on. If not specified, defaults to an instance of
-            :class:`NewThreadScheduler <rx.scheduler.NewThreadScheduler>`.
+            :class:`NewThreadScheduler <reactivex.scheduler.NewThreadScheduler>`.
         lookup: [Optional] A dict used to convert an element into a specified
             value. If not specified, defaults to :code:`{}`.
         error: [Optional] Exception that will be use in place of the :code:`#`
@@ -833,7 +835,7 @@ def interval(
             (specified as a :class:`float` denoting seconds or an instance of
             :class:`timedelta`).
         scheduler:  Scheduler to run the interval on. If not specified, an
-            instance of :class:`TimeoutScheduler <rx.scheduler.TimeoutScheduler>`
+            instance of :class:`TimeoutScheduler <reactivex.scheduler.TimeoutScheduler>`
             is used.
 
     Returns:
@@ -976,7 +978,8 @@ def range(
         step: [Optional] The step to be used (default is 1).
         scheduler: [Optional] The scheduler to schedule the values on.
             If not specified, the default is to use an instance of
-            :class:`CurrentThreadScheduler <rx.scheduler.CurrentThreadScheduler>`.
+            :class:`CurrentThreadScheduler
+            <reactivex.scheduler.CurrentThreadScheduler>`.
 
     Returns:
         An observable sequence that contains a range of sequential
@@ -1072,7 +1075,7 @@ def start(
         func: Function to run asynchronously.
         scheduler: [Optional] Scheduler to run the function on. If
             not specified, defaults to an instance of
-            :class:`TimeoutScheduler <rx.scheduler.TimeoutScheduler>`.
+            :class:`TimeoutScheduler <reactivex.scheduler.TimeoutScheduler>`.
 
     Returns:
         An observable sequence exposing the function's result value,
@@ -1125,7 +1128,7 @@ def throw(
         exception: An object used for the sequence's termination.
         scheduler: [Optional] Scheduler to schedule the error notification on.
             If not specified, the default is to use an instance of
-            :class:`ImmediateScheduler <rx.scheduler.ImmediateScheduler>`.
+            :class:`ImmediateScheduler <reactivex.scheduler.ImmediateScheduler>`.
 
     Returns:
         The observable sequence that terminates exceptionally with the
@@ -1165,7 +1168,7 @@ def timer(
             If not specified, the resulting timer is not recurring.
         scheduler:  [Optional] Scheduler to run the timer on. If not specified,
             the default is to use an instance of
-            :class:`TimeoutScheduler <rx.scheduler.TimeoutScheduler>`.
+            :class:`TimeoutScheduler <reactivex.scheduler.TimeoutScheduler>`.
 
     Returns:
         An observable sequence that produces a value after due time has
@@ -1199,7 +1202,7 @@ def to_async(
         func: Function to convert to an asynchronous function.
         scheduler: [Optional] Scheduler to run the function on. If not
             specified, defaults to an instance of
-            :class:`TimeoutScheduler <rx.scheduler.TimeoutScheduler>`.
+            :class:`TimeoutScheduler <reactivex.scheduler.TimeoutScheduler>`.
 
     Returns:
         Asynchronous function.

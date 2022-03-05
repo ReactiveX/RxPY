@@ -265,7 +265,7 @@ Some packages were renamed:
 +-----------------------+-------------------------+
 | Old name              | New name                |
 +-----------------------+-------------------------+
-| *rx.concurrency*      | *rx.scheduler*          |
+| *rx.concurrency*      | *reactivex.scheduler*   |
 +-----------------------+-------------------------+
 | *rx.disposables*      | *rx.disposable*         |
 +-----------------------+-------------------------+
@@ -273,5 +273,5 @@ Some packages were renamed:
 +-----------------------+-------------------------+
 
 Furthermore, the package formerly known as *rx.concurrency.mainloopscheduler*
-has been split into two parts, *rx.scheduler.mainloop* and
-*rx.scheduler.eventloop*.
+has been split into two parts, *reactivex.scheduler.mainloop* and
+*reactivex.scheduler.eventloop*.
