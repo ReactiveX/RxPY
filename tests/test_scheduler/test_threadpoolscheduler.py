@@ -1,18 +1,15 @@
-import unittest
-
 import threading
+import unittest
 from datetime import timedelta
 from time import sleep
 
-from rx.scheduler import ThreadPoolScheduler
-from rx.internal.basic import default_now
-
+from reactivex.internal.basic import default_now
+from reactivex.scheduler import ThreadPoolScheduler
 
 thread_pool_scheduler = ThreadPoolScheduler()
 
 
 class TestThreadPoolScheduler(unittest.TestCase):
-
     def test_threadpool_now(self):
         scheduler = ThreadPoolScheduler()
         diff = scheduler.now - default_now()

@@ -1,16 +1,13 @@
 import unittest
 from datetime import timedelta
-from typing import Optional
 
-from rx.core import typing
-from rx.disposable import Disposable
-from rx.internal.basic import default_now
-from rx.scheduler.scheduleditem import ScheduledItem
-from rx.scheduler.scheduler import Scheduler
+from reactivex.disposable import Disposable
+from reactivex.internal.basic import default_now
+from reactivex.scheduler.scheduleditem import ScheduledItem
+from reactivex.scheduler.scheduler import Scheduler
 
 
 class ScheduledItemTestScheduler(Scheduler):
-
     def __init__(self):
         super()
         self.action = None
@@ -34,7 +31,6 @@ class ScheduledItemTestScheduler(Scheduler):
 
 
 class TestScheduledItem(unittest.TestCase):
-
     def test_scheduleditem_invoke(self):
         scheduler = ScheduledItemTestScheduler()
         disposable = Disposable()

@@ -1,13 +1,13 @@
-import pytest
-
 import threading
 from datetime import timedelta
 from time import sleep
 
-QtCore = pytest.importorskip('PyQt5.QtCore')
+import pytest
 
-from rx.scheduler.mainloop import QtScheduler
-from rx.internal.basic import default_now
+from reactivex.internal.basic import default_now
+from reactivex.scheduler.mainloop import QtScheduler
+
+QtCore = pytest.importorskip("PyQt5.QtCore")
 
 
 @pytest.fixture(scope="module")
@@ -19,7 +19,6 @@ def app():
 
 
 class TestQtSchedulerPyQt5:
-
     def test_pyqt5_schedule_now(self):
         scheduler = QtScheduler(QtCore)
         diff = scheduler.now - default_now()

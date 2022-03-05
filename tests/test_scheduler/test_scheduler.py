@@ -1,12 +1,10 @@
 import unittest
-from datetime import timedelta
 
-from rx.internal.constants import DELTA_ZERO, UTC_ZERO
-from rx.scheduler.scheduler import Scheduler
+from reactivex.internal.constants import DELTA_ZERO, UTC_ZERO
+from reactivex.scheduler.scheduler import Scheduler
 
 
 class TestScheduler(unittest.TestCase):
-
     def test_base_to_seconds(self):
         val = Scheduler.to_seconds(0.0)
         assert val == 0.0

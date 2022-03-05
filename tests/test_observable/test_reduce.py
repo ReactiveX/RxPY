@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.testing import TestScheduler, ReactiveTest
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -14,7 +14,6 @@ created = ReactiveTest.created
 
 
 class TestReduce(unittest.TestCase):
-
     def test_reduce_with_seed_empty(self):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_completed(250)]
@@ -38,7 +37,7 @@ class TestReduce(unittest.TestCase):
         assert res == [on_next(250, 42 + 24), on_completed(250)]
 
     def test_reduce_with_seed_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_error(210, ex)]
         xs = scheduler.create_hot_observable(msgs)
@@ -69,7 +68,8 @@ class TestReduce(unittest.TestCase):
             on_next(230, 2),
             on_next(240, 3),
             on_next(250, 4),
-            on_completed(260)]
+            on_completed(260),
+        ]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
@@ -88,7 +88,7 @@ class TestReduce(unittest.TestCase):
 
         res = scheduler.start(create=create).messages
         assert len(res) == 1
-        assert res[0].value.kind == 'E' and res[0].value.exception is not None
+        assert res[0].value.kind == "E" and res[0].value.exception is not None
         assert res[0].time == 250
 
     def test_reduce_without_seed_return(self):
@@ -103,7 +103,7 @@ class TestReduce(unittest.TestCase):
         assert res == [on_next(250, 24), on_completed(250)]
 
     def test_reduce_without_seed_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_error(210, ex)]
         xs = scheduler.create_hot_observable(msgs)
@@ -134,7 +134,8 @@ class TestReduce(unittest.TestCase):
             on_next(230, 2),
             on_next(240, 3),
             on_next(250, 4),
-            on_completed(260)]
+            on_completed(260),
+        ]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
@@ -144,9 +145,8 @@ class TestReduce(unittest.TestCase):
         assert res == [on_next(260, 10), on_completed(260)]
 
     def test_reduce_seed_none_does_not_crash(self):
-        rx.empty().pipe(
-            ops.reduce(lambda acc, v: v, seed=None)
-        ).subscribe()
+        reactivex.empty().pipe(ops.reduce(lambda acc, v: v, seed=None)).subscribe()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

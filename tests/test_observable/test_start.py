@@ -1,9 +1,9 @@
-import unittest
 import asyncio
+import unittest
 from asyncio import Future
 
-import rx
-from rx.testing import TestScheduler, ReactiveTest
+import reactivex
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -15,7 +15,6 @@ created = ReactiveTest.created
 
 
 class TestStart(unittest.TestCase):
-
     def test_start_async(self):
         loop = asyncio.get_event_loop()
         success = [False]
@@ -26,14 +25,15 @@ class TestStart(unittest.TestCase):
                 future.set_result(42)
                 return future
 
-            source = rx.start_async(func)
+            source = reactivex.start_async(func)
 
             def on_next(x):
-                success[0] = (42 == x)
+                success[0] = 42 == x
+
             source.subscribe(on_next)
 
         loop.run_until_complete(go())
-        assert(all(success))
+        assert all(success)
 
     def test_start_async_error(self):
         loop = asyncio.get_event_loop()
@@ -45,14 +45,15 @@ class TestStart(unittest.TestCase):
                 future.set_exception(Exception(str(42)))
                 return future
 
-            source = rx.start_async(func)
+            source = reactivex.start_async(func)
 
             def on_error(ex):
-                success[0] = (str(42) == str(ex))
+                success[0] = str(42) == str(ex)
+
             source.subscribe(on_error=on_error)
 
         loop.run_until_complete(go())
-        assert(all(success))
+        assert all(success)
 
     def test_start_action2(self):
         scheduler = TestScheduler()
@@ -62,15 +63,14 @@ class TestStart(unittest.TestCase):
         def create():
             def func():
                 done[0] = True
-            return rx.start(func, scheduler)
+
+            return reactivex.start(func, scheduler)
 
         res = scheduler.start(create)
 
-        assert res.messages == [
-            on_next(200, None),
-            on_completed(200)]
+        assert res.messages == [on_next(200, None), on_completed(200)]
 
-        assert(done)
+        assert done
 
     def test_start_func2(self):
         scheduler = TestScheduler()
@@ -78,12 +78,12 @@ class TestStart(unittest.TestCase):
         def create():
             def func():
                 return 1
-            return rx.start(func, scheduler)
+
+            return reactivex.start(func, scheduler)
+
         res = scheduler.start(create)
 
-        assert res.messages == [
-            on_next(200, 1),
-            on_completed(200)]
+        assert res.messages == [on_next(200, 1), on_completed(200)]
 
     def test_start_funcerror(self):
         ex = Exception()
@@ -93,8 +93,9 @@ class TestStart(unittest.TestCase):
         def create():
             def func():
                 raise ex
-            return rx.start(func, scheduler)
+
+            return reactivex.start(func, scheduler)
+
         res = scheduler.start(create)
 
-        assert res.messages == [
-            on_error(200, ex)]
+        assert res.messages == [on_error(200, ex)]

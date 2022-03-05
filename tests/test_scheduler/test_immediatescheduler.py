@@ -1,24 +1,23 @@
-import pytest
-import unittest
-
+import os
 import threading
+import unittest
 from datetime import timedelta
 from time import sleep
 
-from rx.disposable import Disposable
-from rx.scheduler import ImmediateScheduler
-from rx.internal.basic import default_now
-from rx.internal.constants import DELTA_ZERO
-from rx.internal.exceptions import WouldBlockException
+import pytest
+
+from reactivex.disposable import Disposable
+from reactivex.internal.basic import default_now
+from reactivex.internal.constants import DELTA_ZERO
+from reactivex.internal.exceptions import WouldBlockException
+from reactivex.scheduler import ImmediateScheduler
+
+CI = os.getenv("CI") is not None
 
 
 class TestImmediateScheduler(unittest.TestCase):
-
     def test_immediate_singleton(self):
-        scheduler = [
-            ImmediateScheduler(),
-            ImmediateScheduler.singleton()
-        ]
+        scheduler = [ImmediateScheduler(), ImmediateScheduler.singleton()]
         assert scheduler[0] is scheduler[1]
 
         gate = [threading.Semaphore(0), threading.Semaphore(0)]
@@ -48,11 +47,13 @@ class TestImmediateScheduler(unittest.TestCase):
         assert scheduler[0] is scheduler[1]
         assert scheduler[0] is not scheduler[2]
 
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_immediate_now(self):
         scheduler = ImmediateScheduler()
         diff = scheduler.now - default_now()
         assert abs(diff) <= timedelta(milliseconds=1)
 
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_immediate_now_units(self):
         scheduler = ImmediateScheduler()
         diff = scheduler.now

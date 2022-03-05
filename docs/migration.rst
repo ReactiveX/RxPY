@@ -1,7 +1,35 @@
 .. _migration:
 
-Migration
-=========
+Migration v4
+============
+
+ReactiveX for Python v4 is an evolution of RxPY v3 to modenize it to
+current Python standards:
+
+- Project main module renamed from ``rx`` to ``reactivex``. This is done
+  to give it a unique name different from the obsolete `Reactive Extensions
+  (RxPY) <https://github.com/Reactive-Extensions/RxPy>`_
+- Generic type annotations. Code now type checks with pyright / pylance
+  at strict settings. It also mostly type checks with mypy. Mypy
+  should eventually catch up.
+- The ``pipe`` function has been renamed to ``compose``. There is now a
+  new function ``pipe`` that works similar to the ``pipe`` method.
+- RxPY is now a modern Python project using ``pyproject.toml`` instead
+  of ``setup.py``, and using modern tools such as Poetry, Black
+  formatter and isort.
+
+.. code:: python
+
+    import reactivex
+    from reactivex import operators as ops
+
+    reactivex.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+        ops.map(lambda s: len(s)),
+        ops.filter(lambda i: i >= 5)
+    ).subscribe(lambda value: print("Received {0}".format(value)))
+
+Migration v3
+============
 
 RxPY v3 is a major evolution from RxPY v1. This release brings many
 improvements, some of the most important ones being:
@@ -174,7 +202,7 @@ unpacked:
 Blocking Observable
 -------------------
 
-BlockingObservables have been removed from RxPY v3. In RxPY v1, blocking until
+BlockingObservables have been removed from rxPY v3. In RxPY v1, blocking until
 an Observable completes was done the following way:
 
 .. code:: python

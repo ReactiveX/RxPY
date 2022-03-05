@@ -1,8 +1,7 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.testing import TestScheduler, ReactiveTest
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -21,10 +20,7 @@ class TestPartition(unittest.TestCase):
     def test_partition_empty(self):
         scheduler = TestScheduler()
 
-        xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_completed(210)
-        )
+        xs = scheduler.create_hot_observable(on_next(180, 5), on_completed(210))
 
         subscription1 = [None]
         subscription2 = [None]
@@ -35,35 +31,33 @@ class TestPartition(unittest.TestCase):
 
         def action0(scheduler, state):
             observables.extend(xs.pipe(ops.partition(is_even)))
+
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
             subscription1[0] = observables[0].subscribe(results1)
             subscription2[0] = observables[1].subscribe(results2)
+
         scheduler.schedule_absolute(ReactiveTest.subscribed, action1)
 
         def action2(scheduler, state):
             subscription1[0].dispose()
             subscription2[0].dispose()
+
         scheduler.schedule_absolute(ReactiveTest.disposed, action2)
 
         scheduler.start()
-        assert results1.messages == [
-            on_completed(210)]
+        assert results1.messages == [on_completed(210)]
 
-        assert results2.messages == [
-            on_completed(210)]
+        assert results2.messages == [on_completed(210)]
 
-        assert xs.subscriptions == [
-            subscribe(200, 210)]
+        assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_partition_single(self):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_next(210, 4),
-            on_completed(220)
+            on_next(180, 5), on_next(210, 4), on_completed(220)
         )
 
         observables = []
@@ -75,38 +69,34 @@ class TestPartition(unittest.TestCase):
 
         def action0(scheduler, state):
             observables.extend(xs.pipe(ops.partition(is_even)))
+
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
             subscription1[0] = observables[0].subscribe(results1)
             subscription2[0] = observables[1].subscribe(results2)
+
         scheduler.schedule_absolute(ReactiveTest.subscribed, action1)
 
         def action2(scheduler, state):
             subscription1[0].dispose()
             subscription2[0].dispose()
+
         scheduler.schedule_absolute(ReactiveTest.disposed, action2)
 
         scheduler.start()
 
-        assert results1.messages == [
-            on_next(210, 4),
-            on_completed(220)]
+        assert results1.messages == [on_next(210, 4), on_completed(220)]
 
-        assert results2.messages == [
-            on_completed(220)]
+        assert results2.messages == [on_completed(220)]
 
-        assert xs.subscriptions == [
-            subscribe(200, 220)]
+        assert xs.subscriptions == [subscribe(200, 220)]
 
     def test_partition_each(self):
         scheduler = TestScheduler()
 
         xs = scheduler.create_hot_observable(
-            on_next(180, 5),
-            on_next(210, 4),
-            on_next(220, 3),
-            on_completed(230)
+            on_next(180, 5), on_next(210, 4), on_next(220, 3), on_completed(230)
         )
 
         observables = []
@@ -134,16 +124,11 @@ class TestPartition(unittest.TestCase):
 
         scheduler.start()
 
-        assert results1.messages == [
-            on_next(210, 4),
-            on_completed(230)]
+        assert results1.messages == [on_next(210, 4), on_completed(230)]
 
-        assert results2.messages == [
-            on_next(220, 3),
-            on_completed(230)]
+        assert results2.messages == [on_next(220, 3), on_completed(230)]
 
-        assert xs.subscriptions == [
-            subscribe(200, 230)]
+        assert xs.subscriptions == [subscribe(200, 230)]
 
     def test_partition_completed(self):
         scheduler = TestScheduler()
@@ -154,7 +139,7 @@ class TestPartition(unittest.TestCase):
             on_next(240, 3),
             on_next(290, 2),
             on_next(350, 1),
-            on_completed(360)
+            on_completed(360),
         )
 
         observables = []
@@ -171,11 +156,13 @@ class TestPartition(unittest.TestCase):
         def action1(scheduler, state):
             subscription1[0] = observables[0].subscribe(results1)
             subscription2[0] = observables[1].subscribe(results2)
+
         scheduler.schedule_absolute(ReactiveTest.subscribed, action1)
 
         def action2(scheduler, state):
             subscription1[0].dispose()
             subscription2[0].dispose()
+
         scheduler.schedule_absolute(ReactiveTest.disposed, action2)
 
         scheduler.start()
@@ -183,15 +170,16 @@ class TestPartition(unittest.TestCase):
         assert results1.messages == [
             on_next(210, 4),
             on_next(290, 2),
-            on_completed(360)]
+            on_completed(360),
+        ]
 
         assert results2.messages == [
             on_next(240, 3),
             on_next(350, 1),
-            on_completed(360)]
+            on_completed(360),
+        ]
 
-        assert xs.subscriptions == [
-            subscribe(200, 360)]
+        assert xs.subscriptions == [subscribe(200, 360)]
 
     def test_partition_not_completed(self):
         scheduler = TestScheduler()
@@ -201,7 +189,7 @@ class TestPartition(unittest.TestCase):
             on_next(210, 4),
             on_next(240, 3),
             on_next(290, 2),
-            on_next(350, 1)
+            on_next(350, 1),
         )
 
         observables = []
@@ -213,6 +201,7 @@ class TestPartition(unittest.TestCase):
 
         def action0(scheduler, state):
             observables.extend(xs.pipe(ops.partition(is_even)))
+
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
@@ -224,20 +213,16 @@ class TestPartition(unittest.TestCase):
         def action2(scheduler, state):
             subscription1[0].dispose()
             subscription2[0].dispose()
+
         scheduler.schedule_absolute(ReactiveTest.disposed, action2)
 
         scheduler.start()
 
-        assert results1.messages == [
-            on_next(210, 4),
-            on_next(290, 2)]
+        assert results1.messages == [on_next(210, 4), on_next(290, 2)]
 
-        assert results2.messages == [
-            on_next(240, 3),
-            on_next(350, 1)]
+        assert results2.messages == [on_next(240, 3), on_next(350, 1)]
 
-        assert xs.subscriptions == [
-            subscribe(200, 1000)]
+        assert xs.subscriptions == [subscribe(200, 1000)]
 
     def test_partition_error(self):
         error = Exception()
@@ -249,7 +234,7 @@ class TestPartition(unittest.TestCase):
             on_next(240, 3),
             on_error(290, error),
             on_next(350, 1),
-            on_completed(360)
+            on_completed(360),
         )
 
         observables = []
@@ -260,6 +245,7 @@ class TestPartition(unittest.TestCase):
 
         def action0(scheduler, state):
             observables.extend(xs.pipe(ops.partition(is_even)))
+
         scheduler.schedule_absolute(ReactiveTest.created, action0)
 
         def action1(scheduler, state):
@@ -271,20 +257,16 @@ class TestPartition(unittest.TestCase):
         def action2(scheduler, state):
             subscription1[0].dispose()
             subscription2[0].dispose()
+
         scheduler.schedule_absolute(ReactiveTest.disposed, action2)
 
         scheduler.start()
 
-        assert results1.messages == [
-            on_next(210, 4),
-            on_error(290, error)]
+        assert results1.messages == [on_next(210, 4), on_error(290, error)]
 
-        assert results2.messages == [
-            on_next(240, 3),
-            on_error(290, error)]
+        assert results2.messages == [on_next(240, 3), on_error(290, error)]
 
-        assert xs.subscriptions == [
-            subscribe(200, 290)]
+        assert xs.subscriptions == [subscribe(200, 290)]
 
     def test_partition_disposed(self):
         scheduler = TestScheduler()
@@ -295,7 +277,7 @@ class TestPartition(unittest.TestCase):
             on_next(240, 3),
             on_next(290, 2),
             on_next(350, 1),
-            on_completed(360)
+            on_completed(360),
         )
 
         observables = []
@@ -318,15 +300,13 @@ class TestPartition(unittest.TestCase):
         def action2(scheduler, state):
             subscription1[0].dispose()
             subscription2[0].dispose()
+
         scheduler.schedule_absolute(280, action2)
 
         scheduler.start()
 
-        assert results1.messages == [
-            on_next(210, 4)]
+        assert results1.messages == [on_next(210, 4)]
 
-        assert results2.messages == [
-            on_next(240, 3)]
+        assert results2.messages == [on_next(240, 3)]
 
-        assert xs.subscriptions == [
-            subscribe(200, 280)]
+        assert xs.subscriptions == [subscribe(200, 280)]

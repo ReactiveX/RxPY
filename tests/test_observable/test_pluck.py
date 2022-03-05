@@ -1,7 +1,7 @@
 import unittest
 
-from rx import operators as ops
-from rx.testing import TestScheduler, ReactiveTest
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -13,7 +13,6 @@ created = ReactiveTest.created
 
 
 class TestPluck(unittest.TestCase):
-
     def test_pluck_completed(self):
         scheduler = TestScheduler()
 
@@ -26,26 +25,25 @@ class TestPluck(unittest.TestCase):
             on_completed(400),
             on_next(410, {"prop": -1}),
             on_completed(420),
-            on_error(430, Exception('ex'))
+            on_error(430, Exception("ex")),
         )
-        results = scheduler.start(create=lambda: xs.pipe(ops.pluck('prop')))
+        results = scheduler.start(create=lambda: xs.pipe(ops.pluck("prop")))
 
         assert results.messages == [
             on_next(210, 2),
             on_next(240, 3),
             on_next(290, 4),
             on_next(350, 5),
-            on_completed(400)]
+            on_completed(400),
+        ]
         assert xs.subscriptions == [subscribe(200, 400)]
 
 
 class TestPluckAttr(unittest.TestCase):
-
     def test_pluck_attr_completed(self):
         scheduler = TestScheduler()
 
         class DummyClass:
-
             def __init__(self, prop):
                 self.prop = prop
 
@@ -58,14 +56,15 @@ class TestPluckAttr(unittest.TestCase):
             on_completed(400),
             on_next(410, DummyClass(-1)),
             on_completed(420),
-            on_error(430, Exception('ex'))
+            on_error(430, Exception("ex")),
         )
-        results = scheduler.start(create=lambda: xs.pipe(ops.pluck_attr('prop')))
+        results = scheduler.start(create=lambda: xs.pipe(ops.pluck_attr("prop")))
 
         assert results.messages == [
             on_next(210, 2),
             on_next(240, 3),
             on_next(290, 4),
             on_next(350, 5),
-            on_completed(400)]
+            on_completed(400),
+        ]
         assert xs.subscriptions == [subscribe(200, 400)]

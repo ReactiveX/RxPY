@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx import operators as _
-from rx.testing import TestScheduler, ReactiveTest
+import reactivex
+from reactivex import operators as _
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -14,12 +14,11 @@ created = ReactiveTest.created
 
 
 class TestMaterialize(unittest.TestCase):
-
     def test_materialize_never(self):
         scheduler = TestScheduler()
 
         def create():
-            return rx.never().pipe(_.materialize())
+            return reactivex.never().pipe(_.materialize())
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -32,27 +31,40 @@ class TestMaterialize(unittest.TestCase):
             return xs.pipe(_.materialize())
 
         results = scheduler.start(create).messages
-        assert(len(results) == 2)
-        assert(results[0].value.kind == 'N' and results[0].value.value.kind == 'C' and results[0].time == 250)
-        assert(results[1].value.kind == 'C' and results[1].time == 250)
+        assert len(results) == 2
+        assert (
+            results[0].value.kind == "N"
+            and results[0].value.value.kind == "C"
+            and results[0].time == 250
+        )
+        assert results[1].value.kind == "C" and results[1].time == 250
 
     def test_materialize_return(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-                on_next(150, 1), on_next(210, 2), on_completed(250))
+            on_next(150, 1), on_next(210, 2), on_completed(250)
+        )
 
         def create():
             return xs.pipe(_.materialize())
 
         results = scheduler.start(create).messages
-        assert(len(results) == 3)
-        assert(results[0].value.kind == 'N' and results[0].value.value.kind ==
-               'N' and results[0].value.value.value == 2 and results[0].time == 210)
-        assert(results[1].value.kind == 'N' and results[1].value.value.kind == 'C' and results[1].time == 250)
-        assert(results[2].value.kind == 'C' and results[1].time == 250)
+        assert len(results) == 3
+        assert (
+            results[0].value.kind == "N"
+            and results[0].value.value.kind == "N"
+            and results[0].value.value.value == 2
+            and results[0].time == 210
+        )
+        assert (
+            results[1].value.kind == "N"
+            and results[1].value.value.kind == "C"
+            and results[1].time == 250
+        )
+        assert results[2].value.kind == "C" and results[1].time == 250
 
     def test_materialize_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
 
@@ -60,16 +72,19 @@ class TestMaterialize(unittest.TestCase):
             return xs.pipe(_.materialize())
 
         results = scheduler.start(create).messages
-        assert(len(results) == 2)
-        assert(results[0].value.kind == 'N' and results[0].value.value.kind ==
-               'E' and results[0].value.value.exception == ex)
-        assert(results[1].value.kind == 'C')
+        assert len(results) == 2
+        assert (
+            results[0].value.kind == "N"
+            and results[0].value.value.kind == "E"
+            and str(results[0].value.value.exception) == ex
+        )
+        assert results[1].value.kind == "C"
 
     def test_materialize_dematerialize_never(self):
         scheduler = TestScheduler()
 
         def create():
-            return rx.never().pipe(_.materialize(), _.dematerialize())
+            return reactivex.never().pipe(_.materialize(), _.dematerialize())
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -82,24 +97,29 @@ class TestMaterialize(unittest.TestCase):
             return xs.pipe(_.materialize(), _.dematerialize())
 
         results = scheduler.start(create).messages
-        assert(len(results) == 1)
-        assert(results[0].value.kind == 'C' and results[0].time == 250)
+        assert len(results) == 1
+        assert results[0].value.kind == "C" and results[0].time == 250
 
     def test_materialize_dematerialize_return(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-                on_next(150, 1), on_next(210, 2), on_completed(250))
+            on_next(150, 1), on_next(210, 2), on_completed(250)
+        )
 
         def create():
             return xs.pipe(_.materialize(), _.dematerialize())
 
         results = scheduler.start(create).messages
-        assert(len(results) == 2)
-        assert(results[0].value.kind == 'N' and results[0].value.value == 2 and results[0].time == 210)
-        assert(results[1].value.kind == 'C')
+        assert len(results) == 2
+        assert (
+            results[0].value.kind == "N"
+            and results[0].value.value == 2
+            and results[0].time == 210
+        )
+        assert results[1].value.kind == "C"
 
     def test_materialize_dematerialize_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(250, ex))
 
@@ -107,9 +127,13 @@ class TestMaterialize(unittest.TestCase):
             return xs.pipe(_.materialize(), _.dematerialize())
 
         results = scheduler.start(create).messages
-        assert(len(results) == 1)
-        assert(results[0].value.kind == 'E' and results[0].value.exception == ex and results[0].time == 250)
+        assert len(results) == 1
+        assert (
+            results[0].value.kind == "E"
+            and str(results[0].value.exception) == ex
+            and results[0].time == 250
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

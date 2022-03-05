@@ -1,17 +1,15 @@
-import pytest
 import unittest
-
 from datetime import datetime, timedelta
 from time import sleep
 
-from rx.scheduler.eventloop import EventletScheduler
+import pytest
 
+from reactivex.scheduler.eventloop import EventletScheduler
 
 eventlet = pytest.importorskip("eventlet")
 
 
 class TestEventletScheduler(unittest.TestCase):
-
     def test_eventlet_schedule_now(self):
         scheduler = EventletScheduler(eventlet)
         hub = eventlet.hubs.get_hub()

@@ -78,3 +78,8 @@ _build
 
 # Type checkers
 .pyre
+
+.ionide/
+
+.python-version
+__pycache__

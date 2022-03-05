@@ -3,14 +3,14 @@ from os.path import dirname, join
 
 import pygame
 
-from rx import operators as ops
-from rx.subject import Subject
-from rx.scheduler.mainloop import PyGameScheduler
+from reactivex import operators as ops
+from reactivex.scheduler.mainloop import PyGameScheduler
+from reactivex.subject import Subject
 
+# FORMAT = '%(asctime)-15s %(threadName)s %(message)s'
+# logging.basicConfig(format=FORMAT, level=logging.DEBUG)
+# log = logging.getLogger('Rx')
 
-#FORMAT = '%(asctime)-15s %(threadName)s %(message)s'
-#logging.basicConfig(format=FORMAT, level=logging.DEBUG)
-#log = logging.getLogger('Rx')
 
 def main():
     pygame.init()
@@ -21,7 +21,7 @@ def main():
 
     black = 0, 0, 0
     background = pygame.Surface(screen.get_size())
-    background.fill(black)             # fill the background black
+    background.fill(black)  # fill the background black
     background = background.convert()  # prepare for faster blitting
 
     scheduler = PyGameScheduler(pygame)
@@ -30,16 +30,19 @@ def main():
 
     color = "white"
     base = dirname(__file__)
-    files = [join(base, img % color) for img in [
-        "chess_rook_%s.png",
-        "chess_knight_%s.png",
-        "chess_bishop_%s.png",
-        "chess_king_%s.png",
-        "chess_queen_%s.png",
-        "chess_bishop_%s.png",
-        "chess_knight_%s.png",
-        "chess_rook_%s.png"
-    ]]
+    files = [
+        join(base, img % color)
+        for img in [
+            "chess_rook_%s.png",
+            "chess_knight_%s.png",
+            "chess_bishop_%s.png",
+            "chess_king_%s.png",
+            "chess_queen_%s.png",
+            "chess_bishop_%s.png",
+            "chess_knight_%s.png",
+            "chess_rook_%s.png",
+        ]
+    ]
     images = [pygame.image.load(image).convert_alpha() for image in files]
 
     old = [None] * len(images)
@@ -62,9 +65,9 @@ def main():
             print("Got error: %s" % err)
             sys.exit()
 
-        mousemove.pipe(
-            ops.delay(0.1 * i, scheduler=scheduler)
-        ).subscribe(on_next, on_error=on_error)
+        mousemove.pipe(ops.delay(0.1 * i, scheduler=scheduler)).subscribe(
+            on_next, on_error=on_error
+        )
 
     for i, image in enumerate(images):
         handle_image(i, image)
@@ -94,5 +97,6 @@ def main():
 
         scheduler.run()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

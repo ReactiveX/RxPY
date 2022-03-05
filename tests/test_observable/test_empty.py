@@ -1,7 +1,7 @@
 import unittest
 
-from rx import empty
-from rx.testing import TestScheduler, ReactiveTest
+from reactivex import empty
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -27,6 +27,7 @@ class TestEmpty(unittest.TestCase):
 
         def factory():
             return empty()
+
         results = scheduler.start(factory)
 
         assert results.messages == [on_completed(200)]
@@ -43,7 +44,9 @@ class TestEmpty(unittest.TestCase):
     def test_empty_observer_throw_exception(self):
         scheduler = TestScheduler()
         xs = empty()
-        xs.subscribe(lambda x: None, lambda ex: None, lambda: _raise('ex'), scheduler=scheduler)
+        xs.subscribe(
+            lambda x: None, lambda ex: None, lambda: _raise("ex"), scheduler=scheduler
+        )
 
         with self.assertRaises(RxException):
             scheduler.start()

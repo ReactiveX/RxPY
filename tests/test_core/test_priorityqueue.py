@@ -1,9 +1,9 @@
 import unittest
 
-from rx.internal import PriorityQueue
+from reactivex.internal import PriorityQueue
 
 
-class TestItem():
+class TestItem:
     __test__ = False
 
     def __init__(self, value, label=None):
@@ -30,7 +30,6 @@ class TestItem():
 
 
 class TestPriorityQueue(unittest.TestCase):
-
     def test_priorityqueue_count(self):
         assert PriorityQueue.MIN_COUNT < 0
 
@@ -73,7 +72,7 @@ class TestPriorityQueue(unittest.TestCase):
         p.enqueue(41)
         p.enqueue(43)
 
-        assert([p.dequeue(), p.dequeue(), p.dequeue()] == [41, 42, 43])
+        assert [p.dequeue(), p.dequeue(), p.dequeue()] == [41, 42, 43]
 
     def test_priorityqueue_sort_stability(self):
         """Items with same value should be returned in the order they were
@@ -99,7 +98,7 @@ class TestPriorityQueue(unittest.TestCase):
         """Remove item from queue"""
 
         p = PriorityQueue()
-        assert(p.remove(42) == False)
+        assert p.remove(42) == False
 
         p.enqueue(42)
         p.enqueue(41)

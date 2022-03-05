@@ -1,7 +1,7 @@
 import unittest
 
-from rx import operators as ops
-from rx.testing import TestScheduler, ReactiveTest
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -39,7 +39,9 @@ class TestSingle(unittest.TestCase):
 
     def test_single_async_one(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1), on_next(210, 2), on_completed(250)
+        )
 
         def create():
             return xs.pipe(ops.single())
@@ -49,10 +51,11 @@ class TestSingle(unittest.TestCase):
         assert res.messages == [on_next(250, 2), on_completed(250)]
         assert xs.subscriptions == [subscribe(200, 250)]
 
-
     def test_single_async_many(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_completed(250))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1), on_next(210, 2), on_next(220, 3), on_completed(250)
+        )
 
         def create():
             return xs.pipe(ops.single())
@@ -66,7 +69,7 @@ class TestSingle(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 220)]
 
     def test_single_async_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
 
@@ -80,7 +83,14 @@ class TestSingle(unittest.TestCase):
 
     def test_single_async_predicate(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(220, 3),
+            on_next(230, 4),
+            on_next(240, 5),
+            on_completed(250),
+        )
 
         def create():
             def predicate(x):
@@ -105,6 +115,7 @@ class TestSingle(unittest.TestCase):
                 return x % 2 == 1
 
             return xs.pipe(ops.single(predicate))
+
         res = scheduler.start(create=create)
 
         def predicate(e):
@@ -115,11 +126,19 @@ class TestSingle(unittest.TestCase):
 
     def test_single_async_predicate_one(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(220, 3),
+            on_next(230, 4),
+            on_next(240, 5),
+            on_completed(250),
+        )
 
         def create():
             def predicate(x):
                 return x == 4
+
             return xs.pipe(ops.single(predicate))
 
         res = scheduler.start(create=create)
@@ -128,13 +147,14 @@ class TestSingle(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_single_async_predicate_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
 
         def create():
             def predicate(x):
                 return x > 10
+
             return xs.pipe(ops.single(predicate))
 
         res = scheduler.start(create=create)
@@ -143,9 +163,16 @@ class TestSingle(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 210)]
 
     def test_single_async_predicate_throws(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+        xs = scheduler.create_hot_observable(
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(220, 3),
+            on_next(230, 4),
+            on_next(240, 5),
+            on_completed(250),
+        )
 
         def create():
             def predicate(x):
@@ -153,10 +180,10 @@ class TestSingle(unittest.TestCase):
                     return False
                 else:
                     raise Exception(ex)
+
             return xs.pipe(ops.single(predicate))
 
         res = scheduler.start(create=create)
 
         assert res.messages == [on_error(230, ex)]
         assert xs.subscriptions == [subscribe(200, 230)]
-

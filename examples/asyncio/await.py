@@ -1,13 +1,14 @@
 import asyncio
-import rx
 
+import reactivex
 
-stream = rx.just("Hello, world!")
+stream = reactivex.just("Hello, world!")
 
 
 async def hello_world():
     n = await stream
     print(n)
+
 
 loop = asyncio.get_event_loop()
 # Blocking call which returns when the hello_world() coroutine is done

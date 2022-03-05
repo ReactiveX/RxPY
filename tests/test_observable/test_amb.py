@@ -1,8 +1,8 @@
 import unittest
 
-import rx
-from rx import operators as ops
-from rx.testing import TestScheduler, ReactiveTest
+import reactivex
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -14,11 +14,10 @@ created = ReactiveTest.created
 
 
 class TestAmb(unittest.TestCase):
-
     def test_amb_never2(self):
         scheduler = TestScheduler()
-        l = rx.never()
-        r = rx.never()
+        l = reactivex.never()
+        r = reactivex.never()
 
         def create():
             return l.pipe(ops.amb(r))
@@ -28,12 +27,12 @@ class TestAmb(unittest.TestCase):
 
     def test_amb_never3(self):
         scheduler = TestScheduler()
-        n1 = rx.never()
-        n2 = rx.never()
-        n3 = rx.never()
+        n1 = reactivex.never()
+        n2 = reactivex.never()
+        n3 = reactivex.never()
 
         def create():
-            return rx.amb(n1, n2, n3)
+            return reactivex.amb(n1, n2, n3)
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -41,7 +40,7 @@ class TestAmb(unittest.TestCase):
     def test_amb_never_empty(self):
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_completed(225)]
-        n = rx.never()
+        n = reactivex.never()
         e = scheduler.create_hot_observable(r_msgs)
 
         def create():
@@ -53,7 +52,7 @@ class TestAmb(unittest.TestCase):
     def test_amb_empty_never(self):
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_completed(225)]
-        n = rx.never()
+        n = reactivex.never()
         e = scheduler.create_hot_observable(r_msgs)
 
         def create():
@@ -73,18 +72,19 @@ class TestAmb(unittest.TestCase):
             source_not_disposed[0] = True
 
         o2 = scheduler.create_hot_observable(msgs2).pipe(
-                ops.do_action(on_next=action),
-                )
+            ops.do_action(on_next=action),
+        )
 
         def create():
             return o1.pipe(ops.amb(o2))
+
         results = scheduler.start(create)
 
         assert results.messages == [on_next(210, 2), on_completed(240)]
-        assert(not source_not_disposed[0])
+        assert not source_not_disposed[0]
 
     def test_amb_winner_throws(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(210, 2), on_error(220, ex)]
         msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
@@ -95,18 +95,18 @@ class TestAmb(unittest.TestCase):
             source_not_disposed[0] = True
 
         o2 = scheduler.create_hot_observable(msgs2).pipe(
-                ops.do_action(on_next=action),
-                )
+            ops.do_action(on_next=action),
+        )
 
         def create():
             return o1.pipe(ops.amb(o2))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 2), on_error(220, ex)]
-        assert(not source_not_disposed[0])
+        assert not source_not_disposed[0]
 
     def test_amb_loser_throws(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(220, 2), on_error(230, ex)]
         msgs2 = [on_next(150, 1), on_next(210, 3), on_completed(250)]
@@ -114,9 +114,10 @@ class TestAmb(unittest.TestCase):
 
         def action():
             source_not_disposed[0] = True
+
         o1 = scheduler.create_hot_observable(msgs1).pipe(
-                ops.do_action(on_next=action),
-                )
+            ops.do_action(on_next=action),
+        )
 
         o2 = scheduler.create_hot_observable(msgs2)
 
@@ -125,10 +126,10 @@ class TestAmb(unittest.TestCase):
 
         results = scheduler.start(create)
         assert results.messages == [on_next(210, 3), on_completed(250)]
-        assert(not source_not_disposed[0])
+        assert not source_not_disposed[0]
 
     def test_amb_throws_before_election(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_error(210, ex)]
         msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(250)]
@@ -139,8 +140,8 @@ class TestAmb(unittest.TestCase):
             source_not_disposed[0] = True
 
         o2 = scheduler.create_hot_observable(msgs2).pipe(
-                ops.do_action(on_next=action),
-                )
+            ops.do_action(on_next=action),
+        )
 
         def create():
             return o1.pipe(ops.amb(o2))
@@ -148,4 +149,4 @@ class TestAmb(unittest.TestCase):
         results = scheduler.start(create)
 
         assert results.messages == [on_error(210, ex)]
-        assert(not source_not_disposed[0])
+        assert not source_not_disposed[0]

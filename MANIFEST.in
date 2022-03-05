@@ -1,3 +1,0 @@
-include LICENSE
-include project.cfg
-include rx/py.typed

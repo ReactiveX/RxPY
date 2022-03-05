@@ -3,18 +3,21 @@ The automcomplete example rewritten for bottle / gevent.
 - Requires besides bottle and gevent also the geventwebsocket pip package
 - Instead of a future we create the inner stream for flat_map_latest manually
 """
-from bottle import request, Bottle, abort
+import json
+
 import gevent
+import requests
+from bottle import Bottle, abort, request
 from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
-import json, requests
-import rx
-from rx.subject import Subject
-from rx.scheduler.eventloop import GEventScheduler
+
+from reactivex.scheduler.eventloop import GEventScheduler
+from reactivex.subject import Subject
+
 
 class WikiFinder:
-    tmpl = 'http://en.wikipedia.org/w/api.php'
-    tmpl += '?action=opensearch&search=%s&format=json'
+    tmpl = "http://en.wikipedia.org/w/api.php"
+    tmpl += "?action=opensearch&search=%s&format=json"
 
     def __init__(self, term):
         self.res = r = gevent.event.AsyncResult()
@@ -33,21 +36,19 @@ app, PORT = Bottle(), 8081
 scheduler = GEventScheduler(gevent)
 
 
-@app.route('/ws')
+@app.route("/ws")
 def handle_websocket():
 
-    wsock = request.environ.get('wsgi.websocket')
+    wsock = request.environ.get("wsgi.websocket")
     if not wsock:
-        abort(400, 'Expected WebSocket request.')
+        abort(400, "Expected WebSocket request.")
     stream = Subject()
-    query = stream.map(
-        lambda x: x["term"]
-    ).filter(
-        lambda text: len(text) > 2  # Only if text is longer than 2 characters
-    ).debounce(
-        0.750,  # Pause for 750ms
-        scheduler=scheduler
-    ).distinct_until_changed()  # Only if the value has changed
+    query = (
+        stream.map(lambda x: x["term"])
+        .filter(lambda text: len(text) > 2)  # Only if text is longer than 2 characters
+        .debounce(0.750, scheduler=scheduler)  # Pause for 750ms
+        .distinct_until_changed()
+    )  # Only if the value has changed
 
     searcher = query.flat_map_latest(lambda term: WikiFinder(term))
 
@@ -69,19 +70,18 @@ def handle_websocket():
             break
 
 
-
-@app.route('/static/autocomplete.js')
+@app.route("/static/autocomplete.js")
 def get_js():
     # blatantly ignoring bottle's template engine:
-    return open('autocomplete.js').read().replace('8080', str(PORT))
+    return open("autocomplete.js").read().replace("8080", str(PORT))
 
-@app.route('/')
+
+@app.route("/")
 def get_index():
     return open("index.html").read()
 
 
-if __name__ == '__main__':
-    h = ('0.0.0.0', PORT)
+if __name__ == "__main__":
+    h = ("0.0.0.0", PORT)
     server = gevent.pywsgi.WSGIServer(h, app, handler_class=WebSocketHandler)
     server.serve_forever()
-

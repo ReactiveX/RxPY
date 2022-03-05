@@ -1,20 +1,24 @@
-import pytest
+import os
 import unittest
-
 from datetime import timedelta
 from time import sleep
 
-from rx.scheduler import TrampolineScheduler
-from rx.internal.basic import default_now
+import pytest
+
+from reactivex.internal.basic import default_now
+from reactivex.scheduler import TrampolineScheduler
+
+CI = os.getenv("CI") is not None
 
 
 class TestTrampolineScheduler(unittest.TestCase):
-
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_trampoline_now(self):
         scheduler = TrampolineScheduler()
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=1)
 
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_trampoline_now_units(self):
         scheduler = TrampolineScheduler()
         diff = scheduler.now
@@ -69,6 +73,7 @@ class TestTrampolineScheduler(unittest.TestCase):
                 ran = True
 
             return scheduler.schedule(inner_action)
+
         scheduler.schedule(action)
 
         assert ran is True
@@ -78,7 +83,6 @@ class TestTrampolineScheduler(unittest.TestCase):
         tests = []
 
         def outer(scheduler, state=None):
-
             def action1(scheduler, state=None):
                 tests.append(1)
 

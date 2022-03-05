@@ -1,19 +1,21 @@
 import asyncio
 from asyncio import Future
+from typing import Any, Coroutine, List, TypeVar
 
-import rx
-from rx import operators as ops
-from rx.scheduler.eventloop import AsyncIOScheduler
-from rx.core import Observable
+import reactivex
+from reactivex import Notification, Observable
+from reactivex import operators as ops
+from reactivex.scheduler.eventloop import AsyncIOScheduler
+
+_T = TypeVar("_T")
 
 
-def to_async_generator(sentinel=None):
+def to_async_generator(sentinel: Any = None) -> Coroutine[Any, Any, Future[Any]]:
     loop = asyncio.get_event_loop()
-    future = Future()
-    notifications = []
+    future = loop.create_future()
+    notifications: List[Notification[Any]] = []
 
-    def _to_async_generator(source: Observable):
-
+    def _to_async_generator(source: Observable[_T]):
         def feeder():
             nonlocal future
 
@@ -29,7 +31,7 @@ def to_async_generator(sentinel=None):
             else:
                 future.set_result(notification.value)
 
-        def on_next(value):
+        def on_next(value: _T) -> None:
             """Takes on_next values and appends them to the notification queue"""
 
             notifications.append(value)
@@ -45,14 +47,16 @@ def to_async_generator(sentinel=None):
             future = Future()
 
             return future
+
         return gen
+
     return _to_async_generator
 
 
 async def go(loop):
     scheduler = AsyncIOScheduler(loop)
 
-    xs = rx.from_([x for x in range(10)], scheduler=scheduler)
+    xs = reactivex.from_([x for x in range(10)], scheduler=scheduler)
     gen = xs.pipe(to_async_generator())
 
     # Wish we could write something like:
@@ -69,5 +73,5 @@ def main():
     loop.run_until_complete(go(loop))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

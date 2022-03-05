@@ -1,9 +1,8 @@
-from rx.core import Observer
-from rx.core.notification import OnNext, OnError, OnCompleted, from_notifier
+from reactivex import Observer
+from reactivex.notification import OnCompleted, OnError, OnNext, from_notifier
 
 
 class MyObserver(Observer):
-
     def __init__(self):
         super().__init__()
         self.has_on_next = None
@@ -13,8 +12,8 @@ class MyObserver(Observer):
     def _on_next_core(self, value):
         self.has_on_next = value
 
-    def _on_error_core(self, error):
-        self.has_on_error = error
+    def _on_error_core(self, error: Exception):
+        self.has_on_error = str(error)
 
     def _on_completed_core(self):
         self.has_on_completed = True
@@ -25,7 +24,7 @@ def test_to_observer_notification_on_next():
 
     def next(n):
         assert i == 0
-        assert n.kind == 'N'
+        assert n.kind == "N"
         assert n.value == 42
         assert not hasattr(n, "exception")
         assert n.has_value
@@ -34,13 +33,13 @@ def test_to_observer_notification_on_next():
 
 
 def test_to_observer_notification_on_error():
-    ex = 'ex'
+    ex = "ex"
     i = 0
 
     def next(n):
         assert i == 0
-        assert n.kind == 'E'
-        assert n.exception == ex
+        assert n.kind == "E"
+        assert str(n.exception) == ex
         assert not n.has_value
 
     from_notifier(next).on_error(ex)
@@ -51,7 +50,7 @@ def test_to_observer_notification_completed():
 
     def next(n):
         assert i == 0
-        assert n.kind == 'C'
+        assert n.kind == "C"
         assert not n.has_value
 
     from_notifier(next).on_completed()
@@ -62,7 +61,7 @@ def test_to_notifier_forwards():
     obsn.to_notifier()(OnNext(42))
     assert obsn.has_on_next == 42
 
-    ex = 'ex'
+    ex = "ex"
     obse = MyObserver()
     obse.to_notifier()(OnError(ex))
     assert ex == obse.has_on_error
@@ -87,7 +86,7 @@ def test_create_on_next():
 
 
 def test_create_on_next_has_error():
-    ex = 'ex'
+    ex = "ex"
     next = [False]
     _e = None
 
@@ -136,7 +135,7 @@ def test_create_on_next_on_completed():
 
 def test_create_on_next_close_has_error():
     e_ = None
-    ex = 'ex'
+    ex = "ex"
     next = [False]
     completed = [False]
 
@@ -163,7 +162,7 @@ def test_create_on_next_close_has_error():
 
 
 def test_create_on_next_on_error():
-    ex = 'ex'
+    ex = "ex"
     next = [True]
     error = [False]
 
@@ -187,7 +186,7 @@ def test_create_on_next_on_error():
 
 
 def test_create_on_next_throw_hit_completed():
-    ex = 'ex'
+    ex = "ex"
     next = [True]
     error = [False]
 
@@ -211,7 +210,7 @@ def test_create_on_next_throw_hit_completed():
 
 
 def test_create_on_next_throw_close1():
-    ex = 'ex'
+    ex = "ex"
     next = [True]
     error = [False]
     completed = [False]
@@ -242,7 +241,7 @@ def test_create_on_next_throw_close1():
 
 
 def test_create_on_next_throw_close2():
-    ex = 'ex'
+    ex = "ex"
     next = [True]
     error = [False]
     completed = [False]
@@ -285,7 +284,7 @@ def test_as_observer_forwards():
     obsn.as_observer().on_next(42)
     assert obsn.has_on_next == 42
 
-    ex = 'ex'
+    ex = "ex"
     obse = MyObserver()
     obse.as_observer().on_error(ex)
     assert obse.has_on_error == ex
@@ -295,5 +294,5 @@ def test_as_observer_forwards():
     assert obsc.has_on_completed
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_to_notifier_forwards()

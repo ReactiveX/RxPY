@@ -1,7 +1,7 @@
 import unittest
 
-from rx import operators as ops
-from rx.testing import TestScheduler, ReactiveTest
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -23,8 +23,8 @@ class TestMax(unittest.TestCase):
 
         res = scheduler.start(create=create).messages
         self.assertEqual(1, len(res))
-        assert(res[0].value.kind == 'E' and res[0].value.exception is not None)
-        assert(res[0].time == 250)
+        assert res[0].value.kind == "E" and res[0].value.exception is not None
+        assert res[0].time == 250
 
     def test_max_int32_return(self):
         scheduler = TestScheduler()
@@ -39,8 +39,13 @@ class TestMax(unittest.TestCase):
 
     def test_max_int32_some(self):
         scheduler = TestScheduler()
-        msgs = [on_next(150, 1), on_next(210, 3), on_next(220, 4),
-                on_next(230, 2), on_completed(250)]
+        msgs = [
+            on_next(150, 1),
+            on_next(210, 3),
+            on_next(220, 4),
+            on_next(230, 2),
+            on_completed(250),
+        ]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
@@ -50,13 +55,14 @@ class TestMax(unittest.TestCase):
         assert res == [on_next(250, 4), on_completed(250)]
 
     def test_max_int32_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_error(210, ex)]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
             return xs.pipe(ops.max())
+
         res = scheduler.start(create=create).messages
         assert res == [on_error(210, ex)]
 
@@ -91,12 +97,12 @@ class TestMax(unittest.TestCase):
 
         res = scheduler.start(create=create).messages
         self.assertEqual(1, len(res))
-        assert(res[0].value.kind == 'E' and res[0].value.exception is not None)
-        assert(res[0].time == 250)
+        assert res[0].value.kind == "E" and res[0].value.exception is not None
+        assert res[0].time == 250
 
     def test_max_of_t_comparer_return(self):
         scheduler = TestScheduler()
-        msgs = [on_next(150, 'z'), on_next(210, 'a'), on_completed(250)]
+        msgs = [on_next(150, "z"), on_next(210, "a"), on_completed(250)]
 
         def reverse_comparer(a, b):
             if a > b:
@@ -113,12 +119,17 @@ class TestMax(unittest.TestCase):
             return xs.pipe(ops.max(reverse_comparer))
 
         res = scheduler.start(create=create).messages
-        assert res == [on_next(250, 'a'), on_completed(250)]
+        assert res == [on_next(250, "a"), on_completed(250)]
 
     def test_max_of_t_comparer_some(self):
         scheduler = TestScheduler()
-        msgs = [on_next(150, 'z'), on_next(210, 'b'), on_next(220, 'c'),
-                on_next(230, 'a'), on_completed(250)]
+        msgs = [
+            on_next(150, "z"),
+            on_next(210, "b"),
+            on_next(220, "c"),
+            on_next(230, "a"),
+            on_completed(250),
+        ]
 
         def reverse_comparer(a, b):
             if a > b:
@@ -135,12 +146,12 @@ class TestMax(unittest.TestCase):
             return xs.pipe(ops.max(reverse_comparer))
 
         res = scheduler.start(create=create).messages
-        assert res == [on_next(250, 'a'), on_completed(250)]
+        assert res == [on_next(250, "a"), on_completed(250)]
 
     def test_max_of_t_comparer_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
-        msgs = [on_next(150, 'z'), on_error(210, ex)]
+        msgs = [on_next(150, "z"), on_error(210, ex)]
 
         def reverse_comparer(a, b):
             if a > b:
@@ -161,7 +172,7 @@ class TestMax(unittest.TestCase):
 
     def test_max_of_t_comparer_never(self):
         scheduler = TestScheduler()
-        msgs = [on_next(150, 'z')]
+        msgs = [on_next(150, "z")]
 
         def reverse_comparer(a, b):
             if a > b:
@@ -181,10 +192,15 @@ class TestMax(unittest.TestCase):
         assert res == []
 
     def test_max_of_t_comparer_throws(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
-        msgs = [on_next(150, 'z'), on_next(210, 'b'), on_next(220, 'c'),
-                on_next(230, 'a'), on_completed(250)]
+        msgs = [
+            on_next(150, "z"),
+            on_next(210, "b"),
+            on_next(220, "c"),
+            on_next(230, "a"),
+            on_completed(250),
+        ]
 
         def reverse_comparer(a, b):
             raise Exception(ex)
@@ -193,6 +209,7 @@ class TestMax(unittest.TestCase):
 
         def create():
             return xs.pipe(ops.max(reverse_comparer))
+
         res = scheduler.start(create=create).messages
 
         assert res == [on_error(220, ex)]

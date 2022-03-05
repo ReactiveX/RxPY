@@ -1,20 +1,24 @@
-import unittest
+import os
 import threading
-
+import unittest
 from datetime import timedelta
 from time import sleep
 
-from rx.scheduler import NewThreadScheduler
-from rx.internal.basic import default_now
+import pytest
+
+from reactivex.internal.basic import default_now
+from reactivex.scheduler import NewThreadScheduler
+
+CI = os.getenv("CI") is not None
 
 
 class TestNewThreadScheduler(unittest.TestCase):
-
     def test_new_thread_now(self):
         scheduler = NewThreadScheduler()
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=5)
 
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_new_thread_now_units(self):
         scheduler = NewThreadScheduler()
         diff = scheduler.now
@@ -62,7 +66,7 @@ class TestNewThreadScheduler(unittest.TestCase):
         d = scheduler.schedule_relative(timedelta(milliseconds=1), action)
         d.dispose()
 
-        sleep(0.1)
+        sleep(0.2)
         assert ran is False
 
     def test_new_thread_schedule_periodic(self):
@@ -71,7 +75,7 @@ class TestNewThreadScheduler(unittest.TestCase):
         period = 0.05
         counter = 3
 
-        def action(state):
+        def action(state: int):
             nonlocal counter
             if state:
                 counter -= 1
@@ -88,7 +92,7 @@ class TestNewThreadScheduler(unittest.TestCase):
         period = 0.1
         counter = 4
 
-        def action(state):
+        def action(state: int):
             nonlocal counter
             if state:
                 counter -= 1

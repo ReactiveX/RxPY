@@ -1,17 +1,16 @@
-import pytest
 import unittest
-
 from datetime import datetime, timedelta
 from time import sleep
 
-tornado = pytest.importorskip("tornado")
-from tornado import ioloop
+import pytest
 
-from rx.scheduler.eventloop import IOLoopScheduler
+from reactivex.scheduler.eventloop import IOLoopScheduler
+
+tornado = pytest.importorskip("tornado")
+from tornado import ioloop  # isort: skip
 
 
 class TestIOLoopScheduler(unittest.TestCase):
-
     def test_ioloop_schedule_now(self):
         loop = ioloop.IOLoop.instance()
         scheduler = IOLoopScheduler(loop)

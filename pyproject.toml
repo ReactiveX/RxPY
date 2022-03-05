@@ -1,0 +1,74 @@
+[tool.poetry]
+name = "reactivex"
+version = "4.0.0a4"  # Make sure the version here is the same as in _version.py
+description = "ReactiveX (Rx) for Python"
+readme = "README.rst"
+authors = ["Dag Brattli <dag@brattli.net>"]
+license = "MIT License"
+homepage = "http://reactivex.io"
+repository = "https://github.com/ReactiveX/RxPY"
+documentation = "https://rxpy.readthedocs.io/en/latest/"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Other Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+packages = [
+    { include = "reactivex" },
+    { include = "reactivex/py.typed" }
+]
+
+[tool.poetry.dependencies]
+python = ">= 3.7, < 3.11"
+
+[tool.poetry.dev-dependencies]
+pytest-asyncio = "^0.18.1"
+pytest = "^7.0.1"
+coverage = "^6.3.2"
+pytest-xdist = "^2.5.0"
+black = "^22.1.0"
+isort = "^5.10.1"
+pyright = "^0.0.13"
+mypy = "^0.931"
+flake8 = "^4.0.1"
+coveralls = "^3.3.1"
+pre-commit = "^2.17.0"
+autoflake = "^1.4"
+
+[tool.black]
+line-length = 88
+target_version = ['py39']
+include = '\.py$'
+
+[tool.isort]
+profile = "black"
+line_length=88                 # corresponds to -w  flag
+multi_line_output=3            # corresponds to -m  flag
+include_trailing_comma=true    # corresponds to -tc flag
+skip_glob = '^((?!py$).)*$'    # isort all Python files
+float_to_top=true
+
+[tool.mypy]
+python_version = "3.9"
+follow_imports = "silent"
+files = ["reactivex"]
+exclude = ["reactivex/operators/_\\w.*\\.py$"] # mypy will eventually catch up
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "strict"
+#addopts = "-n auto"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+

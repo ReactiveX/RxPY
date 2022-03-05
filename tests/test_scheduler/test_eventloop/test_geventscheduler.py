@@ -1,16 +1,14 @@
-import pytest
 import unittest
-
 from datetime import datetime, timedelta
 
-from rx.scheduler.eventloop import GEventScheduler
+import pytest
 
+from reactivex.scheduler.eventloop import GEventScheduler
 
 gevent = pytest.importorskip("gevent")
 
 
 class TestGEventScheduler(unittest.TestCase):
-
     def test_gevent_schedule_now(self):
         scheduler = GEventScheduler(gevent)
         hub = gevent.get_hub()

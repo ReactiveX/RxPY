@@ -1,7 +1,7 @@
 import unittest
 
-from rx import operators as ops
-from rx.testing import TestScheduler, ReactiveTest
+from reactivex import operators as ops
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -13,7 +13,6 @@ created = ReactiveTest.created
 
 
 class TestContains(unittest.TestCase):
-
     def test_contains_empty(self):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_completed(250)]
@@ -21,6 +20,7 @@ class TestContains(unittest.TestCase):
 
         def create():
             return xs.pipe(ops.contains(42))
+
         res = scheduler.start(create=create).messages
         assert res == [on_next(250, False), on_completed(250)]
 
@@ -48,8 +48,13 @@ class TestContains(unittest.TestCase):
 
     def test_contains_some_positive(self):
         scheduler = TestScheduler()
-        msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3),
-                on_next(230, 4), on_completed(250)]
+        msgs = [
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(220, 3),
+            on_next(230, 4),
+            on_completed(250),
+        ]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
@@ -60,17 +65,23 @@ class TestContains(unittest.TestCase):
 
     def test_contains_some_negative(self):
         scheduler = TestScheduler()
-        msgs = [on_next(150, 1), on_next(210, 2), on_next(220, 3),
-                on_next(230, 4), on_completed(250)]
+        msgs = [
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(220, 3),
+            on_next(230, 4),
+            on_completed(250),
+        ]
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
             return xs.pipe(ops.contains(-3))
+
         res = scheduler.start(create=create).messages
         assert res == [on_next(250, False), on_completed(250)]
 
     def test_contains_on_error(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
 
@@ -92,7 +103,7 @@ class TestContains(unittest.TestCase):
         assert res == []
 
     def test_contains_comparer_throws(self):
-        ex = 'ex'
+        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2))
 
@@ -108,8 +119,12 @@ class TestContains(unittest.TestCase):
     def test_contains_comparer_contains_value(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-                on_next(150, 1), on_next(210, 3), on_next(220, 4),
-                on_next(230, 8), on_completed(250))
+            on_next(150, 1),
+            on_next(210, 3),
+            on_next(220, 4),
+            on_next(230, 8),
+            on_completed(250),
+        )
 
         def create():
             return xs.pipe(ops.contains(42, lambda a, b: a % 2 == b % 2))
@@ -120,8 +135,12 @@ class TestContains(unittest.TestCase):
     def test_contains_comparer_does_not_contain_value(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-                on_next(150, 1), on_next(210, 2), on_next(220, 4),
-                on_next(230, 8), on_completed(250))
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(220, 4),
+            on_next(230, 8),
+            on_completed(250),
+        )
 
         def create():
             return xs.pipe(ops.contains(21, lambda a, b: a % 2 == b % 2))

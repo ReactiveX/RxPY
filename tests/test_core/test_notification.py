@@ -1,6 +1,8 @@
-from rx.core.typing import Observer
-from rx.testing import TestScheduler, ReactiveTest
-from rx.core.notification import OnNext, OnError, OnCompleted
+from typing import Any
+
+from reactivex.abc import ObserverBase
+from reactivex.notification import OnCompleted, OnError, OnNext
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -13,7 +15,7 @@ created = ReactiveTest.created
 
 def test_on_next_ctor_and_props():
     n = OnNext(42)
-    assert 'N' == n.kind
+    assert "N" == n.kind
     assert n.has_value
     assert 42 == n.value
     assert not hasattr(n, "exception")
@@ -40,7 +42,7 @@ def test_on_next_tostring():
     assert "42" in str(n1)
 
 
-class CheckOnNextObserver(Observer):
+class CheckOnNextObserver(ObserverBase):
     def __init__(self):
         super(CheckOnNextObserver, self).__init__()
 
@@ -56,6 +58,7 @@ class CheckOnNextObserver(Observer):
     def on_completed(self):
         def func():
             raise NotImplementedError
+
         return func
 
 
@@ -66,7 +69,7 @@ def test_on_next_accept_observer():
     assert con.value == 42
 
 
-class AcceptObserver(Observer):
+class AcceptObserver(ObserverBase):
     def __init__(self, on_next, on_error, on_completed):
         self._on_next = on_next
         self._on_error = on_error
@@ -87,25 +90,31 @@ def test_on_next_accept_observer_with_result():
 
     def on_next(x):
         return "OK"
+
     def on_error(err):
         assert False
+
     def on_completed():
         assert False
 
     res = n1.accept(AcceptObserver(on_next, on_error, on_completed))
-    assert 'OK' == res
+    assert "OK" == res
 
 
 def test_on_next_accept_action():
     obs = [False]
     n1 = OnNext(42)
+
     def on_next(x):
         obs[0] = True
         return obs[0]
+
     def on_error(err):
         assert False
+
     def on_completed():
         assert False
+
     n1.accept(on_next, on_error, on_completed)
 
     assert obs[0]
@@ -116,26 +125,28 @@ def test_on_next_accept_action_with_result():
 
     def on_next(x):
         return "OK"
+
     def on_error(err):
         assert False
+
     def on_completed():
         assert False
 
     res = n1.accept(on_next, on_error, on_completed)
-    assert 'OK' == res
+    assert "OK" == res
 
 
 def test_throw_ctor_and_props():
-    e = 'e'
+    e = "e"
     n = OnError(e)
-    assert 'E'== n.kind
+    assert "E" == n.kind
     assert not n.has_value
-    assert e == n.exception
+    assert e == str(n.exception)
 
 
 def test_throw_equality():
-    ex1 = 'ex1'
-    ex2 = 'ex2'
+    ex1 = "ex1"
+    ex2 = "ex2"
     n1 = OnError(ex1)
     n2 = OnError(ex1)
     n3 = OnError(ex2)
@@ -151,30 +162,30 @@ def test_throw_equality():
 
 
 def test_throw_tostring():
-    ex = 'ex'
+    ex = "ex"
     n1 = OnError(ex)
     assert "OnError" in str(n1)
     assert "ex" in str(n1)
 
 
-class CheckOnErrorObserver(Observer):
+class CheckOnErrorObserver(ObserverBase[Any]):
     def __init__(self):
         super(CheckOnErrorObserver, self).__init__()
 
         self.error = None
 
-    def on_next(value):
+    def on_next(self, value: Any) -> None:
         raise NotImplementedError()
 
-    def on_error(self, exception):
-        self.error = exception
+    def on_error(self, error: Exception) -> None:
+        self.error = str(error)
 
-    def on_completed(self):
+    def on_completed(self) -> None:
         raise NotImplementedError()
 
 
 def test_throw_accept_observer():
-    ex = 'ex'
+    ex = "ex"
     obs = CheckOnErrorObserver()
     n1 = OnError(ex)
     n1.accept(obs)
@@ -182,12 +193,13 @@ def test_throw_accept_observer():
 
 
 def test_throw_accept_observer_with_result():
-    ex = 'ex'
+    ex = "ex"
     n1 = OnError(ex)
 
     def on_next(x):
         assert False
         return None
+
     def on_error(ex):
         return "OK"
 
@@ -196,20 +208,22 @@ def test_throw_accept_observer_with_result():
         return None
 
     res = n1.accept(AcceptObserver(on_next, on_error, on_completed))
-    assert 'OK' == res
+    assert "OK" == res
 
 
 def test_throw_accept_action():
-    ex = 'ex'
+    ex = "ex"
     obs = [False]
     n1 = OnError(ex)
 
     def on_next(x):
         assert False
         return None
+
     def on_error(ex):
         obs[0] = True
         return obs[0]
+
     def on_completed():
         assert False
         return None
@@ -219,25 +233,27 @@ def test_throw_accept_action():
 
 
 def test_throw_accept_action_with_result():
-    ex = 'ex'
+    ex = "ex"
     n1 = OnError(ex)
 
     def on_next(x):
         assert False
         return None
+
     def on_error(ex):
         return "OK"
+
     def on_completed():
         assert False
         return None
 
     res = n1.accept(on_next, on_error, on_completed)
-    assert 'OK' == res
+    assert "OK" == res
 
 
 def test_close_ctor_and_props():
     n = OnCompleted()
-    assert 'C' == n.kind
+    assert "C" == n.kind
     assert not n.has_value
     assert not hasattr(n, "exception")
 
@@ -256,10 +272,10 @@ def test_close_equality():
 
 def test_close_tostring():
     n1 = OnCompleted()
-    assert 'OnCompleted' in str(n1)
+    assert "OnCompleted" in str(n1)
 
 
-class CheckOnCompletedObserver(Observer):
+class CheckOnCompletedObserver(ObserverBase):
     def __init__(self):
         super(CheckOnCompletedObserver, self).__init__()
 
@@ -288,14 +304,16 @@ def test_close_accept_observer_with_result():
     def on_next(x):
         assert False
         return None
+
     def on_error(err):
         assert False
         return None
+
     def on_completed():
         return "OK"
 
     res = n1.accept(AcceptObserver(on_next, on_error, on_completed))
-    assert 'OK' == res
+    assert "OK" == res
 
 
 def test_close_accept_action():
@@ -305,9 +323,11 @@ def test_close_accept_action():
     def on_next(x):
         assert False
         return None
+
     def on_error(ex):
         assert False
         return None
+
     def on_completed():
         obs[0] = True
         return obs[0]
@@ -322,14 +342,16 @@ def test_close_accept_action_with_result():
     def on_next(x):
         assert False
         return None
+
     def on_error(ex):
         assert False
         return None
+
     def on_completed():
         return "OK"
 
     res = n1.accept(on_next, on_error, on_completed)
-    assert 'OK' == res
+    assert "OK" == res
 
 
 def test_to_observable_empty():
@@ -349,11 +371,14 @@ def test_to_observable_return():
         return OnNext(42).to_observable(scheduler)
 
     res = scheduler.start(create)
-    assert res.messages == [ReactiveTest.on_next(200, 42), ReactiveTest.on_completed(200)]
+    assert res.messages == [
+        ReactiveTest.on_next(200, 42),
+        ReactiveTest.on_completed(200),
+    ]
 
 
 def test_to_observable_on_error():
-    ex = 'ex'
+    ex = "ex"
     scheduler = TestScheduler()
 
     def create():

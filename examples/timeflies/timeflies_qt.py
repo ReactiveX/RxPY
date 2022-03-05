@@ -1,9 +1,9 @@
 import sys
 
-import rx
-from rx import operators as ops
-from rx.subject import Subject
-from rx.scheduler.mainloop import QtScheduler
+import reactivex
+from reactivex import operators as ops
+from reactivex.scheduler.mainloop import QtScheduler
+from reactivex.subject import Subject
 
 try:
     from PySide2 import QtCore
@@ -11,13 +11,12 @@ try:
 except ImportError:
     try:
         from PyQt5 import QtCore
-        from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+        from PyQt5.QtWidgets import QApplication, QLabel, QWidget
     except ImportError:
-        raise ImportError('Please ensure either PySide2 or PyQt5 is available!')
+        raise ImportError("Please ensure either PySide2 or PyQt5 is available!")
 
 
 class Window(QWidget):
-
     def __init__(self):
         QWidget.__init__(self)
         self.setWindowTitle("Rx for Python rocks")
@@ -38,11 +37,11 @@ def main():
     window = Window()
     window.show()
 
-    text = 'TIME FLIES LIKE AN ARROW'
+    text = "TIME FLIES LIKE AN ARROW"
 
     def on_next(info):
         label, (x, y), i = info
-        label.move(x + i*12 + 15, y)
+        label.move(x + i * 12 + 15, y)
         label.show()
 
     def handle_label(label, i):
@@ -52,12 +51,12 @@ def main():
         return window.mousemove.pipe(
             delayer,
             mapper,
-            )
+        )
 
     labeler = ops.flat_map_indexed(handle_label)
     mapper = ops.map(lambda c: QLabel(c, window))
 
-    rx.from_(text).pipe(
+    reactivex.from_(text).pipe(
         mapper,
         labeler,
     ).subscribe(on_next, on_error=print, scheduler=scheduler)
@@ -65,5 +64,5 @@ def main():
     sys.exit(app.exec_())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

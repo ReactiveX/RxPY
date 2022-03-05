@@ -1,19 +1,18 @@
-import pytest
 import unittest
 
-from rx.scheduler import VirtualTimeScheduler
-from rx.internal import ArgumentOutOfRangeException
-from rx.internal.constants import DELTA_ZERO, UTC_ZERO
+import pytest
+
+from reactivex.internal import ArgumentOutOfRangeException
+from reactivex.internal.constants import DELTA_ZERO, UTC_ZERO
+from reactivex.scheduler import VirtualTimeScheduler
 
 
 class VirtualSchedulerTestScheduler(VirtualTimeScheduler):
-
     def add(self, absolute, relative):
         return absolute + relative
 
 
 class TestVirtualTimeScheduler(unittest.TestCase):
-
     def test_virtual_now_noarg(self):
         scheduler = VirtualSchedulerTestScheduler()
         assert scheduler.clock == 0.0

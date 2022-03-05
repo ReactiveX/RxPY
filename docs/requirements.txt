@@ -2,3 +2,4 @@ sphinx>=2.0
 sphinx-autodoc-typehints>=1.10.3
 guzzle_sphinx_theme>=0.7.11
 sphinxcontrib_dooble>=1.0
+tomli>=2.0

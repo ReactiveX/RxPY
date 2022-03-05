@@ -1,6 +1,7 @@
 import unittest
 
-from rx.testing import TestScheduler, ReactiveTest
+from reactivex.observable.observable import Observable
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -12,13 +13,12 @@ created = ReactiveTest.created
 
 
 class TestSlice(unittest.TestCase):
-
     def test_slice_empty(self):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_completed(250)]
         xs = scheduler.create_hot_observable(msgs)
 
-        def create():
+        def create() -> Observable[int]:
             return xs[1:42]
 
         res = scheduler.start(create=create).messages
@@ -39,10 +39,12 @@ class TestSlice(unittest.TestCase):
             on_next(370, 7),
             on_next(410, 8),
             on_next(415, 9),
-            on_completed(690))
+            on_completed(690),
+        )
 
         def create():
             return xs[0:10]
+
         results = scheduler.start(create)
         assert results.messages == [
             on_next(210, 0),
@@ -55,7 +57,8 @@ class TestSlice(unittest.TestCase):
             on_next(370, 7),
             on_next(410, 8),
             on_next(415, 9),
-            on_completed(415)]
+            on_completed(415),
+        ]
         assert xs.subscriptions == [subscribe(200, 415)]
 
     def test_slice_same_noop(self):
@@ -73,10 +76,12 @@ class TestSlice(unittest.TestCase):
             on_next(370, 7),
             on_next(410, 8),
             on_next(415, 9),
-            on_completed(690))
+            on_completed(690),
+        )
 
         def create():
             return xs[:]
+
         results = scheduler.start(create)
         assert results.messages == [
             on_next(210, 0),
@@ -89,7 +94,8 @@ class TestSlice(unittest.TestCase):
             on_next(370, 7),
             on_next(410, 8),
             on_next(415, 9),
-            on_completed(690)]
+            on_completed(690),
+        ]
         assert xs.subscriptions == [subscribe(200, 690)]
 
     def test_slice_skip_first(self):
@@ -107,10 +113,12 @@ class TestSlice(unittest.TestCase):
             on_next(370, 7),
             on_next(410, 8),
             on_next(415, 9),
-            on_completed(690))
+            on_completed(690),
+        )
 
         def create():
             return xs[2:]
+
         results = scheduler.start(create)
         assert results.messages == [
             on_next(270, 2),
@@ -121,7 +129,8 @@ class TestSlice(unittest.TestCase):
             on_next(370, 7),
             on_next(410, 8),
             on_next(415, 9),
-            on_completed(690)]
+            on_completed(690),
+        ]
         assert xs.subscriptions == [subscribe(200, 690)]
 
     def test_slice_skip_last(self):
@@ -139,10 +148,12 @@ class TestSlice(unittest.TestCase):
             on_next(370, 7),
             on_next(410, 8),
             on_next(415, 9),
-            on_completed(690))
+            on_completed(690),
+        )
 
         def create():
             return xs[:-2]
+
         results = scheduler.start(create)
         assert results.messages == [
             on_next(270, 0),
@@ -153,7 +164,8 @@ class TestSlice(unittest.TestCase):
             on_next(370, 5),
             on_next(410, 6),
             on_next(415, 7),
-            on_completed(690)]
+            on_completed(690),
+        ]
         assert xs.subscriptions == [subscribe(200, 690)]
 
     def test_slice_take_last(self):
@@ -171,15 +183,14 @@ class TestSlice(unittest.TestCase):
             on_next(370, 7),
             on_next(410, 8),
             on_next(415, 9),
-            on_completed(690))
+            on_completed(690),
+        )
 
         def create():
             return xs[-2:]
+
         results = scheduler.start(create)
-        assert results.messages == [
-            on_next(690, 8),
-            on_next(690, 9),
-            on_completed(690)]
+        assert results.messages == [on_next(690, 8), on_next(690, 9), on_completed(690)]
         assert xs.subscriptions == [subscribe(200, 690)]
 
     def test_slice_take_first(self):
@@ -197,15 +208,14 @@ class TestSlice(unittest.TestCase):
             on_next(370, 7),
             on_next(410, 8),
             on_next(415, 9),
-            on_completed(690))
+            on_completed(690),
+        )
 
         def create():
             return xs[:2]
+
         results = scheduler.start(create)
-        assert results.messages == [
-            on_next(210, 0),
-            on_next(230, 1),
-            on_completed(230)]
+        assert results.messages == [on_next(210, 0), on_next(230, 1), on_completed(230)]
         assert xs.subscriptions == [subscribe(200, 230)]
 
     def test_slice_take_last_skip_all(self):
@@ -223,13 +233,14 @@ class TestSlice(unittest.TestCase):
             on_next(370, 7),
             on_next(410, 8),
             on_next(415, 9),
-            on_completed(690))
+            on_completed(690),
+        )
 
         def create():
             return xs[-2:0]
+
         results = scheduler.start(create)
-        assert results.messages == [
-            on_completed(200)]
+        assert results.messages == [on_completed(200)]
 
     def test_slice_step_2(self):
         scheduler = TestScheduler()
@@ -246,10 +257,12 @@ class TestSlice(unittest.TestCase):
             on_next(370, 7),
             on_next(410, 8),
             on_next(415, 9),
-            on_completed(690))
+            on_completed(690),
+        )
 
         def create():
             return xs[0:10:2]
+
         results = scheduler.start(create)
         assert results.messages == [
             on_next(210, 0),
@@ -257,5 +270,6 @@ class TestSlice(unittest.TestCase):
             on_next(300, 4),
             on_next(340, 6),
             on_next(410, 8),
-            on_completed(415)]
+            on_completed(415),
+        ]
         assert xs.subscriptions == [subscribe(200, 415)]

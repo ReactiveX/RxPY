@@ -1,18 +1,16 @@
-import pytest
 import unittest
-
 from datetime import timedelta
 from time import sleep
 
-from rx.scheduler.mainloop import PyGameScheduler
-from rx.internal.basic import default_now
+import pytest
 
+from reactivex.internal.basic import default_now
+from reactivex.scheduler.mainloop import PyGameScheduler
 
 pygame = pytest.importorskip("pygame")
 
 
 class TestPyGameScheduler(unittest.TestCase):
-
     def test_pygame_schedule_now(self):
         scheduler = PyGameScheduler(pygame)
         diff = scheduler.now - default_now()

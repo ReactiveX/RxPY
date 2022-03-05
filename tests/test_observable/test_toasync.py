@@ -1,7 +1,7 @@
 import unittest
 
-import rx
-from rx.testing import TestScheduler, ReactiveTest
+import reactivex
+from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -25,13 +25,11 @@ class TestToAsync(unittest.TestCase):
 
         def create():
             context = Context()
-            return rx.to_async(context.func, scheduler)(42)
+            return reactivex.to_async(context.func, scheduler)(42)
 
         res = scheduler.start(create)
 
-        assert res.messages == [
-            on_next(200, 84),
-            on_completed(200)]
+        assert res.messages == [on_next(200, 84), on_completed(200)]
 
     def test_to_async0(self):
         scheduler = TestScheduler()
@@ -40,13 +38,11 @@ class TestToAsync(unittest.TestCase):
             def func():
                 return 0
 
-            return rx.to_async(func, scheduler)()
+            return reactivex.to_async(func, scheduler)()
 
         res = scheduler.start(create)
 
-        assert res.messages == [
-            on_next(200, 0),
-            on_completed(200)]
+        assert res.messages == [on_next(200, 0), on_completed(200)]
 
     def test_to_async1(self):
         scheduler = TestScheduler()
@@ -55,13 +51,11 @@ class TestToAsync(unittest.TestCase):
             def func(x):
                 return x
 
-            return rx.to_async(func, scheduler)(1)
+            return reactivex.to_async(func, scheduler)(1)
 
         res = scheduler.start(create)
 
-        assert res.messages == [
-            on_next(200, 1),
-            on_completed(200)]
+        assert res.messages == [on_next(200, 1), on_completed(200)]
 
     def test_to_async2(self):
         scheduler = TestScheduler()
@@ -70,13 +64,11 @@ class TestToAsync(unittest.TestCase):
             def func(x, y):
                 return x + y
 
-            return rx.to_async(func, scheduler)(1, 2)
+            return reactivex.to_async(func, scheduler)(1, 2)
 
         res = scheduler.start(create)
 
-        assert res.messages == [
-            on_next(200, 3),
-            on_completed(200)]
+        assert res.messages == [on_next(200, 3), on_completed(200)]
 
     def test_to_async3(self):
         scheduler = TestScheduler()
@@ -85,13 +77,11 @@ class TestToAsync(unittest.TestCase):
             def func(x, y, z):
                 return x + y + z
 
-            return rx.to_async(func, scheduler)(1, 2, 3)
+            return reactivex.to_async(func, scheduler)(1, 2, 3)
 
         res = scheduler.start(create)
 
-        assert res.messages == [
-            on_next(200, 6),
-            on_completed(200)]
+        assert res.messages == [on_next(200, 6), on_completed(200)]
 
     def test_to_async4(self):
         scheduler = TestScheduler()
@@ -100,12 +90,11 @@ class TestToAsync(unittest.TestCase):
             def func(a, b, c, d):
                 return a + b + c + d
 
-            return rx.to_async(func, scheduler)(1, 2, 3, 4)
+            return reactivex.to_async(func, scheduler)(1, 2, 3, 4)
+
         res = scheduler.start(create)
 
-        assert res.messages == [
-            on_next(200, 10),
-            on_completed(200)]
+        assert res.messages == [on_next(200, 10), on_completed(200)]
 
     def test_to_async_error0(self):
         ex = Exception()
@@ -115,12 +104,12 @@ class TestToAsync(unittest.TestCase):
         def create():
             def func():
                 raise ex
-            return rx.to_async(func, scheduler)()
+
+            return reactivex.to_async(func, scheduler)()
 
         res = scheduler.start(create)
 
-        assert res.messages == [
-            on_error(200, ex)]
+        assert res.messages == [on_error(200, ex)]
 
     def test_to_async_error1(self):
         ex = Exception()
@@ -130,12 +119,12 @@ class TestToAsync(unittest.TestCase):
         def create():
             def func(a):
                 raise ex
-            return rx.to_async(func, scheduler)(1)
+
+            return reactivex.to_async(func, scheduler)(1)
 
         res = scheduler.start(create)
 
-        assert res.messages == [
-            on_error(200, ex)]
+        assert res.messages == [on_error(200, ex)]
 
     def test_to_async_error2(self):
         ex = Exception()
@@ -145,12 +134,12 @@ class TestToAsync(unittest.TestCase):
         def create():
             def func(a, b):
                 raise ex
-            return rx.to_async(func, scheduler)(1, 2)
+
+            return reactivex.to_async(func, scheduler)(1, 2)
 
         res = scheduler.start(create)
 
-        assert res.messages == [
-            on_error(200, ex)]
+        assert res.messages == [on_error(200, ex)]
 
     def test_to_async_error3(self):
         ex = Exception()
@@ -160,12 +149,12 @@ class TestToAsync(unittest.TestCase):
         def create():
             def func(a, b, c):
                 raise ex
-            return rx.to_async(func, scheduler)(1, 2, 3)
+
+            return reactivex.to_async(func, scheduler)(1, 2, 3)
 
         res = scheduler.start(create)
 
-        assert res.messages == [
-            on_error(200, ex)]
+        assert res.messages == [on_error(200, ex)]
 
     def test_to_async_error4(self):
         ex = Exception()
@@ -175,9 +164,9 @@ class TestToAsync(unittest.TestCase):
         def create():
             def func(a, b, c, d):
                 raise ex
-            return rx.to_async(func, scheduler)(1, 2, 3, 4)
+
+            return reactivex.to_async(func, scheduler)(1, 2, 3, 4)
 
         res = scheduler.start(create)
 
-        assert res.messages == [
-            on_error(200, ex)]
+        assert res.messages == [on_error(200, ex)]
