@@ -28,8 +28,8 @@ ReactiveX for Python v4
 For v3.X please go to the `v3 branch
 <https://github.com/ReactiveX/RxPY/tree/release/v3.2.x>`_.
 
-RxPY v4.x runs on `Python <http://www.python.org/>`_ 3.7 or above. To install
-RxPY:
+ReactiveX for Python v4.x runs on `Python <http://www.python.org/>`_ 3.7 or above. To
+install:
 
 .. code:: console
 
@@ -64,7 +64,7 @@ Learning ReactiveX
 
 Read the `documentation
 <https://rxpy.readthedocs.io/en/latest/>`_ to learn
-the principles of RxPY and get the complete reference of the available
+the principles of ReactiveX and get the complete reference of the available
 operators.
 
 If you need to migrate code from RxPY v1.x, read the `migration
@@ -99,8 +99,8 @@ over `1300 passing unit-tests <https://coveralls.io/github/ReactiveX/RxPY>`_. Rx
 is mostly a direct port of RxJS, but also borrows a bit from Rx.NET and RxJava in
 terms of threading and blocking operators.
 
-RxPY follows `PEP 8 <http://legacy.python.org/dev/peps/pep-0008/>`_, so all
-function and method names are lowercase with words separated by underscores as
+ReactiveX for Python follows `PEP 8 <http://legacy.python.org/dev/peps/pep-0008/>`_, so
+all function and method names are lowercase with words separated by underscores as
 necessary to improve readability.
 
 Thus .NET code such as:
@@ -116,10 +116,10 @@ need to be written with an ``_`` in Python:
 
     group = source.pipe(ops.group_by(lambda i: i % 3))
 
-With RxPY you should use `named keyword arguments
-<https://docs.python.org/3/glossary.html>`_ instead of positional arguments when
-an operator has multiple optional arguments. RxPY will not try to detect which
-arguments you are giving to the operator (or not).
+With ReactiveX for Python you should use `named keyword arguments
+<https://docs.python.org/3/glossary.html>`_ instead of positional arguments when an
+operator has multiple optional arguments. RxPY will not try to detect which arguments
+you are giving to the operator (or not).
 
 Development
 -----------
