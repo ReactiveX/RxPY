@@ -1,15 +1,21 @@
+import os
 import threading
 import unittest
 from datetime import timedelta
 from time import sleep
+
+import pytest
 
 from reactivex.internal.basic import default_now
 from reactivex.scheduler import ThreadPoolScheduler
 
 thread_pool_scheduler = ThreadPoolScheduler()
 
+CI = os.getenv("CI") is not None
+
 
 class TestThreadPoolScheduler(unittest.TestCase):
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_threadpool_now(self):
         scheduler = ThreadPoolScheduler()
         diff = scheduler.now - default_now()
