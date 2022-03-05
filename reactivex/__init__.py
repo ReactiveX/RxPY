@@ -302,7 +302,7 @@ def defer(
                 ---1--2--3--|
 
     Example:
-        >>> res = defer(lambda scheduler: of(1, 2, 3))
+        >>> res = reactivex.defer(lambda scheduler: of(1, 2, 3))
 
     Args:
         factory: Observable factory function to invoke for each observer
