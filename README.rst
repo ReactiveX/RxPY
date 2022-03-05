@@ -22,10 +22,11 @@ The ReactiveX for Python (RxPY)
 *A library for composing asynchronous and event-based programs using observable
 collections and query operator functions in Python*
 
-ReactiveX for Python (RxPY) v4.0
+ReactiveX for Python v4.X
 --------------------------------
 
-For v3.X please go to the `v3 branch <https://github.com/ReactiveX/RxPY/tree/master>`_.
+For v3.X please go to the `v3 branch
+<https://github.com/ReactiveX/RxPY/tree/release/v3.2.x>`_.
 
 RxPY v4.x runs on `Python <http://www.python.org/>`_ 3.7 or above. To install
 RxPY:
@@ -46,10 +47,10 @@ streams using Schedulers.
 
 .. code:: python
 
-    import reactivex
+    import reactivex as rx
     from reactivex import operators as ops
 
-    source = reactivex.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
+    source = rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
     composed = source.pipe(
         ops.map(lambda s: len(s)),
@@ -119,3 +120,38 @@ With RxPY you should use `named keyword arguments
 <https://docs.python.org/3/glossary.html>`_ instead of positional arguments when
 an operator has multiple optional arguments. RxPY will not try to detect which
 arguments you are giving to the operator (or not).
+
+Development
+-----------
+
+This project is managed using `Poetry <https://python-poetry.org/>`_. Code is formatted
+using `Black <https://github.com/psf/black>`_, `isort
+<https://github.com/PyCQA/isort>`_. Code is statically type checked using `pyright
+<https://github.com/microsoft/pyright>`_ and `mypy <http://mypy-lang.org/>`_.
+
+If you want to take advantage of the default VSCode integration, then
+first configure Poetry to make its virtual environment in the
+repository:
+
+.. code:: console
+
+    poetry config virtualenvs.in-project true
+
+After cloning the repository, activate the tooling:
+
+.. code:: console
+
+    poetry install
+    poetry run pre-commit install
+
+Run unit tests:
+
+.. code:: console
+
+    poetry run pytest
+
+Run code checks (manually):
+
+.. code:: console
+
+    poetry run pre-commit run --all-files
