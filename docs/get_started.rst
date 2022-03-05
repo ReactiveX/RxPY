@@ -230,7 +230,7 @@ To achieve concurrency, you use two operators: :func:`subscribe_on()
 <reactivex.operators.subscribe_on>` and :func:`observe_on() <reactivex.operators.observe_on>`.
 Both need a :ref:`Scheduler <reference_scheduler>` which provides a thread for
 each subscription to do work (see section on Schedulers below). The
-:class:`ThreadPoolScheduler <rx.scheduler.ThreadPoolScheduler>` is a good
+:class:`ThreadPoolScheduler <reactivex.scheduler.ThreadPoolScheduler>` is a good
 choice to create a pool of reusable worker threads.
 
 .. attention::

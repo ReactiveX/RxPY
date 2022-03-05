@@ -13,12 +13,12 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 import os
-import re
 import sys
 from distutils.command.config import config
 
 import guzzle_sphinx_theme
 import tomli
+from dunamai import Version
 
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root)
@@ -39,10 +39,11 @@ description = project_meta["description"]
 url = project_meta["homepage"]
 title = project + " Documentation"
 
+_version = Version.from_git()
 # The full version, including alpha/beta/rc tags
-release = project_meta["version"]
+release = _version.serialize(metadata=False)
 # The short X.Y.Z version
-version = re.sub("[^0-9.].*$", "", release)
+version = _version.base
 
 
 # -- General configuration ---------------------------------------------------
