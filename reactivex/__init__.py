@@ -302,12 +302,13 @@ def defer(
                 ---1--2--3--|
 
     Example:
-        >>> res = reactivex.defer(lambda: of(1, 2, 3))
+        >>> res = defer(lambda scheduler: of(1, 2, 3))
 
     Args:
         factory: Observable factory function to invoke for each observer
-            which invokes :func:`subscribe() <reactivex.Observable.subscribe>` on
-            the resulting sequence.
+            which invokes :func:`subscribe()
+            <reactivex.Observable.subscribe>` on the resulting sequence.
+            The factory takes a single argument, the scheduler used.
 
     Returns:
         An observable sequence whose observers trigger an invocation

@@ -14,11 +14,12 @@ def defer_(
     function whenever a new observer subscribes.
 
     Example:
-        >>> res = defer(lambda: of(1, 2, 3))
+        >>> res = defer(lambda scheduler: of(1, 2, 3))
 
     Args:
         observable_factory: Observable factory function to invoke for
-        each observer that subscribes to the resulting sequence.
+        each observer that subscribes to the resulting sequence. The
+        factory takes a single argument, the scheduler used.
 
     Returns:
         An observable sequence whose observers trigger an invocation
