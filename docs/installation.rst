@@ -7,7 +7,7 @@ ReactiveX for Python v4.x runs on `Python <http://www.python.org/>`__ 3. To inst
 
 .. code:: console
 
-    pip3 install reactivex
+    pip3 install reactivex --pre
 
 RxPY v3.x runs on `Python <http://www.python.org/>`__ 3. To install RxPY:
 
