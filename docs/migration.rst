@@ -3,7 +3,7 @@
 Migration v4
 ============
 
-ReactiveX for Python v4 is an evolution of RxPY v3 to modenize it to
+ReactiveX for Python v4 is an evolution of RxPY v3 to modernize it to
 current Python standards:
 
 - Project main module renamed from ``rx`` to ``reactivex``. This is done

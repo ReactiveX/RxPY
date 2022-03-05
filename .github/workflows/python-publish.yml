@@ -1,0 +1,34 @@
+name: Publish Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    name: "Publish library"
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+        with:
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          fetch-depth: 0
+
+      - name: Setup Python Env
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry version $(dunamai from any --no-metadata --style pep440)
+          poetry install
+
+      - name: Build package
+        run: poetry build
+
+      - name: Release to PyPI
+        run: |
+          poetry publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} || echo 'Version exists'

@@ -145,6 +145,18 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "dunamai"
+version = "1.9.0"
+description = "Dynamic version generation"
+category = "dev"
+optional = false
+python-versions = ">=3.5,<4.0"
+
+[package.dependencies]
+importlib-metadata = {version = ">=1.6.0", markers = "python_version < \"3.8\""}
+packaging = ">=20.9"
+
+[[package]]
 name = "execnet"
 version = "1.9.0"
 description = "execnet: rapid multi-Python deployment"
@@ -574,7 +586,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = ">= 3.7, < 3.11"
-content-hash = "af631dfae0ca793809672d35ec560db5a3a94e6cfbcb478f2b3bd9f75f12aeb5"
+content-hash = "8958e5eaed6c6921a8962625ef6e57537908d0377e5d7146f7eadb9230f55cf7"
 
 [metadata.files]
 atomicwrites = [
@@ -686,6 +698,10 @@ distlib = [
 ]
 docopt = [
     {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
+]
+dunamai = [
+    {file = "dunamai-1.9.0-py3-none-any.whl", hash = "sha256:89213a9c1176313cdfda7091a15c6d94be8c17b25e57a8c1e2ecf10d902b25d2"},
+    {file = "dunamai-1.9.0.tar.gz", hash = "sha256:284dc9acbd3d6b749440332e46164f64b207c56eaf4af412d856cf9f08978932"},
 ]
 execnet = [
     {file = "execnet-1.9.0-py2.py3-none-any.whl", hash = "sha256:a295f7cc774947aac58dde7fdc85f4aa00c42adf5d8f5468fc630c1acf30a142"},
