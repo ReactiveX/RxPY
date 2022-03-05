@@ -1,4 +1,4 @@
-RxPY v3 team
+ReactiveX for Python maintainers
 
 Dag Brattli @dbrattli
 Erik Kemperman, @erikkemperman

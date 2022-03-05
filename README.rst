@@ -33,7 +33,7 @@ install:
 
 .. code:: console
 
-    pip3 install reactivex
+    pip3 install reactivex --pre
 
 
 About ReactiveX
@@ -77,17 +77,9 @@ There is also a list of third party documentation available `here
 Community
 ----------
 
-Join the conversation on Slack!
-
-The gracious folks at `PySlackers <https://pyslackers.com/>`_ have given us a home
-in the `#rxpy <https://pythondev.slack.com/messages/rxpy>`_ Slack channel. Please
-join us there for questions, conversations, and all things related to RxPY.
-
-To join, navigate the page above to receive an email invite. After signing up,
-join us in the #rxpy channel.
-
-Please follow the community guidelines and terms of service.
-
+Join the conversation on GitHub `Discussions
+<https://github.com/ReactiveX/RxPY/discussions>`_! if you have any questions or
+suggestions.
 
 Differences from .NET and RxJS
 ------------------------------
@@ -100,8 +92,8 @@ is mostly a direct port of RxJS, but also borrows a bit from Rx.NET and RxJava i
 terms of threading and blocking operators.
 
 ReactiveX for Python follows `PEP 8 <http://legacy.python.org/dev/peps/pep-0008/>`_, so
-all function and method names are lowercase with words separated by underscores as
-necessary to improve readability.
+all function and method names are ``snake_cased`` i.e lowercase with words separated by
+underscores as necessary to improve readability.
 
 Thus .NET code such as:
 
