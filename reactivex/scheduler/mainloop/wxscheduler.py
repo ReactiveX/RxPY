@@ -77,9 +77,9 @@ class WxScheduler(PeriodicScheduler):
         timer = self._timer_class(interval)
         # A timer can only be used from the main thread
         if self._wx.IsMainThread():
-            timer.Start(msecs, oneShot=not periodic)
+            timer.Start(msecs, oneShot=not periodic)  # type: ignore
         else:
-            self._wx.CallAfter(timer.Start, msecs, oneShot=not periodic)
+            self._wx.CallAfter(timer.Start, msecs, oneShot=not periodic)  # type: ignore
         self._timers.add(timer)
 
         def dispose() -> None:
