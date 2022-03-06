@@ -1,3 +1,4 @@
+import os
 import unittest
 from datetime import datetime, timedelta
 from time import sleep
@@ -7,15 +8,18 @@ import pytest
 from reactivex.scheduler.eventloop import EventletScheduler
 
 eventlet = pytest.importorskip("eventlet")
+CI = os.getenv("CI") is not None
 
 
 class TestEventletScheduler(unittest.TestCase):
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_eventlet_schedule_now(self):
         scheduler = EventletScheduler(eventlet)
         hub = eventlet.hubs.get_hub()
         diff = scheduler.now - datetime.utcfromtimestamp(hub.clock())
         assert abs(diff) < timedelta(milliseconds=1)
 
+    @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_eventlet_schedule_now_units(self):
         scheduler = EventletScheduler(eventlet)
         diff = scheduler.now
