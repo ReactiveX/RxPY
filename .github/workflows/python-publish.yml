@@ -27,7 +27,7 @@ jobs:
         run: |
           RX_VERSION=$(dunamai from any --no-metadata --style pep440)
           poetry version $RX_VERSION
-          poetry run echo "__version__ = \"$RX_VERSION\"" > reactivex/_version.py
+          echo "__version__ = \"$RX_VERSION\"" > reactivex/_version.py
 
       - name: Build package
         run: poetry build
