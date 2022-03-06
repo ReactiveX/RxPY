@@ -39,11 +39,11 @@ install:
 About ReactiveX
 ---------------
 
-ReactiveX for Python (RxPY) is a set of libraries for composing asynchronous and
-event-based programs using observable sequences and pipable query operators in Python.
-Using Rx, developers represent asynchronous data streams with Observables, query
-asynchronous data streams using operators, and parameterize concurrency in data/event
-streams using Schedulers.
+ReactiveX for Python (RxPY) is a library for composing asynchronous and event-based
+programs using observable sequences and pipable query operators in Python. Using Rx,
+developers represent asynchronous data streams with Observables, query asynchronous data
+streams using operators, and parameterize concurrency in data/event streams using
+Schedulers.
 
 .. code:: python
 
@@ -67,7 +67,7 @@ Read the `documentation
 the principles of ReactiveX and get the complete reference of the available
 operators.
 
-If you need to migrate code from RxPY v1.x, read the `migration
+If you need to migrate code from RxPY v1.x or v3.x, read the `migration
 <https://rxpy.readthedocs.io/en/latest/migration.html>`_ section.
 
 There is also a list of third party documentation available `here
