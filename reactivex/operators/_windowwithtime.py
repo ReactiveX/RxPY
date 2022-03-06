@@ -40,7 +40,7 @@ def window_with_time_(
             next_shift = [timeshift]
             next_span = [timespan]
             total_time = [DELTA_ZERO]
-            q: List[Subject[_T]] = []
+            queue: List[Subject[_T]] = []
 
             group_disposable = CompositeDisposable(timer_d)
             ref_count_disposable = RefCountDisposable(group_disposable)
@@ -75,34 +75,37 @@ def window_with_time_(
                     with source.lock:
                         if is_shift:
                             s = Subject()
-                            q.append(s)
+                            queue.append(s)
                             observer.on_next(add_ref(s, ref_count_disposable))
 
                         if is_span:
-                            s = q.pop(0)
+                            s = queue.pop(0)
                             s.on_completed()
 
                     create_timer()
 
                 m.disposable = _scheduler.schedule_relative(ts, action)
 
-            q.append(Subject())
-            observer.on_next(add_ref(q[0], ref_count_disposable))
+            queue.append(Subject())
+            observer.on_next(add_ref(queue[0], ref_count_disposable))
             create_timer()
 
             def on_next(x: _T) -> None:
-                for s in q:
-                    s.on_next(x)
+                with source.lock:
+                    for s in queue:
+                        s.on_next(x)
 
             def on_error(e: Exception) -> None:
-                for s in q:
-                    s.on_error(e)
+                with source.lock:
+                    for s in queue:
+                        s.on_error(e)
 
                 observer.on_error(e)
 
             def on_completed() -> None:
-                for s in q:
-                    s.on_completed()
+                with source.lock:
+                    for s in queue:
+                        s.on_completed()
 
                 observer.on_completed()
 
