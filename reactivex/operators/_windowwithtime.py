@@ -72,14 +72,15 @@ def window_with_time_(
                 def action(scheduler: abc.SchedulerBase, state: Any = None):
                     s: Optional[Subject[_T]] = None
 
-                    if is_shift:
-                        s = Subject()
-                        q.append(s)
-                        observer.on_next(add_ref(s, ref_count_disposable))
+                    with source.lock:
+                        if is_shift:
+                            s = Subject()
+                            q.append(s)
+                            observer.on_next(add_ref(s, ref_count_disposable))
 
-                    if is_span:
-                        s = q.pop(0)
-                        s.on_completed()
+                        if is_span:
+                            s = q.pop(0)
+                            s.on_completed()
 
                     create_timer()
 
