@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ReactiveX"
-version = "0.0.0"
+version = "0.0.0" # NOTE: will be updated by publish script
 description = "ReactiveX (Rx) for Python"
 readme = "README.rst"
 authors = ["Dag Brattli <dag@brattli.net>"]

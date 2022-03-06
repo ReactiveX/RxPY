@@ -20,10 +20,14 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install dependencies and set version
+      - name: Install dependencies
+        run: pip install poetry dunamai
+
+      - name: Set version
         run: |
-          pip install poetry dunamai
-          poetry version $(dunamai from any --no-metadata --style pep440)
+          RX_VERSION=$(dunamai from any --no-metadata --style pep440)
+          poetry version $RX_VERSION
+          poetry run echo "__version__ = \"$RX_VERSION\"" > reactivex/_version.py
 
       - name: Build package
         run: poetry build
