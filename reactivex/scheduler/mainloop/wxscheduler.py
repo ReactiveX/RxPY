@@ -75,9 +75,11 @@ class WxScheduler(PeriodicScheduler):
         log.debug("timeout wx: %s", msecs)
 
         timer = self._timer_class(interval)
-        timer.Start(  # type: ignore
-            msecs, self._wx.TIMER_CONTINUOUS if periodic else self._wx.TIMER_ONE_SHOT
-        )
+        # A timer can only be used from the main thread
+        if self._wx.IsMainThread():
+            timer.Start(msecs, oneShot=not periodic)  # type: ignore
+        else:
+            self._wx.CallAfter(timer.Start, msecs, oneShot=not periodic)  # type: ignore
         self._timers.add(timer)
 
         def dispose() -> None:
@@ -99,8 +101,20 @@ class WxScheduler(PeriodicScheduler):
             The disposable object used to cancel the scheduled action
             (best effort).
         """
+        sad = SingleAssignmentDisposable()
+        is_disposed = False
 
-        return self._wxtimer_schedule(0.0, action, state=state)
+        def invoke_action() -> None:
+            if not is_disposed:
+                sad.disposable = action(self, state)
+
+        self._wx.CallAfter(invoke_action)
+
+        def dispose() -> None:
+            nonlocal is_disposed
+            is_disposed = True
+
+        return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule_relative(
         self,
