@@ -9,7 +9,7 @@ OnError = Callable[[Exception], None]
 OnCompleted = Callable[[], None]
 
 
-class ObserverBase(Generic[_T], ABC):
+class ObserverBase(Generic[_T_in], ABC):
     """Observer abstract base class
 
     An Observer is the entity that receives all emissions of a
@@ -19,7 +19,7 @@ class ObserverBase(Generic[_T], ABC):
     __slots__ = ()
 
     @abstractmethod
-    def on_next(self, value: _T) -> None:
+    def on_next(self, value: _T_in) -> None:
         """Notifies the observer of a new element in the sequence.
 
         Args:
