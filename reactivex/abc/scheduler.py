@@ -10,7 +10,8 @@ AbsoluteTime = Union[datetime, float]
 RelativeTime = Union[timedelta, float]
 AbsoluteOrRelativeTime = Union[datetime, timedelta, float]
 ScheduledAction = Callable[
-    ["SchedulerBase", Optional[_TState]], Optional[DisposableBase]
+    ["SchedulerBase", Optional[_TState]],
+    Optional[DisposableBase],
 ]
 
 

@@ -38,10 +38,12 @@ def main():
     def char2label(char: str) -> Label:
         return Label(frame, text=char)
 
-    reactivex.from_(text).pipe(
+    xs = reactivex.of(text).pipe(
         ops.map(char2label),
         ops.flat_map_indexed(label2stream),
-    ).subscribe(on_next, on_error=print, scheduler=scheduler)
+    )
+
+    xs.subscribe(on_next, on_error=print, scheduler=scheduler)
 
     frame.pack()
     root.mainloop()

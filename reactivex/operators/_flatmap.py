@@ -1,8 +1,9 @@
 from asyncio import Future
-from typing import Any, Callable, Iterable, Optional, TypeVar, Union, cast
+from typing import Any, Callable, Optional, TypeVar, Union, cast
 
 from reactivex import Observable, from_, from_future
 from reactivex import operators as ops
+from reactivex.internal.basic import identity
 from reactivex.typing import Mapper, MapperIndexed
 
 _T1 = TypeVar("_T1")
@@ -14,14 +15,16 @@ def _flat_map_internal(
     mapper: Optional[Mapper[_T1, Any]] = None,
     mapper_indexed: Optional[MapperIndexed[_T1, Any]] = None,
 ) -> Observable[Any]:
-    def projection(x: _T1, i: int):
-        mapper_result = (
-            mapper(x) if mapper else mapper_indexed(x, i) if mapper_indexed else None
+    def projection(x: _T1, i: int) -> Observable[Any]:
+        mapper_result: Any = (
+            mapper(x)
+            if mapper
+            else mapper_indexed(x, i)
+            if mapper_indexed
+            else identity
         )
         if isinstance(mapper_result, Future):
             result: Observable[Any] = from_future(cast("Future[Any]", mapper_result))
-        elif isinstance(mapper_result, Iterable):
-            result = from_(mapper_result)
         elif isinstance(mapper_result, Observable):
             result = mapper_result
         else:
