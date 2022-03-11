@@ -1,9 +1,9 @@
 from threading import RLock, Thread
 from typing import Any, Callable, TypeVar
+
 from typing_extensions import ParamSpec
 
 from reactivex.typing import StartableTarget
-
 
 _T = TypeVar("_T")
 _P = ParamSpec("_P")
