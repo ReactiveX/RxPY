@@ -9,7 +9,7 @@ from reactivex.disposable import (
     RefCountDisposable,
     SingleAssignmentDisposable,
 )
-from reactivex.internal.utils import add_ref
+from reactivex.internal import add_ref
 from reactivex.subject import Subject
 
 _TLeft = TypeVar("_TLeft")

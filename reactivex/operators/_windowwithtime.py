@@ -8,8 +8,7 @@ from reactivex.disposable import (
     SerialDisposable,
     SingleAssignmentDisposable,
 )
-from reactivex.internal.constants import DELTA_ZERO
-from reactivex.internal.utils import add_ref
+from reactivex.internal import DELTA_ZERO, add_ref, synchronized
 from reactivex.scheduler import TimeoutScheduler
 from reactivex.subject import Subject
 
@@ -69,18 +68,18 @@ def window_with_time_(
                 if is_shift:
                     next_shift[0] += timeshift
 
+                @synchronized(source.lock)
                 def action(scheduler: abc.SchedulerBase, state: Any = None):
                     s: Optional[Subject[_T]] = None
 
-                    with source.lock:
-                        if is_shift:
-                            s = Subject()
-                            queue.append(s)
-                            observer.on_next(add_ref(s, ref_count_disposable))
+                    if is_shift:
+                        s = Subject()
+                        queue.append(s)
+                        observer.on_next(add_ref(s, ref_count_disposable))
 
-                        if is_span:
-                            s = queue.pop(0)
-                            s.on_completed()
+                    if is_span:
+                        s = queue.pop(0)
+                        s.on_completed()
 
                     create_timer()
 
@@ -95,17 +94,17 @@ def window_with_time_(
                     for s in queue:
                         s.on_next(x)
 
+            @synchronized(source.lock)
             def on_error(e: Exception) -> None:
-                with source.lock:
-                    for s in queue:
-                        s.on_error(e)
+                for s in queue:
+                    s.on_error(e)
 
                 observer.on_error(e)
 
+            @synchronized(source.lock)
             def on_completed() -> None:
-                with source.lock:
-                    for s in queue:
-                        s.on_completed()
+                for s in queue:
+                    s.on_completed()
 
                 observer.on_completed()
 

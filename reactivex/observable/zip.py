@@ -4,7 +4,7 @@ from typing import Any, List, Optional, Tuple
 
 from reactivex import Observable, abc, from_future
 from reactivex.disposable import CompositeDisposable, SingleAssignmentDisposable
-from reactivex.internal.concurrency import synchronized
+from reactivex.internal import synchronized
 
 
 def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
