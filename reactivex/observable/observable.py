@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import threading
-from typing import Any, Callable, Iterable, Optional, TypeVar, Union, cast, overload
+from typing import Any, Callable, Generator, Optional, TypeVar, Union, cast, overload
 
 from reactivex import abc
 from reactivex.disposable import Disposable
@@ -256,7 +256,7 @@ class Observable(abc.ObservableBase[_T]):
 
         return run(self)
 
-    def __await__(self) -> Iterable[_T]:
+    def __await__(self) -> Generator[Any, None, _T]:
         """Awaits the given observable.
 
         Returns:
@@ -265,7 +265,10 @@ class Observable(abc.ObservableBase[_T]):
         from ..operators._tofuture import to_future_
 
         loop = asyncio.get_event_loop()
-        return iter(self.pipe(to_future_(scheduler=AsyncIOScheduler(loop=loop))))
+        future: asyncio.Future[_T] = self.pipe(
+            to_future_(scheduler=AsyncIOScheduler(loop=loop))
+        )
+        return future.__await__()
 
     def __add__(self, other: Observable[_T]) -> Observable[_T]:
         """Pythonic version of :func:`concat <reactivex.concat>`.
