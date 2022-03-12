@@ -58,7 +58,7 @@ def replay_(
 
         return ops.multicast(subject_factory=subject_factory, mapper=mapper)
     rs: ReplaySubject[_TSource] = ReplaySubject(buffer_size, window, scheduler)
-    return ops.multicast(rs)
+    return ops.multicast(subject=rs)
 
 
 __all__ = ["replay_"]
