@@ -24,10 +24,12 @@ class ConnectableObservable(Observable[_T]):
         self,
         observer: abc.ObserverBase[_T],
         scheduler: Optional[abc.SchedulerBase] = None,
-    ):
+    ) -> abc.DisposableBase:
         return self.subject.subscribe(observer, scheduler=scheduler)
 
-    def connect(self, scheduler: Optional[abc.SchedulerBase] = None):
+    def connect(
+        self, scheduler: Optional[abc.SchedulerBase] = None
+    ) -> Optional[abc.DisposableBase]:
         """Connects the observable."""
 
         if not self.has_subscription:
@@ -70,7 +72,7 @@ class ConnectableObservable(Observable[_T]):
                 connectable_subscription[0] = source.connect(scheduler)
                 is_connected[0] = True
 
-            def dispose():
+            def dispose() -> None:
                 subscription.dispose()
                 count[0] -= 1
                 is_connected[0] = False

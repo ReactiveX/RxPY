@@ -14,7 +14,7 @@ def throw_(
     ) -> abc.DisposableBase:
         _scheduler = scheduler or ImmediateScheduler.singleton()
 
-        def action(scheduler: abc.SchedulerBase, state: Any):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             observer.on_error(exception_)
 
         return _scheduler.schedule(action)

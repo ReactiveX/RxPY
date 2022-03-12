@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Any, Dict, List, NamedTuple, Optional, Tuple, Union
+from typing import Any, Dict, Generator, List, NamedTuple, Optional, Tuple, Union
 from warnings import warn
 
 import reactivex
@@ -35,7 +35,9 @@ class MarblesContext(NamedTuple):
 
 
 @contextmanager
-def marbles_testing(timespan: RelativeTime = 1.0):
+def marbles_testing(
+    timespan: RelativeTime = 1.0,
+) -> Generator[MarblesContext, None, None]:
     """
     Initialize a :class:`rx.testing.TestScheduler` and return a namedtuple
     containing the following functions that wrap its methods.
@@ -79,7 +81,7 @@ def marbles_testing(timespan: RelativeTime = 1.0):
     start_called = False
     outside_of_context = False
 
-    def check():
+    def check() -> None:
         if outside_of_context:
             warn(
                 "context functions should not be called outside of " "with statement.",

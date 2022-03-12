@@ -51,7 +51,7 @@ class CurrentThreadScheduler(TrampolineScheduler):
         return self
 
     # pylint: disable=super-init-not-called
-    def __init__(self):
+    def __init__(self) -> None:
         self._tramps: MutableMapping[Thread, Trampoline] = WeakKeyDictionary()
 
     def get_trampoline(self) -> Trampoline:
@@ -74,7 +74,7 @@ class CurrentThreadSchedulerSingleton(CurrentThreadScheduler):
     _local = _Local()
 
     # pylint: disable=super-init-not-called
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     def get_trampoline(self) -> Trampoline:

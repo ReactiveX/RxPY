@@ -12,12 +12,12 @@ def observable_timer_date(
 ) -> Observable[int]:
     def subscribe(
         observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None
-    ):
+    ) -> abc.DisposableBase:
         _scheduler: abc.SchedulerBase = (
             scheduler or scheduler_ or TimeoutScheduler.singleton()
         )
 
-        def action(scheduler: abc.SchedulerBase, state: Any):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             observer.on_next(0)
             observer.on_completed()
 
@@ -33,7 +33,7 @@ def observable_timer_duetime_and_period(
 ) -> Observable[int]:
     def subscribe(
         observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None
-    ):
+    ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
         nonlocal duetime
 
@@ -45,7 +45,7 @@ def observable_timer_duetime_and_period(
         dt = duetime
         count = 0
 
-        def action(scheduler: abc.SchedulerBase, state: Any):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal dt
             nonlocal count
 
@@ -70,11 +70,11 @@ def observable_timer_timespan(
 ) -> Observable[int]:
     def subscribe(
         observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None
-    ):
+    ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
         d = _scheduler.to_seconds(duetime)
 
-        def action(scheduler: abc.SchedulerBase, state: Any):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             observer.on_next(0)
             observer.on_completed()
 

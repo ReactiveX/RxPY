@@ -7,12 +7,12 @@ from reactivex import operators as ops
 seconds = [5, 1, 2, 4, 3]
 
 
-def sleep(tm):
+def sleep(tm: float) -> float:
     time.sleep(tm)
     return tm
 
 
-def output(result):
+def output(result: str) -> None:
     print("%d seconds" % result)
 
 

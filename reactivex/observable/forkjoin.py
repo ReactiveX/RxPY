@@ -46,7 +46,7 @@ def fork_join_(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
             cast(SingleAssignmentDisposable, None)
         ] * n
 
-        def _subscribe(i: int):
+        def _subscribe(i: int) -> None:
             subscriptions[i] = SingleAssignmentDisposable()
 
             def on_next(value: Any) -> None:

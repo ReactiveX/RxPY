@@ -19,7 +19,7 @@ def amb_(*sources: Observable[_T]) -> Observable[_T]:
 
     acc: Observable[_T] = never()
 
-    def func(previous: Observable[_T], current: Observable[_T]):
+    def func(previous: Observable[_T], current: Observable[_T]) -> Observable[_T]:
         return _.amb(previous)(current)
 
     for source in sources:

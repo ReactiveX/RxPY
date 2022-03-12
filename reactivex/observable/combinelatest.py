@@ -29,7 +29,7 @@ def combine_latest_(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
         is_done = [False] * n
         values = [None] * n
 
-        def _next(i: Any):
+        def _next(i: Any) -> None:
             has_value[i] = True
 
             if has_value_all[0] or all(has_value):
@@ -41,14 +41,14 @@ def combine_latest_(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
 
             has_value_all[0] = all(has_value)
 
-        def done(i: Any):
+        def done(i: Any) -> None:
             is_done[i] = True
             if all(is_done):
                 observer.on_completed()
 
         subscriptions: List[Optional[SingleAssignmentDisposable]] = [None] * n
 
-        def func(i: int):
+        def func(i: int) -> None:
             subscriptions[i] = SingleAssignmentDisposable()
 
             def on_next(x: Any) -> None:
@@ -56,7 +56,7 @@ def combine_latest_(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
                     values[i] = x
                     _next(i)
 
-            def on_completed():
+            def on_completed() -> None:
                 with parent.lock:
                     done(i)
 

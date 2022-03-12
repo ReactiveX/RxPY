@@ -8,7 +8,7 @@ from .scheduleditem import ScheduledItem
 
 
 class Trampoline:
-    def __init__(self):
+    def __init__(self) -> None:
         self._idle: bool = True
         self._queue: PriorityQueue[ScheduledItem] = PriorityQueue()
         self._lock: Lock = Lock()

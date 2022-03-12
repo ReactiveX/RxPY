@@ -46,7 +46,7 @@ class GtkScheduler(PeriodicScheduler):
 
         stopped = False
 
-        def timer_handler(_) -> bool:
+        def timer_handler(_: Any) -> bool:
             if stopped:
                 return False
 

@@ -8,7 +8,7 @@ class MultipleAssignmentDisposable(DisposableBase):
     """Represents a disposable resource whose underlying disposable
     resource can be replaced by another disposable resource."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.current: Optional[DisposableBase] = None
         self.is_disposed = False
         self.lock = RLock()

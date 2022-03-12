@@ -30,7 +30,7 @@ class ScheduledDisposable(abc.DisposableBase):
     def dispose(self) -> None:
         """Disposes the wrapped disposable on the provided scheduler."""
 
-        def action(scheduler: abc.SchedulerBase, state: Any):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             """Scheduled dispose action"""
 
             self.disposable.dispose()

@@ -45,13 +45,15 @@ def range_(
 
     def subscribe(
         observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None
-    ):
+    ) -> abc.DisposableBase:
         nonlocal range_t
 
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
         sd = MultipleAssignmentDisposable()
 
-        def action(scheduler: abc.SchedulerBase, iterator: Optional[Iterator[int]]):
+        def action(
+            scheduler: abc.SchedulerBase, iterator: Optional[Iterator[int]]
+        ) -> None:
             try:
                 assert iterator
                 observer.on_next(next(iterator))

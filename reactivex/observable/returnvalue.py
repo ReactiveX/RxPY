@@ -30,7 +30,7 @@ def return_value_(
     ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
 
-        def action(scheduler: abc.SchedulerBase, state: Any = None):
+        def action(scheduler: abc.SchedulerBase, state: Any = None) -> None:
             observer.on_next(value)
             observer.on_completed()
 
@@ -44,10 +44,10 @@ def from_callable_(
 ) -> Observable[_T]:
     def subscribe(
         observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
-    ):
+    ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
 
-        def action(_: abc.SchedulerBase, __: Any = None):
+        def action(_: abc.SchedulerBase, __: Any = None) -> None:
             nonlocal observer
 
             try:

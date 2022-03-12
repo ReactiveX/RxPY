@@ -35,7 +35,7 @@ class WxScheduler(PeriodicScheduler):
                 super().__init__()  # type: ignore
                 self.callback = callback
 
-            def Notify(self):
+            def Notify(self) -> None:
                 self.callback()
 
         self._timer_class = Timer

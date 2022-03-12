@@ -94,7 +94,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
         handle.append(self._loop.call_soon_threadsafe(stage2))
 
         def dispose() -> None:
-            def do_cancel_handles():
+            def do_cancel_handles() -> None:
                 try:
                     handle.pop().cancel()
                     handle.pop().cancel()
@@ -137,7 +137,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state=state)
 
-    def _on_self_loop_or_not_running(self):
+    def _on_self_loop_or_not_running(self) -> bool:
         """
         Returns True if either self._loop is not running, or we're currently
         executing on self._loop. In both cases, waiting for a future to be

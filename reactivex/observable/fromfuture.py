@@ -23,7 +23,7 @@ def from_future_(future: "Future[_T]") -> Observable[_T]:
     def subscribe(
         observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
     ) -> abc.DisposableBase:
-        def done(future: "Future[_T]"):
+        def done(future: "Future[_T]") -> None:
             try:
                 value: Any = future.result()
             except Exception as ex:

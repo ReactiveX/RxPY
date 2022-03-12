@@ -47,7 +47,7 @@ class AutoDetachObserver(abc.ObserverBase[_T_in]):
         finally:
             self.dispose()
 
-    def set_disposable(self, value: abc.DisposableBase):
+    def set_disposable(self, value: abc.DisposableBase) -> None:
         self._subscription.disposable = value
 
     subscription = property(fset=set_disposable)

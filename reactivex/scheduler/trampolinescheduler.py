@@ -2,6 +2,7 @@ import logging
 from typing import Optional, TypeVar
 
 from reactivex import abc, typing
+from reactivex.abc.disposable import DisposableBase
 from reactivex.abc.scheduler import ScheduledAction
 from reactivex.internal.constants import DELTA_ZERO
 
@@ -105,7 +106,9 @@ class TrampolineScheduler(Scheduler):
         """
         return self.get_trampoline().idle()
 
-    def ensure_trampoline(self, action: ScheduledAction[_TState]):
+    def ensure_trampoline(
+        self, action: ScheduledAction[_TState]
+    ) -> Optional[DisposableBase]:
         """Method for testing the TrampolineScheduler."""
 
         if self.schedule_required():
