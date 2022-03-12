@@ -17,7 +17,7 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Code or Screenshots**
-If applicable, add code or screenshots to help explain your problem.
+If applicable, add a minimal code example or screenshots to help explain your problem.
 
 ```python
 def foo(self) -> str:
@@ -27,5 +27,6 @@ def foo(self) -> str:
 **Additional context**
 Add any other context about the problem here.
 
- - OS: [e.g. Windows]
+ - OS [e.g. Windows]
+ - RxPY version [e.g 4.0.0]
  - Python version [e.g. 3.10.2]
