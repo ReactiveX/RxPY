@@ -2427,10 +2427,32 @@ def repeat(
     return repeat_(repeat_count)
 
 
+@overload
 def replay(
-    mapper: Optional[Mapper[Observable[_T1], Observable[_T2]]] = None,
     buffer_size: Optional[int] = None,
     window: Optional[typing.RelativeTime] = None,
+    *,
+    scheduler: Optional[abc.SchedulerBase] = None,
+) -> Callable[[Observable[_T1]], ConnectableObservable[_T1]]:
+    ...
+
+
+@overload
+def replay(
+    buffer_size: Optional[int] = None,
+    window: Optional[typing.RelativeTime] = None,
+    *,
+    mapper: Optional[Mapper[Observable[_T1], Observable[_T2]]],
+    scheduler: Optional[abc.SchedulerBase] = None,
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    ...
+
+
+def replay(
+    buffer_size: Optional[int] = None,
+    window: Optional[typing.RelativeTime] = None,
+    *,
+    mapper: Optional[Mapper[Observable[_T1], Observable[_T2]]] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
 ) -> Callable[[Observable[_T1]], Union[Observable[_T2], ConnectableObservable[_T1]]]:
     """The `replay` operator.
