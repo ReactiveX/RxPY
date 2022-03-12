@@ -41,14 +41,13 @@ def with_latest_from_(
                         result = (value,) + tuple(values)
                         observer.on_next(result)
 
+            children_subscription = [
+                subscribechild(i, child) for i, child in enumerate(children)
+            ]
             disp = parent.subscribe(
                 on_next, observer.on_error, observer.on_completed, scheduler=scheduler
             )
             parent_subscription.disposable = disp
-
-            children_subscription = [
-                subscribechild(i, child) for i, child in enumerate(children)
-            ]
 
             return [parent_subscription] + children_subscription
 
