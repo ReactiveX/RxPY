@@ -22,14 +22,14 @@ def from_callback_(
         the arguments to the callback as a list.
     """
 
-    def function(*args: Any):
+    def function(*args: Any) -> Observable[Any]:
         arguments = list(args)
 
         def subscribe(
             observer: abc.ObserverBase[Any],
             scheduler: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
-            def handler(*args: Any):
+            def handler(*args: Any) -> None:
                 results = list(args)
                 if mapper:
                     try:

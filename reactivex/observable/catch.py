@@ -34,7 +34,7 @@ def catch_with_iterable_(sources: Iterable[Observable[_T]]) -> Observable[_T]:
 
     def subscribe(
         observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
-    ):
+    ) -> abc.DisposableBase:
         _scheduler = scheduler_ or CurrentThreadScheduler.singleton()
 
         subscription = SerialDisposable()
@@ -42,7 +42,7 @@ def catch_with_iterable_(sources: Iterable[Observable[_T]]) -> Observable[_T]:
         last_exception = None
         is_disposed = False
 
-        def action(scheduler: abc.SchedulerBase, state: Any = None):
+        def action(scheduler: abc.SchedulerBase, state: Any = None) -> None:
             def on_error(exn: Exception) -> None:
                 nonlocal last_exception
                 last_exception = exn
@@ -72,7 +72,7 @@ def catch_with_iterable_(sources: Iterable[Observable[_T]]) -> Observable[_T]:
 
         cancelable.disposable = _scheduler.schedule(action)
 
-        def dispose():
+        def dispose() -> None:
             nonlocal is_disposed
             is_disposed = True
 

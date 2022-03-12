@@ -29,7 +29,9 @@ class ThreadPoolScheduler(NewThreadScheduler):
     def __init__(self, max_workers: Optional[int] = None) -> None:
         self.executor: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=max_workers)
 
-        def thread_factory(target: typing.StartableTarget):
+        def thread_factory(
+            target: typing.StartableTarget,
+        ) -> ThreadPoolScheduler.ThreadPoolThread:
             return self.ThreadPoolThread(self.executor, target)
 
         super().__init__(thread_factory)

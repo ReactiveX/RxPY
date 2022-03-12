@@ -24,8 +24,8 @@ class HotObservable(Observable[_T]):
 
         observable = self
 
-        def get_action(notification: Notification[_T]):
-            def action(scheduler: abc.SchedulerBase, state: Any):
+        def get_action(notification: Notification[_T]) -> abc.ScheduledAction[_T]:
+            def action(scheduler: abc.SchedulerBase, state: Any) -> abc.DisposableBase:
                 for observer in observable.observers[:]:
                     notification.accept(observer)
                 return Disposable()
@@ -51,7 +51,7 @@ class HotObservable(Observable[_T]):
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1
 
-        def dispose_action():
+        def dispose_action() -> None:
             if observer:
                 self.observers.remove(observer)
             start = self.subscriptions[index].subscribe

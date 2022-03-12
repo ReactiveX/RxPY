@@ -39,7 +39,7 @@ def generate_with_relative_time_(
     def subscribe(
         observer: abc.ObserverBase[_TState],
         scheduler: Optional[abc.SchedulerBase] = None,
-    ):
+    ) -> abc.DisposableBase:
         scheduler = scheduler or TimeoutScheduler.singleton()
         mad = MultipleAssignmentDisposable()
         state = initial_state
@@ -48,7 +48,7 @@ def generate_with_relative_time_(
         first = True
         time: Optional[RelativeTime] = None
 
-        def action(scheduler: abc.SchedulerBase, _: Any):
+        def action(scheduler: abc.SchedulerBase, _: Any) -> None:
             nonlocal state
             nonlocal has_result
             nonlocal result

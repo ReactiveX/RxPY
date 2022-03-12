@@ -17,7 +17,7 @@ class RemovableDisposable(abc.DisposableBase):
         self.subject = subject
         self.observer = observer
 
-    def dispose(self):
+    def dispose(self) -> None:
         self.observer.dispose()
         if not self.subject.is_disposed and self.observer in self.subject.observers:
             self.subject.observers.remove(self.observer)

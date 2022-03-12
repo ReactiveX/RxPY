@@ -24,12 +24,12 @@ def concat_with_iterable_(sources: Iterable[Observable[_T]]) -> Observable[_T]:
         cancelable = SerialDisposable()
         is_disposed = False
 
-        def action(scheduler: abc.SchedulerBase, state: Any = None):
+        def action(scheduler: abc.SchedulerBase, state: Any = None) -> None:
             nonlocal is_disposed
             if is_disposed:
                 return
 
-            def on_completed():
+            def on_completed() -> None:
                 cancelable.disposable = _scheduler.schedule(action)
 
             try:
@@ -50,7 +50,7 @@ def concat_with_iterable_(sources: Iterable[Observable[_T]]) -> Observable[_T]:
 
         cancelable.disposable = _scheduler.schedule(action)
 
-        def dispose():
+        def dispose() -> None:
             nonlocal is_disposed
             is_disposed = True
 

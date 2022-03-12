@@ -21,7 +21,7 @@ def generate_(
         state = initial_state
         mad = MultipleAssignmentDisposable()
 
-        def action(scheduler: abc.SchedulerBase, state1: Any = None):
+        def action(scheduler: abc.SchedulerBase, state1: Any = None) -> None:
             nonlocal first
             nonlocal state
 

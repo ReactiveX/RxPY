@@ -28,19 +28,19 @@ class ScheduledObserver(Observer[_T_in]):
         # http://effbot.org/pyfaq/what-kinds-of-global-value-mutation-are-thread-safe.htm
 
     def _on_next_core(self, value: Any) -> None:
-        def action():
+        def action() -> None:
             self.observer.on_next(value)
 
         self.queue.append(action)
 
     def _on_error_core(self, error: Exception) -> None:
-        def action():
+        def action() -> None:
             self.observer.on_error(error)
 
         self.queue.append(action)
 
     def _on_completed_core(self) -> None:
-        def action():
+        def action() -> None:
             self.observer.on_completed()
 
         self.queue.append(action)

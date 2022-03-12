@@ -80,7 +80,9 @@ class TestScheduler(VirtualTimeScheduler):
         subscription: Optional[abc.DisposableBase] = None
         source: Optional[abc.ObservableBase[_T]] = None
 
-        def action_create(scheduler: abc.SchedulerBase, state: Any = None):
+        def action_create(
+            scheduler: abc.SchedulerBase, state: Any = None
+        ) -> abc.DisposableBase:
             """Called at create time. Defaults to 100"""
             nonlocal source
             source = create() if create is not None else reactivex.never()
@@ -88,7 +90,9 @@ class TestScheduler(VirtualTimeScheduler):
 
         self.schedule_absolute(created, action_create)
 
-        def action_subscribe(scheduler: abc.SchedulerBase, state: Any = None):
+        def action_subscribe(
+            scheduler: abc.SchedulerBase, state: Any = None
+        ) -> abc.DisposableBase:
             """Called at subscribe time. Defaults to 200"""
             nonlocal subscription
             if source:
@@ -97,7 +101,9 @@ class TestScheduler(VirtualTimeScheduler):
 
         self.schedule_absolute(subscribed, action_subscribe)
 
-        def action_dispose(scheduler: abc.SchedulerBase, state: Any = None):
+        def action_dispose(
+            scheduler: abc.SchedulerBase, state: Any = None
+        ) -> abc.DisposableBase:
             """Called at dispose time. Defaults to 1000"""
             if subscription:
                 subscription.dispose()

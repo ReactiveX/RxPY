@@ -38,7 +38,6 @@ def hot(
     error: Optional[Exception] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
 ) -> Observable[Any]:
-
     _scheduler = scheduler or new_thread_scheduler
 
     if isinstance(duetime, datetime):
@@ -66,7 +65,7 @@ def hot(
             with lock:
                 observers.append(observer)
 
-        def dispose():
+        def dispose() -> None:
             with lock:
                 try:
                     observers.remove(observer)
@@ -76,7 +75,7 @@ def hot(
         return Disposable(dispose)
 
     def create_action(notification: Notification[Any]) -> typing.ScheduledAction[Any]:
-        def action(scheduler: abc.SchedulerBase, state: Any = None):
+        def action(scheduler: abc.SchedulerBase, state: Any = None) -> None:
             nonlocal is_stopped
 
             with lock:
@@ -105,7 +104,6 @@ def from_marbles(
     error: Optional[Exception] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
 ) -> Observable[Any]:
-
     messages = parse(
         string, timespan=timespan, lookup=lookup, error=error, raise_stopped=True
     )
@@ -121,7 +119,7 @@ def from_marbles(
         ) -> None:
             duetime, notification = message
 
-            def action(scheduler: abc.SchedulerBase, state: Any = None):
+            def action(scheduler: abc.SchedulerBase, state: Any = None) -> None:
                 notification.accept(observer)
 
             disp.add(_scheduler.schedule_relative(duetime, action))

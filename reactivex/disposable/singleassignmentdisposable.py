@@ -25,7 +25,7 @@ class SingleAssignmentDisposable(DisposableBase):
     def get_disposable(self) -> Optional[DisposableBase]:
         return self.current
 
-    def set_disposable(self, value: DisposableBase):
+    def set_disposable(self, value: DisposableBase) -> None:
         if self.current:
             raise Exception("Disposable has already been assigned")
 

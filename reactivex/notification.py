@@ -81,7 +81,7 @@ class Notification(Generic[_T]):
             observer: abc.ObserverBase[_T],
             scheduler: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
-            def action(scheduler: abc.SchedulerBase, state: Any):
+            def action(scheduler: abc.SchedulerBase, state: Any) -> None:
                 self._accept_observer(observer)
                 if self.kind == "N":
                     observer.on_completed()
@@ -105,7 +105,7 @@ class Notification(Generic[_T]):
 class OnNext(Notification[_T]):
     """Represents an OnNext notification to an observer."""
 
-    def __init__(self, value: _T):
+    def __init__(self, value: _T) -> None:
         """Constructs a notification of a new value."""
 
         super(OnNext, self).__init__()
@@ -134,7 +134,7 @@ class OnNext(Notification[_T]):
 class OnError(Notification[_T]):
     """Represents an OnError notification to an observer."""
 
-    def __init__(self, error: Union[Exception, str]):
+    def __init__(self, error: Union[Exception, str]) -> None:
         """Constructs a notification of an exception."""
 
         super(OnError, self).__init__()
@@ -151,7 +151,7 @@ class OnError(Notification[_T]):
     ) -> None:
         return on_error(self.exception) if on_error else None
 
-    def _accept_observer(self, observer: abc.ObserverBase[_T]):
+    def _accept_observer(self, observer: abc.ObserverBase[_T]) -> None:
         return observer.on_error(self.exception)
 
     def __str__(self) -> str:
@@ -161,7 +161,7 @@ class OnError(Notification[_T]):
 class OnCompleted(Notification[_T]):
     """Represents an OnCompleted notification to an observer."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Constructs a notification of the end of a sequence."""
 
         super(OnCompleted, self).__init__()
@@ -175,7 +175,7 @@ class OnCompleted(Notification[_T]):
     ) -> None:
         return on_completed() if on_completed else None
 
-    def _accept_observer(self, observer: abc.ObserverBase[_T]):
+    def _accept_observer(self, observer: abc.ObserverBase[_T]) -> None:
         return observer.on_completed()
 
     def __str__(self) -> str:
@@ -196,10 +196,10 @@ def from_notifier(handler: Callable[[Notification[_T]], None]) -> Observer[_T]:
     def _on_next(value: _T) -> None:
         return handler(OnNext(value))
 
-    def _on_error(error: Exception):
+    def _on_error(error: Exception) -> None:
         return handler(OnError(error))
 
-    def _on_completed():
+    def _on_completed() -> None:
         return handler(OnCompleted())
 
     return Observer(_on_next, _on_error, _on_completed)

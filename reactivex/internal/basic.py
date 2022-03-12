@@ -4,7 +4,7 @@ from typing import Any, NoReturn, TypeVar, Union
 _T = TypeVar("_T")
 
 
-def noop(*args: Any, **kw: Any):
+def noop(*args: Any, **kw: Any) -> None:
     """No operation. Returns nothing"""
 
 

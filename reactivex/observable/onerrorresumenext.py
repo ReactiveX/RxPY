@@ -33,13 +33,15 @@ def on_error_resume_next_(
 
     def subscribe(
         observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
-    ):
+    ) -> abc.DisposableBase:
         scheduler = scheduler or CurrentThreadScheduler.singleton()
 
         subscription = SerialDisposable()
         cancelable = SerialDisposable()
 
-        def action(scheduler: abc.SchedulerBase, state: Optional[Exception] = None):
+        def action(
+            scheduler: abc.SchedulerBase, state: Optional[Exception] = None
+        ) -> None:
             try:
                 source = next(sources_)
             except StopIteration:
@@ -55,7 +57,7 @@ def on_error_resume_next_(
             d = SingleAssignmentDisposable()
             subscription.disposable = d
 
-            def on_resume(state: Optional[Exception] = None):
+            def on_resume(state: Optional[Exception] = None) -> None:
                 scheduler.schedule(action, state)
 
             d.disposable = current.subscribe(

@@ -19,7 +19,9 @@ def with_latest_from_(
 
             values = [NO_VALUE for _ in children]
 
-            def subscribechild(i: int, child: Observable[Any]):
+            def subscribechild(
+                i: int, child: Observable[Any]
+            ) -> SingleAssignmentDisposable:
                 subscription = SingleAssignmentDisposable()
 
                 def on_next(value: Any) -> None:

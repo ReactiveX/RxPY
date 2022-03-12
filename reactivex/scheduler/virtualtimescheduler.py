@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from typing import Any, Optional, TypeVar
 
 from reactivex import abc, typing
+from reactivex.abc.scheduler import AbsoluteTime
 from reactivex.internal import ArgumentOutOfRangeException, PriorityQueue
 
 from .periodicscheduler import PeriodicScheduler
@@ -34,7 +35,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
         self._lock: threading.Lock = threading.Lock()
         self._queue: PriorityQueue[ScheduledItem] = PriorityQueue()
 
-    def _get_clock(self):
+    def _get_clock(self) -> AbsoluteTime:
         with self._lock:
             return self._clock
 

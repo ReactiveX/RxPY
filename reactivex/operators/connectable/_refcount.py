@@ -28,7 +28,7 @@ def ref_count_() -> Callable[[ConnectableObservable[_T]], Observable[_T]]:
             if should_connect:
                 connectable_subscription = source.connect(scheduler)
 
-            def dispose():
+            def dispose() -> None:
                 nonlocal connectable_subscription, count
 
                 subscription.dispose()

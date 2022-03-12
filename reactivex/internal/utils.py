@@ -20,7 +20,7 @@ def add_ref(xs: "Observable[_T]", r: RefCountDisposable) -> "Observable[_T]":
 
     def subscribe(
         observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
-    ):
+    ) -> abc.DisposableBase:
         return CompositeDisposable(r.disposable, xs.subscribe(observer))
 
     return Observable(subscribe)

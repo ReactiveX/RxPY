@@ -35,7 +35,7 @@ def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
         is_completed = [False] * n
 
         @synchronized(lock)
-        def next_(i: int):
+        def next_(i: int) -> None:
             if all(len(q) for q in queues):
                 try:
                     queued_values = [x.pop(0) for x in queues]
@@ -64,14 +64,14 @@ def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
 
         subscriptions: List[Optional[abc.DisposableBase]] = [None] * n
 
-        def func(i: int):
+        def func(i: int) -> None:
             source: Observable[Any] = sources[i]
             if isinstance(source, Future):
                 source = from_future(source)
 
             sad = SingleAssignmentDisposable()
 
-            def on_next(x: Any):
+            def on_next(x: Any) -> None:
                 queues[i].append(x)
                 next_(i)
 
