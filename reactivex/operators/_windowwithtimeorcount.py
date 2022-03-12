@@ -7,7 +7,7 @@ from reactivex.disposable import (
     SerialDisposable,
     SingleAssignmentDisposable,
 )
-from reactivex.internal.utils import add_ref
+from reactivex.internal import add_ref
 from reactivex.scheduler import TimeoutScheduler
 from reactivex.subject import Subject
 

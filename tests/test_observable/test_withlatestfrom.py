@@ -20,7 +20,7 @@ class RxException(Exception):
 # Helper function for raising exceptions within lambdas
 
 
-def _raise(ex):
+def _raise(ex: str) -> None:
     raise RxException(ex)
 
 

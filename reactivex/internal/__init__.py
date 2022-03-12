@@ -7,13 +7,18 @@ from .exceptions import (
     SequenceContainsNoElementsError,
 )
 from .priorityqueue import PriorityQueue
+from .utils import NotSet, add_ref, alias, infinite
 
 __all__ = [
+    "add_ref",
+    "alias",
     "ArgumentOutOfRangeException",
     "DisposedException",
     "default_comparer",
     "default_error",
+    "infinite",
     "noop",
+    "NotSet",
     "SequenceContainsNoElementsError",
     "concurrency",
     "DELTA_ZERO",

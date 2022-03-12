@@ -9,8 +9,7 @@ from reactivex.disposable import (
     SerialDisposable,
     SingleAssignmentDisposable,
 )
-from reactivex.internal import noop
-from reactivex.internal.utils import add_ref
+from reactivex.internal import add_ref, noop
 from reactivex.subject import Subject
 
 log = logging.getLogger("Rx")

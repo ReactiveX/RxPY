@@ -3,8 +3,7 @@ from typing import Callable, List, Optional, TypeVar
 
 from reactivex import Observable, abc
 from reactivex.disposable import RefCountDisposable, SingleAssignmentDisposable
-from reactivex.internal.exceptions import ArgumentOutOfRangeException
-from reactivex.internal.utils import add_ref
+from reactivex.internal import ArgumentOutOfRangeException, add_ref
 from reactivex.subject import Subject
 
 log = logging.getLogger("Rx")

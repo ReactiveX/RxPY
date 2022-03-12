@@ -4,7 +4,7 @@ from typing import Callable, List, Optional, TypeVar, Union
 import reactivex
 from reactivex import Observable, abc, from_future, typing
 from reactivex.disposable import CompositeDisposable, SingleAssignmentDisposable
-from reactivex.internal.concurrency import synchronized
+from reactivex.internal import synchronized
 
 _T = TypeVar("_T")
 
