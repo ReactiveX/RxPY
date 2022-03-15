@@ -9,7 +9,7 @@ from reactivex.scheduler.mainloop import TkinterScheduler
 from reactivex.subject import Subject
 
 
-def main():
+def main() -> None:
     root = Tk()
     root.title("Rx for Python rocks")
     scheduler = TkinterScheduler(root)
@@ -21,14 +21,13 @@ def main():
 
     text = "TIME FLIES LIKE AN ARROW"
 
-    def on_next(info: Tuple[tkinter.Label, "Event[Frame]", int]):
+    def on_next(info: Tuple[tkinter.Label, "Event[Frame]", int]) -> None:
         label, ev, i = info
         label.place(x=ev.x + i * 12 + 15, y=ev.y)
 
     def label2stream(
         label: tkinter.Label, index: int
     ) -> Observable[Tuple[tkinter.Label, "Event[Frame]", int]]:
-        label.config(dict(borderwidth=0, padx=0, pady=0))
 
         return mousemoves.pipe(
             ops.map(lambda ev: (label, ev, index)),
@@ -36,14 +35,12 @@ def main():
         )
 
     def char2label(char: str) -> Label:
-        return Label(frame, text=char)
+        return Label(frame, text=char, borderwidth=0, padx=0, pady=0)
 
-    xs = reactivex.of(text).pipe(
+    reactivex.from_(text).pipe(
         ops.map(char2label),
         ops.flat_map_indexed(label2stream),
-    )
-
-    xs.subscribe(on_next, on_error=print, scheduler=scheduler)
+    ).subscribe(on_next, on_error=print, scheduler=scheduler)
 
     frame.pack()
     root.mainloop()
