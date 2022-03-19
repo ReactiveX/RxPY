@@ -33,7 +33,7 @@ install:
 
 .. code:: console
 
-    pip3 install reactivex --pre
+    pip3 install reactivex
 
 
 About ReactiveX
