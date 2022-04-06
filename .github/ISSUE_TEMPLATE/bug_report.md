@@ -17,7 +17,7 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Code or Screenshots**
-If applicable, add a minimal code example or screenshots to help explain your problem.
+If applicable, add a minimal and self contained code example or screenshots to help explain your problem.
 
 ```python
 def foo(self) -> str:
