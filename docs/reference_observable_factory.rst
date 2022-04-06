@@ -3,5 +3,5 @@
 Observable Factory
 =====================
 
-.. automodule:: rx
+.. automodule:: reactivex
     :members:
