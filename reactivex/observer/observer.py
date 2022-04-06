@@ -91,9 +91,7 @@ class Observer(abc.ObserverBase[_T_in], abc.DisposableBase):
         import traceback
 
         traceback.print_stack()
-        if error:
-            raise error
-        1 / 0  # Raise division by zero
+        raise error
 
     def to_notifier(self) -> Callable[[Notification[_T_in]], None]:
         """Creates a notification callback from an observer.
