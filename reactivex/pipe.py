@@ -90,18 +90,18 @@ def compose(*operators: Callable[[Any], Any]) -> Callable[[Any], Any]:
 
 
 @overload
-def pipe(value: _A) -> _A:
+def pipe(__value: _A) -> _A:
     ...
 
 
 @overload
-def pipe(value: _A, __fn1: Callable[[_A], _B]) -> _B:
+def pipe(__value: _A, __fn1: Callable[[_A], _B]) -> _B:
     ...
 
 
 @overload
 def pipe(
-    value: _A,
+    __value: _A,
     __fn1: Callable[[_A], _B],
     __fn2: Callable[[_B], _C],
 ) -> _C:
@@ -110,7 +110,7 @@ def pipe(
 
 @overload
 def pipe(
-    value: _A,
+    __value: _A,
     __fn1: Callable[[_A], _B],
     __fn2: Callable[[_B], _C],
     __fn3: Callable[[_C], _D],
@@ -120,7 +120,7 @@ def pipe(
 
 @overload
 def pipe(
-    value: _A,
+    __value: _A,
     __fn1: Callable[[_A], _B],
     __fn2: Callable[[_B], _C],
     __fn3: Callable[[_C], _D],
@@ -131,7 +131,7 @@ def pipe(
 
 @overload
 def pipe(
-    value: _A,
+    __value: _A,
     __fn1: Callable[[_A], _B],
     __fn2: Callable[[_B], _C],
     __fn3: Callable[[_C], _D],
@@ -143,7 +143,7 @@ def pipe(
 
 @overload
 def pipe(
-    value: _A,
+    __value: _A,
     __fn1: Callable[[_A], _B],
     __fn2: Callable[[_B], _C],
     __fn3: Callable[[_C], _D],
@@ -156,7 +156,7 @@ def pipe(
 
 @overload
 def pipe(
-    value: _A,
+    __value: _A,
     __fn1: Callable[[_A], _B],
     __fn2: Callable[[_B], _C],
     __fn3: Callable[[_C], _D],
@@ -170,7 +170,7 @@ def pipe(
 
 @overload
 def pipe(
-    value: _A,
+    __value: _A,
     __fn1: Callable[[_A], _B],
     __fn2: Callable[[_B], _C],
     __fn3: Callable[[_C], _D],
@@ -185,7 +185,7 @@ def pipe(
 
 @overload
 def pipe(
-    value: _A,
+    __value: _A,
     __fn1: Callable[[_A], _B],
     __fn2: Callable[[_B], _C],
     __fn3: Callable[[_C], _D],
@@ -199,7 +199,7 @@ def pipe(
     ...
 
 
-def pipe(value: Any, *fns: Callable[[Any], Any]) -> Any:
+def pipe(__value: Any, *fns: Callable[[Any], Any]) -> Any:
     """Functional pipe (`|>`)
 
     Allows the use of function argument on the left side of the
@@ -211,7 +211,7 @@ def pipe(value: Any, *fns: Callable[[Any], Any]) -> Any:
         ...
     """
 
-    return compose(*fns)(value)
+    return compose(*fns)(__value)
 
 
 __all__ = ["pipe", "compose"]

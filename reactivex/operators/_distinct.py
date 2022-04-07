@@ -69,7 +69,8 @@ def distinct_(
                         observer.on_error(ex)
                         return
 
-                hashset.push(key) and observer.on_next(x)
+                if hashset.push(key):
+                    observer.on_next(x)
 
             return source.subscribe(
                 on_next, observer.on_error, observer.on_completed, scheduler=scheduler
