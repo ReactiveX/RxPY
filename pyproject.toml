@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ReactiveX"
+name = "reactivex"
 version = "0.0.0" # NOTE: will be updated by publish script
 description = "ReactiveX (Rx) for Python"
 readme = "README.rst"
