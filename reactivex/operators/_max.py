@@ -1,4 +1,4 @@
-from typing import Callable, Optional, TypeVar
+from typing import Callable, Optional, TypeVar, cast
 
 from reactivex import Observable, compose
 from reactivex import operators as ops
@@ -29,7 +29,7 @@ def max_(
         maximum element in the source sequence.
     """
     return compose(
-        ops.max_by(identity, comparer),
+        ops.max_by(cast(Callable[[_T], _T], identity), comparer),
         ops.map(first_only),
     )
 

@@ -28,8 +28,7 @@ class QtScheduler(PeriodicScheduler):
         """
         super().__init__()
         self._qtcore = qtcore
-        timer_class: Any = self._qtcore.QTimer
-        self._periodic_timers: Set[timer_class] = set()
+        self._periodic_timers: Set[Any] = set()
 
     def schedule(
         self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None

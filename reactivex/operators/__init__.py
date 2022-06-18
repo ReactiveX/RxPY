@@ -2559,7 +2559,7 @@ def scan(
 
 @overload
 def scan(
-    accumulator: Accumulator[_TState, _T], seed: _TState
+    accumulator: Accumulator[_TState, _T], seed: Union[_TState, Type[NotSet]]
 ) -> Callable[[Observable[_T]], Observable[_TState]]:
     ...
 

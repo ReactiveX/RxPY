@@ -119,7 +119,7 @@ def group_by_until_(
                     sad = SingleAssignmentDisposable()
                     group_disposable.add(sad)
 
-                    def expire():
+                    def expire() -> None:
                         if writers[key]:
                             del writers[key]
                             writer.on_completed()
@@ -134,12 +134,12 @@ def group_by_until_(
                             wrt.on_error(exn)
                         observer.on_error(exn)
 
-                    def on_completed():
+                    def on_completed() -> None:
                         expire()
 
-                    sad.disposable = duration.pipe(ops.take(1)).subscribe(
-                        on_next, on_error, on_completed, scheduler=scheduler
-                    )
+                    sad.disposable = duration.pipe(
+                        ops.take(1),
+                    ).subscribe(on_next, on_error, on_completed, scheduler=scheduler)
 
                 try:
                     element = element_mapper_(x)
