@@ -45,7 +45,7 @@ def alias(name: str, doc: str, fun: Callable[_P, _T]) -> Callable[_P, _T]:
     alias_.__kwdefaults__ = _fun.__kwdefaults__
     alias_.__doc__ = doc
     alias_.__annotations__ = _fun.__annotations__
-    return alias_
+    return cast(Callable[_P, _T], alias_)
 
 
 class NotSet:

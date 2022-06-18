@@ -13,7 +13,7 @@ def throttle_first_(
     def throttle_first(source: Observable[_T]) -> Observable[_T]:
         """Returns an observable that emits only the first item emitted
         by the source Observable during sequential time windows of a
-        specifiedduration.
+        specified duration.
 
         Args:
             source: Source observable to throttle.

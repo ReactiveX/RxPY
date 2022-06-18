@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional, TypeVar
+from typing import Callable, List, Optional, TypeVar, cast
 
 from reactivex import Observable, compose
 from reactivex import operators as ops
@@ -36,7 +36,7 @@ def min_(
         with the minimum element in the source sequence.
     """
     return compose(
-        ops.min_by(identity, comparer),
+        ops.min_by(cast(Callable[[_T], _T], identity), comparer),
         ops.map(first_only),
     )
 

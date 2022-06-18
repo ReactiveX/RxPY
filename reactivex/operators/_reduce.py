@@ -43,7 +43,7 @@ def reduce_(
         )
 
     return compose(
-        ops.scan(accumulator),
+        ops.scan(cast(Accumulator[_T, _T], accumulator)),
         ops.last(),
     )
 

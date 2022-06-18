@@ -38,7 +38,7 @@ def from_future_(future: "Future[_T]") -> Observable[_T]:
         future.add_done_callback(done)
 
         def dispose() -> None:
-            if future and future.cancel:
+            if future:
                 future.cancel()
 
         return Disposable(dispose)
