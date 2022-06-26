@@ -11,13 +11,14 @@ import time
 from random import randint
 
 import reactivex
+from reactivex import operators as ops
+
 
 logging.basicConfig(format="%(threadName)s:%(message)s")
 log = logging.getLogger("Rx")
 log.setLevel(logging.WARNING)
 
 sleep, now = time.sleep, time.time
-O = reactivex.Observable
 
 ts_glob = 0  # global start time
 
@@ -140,4 +141,4 @@ def cur_thread():
 
 
 def marble_stream(s):
-    return O.from_marbles(s).to_blocking()
+    return reactivex.from_marbles(s).to_blocking()
