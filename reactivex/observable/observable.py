@@ -50,7 +50,9 @@ class Observable(abc.ObservableBase[_T_out]):
 
     def subscribe(
         self,
-        on_next: Optional[Union[abc.ObserverBase[_T_out], abc.OnNext[_T_out], None]] = None,
+        on_next: Optional[
+            Union[abc.ObserverBase[_T_out], abc.OnNext[_T_out], None]
+        ] = None,
         on_error: Optional[abc.OnError] = None,
         on_completed: Optional[abc.OnCompleted] = None,
         *,
