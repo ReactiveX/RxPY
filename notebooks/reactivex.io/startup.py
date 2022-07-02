@@ -11,8 +11,6 @@ import time
 from random import randint
 
 import reactivex
-from reactivex import operators as ops
-
 
 logging.basicConfig(format="%(threadName)s:%(message)s")
 log = logging.getLogger("Rx")
