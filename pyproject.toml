@@ -28,7 +28,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">= 3.7, < 3.11"
+python = ">= 3.7, < 4.0"
 typing-extensions = "^4.1.1"
 
 [tool.poetry.dev-dependencies]
