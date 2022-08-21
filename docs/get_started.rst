@@ -181,7 +181,7 @@ It is also possible to create an operator that is not a composition of other
 operators. This allows to fully control the subscription logic and items
 emissions:
 
- .. code:: python
+.. code:: python
 
     import reactivex
 
@@ -195,7 +195,7 @@ emissions:
                     on_next,
                     observer.on_error,
                     observer.on_completed,
-                    scheduler)
+                    scheduler=scheduler)
             return reactivex.create(subscribe)
         return _lowercase
 
