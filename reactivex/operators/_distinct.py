@@ -32,7 +32,9 @@ def distinct_(
     key_mapper: Optional[typing.Mapper[_T, _TKey]] = None,
     comparer: Optional[typing.Comparer[_TKey]] = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
-    comparer_ = comparer or default_comparer
+    comparer_: typing.Comparer[_TKey] = comparer or cast(
+        typing.Comparer[_TKey], default_comparer
+    )
 
     def distinct(source: Observable[_T]) -> Observable[_T]:
         """Returns an observable sequence that contains only distinct
