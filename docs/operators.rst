@@ -114,7 +114,7 @@ Operator                                                                        
 :func:`skip_until <reactivex.operators.skip_until>`                Discard items emitted by an Observable until a second Observable emits an item.
 :func:`skip_while <reactivex.operators.skip_while>`                Discard items emitted by an Observable until a specified condition becomes false.
 :func:`take_until <reactivex.operators.take_until>`                Discard items emitted by an Observable after a second Observable emits an item or terminates.
-:func:`take_whle <reactivex.operators.take_while>`                 Discard items emitted by an Observable after a specified condition becomes false.
+:func:`take_while <reactivex.operators.take_while>`                 Discard items emitted by an Observable after a specified condition becomes false.
 =================================================================  ================================================
 
 Mathematical and Aggregate Operators
