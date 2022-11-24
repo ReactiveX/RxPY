@@ -1,4 +1,7 @@
-import collections
+try:
+    from collections.abc import Iterable
+except ImportError:
+    from collections import Iterable
 
 from rx import AnonymousObservable, Observable
 from rx.disposables import CompositeDisposable
@@ -29,7 +32,7 @@ def sequence_equal(self, second, comparer=None):
     first = self
     comparer = comparer or default_comparer
 
-    if isinstance(second, collections.Iterable):
+    if isinstance(second, Iterable):
         second = Observable.from_iterable(second)
 
     def subscribe(observer):
