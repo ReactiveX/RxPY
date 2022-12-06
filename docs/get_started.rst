@@ -165,7 +165,8 @@ other operators, then the implementation is straightforward, thanks to the
     from reactivex import operators as ops
 
     def length_more_than_5():
-        return rx.pipe(
+        # In v4 rx.pipe has been renamed to `compose`
+        return reactivex.compose(
             ops.map(lambda s: len(s)),
             ops.filter(lambda i: i >= 5),
         )
