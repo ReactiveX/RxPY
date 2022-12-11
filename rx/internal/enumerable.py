@@ -24,11 +24,10 @@ class Enumerable(object):
 
             for value in self:
                 if n <= 0:
-                    raise StopIteration
+                    return
                 n -= 1
                 yield value
 
-            raise StopIteration
         return Enumerable(next())
 
     @classmethod
@@ -41,7 +40,6 @@ class Enumerable(object):
                 value += 1
                 n -= 1
 
-            raise StopIteration
         return Enumerable(next())
 
     @classmethod
