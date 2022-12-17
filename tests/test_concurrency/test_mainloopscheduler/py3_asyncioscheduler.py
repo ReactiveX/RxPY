@@ -32,7 +32,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
                 ran = True
             scheduler.schedule(action)
 
-            yield from asyncio.sleep(0.1, loop=loop)
+            yield from asyncio.sleep(0.1)
             assert(ran is True)
 
         loop.run_until_complete(go())
@@ -52,7 +52,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
 
             scheduler.schedule_relative(200, action)
 
-            yield from asyncio.sleep(0.3, loop=loop)
+            yield from asyncio.sleep(0.3)
             diff = endtime-starttime
             assert(diff > 0.18)
 
@@ -72,7 +72,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
             d = scheduler.schedule_relative(10, action)
             d.dispose()
 
-            yield from asyncio.sleep(0.1, loop=loop)
+            yield from asyncio.sleep(0.1)
             assert(not ran)
 
         loop.run_until_complete(go())

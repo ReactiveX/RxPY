@@ -7,6 +7,5 @@ def while_do(cls, condition, source):
         while condition(source):
             yield source
 
-        raise StopIteration()
     return Enumerable(next())
 
