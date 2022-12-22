@@ -257,3 +257,45 @@ The examples below showcase some less commonly needed testing tools.
         # then we get the 42 emit and then blank until 500, so 10 ticks*20
         assert message.value.value == '-----(42)----------|'
 
+
+Gotchas
+.......
+
+Directly using observables in code
+**********************************
+
+If your code creates observables directly in the code you wish to test e.g. `timeout = reactivex.timer(3)`
+you will not be able to test properly as it will *actually* attempt to wait 3 real life seconds.
+
+Some suggestions:
+
+.. code:: python
+
+    # Difficult to test because reactivex.timer is real time
+    def do_or_timeout(doer_observable: Observable[int]):
+        reactivex.merge(
+            doer_observable,
+            reactivex.timer(5).pipe(
+                operators.flat_map(lambda _: reactivex.throw(Exception('abc')))
+            )
+        )
+
+    # option 1: accept scheduler as arg, and pass the TestScheduler
+    def do_or_timeout(doer_observable: Observable[int], scheduler=None):
+        reactivex.merge(
+            doer_observable,
+            reactivex.timer(5.0, scheduler=scheduler).pipe(
+                operators.flat_map(lambda _: reactivex.throw(Exception('abc')))
+            )
+        )
+
+    # option 2: dependency injection: optional timeout
+    def do_or_timeout(doer_observable: Observable[int], timeout=None):
+        timeout = timeout or reactivex.timer(5.0)
+        reactivex.merge(
+            doer_observable,
+            timeout.pipe(
+                operators.flat_map(lambda _: reactivex.throw(Exception('abc')))
+            )
+        )
+
