@@ -107,12 +107,40 @@ Keep the following in mind when modifying these values:
 2. If you change ``subscribed`` to be lower than 100, you need to change ``created`` as well
    otherwise nothing will happen.
 
+An alternative using marbles
+............................
+
+As we saw in the previous section, we can use `reactivex.from_marbles` 
+to create observables for our tests.
+
+An example of using `to_marbles` for the assertion is shown in test_hot_
+
+There is a simplified flow available in `reactivex.testing.marbles` and here's an example:
+
+.. code:: python
+    
+    def test_start_with():
+        from reactivex.testing.marbles import marbles_testing
+        with marbles_testing() as (start, cold, hot, exp):
+            source = cold('------1-2-3-|')
+            outcome = exp('a-----1-2-3-|', {"a": None})  # can use lookups if needed
+            obs = source.pipe(
+                operators.start_with(None)
+            )
+            # Note that start accepts the observable directly, 
+            # without the need for a "create" function
+            results = start(obs)  
+            
+            assert results == outcome
+
+This method makes for very quick to write, and easy to read, tests.
+
 
 Testing an observable factory
 .............................
 
 An observable created from `Observable(subscribe)` can be just as easily tested. 
-Let's use this example to additionally test a disposal case.
+Let's use this example to additionally test a Disposable case.
 
 .. code:: python
 
@@ -157,7 +185,9 @@ Let's remedy that below.
             on_next(30+100, 1),
             on_error(230, ValueError('Sequence error'))
         ]
-        # Often it's better not to test the exact exception; we can test a specific emit as follows:
+        # At times it's better not to test the exact exception, 
+        # maybe its message changes with time or other reasons
+        # We can test a specific notification's details as follows:
         message, err = result.messages
         assert message.time == 130
         assert err.time == 230
@@ -229,6 +259,7 @@ The examples below showcase some less commonly needed testing tools.
             Subscription(900),  # represents an infinite subscription
         ]
 
+.. _test_hot:
 
 .. code:: python
 
@@ -245,12 +276,12 @@ The examples below showcase some less commonly needed testing tools.
         ))
 
         message = result.messages[0]
-        # subscriptions starts at 200
-        # since `source` is a hot observable, the emission @190 will not be caught
-        # the next emit is at 300 ticks, 
-        # which, on our subscription, will look like 300-200=100 ticks
-        # aka 5 "-" each representing 20 ticks (timespan=20 in to_marbles)
+        # the subscription starts at 200;
+        # since `source` is a hot observable, the notification @190 will not be caught
+        # the next notification is at 300 ticks, 
+        # which, on our subscription, will show at 100 ticks (300-200 from subscribed)
+        # or 5 "-" each representing 20 ticks (timespan=20 in to_marbles)
         # then the 42 is received
-        # and then nothing for another 500-300 ticks 500, so 10 "-" before complete
+        # and then nothing for another 200 ticks, so 10 "-" before complete
         assert message.value.value == '-----(42)----------|'
 
