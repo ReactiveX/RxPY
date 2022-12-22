@@ -245,11 +245,12 @@ The examples below showcase some less commonly needed testing tools.
         ))
 
         message = result.messages[0]
-        # sub starts at 200 and we emit at 300
+        # subscriptions starts at 200
         # since `source` is a hot observable, the emission @190 will not be caught
-        # instead on our subscription, it will look like emission at 300-200=100 ticks
+        # the next emit is at 300 ticks, 
+        # which, on our subscription, will look like 300-200=100 ticks
         # aka 5 "-" each representing 20 ticks (timespan=20 in to_marbles)
-        # then the 42 is received emit 
+        # then the 42 is received
         # and then nothing for another 500-300 ticks 500, so 10 "-" before complete
         assert message.value.value == '-----(42)----------|'
 
