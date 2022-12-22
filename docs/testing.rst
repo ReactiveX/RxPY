@@ -11,6 +11,7 @@ Basic example
 
 .. code:: python
 
+    # This assumes that you are using pytest but unittest or others would work just as well
     # Import the testing tools
     from reactivex.testing import ReactiveTest, TestScheduler
     from reactivex import operators
@@ -19,19 +20,6 @@ Basic example
     on_next = ReactiveTest.on_next
     on_error = ReactiveTest.on_error
     on_completed = ReactiveTest.on_completed
-    subscribe = ReactiveTest.subscribe
-
-
-    # This assumes that you are using pytest but unittest or others would work just as well
-
-    from reactivex.testing import ReactiveTest, TestScheduler
-    from reactivex import operators
-
-    on_next = ReactiveTest.on_next
-    on_error = ReactiveTest.on_error
-    on_completed = ReactiveTest.on_completed
-    subscribe = ReactiveTest.subscribe
-
 
     def test_double():
         # Create a scheduler
@@ -95,37 +83,39 @@ or with full control, you can easily test various situations and combinations
             on_next(500, 1), on_next(600, 2), on_next(700, 3), on_completed(800)
         ]
 
-Surprised about the timestamps (@500, @600, ...) for the result messages? Read below about the timeline
+Surprised about the timestamps (@500, @600, ...) for the result messages? 
+Then read below about the timeline.
 
 Timeline
 ........
 
-When `scheduler.start` is called, the test scheduler starts moving its virtual clock forward.
+When ``scheduler.start`` is called, the test scheduler starts moving its virtual clock forward.
 Some important timestamps are however hidden as defaults, as listed below.
-These values can be modified using kwargs in the `scheduler.start(...)` call:
+These values can be modified using kwargs in the ``scheduler.start(...)`` call:
 
 1. ``created`` [100]: When is the observable created. 
-That is when the ``create`` function seen in the basic example, or the lambda above is called.
-2. `subscribed` [200]: When does the subscription occur. 
-This explains the above emission timestamps: 
-consider the first emission @500; given that we are using a cold observable,
-and subscribe to it at 200, the "source"'s timeline starts at 200 and only 300 ticks later, it emits.
-1. `disposed` [1000]: When the subscription is disposed
+   That is when the ``create`` function seen in the basic example.
+2. ``subscribed`` [200]: When does the subscription occur. 
+   This explains the above emission timestamps: 
+   consider the first emission @500; given that we are using a cold observable,
+   and subscribe to it at 200, the "source"'s timeline starts at 200 and only 300 ticks later, it emits.
+3. ``disposed`` [1000]: When the subscription is disposed
 
 Keep the following in mind when modifying these values:
 
 1. Do not use `0` as values since the code ignores that
-2. If you change `subscribed` to be lower than 100, you need to change `created` as well
-otherwise nothing will happen.
+2. If you change ``subscribed`` to be lower than 100, you need to change ``created`` as well
+   otherwise nothing will happen.
 
 
 Testing an observable factory
 .............................
 
 An observable created from `Observable(subscribe)` can be just as easily tested. 
-Let's use this example to additionally test a disposal case
+Let's use this example to additionally test a disposal case.
 
 .. code:: python
+
     def test_my_observable_factory():
         from reactivex.disposable import Disposable, CompositeDisposable
         a = 42
@@ -151,7 +141,8 @@ Let's use this example to additionally test a disposal case
 Testing errors
 ..............
 
-Going back to the in_sequence_or_throw_ operator, we did not test the error case
+Going back to the in_sequence_or_throw_ operator, we did not test the error case;
+Let's remedy that below.
 
 .. code:: python
 
@@ -177,7 +168,7 @@ Going back to the in_sequence_or_throw_ operator, we did not test the error case
 
 
 Testing subscriptions, multiple observables, hot observables
-..............................................
+............................................................
 
 ``scheduler.start`` only allows for a single subscription. 
 Some cases like e.g. `operators.partition` require more.
@@ -204,8 +195,9 @@ The examples below showcase some less commonly needed testing tools.
             on_next(150, 4),
             on_completed(350)
         ]
-        assert steven.messages == [
-            on_next(150, 4),
+        assert todd.messages == [
+            on_next(50, 1),
+            on_next(250, 3),
             on_completed(350)
         ]
 
@@ -253,7 +245,8 @@ The examples below showcase some less commonly needed testing tools.
         ))
 
         message = result.messages[0]
-        # sub starts at 200 and we emit at 300 - since this is a hot observable, aka 5 ticks of 20 (timespan=20 in to_marbles)
+        # sub starts at 200 and we emit at 300 - since this is a hot observable,
+        # aka 5 ticks of 20 (timespan=20 in to_marbles)
         # then we get the 42 emit and then blank until 500, so 10 ticks*20
         assert message.value.value == '-----(42)----------|'
 
