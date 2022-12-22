@@ -182,3 +182,78 @@ Testing subscriptions, multiple observables, hot observables
 ``scheduler.start`` only allows for a single subscription. 
 Some cases like e.g. `operators.partition` require more.
 The examples below showcase some less commonly needed testing tools.
+
+.. code:: python
+    
+    def test_multiple():
+        scheduler = TestScheduler()
+        source = reactivex.from_marbles('-1-4-3-|', timespan=50, scheduler=scheduler)
+        odd, even = source.pipe(
+            operators.partition(lambda x: x % 2),
+        )
+        steven = scheduler.create_observer()
+        todd = scheduler.create_observer()
+
+        even.subscribe(steven)
+        odd.subscribe(todd)
+
+        # Note! Since it's not "start" which creates the subscription, they actually occur at t=0
+        scheduler.start()
+
+        assert steven.messages == [
+            on_next(150, 4),
+            on_completed(350)
+        ]
+        assert steven.messages == [
+            on_next(150, 4),
+            on_completed(350)
+        ]
+
+
+.. code:: python
+
+    from reactivex.testing.subscription import Subscription
+    def test_subscriptions():
+        scheduler = TestScheduler()
+        source = scheduler.create_cold_observable()  # "infinite"
+        subs = []
+        shared = source.pipe(
+            operators.share()
+        )
+        """first sub"""
+        scheduler.schedule_relative(200, lambda *_: subs.append(shared.subscribe(scheduler=scheduler)))
+        # second sub, should not sub to source itself
+        scheduler.schedule_relative(300, lambda *_: subs.append(shared.subscribe(scheduler=scheduler)))
+        scheduler.schedule_relative(500, lambda *_: subs[1].dispose())
+        scheduler.schedule_relative(600, lambda *_: subs[0].dispose())
+        """end first sub"""
+        # no existing sub should sub again onto source - we never dispose of it
+        scheduler.schedule_relative(900, lambda *_: subs.append(shared.subscribe(scheduler=scheduler)))
+
+        scheduler.start()
+        # Check that the submissions on the source are as expected
+        assert source.subscriptions == [
+            Subscription(200, 600),
+            Subscription(900),  # represents an infinite subscription
+        ]
+
+
+.. code:: python
+
+    def test_hot():
+        scheduler = TestScheduler()
+        # hot starts at 0 but sub starts at 200 so we'll miss 190
+        source = scheduler.create_hot_observable(
+            on_next(190, 5),
+            on_next(300, 42),
+            on_completed(500)
+        )
+        result = scheduler.start(lambda: source.pipe(
+            operators.to_marbles(timespan=20, scheduler=scheduler)
+        ))
+
+        message = result.messages[0]
+        # sub starts at 200 and we emit at 300 - since this is a hot observable, aka 5 ticks of 20 (timespan=20 in to_marbles)
+        # then we get the 42 emit and then blank until 500, so 10 ticks*20
+        assert message.value.value == '-----(42)----------|'
+
