@@ -16,6 +16,7 @@ operators in Python.
     installation
     rationale
     get_started
+    testing
     migration
     operators
     additional_reading
