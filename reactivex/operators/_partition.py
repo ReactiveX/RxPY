@@ -23,7 +23,7 @@ def partition_(
         when the source completes.
 
         Args:
-            source: Source obserable to partition.
+            source: Source observable to partition.
 
         Returns:
             A list of observables. The first triggers when the

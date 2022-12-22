@@ -3889,7 +3889,7 @@ def to_iterable() -> Callable[[Observable[_T]], Observable[List[_T]]]:
     There is also an alias called ``to_list``.
 
     Returns:
-        An operator function that takes an obserable source and
+        An operator function that takes an observable source and
         returns an observable sequence containing a single element with
         an iterable containing all the elements of the source sequence.
     """
