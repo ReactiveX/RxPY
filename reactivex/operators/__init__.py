@@ -454,6 +454,37 @@ def concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T
     return concat_(*sources)
 
 
+def concat_map(
+    project: Mapper[_T1, Observable[_T2]]
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    """Projects each source value to an Observable which is merged in the output Observable, in a serialized fashion waiting for each one to complete before merging the next.
+
+    Warning: if source values arrive endlessly and faster than their corresponding inner Observables can complete, it will result in memory issues as inner Observables amass in an unbounded buffer waiting for their turn to be subscribed to.
+
+    Note: concatMap is equivalent to mergeMap with concurrency parameter set to 1.
+
+    .. marble::
+        :alt: concat_map
+
+        ---1------2--3-------------------|
+        [ concat_map(i: timer(5).map(i)) ]
+        --------1------2----3------------|
+
+    Examples:
+        >>> op = concat(lambda i: reactivex.timer(1.0).pipe(take(3)))
+
+    Args:
+        project: Projecting function which takes the outer observable value and emits the inner observable
+
+    Returns:
+        An operator function that maps each value to the inner observable and emits its values in order.
+
+    """
+    from ._concatmap import concatmap_
+
+    return concatmap_(project)
+
+
 def contains(
     value: _T, comparer: Optional[typing.Comparer[_T]] = None
 ) -> Callable[[Observable[_T]], Observable[bool]]:
