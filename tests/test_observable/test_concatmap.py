@@ -188,25 +188,3 @@ class TestConcatMap(unittest.TestCase):
         assert e2.subscriptions == [
             Subscription(210, 230)
         ]  # should not be any further sub and should unsub from e2 on outer error
-
-    def test_readme_example(self):
-        scheduler = TestScheduler()
-        e1 = scheduler.create_hot_observable(
-            on_next(300, 1), on_next(400, 2), on_next(430, 3), on_completed(800)
-        )
-        e2 = scheduler.create_cold_observable(on_next(50, 0), on_completed(50))
-
-        def create_inner(x: int) -> Observable[int]:
-            return e2.pipe(operators.map(lambda _i: x))
-
-        def test_create():
-            return e1.pipe(operators.concat_map(create_inner))
-
-        results = scheduler.start(test_create)
-
-        assert results.messages == [
-            on_next(350, 1),
-            on_next(450, 2),
-            on_next(500, 3),
-            on_completed(800),
-        ]
