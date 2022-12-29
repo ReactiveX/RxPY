@@ -8,21 +8,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
       - name: Set up Python 3.9
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.9
-
-      - name: Cache Poetry
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cache/pypoetry
-          key: poetry-cache-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+          cache: poetry
 
       - name: Install dependencies
         run: |
-          pip install poetry
           poetry install
 
       - name: Code checks
@@ -38,23 +34,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Cache Poetry
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cache/pypoetry
-            ~/Library/Caches/pypoetry
-            C:\Users\*\AppData\Local\pypoetry\Cache
-          key: poetry-cache-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+          cache: poetry
 
       - name: Install dependencies
         run: |
-          pip install poetry
           poetry config installer.parallel false
           poetry install
 
@@ -67,21 +58,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
       - name: Set up Python 3.9
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.9
-
-      - name: Cache Poetry
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cache/pypoetry
-          key: poetry-cache-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-
+          cache: poetry
+      
       - name: Install dependencies
         run: |
-          pip install poetry
           poetry install
 
       - name: Run coverage tests
