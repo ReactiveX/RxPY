@@ -457,9 +457,14 @@ def concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T
 def concat_map(
     project: Mapper[_T1, Observable[_T2]]
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
-    """Projects each source value to an Observable which is merged in the output Observable, in a serialized fashion waiting for each one to complete before merging the next.
+    """Projects each source value to an Observable which is merged in the
+    output Observable, in a serialized fashion waiting for each one to complete
+    before merging the next.
 
-    Warning: if source values arrive endlessly and faster than their corresponding inner Observables can complete, it will result in memory issues as inner Observables amass in an unbounded buffer waiting for their turn to be subscribed to.
+    Warning: if source values arrive endlessly and faster than their corresponding
+    inner Observables can complete, it will result in memory issues as inner
+    Observables amass in an unbounded buffer waiting
+    for their turn to be subscribed to.
 
     Note: concatMap is equivalent to mergeMap with concurrency parameter set to 1.
 
@@ -474,10 +479,12 @@ def concat_map(
         >>> op = concat(lambda i: reactivex.timer(1.0).pipe(take(3)))
 
     Args:
-        project: Projecting function which takes the outer observable value and emits the inner observable
+        project: Projecting function which takes the outer observable value
+        and emits the inner observable
 
     Returns:
-        An operator function that maps each value to the inner observable and emits its values in order.
+        An operator function that maps each value to the inner observable
+        and emits its values in order.
 
     """
     from ._concatmap import concatmap_
