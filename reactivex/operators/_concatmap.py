@@ -1,7 +1,6 @@
 from typing import Callable, TypeVar
 
-from reactivex import Observable
-from reactivex import operators
+from reactivex import Observable, operators
 from reactivex.typing import Mapper
 
 _T1 = TypeVar("_T1")

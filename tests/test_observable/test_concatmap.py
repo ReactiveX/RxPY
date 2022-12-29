@@ -1,6 +1,6 @@
 import unittest
 
-from reactivex import operators, Observable
+from reactivex import Observable, operators
 from reactivex.testing import ReactiveTest
 from reactivex.testing.subscription import Subscription
 from reactivex.testing.testscheduler import TestScheduler
