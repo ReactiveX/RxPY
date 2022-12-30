@@ -26,6 +26,7 @@ from reactivex import (
     Observable,
     abc,
     compose,
+    operators,
     typing,
 )
 from reactivex.internal.basic import identity
@@ -487,7 +488,16 @@ def concat_map(
         and emits its values in order.
 
     """
-    from ._concatmap import concatmap_
+
+    def concatmap_(
+        project: Mapper[_T1, Observable[_T2]]
+    ) -> Callable[[Observable[_T1]], Observable[_T2]]:
+        def _concat_map(source: Observable[_T1]) -> Observable[_T2]:
+            return source.pipe(
+                operators.map(project), operators.merge(max_concurrent=1)
+            )
+
+        return _concat_map
 
     return concatmap_(project)
 
