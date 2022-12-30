@@ -489,17 +489,7 @@ def concat_map(
 
     """
 
-    def concatmap_(
-        project: Mapper[_T1, Observable[_T2]]
-    ) -> Callable[[Observable[_T1]], Observable[_T2]]:
-        def _concat_map(source: Observable[_T1]) -> Observable[_T2]:
-            return source.pipe(
-                operators.map(project), operators.merge(max_concurrent=1)
-            )
-
-        return _concat_map
-
-    return concatmap_(project)
+    return compose(map(project), merge(max_concurrent=1))
 
 
 def contains(
