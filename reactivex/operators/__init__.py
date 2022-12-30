@@ -26,7 +26,6 @@ from reactivex import (
     Observable,
     abc,
     compose,
-    operators,
     typing,
 )
 from reactivex.internal.basic import identity
