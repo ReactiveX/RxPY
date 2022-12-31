@@ -221,6 +221,27 @@ Output:
     Received delta
     Received epsilon
 
+Version x.x.x introduces the ``curry_flip`` decorator to make the creation of custom
+operators less verbose:
+
+.. code:: python
+
+    import reactivex
+
+    @curry_flip(1)
+    def lowercase(source):
+        def subscribe(observer, scheduler = None):
+            def on_next(value):
+                observer.on_next(value.lower())
+
+            return source.subscribe(
+                on_next,
+                observer.on_error,
+                observer.on_completed,
+                scheduler=scheduler)
+        return reactivex.create(subscribe)
+
+
 Concurrency
 -----------
 
