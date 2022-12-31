@@ -1,4 +1,5 @@
 from typing import Callable, Optional, TypeVar, cast
+
 from typing_extensions import overload
 
 from reactivex import Observable, abc, compose

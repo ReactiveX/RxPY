@@ -2,7 +2,6 @@ from threading import Thread
 from typing import Callable, TypeVar, Union
 
 from .abc.observable import Subscription
-from .observable import Observable
 from .abc.observer import OnCompleted, OnError, OnNext
 from .abc.periodicscheduler import (
     ScheduledPeriodicAction,
@@ -15,6 +14,7 @@ from .abc.scheduler import (
     ScheduledAction,
 )
 from .abc.startable import StartableBase
+from .observable import Observable
 
 _TState = TypeVar("_TState")
 _T1 = TypeVar("_T1")
