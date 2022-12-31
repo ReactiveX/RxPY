@@ -241,6 +241,9 @@ operators less verbose:
                 scheduler=scheduler)
         return reactivex.create(subscribe)
 
+When building more complex operators which take arguments or even optional arguments,
+``curry_flip`` allows to always keep the ``source`` as first argument in the definition.
+
 
 Concurrency
 -----------
