@@ -2,6 +2,7 @@ import unittest
 
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
+from reactivex.testing.subscription import Subscription
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -210,7 +211,7 @@ class TestBufferWithCount(unittest.TestCase):
             return xs.pipe(ops.buffer_with_count(2, 3))
 
         results = scheduler.start(create).messages
-        self.assertEqual(3, len(results))
-        assert sequence_equal(results[0].value.value, [2, 3]) and results[0].time == 220
-        assert sequence_equal(results[1].value.value, [5]) and results[1].time == 250
-        assert results[2].value.kind == "C" and results[2].time == 250
+        self.assertEqual(
+            results, [on_next(220, [2, 3]), on_next(250, [5]), on_completed(250)]
+        )
+        self.assertEqual(xs.subscriptions, [Subscription(200, 250)])
