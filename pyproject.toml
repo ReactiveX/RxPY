@@ -63,7 +63,7 @@ float_to_top=true
 python_version = "3.9"
 follow_imports = "silent"
 files = ["reactivex"]
-exclude = ["reactivex/operators/_\\w.*\\.py$", "reactivex/curry\\.py"] # mypy will eventually catch up
+exclude = ["reactivex/operators/_\\w.*\\.py$", "reactivex/curry\\.py$"] # mypy will eventually catch up
 disallow_any_generics = true
 disallow_untyped_defs = true
 
