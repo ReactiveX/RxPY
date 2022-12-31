@@ -1,6 +1,6 @@
 from typing import Any, Callable, Tuple, TypeVar, overload
 
-from typing_extensions import Concatenate, ParamSpec, Literal
+from typing_extensions import Concatenate, Literal, ParamSpec
 
 _P = ParamSpec("_P")
 _A = TypeVar("_A")
