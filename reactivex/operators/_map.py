@@ -13,13 +13,17 @@ _T1 = TypeVar("_T1")
 _T2 = TypeVar("_T2")
 
 
+@curry_flip(1)
 @overload
 def map_(source: Observable[_T1]) -> Observable[_T1]:
     ...
 
 
+@curry_flip(1)
 @overload
-def map_(source: Observable[_T1], mapper: Mapper[_T1, _T2]) -> Observable[_T2]:
+def map_(
+    source: Observable[_T1], mapper: Optional[Mapper[_T1, _T2]]
+) -> Observable[_T2]:
     ...
 
 

@@ -30,6 +30,7 @@ Comparer = Callable[[_T1, _T1], bool]
 SubComparer = Callable[[_T1, _T1], int]
 Accumulator = Callable[[_TState, _T1], _TState]
 UnaryOperator = Callable[[Observable[_T1]], Observable[_T2]]
+MonoTypeOperator = UnaryOperator[_T1, _T1]
 
 
 Startable = Union[StartableBase, Thread]
