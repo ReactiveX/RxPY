@@ -1,3 +1,5 @@
+# This file is borrowed from the Expression library, licensed under the MIT license.
+# https://github.com/cognitedata/Expression
 from typing import Any, Callable, Tuple, TypeVar, overload
 
 from typing_extensions import Concatenate, Literal, ParamSpec
