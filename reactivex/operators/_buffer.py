@@ -2,13 +2,15 @@ from typing import Any, Callable, List, Optional, TypeVar
 
 from reactivex import Observable, compose
 from reactivex import operators as ops
+from reactivex.curry import curry_flip
+from reactivex.typing import UnaryOperator
 
 _T = TypeVar("_T")
 
 
 def buffer_(
     boundaries: Observable[Any],
-) -> Callable[[Observable[_T]], Observable[List[_T]]]:
+) -> UnaryOperator[_T, List[_T]]:
     return compose(
         ops.window(boundaries),
         ops.flat_map(ops.to_list()),
@@ -33,9 +35,10 @@ def buffer_toggle_(
     )
 
 
+@curry_flip(1)
 def buffer_with_count_(
-    count: int, skip: Optional[int] = None
-) -> Callable[[Observable[_T]], Observable[List[_T]]]:
+    source: Observable[_T], count: int, skip: Optional[int] = None
+) -> Observable[List[_T]]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on element count information.
 
@@ -54,27 +57,22 @@ def buffer_with_count_(
         observable sequence of buffers.
     """
 
-    def buffer_with_count(source: Observable[_T]) -> Observable[List[_T]]:
-        nonlocal skip
+    if skip is None:
+        skip = count
 
-        if skip is None:
-            skip = count
-
-        def mapper(value: Observable[_T]) -> Observable[List[_T]]:
-            return value.pipe(
-                ops.to_list(),
-            )
-
-        def predicate(value: List[_T]) -> bool:
-            return len(value) > 0
-
-        return source.pipe(
-            ops.window_with_count(count, skip),
-            ops.flat_map(mapper),
-            ops.filter(predicate),
+    def mapper(value: Observable[_T]) -> Observable[List[_T]]:
+        return value.pipe(
+            ops.to_list(),
         )
 
-    return buffer_with_count
+    def predicate(value: List[_T]) -> bool:
+        return len(value) > 0
+
+    return source.pipe(
+        ops.window_with_count(count, skip),
+        ops.flat_map(mapper),
+        ops.filter(predicate),
+    )
 
 
 __all__ = ["buffer_", "buffer_with_count_", "buffer_when_", "buffer_toggle_"]

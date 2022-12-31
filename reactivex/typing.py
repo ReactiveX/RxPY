@@ -2,6 +2,7 @@ from threading import Thread
 from typing import Callable, TypeVar, Union
 
 from .abc.observable import Subscription
+from .observable import Observable
 from .abc.observer import OnCompleted, OnError, OnNext
 from .abc.periodicscheduler import (
     ScheduledPeriodicAction,
@@ -28,6 +29,7 @@ PredicateIndexed = Callable[[_T1, int], bool]
 Comparer = Callable[[_T1, _T1], bool]
 SubComparer = Callable[[_T1, _T1], int]
 Accumulator = Callable[[_TState, _T1], _TState]
+UnaryOperator = Callable[[Observable[_T1]], Observable[_T2]]
 
 
 Startable = Union[StartableBase, Thread]

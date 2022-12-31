@@ -1,4 +1,5 @@
 from typing import Callable, Optional, TypeVar, cast
+from typing_extensions import overload
 
 from reactivex import Observable, abc, compose
 from reactivex import operators as ops
@@ -10,6 +11,16 @@ from reactivex.typing import Mapper, MapperIndexed
 
 _T1 = TypeVar("_T1")
 _T2 = TypeVar("_T2")
+
+
+@overload
+def map_(source: Observable[_T1]) -> Observable[_T1]:
+    ...
+
+
+@overload
+def map_(source: Observable[_T1], mapper: Mapper[_T1, _T2]) -> Observable[_T2]:
+    ...
 
 
 @curry_flip(1)
