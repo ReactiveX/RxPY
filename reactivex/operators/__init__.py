@@ -687,7 +687,7 @@ def delay_with_mapper(
 
     Examples:
         >>> # with mapper only
-        >>> res = source.delay_with_mapper(lambda x: Scheduler.timer(5.0))
+        >>> res = source.delay_with_mapper(lambda x: reactivex.timer(5.0))
         >>> # with delay and mapper
         >>> res = source.delay_with_mapper(
             reactivex.timer(2.0), lambda x: reactivex.timer(x)
@@ -3692,7 +3692,7 @@ def throttle_with_mapper(
     another value within a computed throttle duration.
 
     Example:
-        >>> op = throttle_with_mapper(lambda x: rx.Scheduler.timer(x+x))
+        >>> op = throttle_with_mapper(lambda x: reactivex.timer(x+x))
 
     Args:
         throttle_duration_mapper: Mapper function to retrieve an
@@ -3891,7 +3891,7 @@ def to_iterable() -> Callable[[Observable[_T]], Observable[List[_T]]]:
     There is also an alias called ``to_list``.
 
     Returns:
-        An operator function that takes an obserable source and
+        An operator function that takes an observable source and
         returns an observable sequence containing a single element with
         an iterable containing all the elements of the source sequence.
     """
