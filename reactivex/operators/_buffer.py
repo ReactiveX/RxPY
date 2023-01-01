@@ -3,14 +3,13 @@ from typing import Any, Callable, List, Optional, TypeVar
 from reactivex import Observable, compose
 from reactivex import operators as ops
 from reactivex.curry import curry_flip
-from reactivex.typing import UnaryOperator
 
 _T = TypeVar("_T")
 
 
 def buffer_(
     boundaries: Observable[Any],
-) -> UnaryOperator[_T, List[_T]]:
+) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     return compose(
         ops.window(boundaries),
         ops.flat_map(ops.to_list()),
