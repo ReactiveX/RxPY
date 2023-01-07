@@ -3389,11 +3389,11 @@ def switch_map(
         and emits its values in order, emitting values only from the
         most recently projected Observable.
 
-        
+
         If an inner observable complete, the resulting sequence does *not*
         complete.
         If an inner observable errors, the resulting sequence errors as well.
-        If the outer observable completes/errors, the resulting sequence 
+        If the outer observable completes/errors, the resulting sequence
         completes/errors.
 
     """
