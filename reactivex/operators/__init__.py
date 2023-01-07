@@ -3362,8 +3362,8 @@ def switch_latest() -> Callable[
     return switch_latest_()
 
 
-def switch_map(
-    project: Callable[[_T1, int], Observable[_T2]]
+def switch_map_indexed(
+    project: Optional[MapperIndexed[_T1, Observable[_T2]]]
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     """Projects each source value to an Observable which is merged in
     the output Observable, emitting values only from the most recently
