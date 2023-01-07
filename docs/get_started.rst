@@ -165,7 +165,8 @@ other operators, then the implementation is straightforward, thanks to the
     from reactivex import operators as ops
 
     def length_more_than_5():
-        return rx.pipe(
+        # In v4 rx.pipe has been renamed to `compose`
+        return reactivex.compose(
             ops.map(lambda s: len(s)),
             ops.filter(lambda i: i >= 5),
         )
@@ -379,7 +380,7 @@ the coroutine.
                 i.future.set_result(i.data)
 
             print("starting server")
-            server = asyncio.start_server(handle_echo, '127.0.0.1', 8888, loop=loop)
+            server = asyncio.start_server(handle_echo, '127.0.0.1', 8888)
             loop.create_task(server)
 
             sink.subscribe(
@@ -390,7 +391,7 @@ the coroutine.
         return reactivex.create(on_subscribe)
 
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
     proxy = Subject()
     source = tcp_server(proxy, loop)
     aio_scheduler = AsyncIOScheduler(loop=loop)
