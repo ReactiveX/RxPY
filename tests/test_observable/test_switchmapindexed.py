@@ -3,8 +3,8 @@ import unittest
 from reactivex import interval
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
-from reactivex.testing.subscription import Subscription
 from reactivex.testing.marbles import marbles_testing
+from reactivex.testing.subscription import Subscription
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -174,9 +174,9 @@ class TestSwitchMapIndex(unittest.TestCase):
             xs = hot(
                 "               ---a---b------c-----",
                 {
-                    "a": cold("    --1--2"),
-                    "b": cold("        --1-2-3-4-5|"),
-                    "c": cold("               --1--2"),
+                    "a": cold("    --1--2", None, None),
+                    "b": cold("        --1-2-3-4-5|", None, None),
+                    "c": cold("               --1--2", None, None),
                 },
                 None,
             )
