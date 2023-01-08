@@ -174,9 +174,9 @@ class TestSwitchMap(unittest.TestCase):
             xs = hot(
                 "               ---a---b------c-----",
                 {
-                    "a": cold("    --1--2"),
-                    "b": cold("        --1-2-3-4-5|"),
-                    "c": cold("               --1--2"),
+                    "a": cold("    --1--2", None, None),
+                    "b": cold("        --1-2-3-4-5|", None, None),
+                    "c": cold("               --1--2", None, None),
                 },
                 None,
             )
