@@ -1,8 +1,8 @@
 import unittest
 
-from reactivex import create, empty, return_value, throw
+from reactivex import create, empty, of, return_value, throw
 from reactivex.disposable import SerialDisposable
-from reactivex.operators import map, map_indexed
+from reactivex.operators import switch_map, switch_map_indexed
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -12,6 +12,8 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
+
+map = None
 
 
 class RxException(Exception):
@@ -25,9 +27,9 @@ def _raise(ex):
     raise RxException(ex)
 
 
-class TestMap(unittest.TestCase):
+class TestSwitchMap(unittest.TestCase):
     def test_map_throws(self):
-        mapper = map(lambda x: x)
+        mapper = switch_map(lambda x: of(x))
         with self.assertRaises(RxException):
             return_value(1).pipe(mapper).subscribe(lambda x: _raise("ex"))
 
@@ -43,7 +45,7 @@ class TestMap(unittest.TestCase):
             _raise("ex")
 
         with self.assertRaises(RxException):
-            create(subscribe).pipe(map(lambda x: x)).subscribe()
+            create(subscribe).pipe(switch_map(lambda x: of(x))).subscribe()
 
     def test_map_disposeinsidemapper(self):
         scheduler = TestScheduler()
@@ -59,9 +61,11 @@ class TestMap(unittest.TestCase):
 
             if scheduler.clock > 400:
                 d.dispose()
-            return x
+            return of(x, x + 1)
 
-        d.disposable = xs.pipe(map(projection)).subscribe(results, scheduler)
+        d.disposable = xs.pipe(switch_map(projection)).subscribe(
+            results, scheduler=scheduler
+        )
 
         def action(scheduler, state):
             return d.dispose()
@@ -69,7 +73,12 @@ class TestMap(unittest.TestCase):
         scheduler.schedule_absolute(ReactiveTest.disposed, action)
         scheduler.start()
 
-        assert results.messages == [on_next(100, 1), on_next(200, 2)]
+        assert results.messages == [
+            on_next(100, 1),
+            on_next(100, 2),
+            on_next(200, 2),
+            on_next(200, 3),
+        ]
         assert xs.subscriptions == [ReactiveTest.subscribe(0, 500)]
 
         assert invoked[0] == 3
@@ -92,9 +101,9 @@ class TestMap(unittest.TestCase):
         def factory():
             def projection(x):
                 invoked[0] += 1
-                return x + 1
+                return of(x + 1)
 
-            return xs.pipe(map(projection))
+            return xs.pipe(switch_map(projection))
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -122,7 +131,7 @@ class TestMap(unittest.TestCase):
         )
 
         def factory():
-            return xs.pipe(map())
+            return xs.pipe(switch_map())
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -154,16 +163,20 @@ class TestMap(unittest.TestCase):
             def factory():
                 def projection(x):
                     invoked[0] += 1
-                    return x + 1
+                    return of(x + 1, x)
 
-                return xs.pipe(map(projection))
+                return xs.pipe(switch_map(projection))
 
             results = scheduler.start(factory)
             assert results.messages == [
                 on_next(210, 3),
+                on_next(210, 2),
                 on_next(240, 4),
+                on_next(240, 3),
                 on_next(290, 5),
+                on_next(290, 4),
                 on_next(350, 6),
+                on_next(350, 5),
                 on_completed(400),
             ]
             assert xs.subscriptions == [subscribe(200, 400)]
@@ -183,9 +196,9 @@ class TestMap(unittest.TestCase):
         def factory():
             def projection(x):
                 invoked[0] += 1
-                return x + 1
+                return of(x + 1)
 
-            return xs.pipe(map(projection))
+            return xs.pipe(switch_map(projection))
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -216,9 +229,9 @@ class TestMap(unittest.TestCase):
         def factory():
             def projection(x):
                 invoked[0] += 1
-                return x + 1
+                return of(x + 1)
 
-            return xs.pipe(map(projection))
+            return xs.pipe(switch_map(projection))
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -253,9 +266,9 @@ class TestMap(unittest.TestCase):
                 if invoked[0] == 3:
                     raise Exception(ex)
 
-                return x + 1
+                return of(x + 1)
 
-            return xs.pipe(map(projection))
+            return xs.pipe(switch_map(projection))
 
         results = scheduler.start(factory)
         assert results.messages == [on_next(210, 3), on_next(240, 4), on_error(290, ex)]
@@ -264,7 +277,7 @@ class TestMap(unittest.TestCase):
 
     def test_map_with_index_throws(self):
         with self.assertRaises(RxException):
-            mapper = map_indexed(lambda x, index: x)
+            mapper = switch_map_indexed(lambda x, index: of(x, index))
 
             return return_value(1).pipe(mapper).subscribe(lambda x: _raise("ex"))
 
@@ -297,9 +310,9 @@ class TestMap(unittest.TestCase):
             if scheduler.clock > 400:
                 d.dispose()
 
-            return x + index * 10
+            return of(x + index * 10)
 
-        d.disposable = xs.pipe(map_indexed(projection)).subscribe(results)
+        d.disposable = xs.pipe(switch_map_indexed(projection)).subscribe(results)
 
         def action(scheduler, state):
             return d.dispose()
@@ -328,16 +341,20 @@ class TestMap(unittest.TestCase):
         def factory():
             def projection(x, index):
                 invoked[0] += 1
-                return (x + 1) + (index * 10)
+                return of(x + 1, index * 10)
 
-            return xs.pipe(map_indexed(projection))
+            return xs.pipe(switch_map_indexed(projection))
 
         results = scheduler.start(factory)
         assert results.messages == [
             on_next(210, 5),
-            on_next(240, 14),
-            on_next(290, 23),
-            on_next(350, 32),
+            on_next(210, 0),
+            on_next(240, 4),
+            on_next(240, 10),
+            on_next(290, 3),
+            on_next(290, 20),
+            on_next(350, 2),
+            on_next(350, 30),
             on_completed(400),
         ]
         assert xs.subscriptions == [subscribe(200, 400)]
@@ -358,7 +375,7 @@ class TestMap(unittest.TestCase):
         )
 
         def factory():
-            return xs.pipe(map_indexed())
+            return xs.pipe(switch_map_indexed())
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -385,16 +402,20 @@ class TestMap(unittest.TestCase):
         def factory():
             def projection(x, index):
                 invoked[0] += 1
-                return (x + 1) + (index * 10)
+                return of(x + 1, index * 10)
 
-            return xs.pipe(map_indexed(projection))
+            return xs.pipe(switch_map_indexed(projection))
 
         results = scheduler.start(factory)
         assert results.messages == [
             on_next(210, 5),
-            on_next(240, 14),
-            on_next(290, 23),
-            on_next(350, 32),
+            on_next(210, 0),
+            on_next(240, 4),
+            on_next(240, 10),
+            on_next(290, 3),
+            on_next(290, 20),
+            on_next(350, 2),
+            on_next(350, 30),
         ]
         assert xs.subscriptions == [subscribe(200, 1000)]
         assert invoked[0] == 4
@@ -418,17 +439,21 @@ class TestMap(unittest.TestCase):
         def factory():
             def projection(x, index):
                 invoked[0] += 1
-                return (x + 1) + (index * 10)
+                return of(x + 1, index * 10)
 
-            return xs.pipe(map_indexed(projection))
+            return xs.pipe(switch_map_indexed(projection))
 
         results = scheduler.start(factory)
 
         assert results.messages == [
             on_next(210, 5),
-            on_next(240, 14),
-            on_next(290, 23),
-            on_next(350, 32),
+            on_next(210, 0),
+            on_next(240, 4),
+            on_next(240, 10),
+            on_next(290, 3),
+            on_next(290, 20),
+            on_next(350, 2),
+            on_next(350, 30),
             on_error(400, ex),
         ]
         assert xs.subscriptions == [subscribe(200, 400)]
@@ -455,14 +480,16 @@ class TestMap(unittest.TestCase):
                 invoked[0] += 1
                 if invoked[0] == 3:
                     raise Exception(ex)
-                return (x + 1) + (index * 10)
+                return of(x + 1, index * 10)
 
-            return xs.pipe(map_indexed(projection))
+            return xs.pipe(switch_map_indexed(projection))
 
         results = scheduler.start(factory)
         assert results.messages == [
             on_next(210, 5),
-            on_next(240, 14),
+            on_next(210, 0),
+            on_next(240, 4),
+            on_next(240, 10),
             on_error(290, ex),
         ]
         assert xs.subscriptions == [subscribe(200, 290)]

@@ -1,6 +1,6 @@
 import unittest
 
-from reactivex import create, empty
+from reactivex import create, empty, of
 from reactivex import operators as ops
 from reactivex import return_value, throw
 from reactivex.disposable import SerialDisposable
@@ -26,7 +26,7 @@ def _raise(ex):
     raise RxException(ex)
 
 
-class TestStarmap(unittest.TestCase):
+class TestSwitchStarmap(unittest.TestCase):
     def test_starmap_never(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable()
@@ -36,9 +36,9 @@ class TestStarmap(unittest.TestCase):
         def factory():
             def mapper(x, y):
                 invoked[0] += 1
-                return x + y
+                return of(x + y, x * y)
 
-            return xs.pipe(ops.starmap(mapper))
+            return xs.pipe(ops.switch_starmap(mapper))
 
         results = scheduler.start(factory)
         assert results.messages == []
@@ -58,9 +58,9 @@ class TestStarmap(unittest.TestCase):
         def factory():
             def mapper(x, y):
                 invoked[0] += 1
-                return x + y
+                return of(x + y, x * y)
 
-            return xs.pipe(ops.starmap(mapper))
+            return xs.pipe(ops.switch_starmap(mapper))
 
         results = scheduler.start(factory)
         assert results.messages == [on_completed(300)]
@@ -68,7 +68,7 @@ class TestStarmap(unittest.TestCase):
         assert invoked[0] == 0
 
     def test_starmap_subscription_error(self):
-        mapper = ops.starmap(lambda x, y: (x, y))
+        mapper = ops.switch_starmap(lambda x, y: of(x, x + y))
 
         with self.assertRaises(RxException):
             return_value((1, 10)).pipe(mapper).subscribe(lambda x: _raise("ex"))
@@ -106,9 +106,11 @@ class TestStarmap(unittest.TestCase):
             invoked[0] += 1
             if scheduler._clock > 250:
                 d.dispose()
-            return x + y
+            return of(x + y, x * y)
 
-        d.disposable = xs.pipe(ops.starmap(mapper)).subscribe(results, scheduler)
+        d.disposable = xs.pipe(ops.switch_starmap(mapper)).subscribe(
+            results, scheduler=scheduler
+        )
 
         def action(scheduler, state):
             return d.dispose()
@@ -116,7 +118,12 @@ class TestStarmap(unittest.TestCase):
         scheduler.schedule_absolute(ReactiveTest.disposed, action)
         scheduler.start()
 
-        assert results.messages == [on_next(110, 11), on_next(210, 22)]
+        assert results.messages == [
+            on_next(110, 11),
+            on_next(110, 10),
+            on_next(210, 22),
+            on_next(210, 40),
+        ]
 
         assert xs.subscriptions == [ReactiveTest.subscribe(0, 310)]
         assert invoked[0] == 3
@@ -142,16 +149,20 @@ class TestStarmap(unittest.TestCase):
         def factory():
             def mapper(x, y):
                 invoked[0] += 1
-                return x + y
+                return of(x + y, y - x)
 
-            return xs.pipe(ops.starmap(mapper))
+            return xs.pipe(ops.switch_starmap(mapper))
 
         results = scheduler.start(factory)
         assert results.messages == [
             on_next(210, 22),
+            on_next(210, 18),
             on_next(240, 33),
+            on_next(240, 27),
             on_next(290, 44),
+            on_next(290, 36),
             on_next(350, 55),
+            on_next(350, 45),
             on_completed(400),
         ]
 
@@ -174,16 +185,20 @@ class TestStarmap(unittest.TestCase):
         def factory():
             def mapper(x, y):
                 invoked[0] += 1
-                return x + y
+                return of(x + y, y // x)
 
-            return xs.pipe(ops.starmap(mapper))
+            return xs.pipe(ops.switch_starmap(mapper))
 
         results = scheduler.start(factory)
         assert results.messages == [
             on_next(210, 22),
+            on_next(210, 10),
             on_next(240, 33),
+            on_next(240, 10),
             on_next(290, 44),
+            on_next(290, 10),
             on_next(350, 55),
+            on_next(350, 10),
         ]
 
         assert xs.subscriptions == [subscribe(200, 1000)]
@@ -206,14 +221,18 @@ class TestStarmap(unittest.TestCase):
         )
 
         def factory():
-            return xs.pipe(ops.starmap())
+            return xs.pipe(ops.switch_starmap())
 
         results = scheduler.start(factory)
         assert results.messages == [
-            on_next(210, (2, 20)),
-            on_next(240, (3, 30)),
-            on_next(290, (4, 40)),
-            on_next(350, (5, 50)),
+            on_next(210, 2),
+            on_next(210, 20),
+            on_next(240, 3),
+            on_next(240, 30),
+            on_next(290, 4),
+            on_next(290, 40),
+            on_next(350, 5),
+            on_next(350, 50),
             on_completed(400),
         ]
 
@@ -240,9 +259,9 @@ class TestStarmap(unittest.TestCase):
         def factory():
             def mapper(x):
                 invoked[0] += 1
-                return x * 10
+                return of(x * 10)
 
-            return xs.pipe(ops.starmap(mapper))
+            return xs.pipe(ops.switch_starmap(mapper))
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -277,16 +296,20 @@ class TestStarmap(unittest.TestCase):
         def factory():
             def mapper(x, y, z):
                 invoked[0] += 1
-                return x + y + z
+                return of(x + y, y + z)
 
-            return xs.pipe(ops.starmap(mapper))
+            return xs.pipe(ops.switch_starmap(mapper))
 
         results = scheduler.start(factory)
         assert results.messages == [
-            on_next(210, 222),
-            on_next(240, 333),
-            on_next(290, 444),
-            on_next(350, 555),
+            on_next(210, 22),
+            on_next(210, 220),
+            on_next(240, 33),
+            on_next(240, 330),
+            on_next(290, 44),
+            on_next(290, 440),
+            on_next(350, 55),
+            on_next(350, 550),
             on_completed(400),
         ]
 
@@ -314,16 +337,20 @@ class TestStarmap(unittest.TestCase):
         def factory():
             def mapper(*args):
                 invoked[0] += 1
-                return sum(args)
+                return of(sum(args), max(args))
 
-            return xs.pipe(ops.starmap(mapper))
+            return xs.pipe(ops.switch_starmap(mapper))
 
         results = scheduler.start(factory)
         assert results.messages == [
             on_next(210, 22),
+            on_next(210, 20),
             on_next(240, 33),
+            on_next(240, 30),
             on_next(290, 44),
+            on_next(290, 40),
             on_next(350, 55),
+            on_next(350, 50),
             on_completed(400),
         ]
 
@@ -351,9 +378,9 @@ class TestStarmap(unittest.TestCase):
         def factory():
             def mapper(x, y):
                 invoked[0] += 1
-                return x + y
+                return of(x + y)
 
-            return xs.pipe(ops.starmap(mapper))
+            return xs.pipe(ops.switch_starmap(mapper))
 
         results = scheduler.start(factory)
         assert results.messages == [
@@ -391,9 +418,9 @@ class TestStarmap(unittest.TestCase):
                 if invoked[0] == 3:
                     raise Exception(ex)
 
-                return x + y
+                return of(x + y)
 
-            return xs.pipe(ops.starmap(mapper))
+            return xs.pipe(ops.switch_starmap(mapper))
 
         results = scheduler.start(factory)
         assert results.messages == [
