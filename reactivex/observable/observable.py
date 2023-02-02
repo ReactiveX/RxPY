@@ -88,7 +88,7 @@ class Observable(abc.ObservableBase[_T_out]):
 
         Returns:
             Disposable object representing an observer's subscription to
-            the observable sequence.
+            the observable sequence. Call :code:`.dispose()` on it to unsubscribe.
         """
         if (
             isinstance(on_next, abc.ObserverBase)
