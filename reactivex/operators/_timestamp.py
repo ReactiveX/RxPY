@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Callable, Generic, Optional, TypeVar
 
 from reactivex import Observable, abc, defer, operators
+from reactivex.curry import curry_flip
 from reactivex.scheduler import TimeoutScheduler
 
 _T = TypeVar("_T")
@@ -14,36 +15,37 @@ class Timestamp(Generic[_T]):
     timestamp: datetime
 
 
+@curry_flip(1)
 def timestamp_(
+    source: Observable[_T],
     scheduler: Optional[abc.SchedulerBase] = None,
 ) -> Callable[[Observable[_T]], Observable[Timestamp[_T]]]:
-    def timestamp(source: Observable[_T]) -> Observable[Timestamp[_T]]:
-        """Records the timestamp for each value in an observable sequence.
+    """Records the timestamp for each value in an observable sequence.
 
-        Examples:
-            >>> timestamp(source)
+    Examples:
+        >>> timestamp(source)
 
-        Produces objects with attributes `value` and `timestamp`, where
-        value is the original value.
+    Produces objects with attributes `value` and `timestamp`, where
+    value is the original value.
 
-        Args:
-            source: Observable source to timestamp.
+    Args:
+        source: Observable source to timestamp.
 
-        Returns:
-            An observable sequence with timestamp information on values.
-        """
+    Returns:
+        An observable sequence with timestamp information on values.
+        Each emitted item is a Timestamp object with `.value` and
+        `.timestamp` attributes
+    """
 
-        def factory(scheduler_: Optional[abc.SchedulerBase] = None):
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
+    def factory(scheduler_: Optional[abc.SchedulerBase] = None):
+        _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
-            def mapper(value: _T) -> Timestamp[_T]:
-                return Timestamp(value=value, timestamp=_scheduler.now)
+        def mapper(value: _T) -> Timestamp[_T]:
+            return Timestamp(value=value, timestamp=_scheduler.now)
 
-            return source.pipe(operators.map(mapper))
+        return source.pipe(operators.map(mapper))
 
-        return defer(factory)
-
-    return timestamp
+    return defer(factory)
 
 
 __all__ = ["timestamp_"]

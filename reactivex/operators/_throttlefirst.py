@@ -2,8 +2,8 @@ from datetime import datetime
 from typing import Callable, Optional, TypeVar
 
 from reactivex import Observable, abc, typing
-from reactivex.scheduler import TimeoutScheduler
 from reactivex.curry import curry_flip
+from reactivex.scheduler import TimeoutScheduler
 
 _T = TypeVar("_T")
 
