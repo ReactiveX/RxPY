@@ -63,9 +63,14 @@ def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]
     .. marble::
         :alt: all
 
-        --1--2--3--4--5-|
-        [      all(i: i<10)    ]
-        ----------------true-|
+        --1--2--3--4--5--6----|
+        [      all(i: i<8)    ]
+        ------------------true|
+
+
+        --1--2--3--4--5--6----|
+        [      all(i: i<4)    ]
+        ------false|
 
     Example:
         >>> op = all(lambda value: value.length > 3)
@@ -78,6 +83,13 @@ def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]
         returns an observable sequence containing a single element
         determining whether all elements in the source sequence pass
         the test in the specified predicate.
+
+        If a predicate returns false, the result sequence emits false
+        and completes immediately, regardless of the state of the
+        source sequence.
+
+        If all items pass the predicate test, the emission of true
+        will only happen as the source completes.
     """
     from ._all import all_
 

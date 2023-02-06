@@ -2,6 +2,7 @@ import unittest
 
 from reactivex import operators as _
 from reactivex.testing import ReactiveTest, TestScheduler
+from reactivex.testing.subscription import Subscription
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -17,6 +18,17 @@ class TestAll(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_completed(250)]
         xs = scheduler.create_hot_observable(msgs)
+
+        def create():
+            return xs.pipe(_.all(lambda x: x > 0))
+
+        res = scheduler.start(create=create).messages
+        assert res == [on_next(250, True), on_completed(250)]
+
+    def test_all_no_emit(self):
+        """Should emit true if no item is emitted"""
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_completed(250))
 
         def create():
             return xs.pipe(_.all(lambda x: x > 0))
@@ -79,8 +91,12 @@ class TestAll(unittest.TestCase):
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(210, False), on_completed(210)]
+        assert xs.subscriptions == [Subscription(200, 210)]
 
     def test_all_some_all_match(self):
+        """Should emit true and complete after the source completes if all
+        items pass the predicate test
+        """
         scheduler = TestScheduler()
         msgs = [
             on_next(150, 1),
@@ -119,6 +135,7 @@ class TestAll(unittest.TestCase):
 
         res = scheduler.start(create=create).messages
         assert res == []
+        assert xs.subscriptions == [Subscription(200, 1000)]
 
 
 if __name__ == "__main__":
