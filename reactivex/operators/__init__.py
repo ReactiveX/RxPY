@@ -102,9 +102,8 @@ def amb(right_source: Observable[_T]) -> Callable[[Observable[_T]], Observable[_
     .. marble::
         :alt: amb
 
-        ---8--6--9-----------|
+        ---8--6--9---------|
         --1--2--3---5--------|
-        ----------10-20-30---|
         [        amb()       ]
         --1--2--3---5--------|
 
