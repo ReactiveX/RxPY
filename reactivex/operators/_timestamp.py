@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Callable, Generic, Optional, TypeVar
+from typing import Generic, Optional, TypeVar
 
 from reactivex import Observable, abc, defer, operators
 from reactivex.curry import curry_flip
@@ -19,7 +19,7 @@ class Timestamp(Generic[_T]):
 def timestamp_(
     source: Observable[_T],
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T]], Observable[Timestamp[_T]]]:
+) -> Observable[Timestamp[_T]]:
     """Records the timestamp for each value in an observable sequence.
 
     Examples:

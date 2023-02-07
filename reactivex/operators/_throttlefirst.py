@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Callable, Optional, TypeVar
+from typing import Optional, TypeVar
 
 from reactivex import Observable, abc, typing
 from reactivex.curry import curry_flip
@@ -13,7 +13,7 @@ def throttle_first_(
     source: Observable[_T],
     window_duration: typing.RelativeTime,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T]], Observable[_T]]:
+) -> Observable[_T]:
     """Returns an observable that emits only the first item emitted
     by the source Observable during sequential time windows of a
     specified duration.

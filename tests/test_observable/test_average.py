@@ -1,6 +1,7 @@
 import unittest
 
 from reactivex import operators as _
+from reactivex.internal.exceptions import SequenceContainsNoElementsError
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -19,9 +20,7 @@ class TestAverage(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
         res = scheduler.start(create=lambda: xs.pipe(_.average())).messages
 
-        assert len(res) == 1
-        assert res[0].value.kind == "E" and res[0].value.exception != None
-        assert res[0].time == 250
+        assert res == [on_error(250, SequenceContainsNoElementsError())]
 
     def test_average_int32_return(self):
         scheduler = TestScheduler()
