@@ -74,7 +74,7 @@ class TestToDict(unittest.TestCase):
         )
 
         def create():
-            def key_mapper(x):
+            def key_mapper(x: int):
                 if x < 4:
                     return x * 2
                 else:
@@ -102,7 +102,7 @@ class TestToDict(unittest.TestCase):
             on_completed(600),
         )
 
-        def value_mapper(x):
+        def value_mapper(x: int):
             if x < 4:
                 return x * 4
             else:
@@ -136,3 +136,29 @@ class TestToDict(unittest.TestCase):
         assert res.messages == []
 
         assert xs.subscriptions == [subscribe(200, 1000)]
+
+    def test_to_dict_no_element_mapper(self):
+        scheduler = TestScheduler()
+
+        xs = scheduler.create_hot_observable(
+            on_next(110, 1),
+            on_next(220, 2),
+            on_next(330, 3),
+            on_next(440, 4),
+            on_next(550, 5),
+            on_completed(660),
+        )
+
+        def key_mapper(x: int):
+            return x * 2
+
+        def create():
+            return xs.pipe(ops.to_dict(key_mapper))
+
+        res = scheduler.start(create)
+        assert res.messages == [
+            on_next(660, {4: 2, 6: 3, 8: 4, 10: 5}),
+            on_completed(660),
+        ]
+
+        assert xs.subscriptions == [subscribe(200, 660)]
