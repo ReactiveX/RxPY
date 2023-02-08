@@ -374,6 +374,35 @@ class TestTakeWhile(unittest.TestCase):
         ]
         assert xs.subscriptions == [subscribe(200, 350)]
 
+    def test_take_while_index_use_index_and_value(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(
+            on_next(90, -1),
+            on_next(110, -1),
+            on_next(205, 100),
+            on_next(210, 2),
+            on_next(260, 5),
+            on_next(290, 13),
+            on_next(320, 3),
+            on_next(350, 7),
+            on_next(390, 4),
+            on_completed(600),
+        )
+
+        def create():
+            return xs.pipe(ops.take_while_indexed(lambda x, i: x > i))
+
+        results = scheduler.start(create)
+
+        assert results.messages == [
+            on_next(205, 100),
+            on_next(210, 2),
+            on_next(260, 5),
+            on_next(290, 13),
+            on_completed(320),
+        ]
+        assert xs.subscriptions == [subscribe(200, 320)]
+
     def test_take_while_index_inclusive_true(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
