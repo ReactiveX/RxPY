@@ -33,7 +33,7 @@ class TestTakeWhile(unittest.TestCase):
         invoked = 0
 
         def factory():
-            def predicate(x):
+            def predicate(x: int):
                 nonlocal invoked
 
                 invoked += 1
@@ -72,7 +72,7 @@ class TestTakeWhile(unittest.TestCase):
         invoked = 0
 
         def factory():
-            def predicate(x):
+            def predicate(x: int):
                 nonlocal invoked
 
                 invoked += 1
@@ -113,7 +113,7 @@ class TestTakeWhile(unittest.TestCase):
         invoked = 0
 
         def factory():
-            def predicate(x):
+            def predicate(x: int):
                 nonlocal invoked
 
                 invoked += 1
@@ -146,7 +146,7 @@ class TestTakeWhile(unittest.TestCase):
         invoked = 0
 
         def factory():
-            def predicate(x):
+            def predicate(x: int):
                 nonlocal invoked
 
                 invoked += 1
@@ -186,7 +186,7 @@ class TestTakeWhile(unittest.TestCase):
         invoked = 0
 
         def create():
-            def predicate(x):
+            def predicate(x: int):
                 nonlocal invoked
 
                 invoked += 1
@@ -218,7 +218,7 @@ class TestTakeWhile(unittest.TestCase):
         invoked = 0
 
         def create():
-            def predicate(x):
+            def predicate(x: int):
                 nonlocal invoked
 
                 invoked += 1
@@ -258,7 +258,7 @@ class TestTakeWhile(unittest.TestCase):
         invoked = 0
 
         def create():
-            def predicate(x):
+            def predicate(x: int):
                 nonlocal invoked
 
                 invoked += 1
@@ -291,7 +291,7 @@ class TestTakeWhile(unittest.TestCase):
         invoked = 0
 
         def factory():
-            def predicate(x):
+            def predicate(x: int):
                 nonlocal invoked
 
                 invoked += 1
@@ -426,7 +426,7 @@ class TestTakeWhile(unittest.TestCase):
         invoked = 0
 
         def factory():
-            def predicate(x):
+            def predicate(x: int):
                 nonlocal invoked
 
                 invoked += 1
