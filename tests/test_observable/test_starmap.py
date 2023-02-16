@@ -405,6 +405,39 @@ class TestSelect(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 290)]
         assert invoked[0] == 3
 
+    def test_starmap_with_index_completed(self):
+        scheduler = TestScheduler()
+        invoked = [0]
+        xs = scheduler.create_hot_observable(
+            on_next(180, (5, 50)),
+            on_next(210, (4, 40)),
+            on_next(240, (3, 30)),
+            on_next(290, (2, 20)),
+            on_next(350, (1, 10)),
+            on_completed(400),
+            on_next(410, (-1, -10)),
+            on_completed(420),
+            on_error(430, "ex"),
+        )
+
+        def factory():
+            def projection(x, y, index):
+                invoked[0] += 1
+                return (x + 1) + (y + 10) + (index * 100)
+
+            return xs.pipe(ops.starmap_indexed(projection))
+
+        results = scheduler.start(factory)
+        assert results.messages == [
+            on_next(210, 55),
+            on_next(240, 144),
+            on_next(290, 233),
+            on_next(350, 322),
+            on_completed(400),
+        ]
+        assert xs.subscriptions == [subscribe(200, 400)]
+        assert invoked[0] == 4
+
 
 if __name__ == "__main__":
     unittest.main()
