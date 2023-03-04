@@ -3228,16 +3228,16 @@ def starmap_indexed(
         invoking the indexed mapper function with unpacked elements
         of the source.
     """
-    from ._map import map_
+    from ._map import map_indexed_
 
     if mapper is None:
         return compose(identity)
 
-    def starred(values: Tuple[Any, ...]) -> Any:
+    def starred(values: Tuple[Any, ...], i: int) -> Any:
         assert mapper  # mypy is paranoid
-        return mapper(*values)
+        return mapper(*values, i)
 
-    return compose(map_(starred))
+    return compose(map_indexed_(starred))
 
 
 def start_with(*args: _T) -> Callable[[Observable[_T]], Observable[_T]]:
