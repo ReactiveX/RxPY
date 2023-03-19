@@ -11,3 +11,10 @@ Please register any issues to `ReactiveX/RxPY/issues <https://github.com/Reactiv
 
 Please submit any pull requests against the
 `master <https://github.com/ReactiveX/RxPY/tree/master>`_ branch.
+
+Before submitting the pull requets, be sure to run
+
+.. code:: shell
+
+    poetry run pre-commit run --all-files --show-diff-on-failure
+    poetry run coverage run -m pytest && poetry run coverage report -m
