@@ -22,6 +22,18 @@ def _raise(ex):
 
 
 class TestSingle(unittest.TestCase):
+    def test_single_source_never_completes(self):
+        scheduler = TestScheduler()
+        xs = scheduler.create_hot_observable(on_next(150, 1), on_next(250, 2))
+
+        def create():
+            return xs.pipe(ops.single())
+
+        res = scheduler.start(create=create)
+
+        assert [] == res.messages
+        assert xs.subscriptions == [subscribe(200, 1000)]
+
     def test_single_async_empty(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
@@ -52,9 +64,14 @@ class TestSingle(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_single_async_many(self):
+        """Should error as soon as a second "valid" element is encountered."""
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
-            on_next(150, 1), on_next(210, 2), on_next(220, 3), on_completed(250)
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(220, 3),
+            on_next(230, 3),
+            on_completed(250),
         )
 
         def create():

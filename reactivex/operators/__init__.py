@@ -63,9 +63,14 @@ def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]
     .. marble::
         :alt: all
 
-        --1--2--3--4--5-|
-        [      all(i: i<10)    ]
-        ----------------true-|
+        --1--2--3--4--5--6----|
+        [      all(i: i<8)    ]
+        ------------------true|
+
+
+        --1--2--3--4--5--6----|
+        [      all(i: i<4)    ]
+        ------false|
 
     Example:
         >>> op = all(lambda value: value.length > 3)
@@ -78,6 +83,13 @@ def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]
         returns an observable sequence containing a single element
         determining whether all elements in the source sequence pass
         the test in the specified predicate.
+
+        If a predicate returns false, the result sequence emits false
+        and completes immediately, regardless of the state of the
+        source sequence.
+
+        If all items pass the predicate test, the emission of true
+        will only happen as the source completes.
     """
     from ._all import all_
 
@@ -90,9 +102,8 @@ def amb(right_source: Observable[_T]) -> Callable[[Observable[_T]], Observable[_
     .. marble::
         :alt: amb
 
-        ---8--6--9-----------|
+        ---8--6--9---------|
         --1--2--3---5--------|
-        ----------10-20-30---|
         [        amb()       ]
         --1--2--3---5--------|
 
@@ -2611,7 +2622,7 @@ def scan(
     Applies an accumulator function over an observable sequence and
     returns each intermediate result. The optional seed value is used
     as the initial accumulator value. For aggregation behavior with no
-    intermediate results, see `aggregate()` or `Observable()`.
+    intermediate results, see `reduce()` or `Observable()`.
 
     .. marble::
         :alt: scan
@@ -2705,12 +2716,29 @@ def single(
     the condition in the optional predicate, and reports an exception
     if there is not exactly one element in the observable sequence.
 
+    If the predicates does not match any item, the resulting sequence
+    errors once the source completes.
+
+    If the predicate matches more than one item, the resulting sequence
+    errors immediately, without waiting for the source to complete.
+
+    If the source never completes, the resulting sequence does not
+    emit anything, nor completes.
+
     .. marble::
         :alt: single
 
         ----1--2--3--4-----|
-        [     single(3)    ]
-        ----------3--------|
+        [   single(x==3)   ]
+        -----------------3-|
+
+        ----1--3--3--4-----|
+        [   single(x==3)   ]
+        ----------x
+
+        ----1--1--1--1-----|
+        [   single(x==3)   ]
+        -------------------x
 
     Example:
         >>> res = single()

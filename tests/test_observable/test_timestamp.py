@@ -1,8 +1,10 @@
 import unittest
 from datetime import datetime
+from typing import Any, Union
 
 import reactivex
 from reactivex import operators as ops
+from reactivex.operators._timestamp import Timestamp as OriginalTimestamp
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -15,11 +17,11 @@ created = ReactiveTest.created
 
 
 class Timestamp(object):
-    def __init__(self, value, timestamp):
+    def __init__(self, value: Any, timestamp: Union[datetime, int]):
         if isinstance(timestamp, datetime):
-            timestamp = timestamp - datetime.utcfromtimestamp(0)
+            time_delta = timestamp - datetime.utcfromtimestamp(0)
             timestamp = int(
-                timestamp.seconds
+                time_delta.seconds
             )  # FIXME: Must fix when tests run at fraction of seconds.
 
         self.value = value
@@ -28,7 +30,7 @@ class Timestamp(object):
     def __str__(self):
         return "%s@%s" % (self.value, self.timestamp)
 
-    def equals(self, other):
+    def equals(self, other: "Timestamp"):
         return other.timestamp == self.timestamp and other.value == self.value
 
 
@@ -46,7 +48,7 @@ class TestTimeInterval(unittest.TestCase):
         )
 
         def create():
-            def mapper(x):
+            def mapper(x: OriginalTimestamp[int]):
                 return Timestamp(x.value, x.timestamp)
 
             return xs.pipe(
@@ -64,6 +66,8 @@ class TestTimeInterval(unittest.TestCase):
             on_completed(400),
         ]
 
+        assert xs.subscriptions == [subscribe(200, 400)]
+
     def test_timestamp_empty(self):
         scheduler = TestScheduler()
 
@@ -74,6 +78,7 @@ class TestTimeInterval(unittest.TestCase):
         assert results.messages == [on_completed(200)]
 
     def test_timestamp_error(self):
+        """Should not timestamp errors"""
         ex = "ex"
         scheduler = TestScheduler()
 
