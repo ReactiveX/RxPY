@@ -2622,7 +2622,7 @@ def scan(
     Applies an accumulator function over an observable sequence and
     returns each intermediate result. The optional seed value is used
     as the initial accumulator value. For aggregation behavior with no
-    intermediate results, see `aggregate()` or `Observable()`.
+    intermediate results, see `reduce()` or `Observable()`.
 
     .. marble::
         :alt: scan
@@ -2716,12 +2716,29 @@ def single(
     the condition in the optional predicate, and reports an exception
     if there is not exactly one element in the observable sequence.
 
+    If the predicates does not match any item, the resulting sequence
+    errors once the source completes.
+
+    If the predicate matches more than one item, the resulting sequence
+    errors immediately, without waiting for the source to complete.
+
+    If the source never completes, the resulting sequence does not
+    emit anything, nor completes.
+
     .. marble::
         :alt: single
 
         ----1--2--3--4-----|
-        [     single(3)    ]
-        ----------3--------|
+        [   single(x==3)   ]
+        -----------------3-|
+
+        ----1--3--3--4-----|
+        [   single(x==3)   ]
+        ----------x
+
+        ----1--1--1--1-----|
+        [   single(x==3)   ]
+        -------------------x
 
     Example:
         >>> res = single()
