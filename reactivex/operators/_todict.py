@@ -1,8 +1,8 @@
 from typing import Dict, Optional, TypeVar, cast
 
 from reactivex import Observable, abc
-from reactivex.typing import Mapper
 from reactivex.curry import curry_flip
+from reactivex.typing import Mapper
 
 _T = TypeVar("_T")
 _TKey = TypeVar("_TKey")

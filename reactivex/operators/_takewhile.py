@@ -1,8 +1,8 @@
 from typing import Optional, TypeVar
 
 from reactivex import Observable, abc, operators
-from reactivex.typing import Predicate, PredicateIndexed
 from reactivex.curry import curry_flip
+from reactivex.typing import Predicate, PredicateIndexed
 
 _T = TypeVar("_T")
 
