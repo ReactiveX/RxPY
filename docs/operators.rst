@@ -26,16 +26,18 @@ Operator                                                   Description
 Transforming Observables
 ------------------------
 
-================================================   ================================================
-Operator                                                           Description
-================================================   ================================================
-:func:`buffer <reactivex.operators.buffer>`        Periodically gather items from an Observable into bundles and emit these bundles rather than emitting the items one at a time.
-:func:`flat_map <reactivex.operators.flat_map>`    Transform the items emitted by an Observable into Observables, then flatten the emissions from those into a single Observable.
-:func:`group_by <reactivex.operators.group_by>`    Divide an Observable into a set of Observables that each emit a different group of items from the original Observable, organized by key.
-:func:`map <reactivex.operators.map>`              Transform the items emitted by an Observable by applying a function to each item.
-:func:`scan <reactivex.operators.scan>`            Apply a function to each item emitted by an Observable, sequentially, and emit each successive value.
-:func:`window <reactivex.operators.window>`        Periodically subdivide items from an Observable into Observable windows and emit these windows rather than emitting the items one at a time.
-================================================   ================================================
+================================================    ================================================
+Operator                                                            Description
+================================================    ================================================
+:func:`buffer <reactivex.operators.buffer>`         Periodically gather items from an Observable into bundles and emit these bundles rather than emitting the items one at a time.
+:func:`flat_map <reactivex.operators.flat_map>`     Transform the items emitted by an Observable into Observables, then flatten the emissions from those into a single Observable.
+:func:`concat_map <reactivex.operators.concat_map>` Projects each source value to an Observable which is merged in the output Observable, in a serialized fashion waiting for each one to complete before merging the next.
+:func:`switch_map <reactivex.operators.switch_map>` Projects each source value to an Observable which is merged in the output Observable, emitting values only from the most recently projected Observable.
+:func:`group_by <reactivex.operators.group_by>`     Divide an Observable into a set of Observables that each emit a different group of items from the original Observable, organized by key.
+:func:`map <reactivex.operators.map>`               Transform the items emitted by an Observable by applying a function to each item.
+:func:`scan <reactivex.operators.scan>`             Apply a function to each item emitted by an Observable, sequentially, and emit each successive value.
+:func:`window <reactivex.operators.window>`         Periodically subdivide items from an Observable into Observable windows and emit these windows rather than emitting the items one at a time.
+================================================    ================================================
 
 Filtering Observables
 ----------------------
@@ -114,7 +116,7 @@ Operator                                                                        
 :func:`skip_until <reactivex.operators.skip_until>`                Discard items emitted by an Observable until a second Observable emits an item.
 :func:`skip_while <reactivex.operators.skip_while>`                Discard items emitted by an Observable until a specified condition becomes false.
 :func:`take_until <reactivex.operators.take_until>`                Discard items emitted by an Observable after a second Observable emits an item or terminates.
-:func:`take_whle <reactivex.operators.take_while>`                 Discard items emitted by an Observable after a specified condition becomes false.
+:func:`take_while <reactivex.operators.take_while>`                 Discard items emitted by an Observable after a specified condition becomes false.
 =================================================================  ================================================
 
 Mathematical and Aggregate Operators

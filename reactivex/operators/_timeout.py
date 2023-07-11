@@ -36,7 +36,7 @@ def timeout_(
             source: Source observable to timeout
 
         Returns:
-            An obserable sequence switching to the other sequence in
+            An observable sequence switching to the other sequence in
             case of a timeout.
         """
 

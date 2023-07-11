@@ -31,7 +31,7 @@ def sequence_equal_(
             )
 
         Args:
-            source: Source obserable to compare.
+            source: Source observable to compare.
 
         Returns:
             An observable sequence that contains a single element which

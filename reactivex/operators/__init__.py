@@ -454,6 +454,43 @@ def concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T
     return concat_(*sources)
 
 
+def concat_map(
+    project: Mapper[_T1, Observable[_T2]]
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    """Projects each source value to an Observable which is merged in the
+    output Observable, in a serialized fashion waiting for each one to complete
+    before merging the next.
+
+    Warning: if source values arrive endlessly and faster than their corresponding
+    inner Observables can complete, it will result in memory issues as inner
+    Observables amass in an unbounded buffer waiting
+    for their turn to be subscribed to.
+
+    Note: concatMap is equivalent to mergeMap with concurrency parameter set to 1.
+
+    .. marble::
+        :alt: concat_map
+
+        ---1------------2-----3----------------------------|
+        [        concat_map(i: 10*i---10*i---10*i|)        ]
+        ---10---10---10-20---20---(20,30)---30---30--------|
+
+    Examples:
+        >>> op = concat(lambda i: reactivex.timer(1.0).pipe(take(3)))
+
+    Args:
+        project: Projecting function which takes the outer observable value
+        and emits the inner observable
+
+    Returns:
+        An operator function that maps each value to the inner observable
+        and emits its values in order.
+
+    """
+
+    return compose(map(project), merge(max_concurrent=1))
+
+
 def contains(
     value: _T, comparer: Optional[typing.Comparer[_T]] = None
 ) -> Callable[[Observable[_T]], Observable[bool]]:
@@ -648,7 +685,7 @@ def delay_with_mapper(
 
     Examples:
         >>> # with mapper only
-        >>> res = source.delay_with_mapper(lambda x: Scheduler.timer(5.0))
+        >>> res = source.delay_with_mapper(lambda x: reactivex.timer(5.0))
         >>> # with delay and mapper
         >>> res = source.delay_with_mapper(
             reactivex.timer(2.0), lambda x: reactivex.timer(x)
@@ -3325,6 +3362,85 @@ def switch_latest() -> Callable[
     return switch_latest_()
 
 
+def switch_map(
+    project: Optional[Mapper[_T1, Observable[_T2]]] = None
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    """Projects each source value to an Observable which is merged in
+    the output Observable, emitting values only from the most recently
+    projected Observable.
+
+
+    .. marble::
+        :alt: switch_map
+
+        ---a----------b-------c---------|
+        [   switch_map(x: x---x---x|)   ]
+        ---a---a---a--b---b---c---c---c-|
+
+    Examples:
+        >>> op = switch_map(lambda x: reactivex.timer(1.0).pipe(map(lambda x: x)))
+        >>> op = switch_map()
+
+    Args:
+        project: Projecting function which takes the outer observable value
+        and the emission index and emits the inner observable; defaults to `identity`
+
+    Returns:
+        An operator function that maps each value to the inner observable
+        and emits its values in order, emitting values only from the
+        most recently projected Observable.
+
+
+        If an inner observable complete, the resulting sequence does *not*
+        complete.
+        If an inner observable errors, the resulting sequence errors as well.
+        If the outer observable completes/errors, the resulting sequence
+        completes/errors.
+
+    """
+
+    return compose(map(project), switch_latest())
+
+
+def switch_map_indexed(
+    project: Optional[MapperIndexed[_T1, Observable[_T2]]] = None
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    """Projects each source value to an Observable which is merged in
+    the output Observable, emitting values only from the most recently
+    projected Observable.
+
+
+    .. marble::
+        :alt: switch_map
+
+        ---a----------b-------c---------------------|
+        [ switch_map_indexed(x,i: x*i---x*i---x*i|) ]
+        ---a---a---a--bb---bb-ccc---ccc---ccc-------|
+
+    Examples:
+        >>> op = switch_map_indexed(lambda x, i: reactivex.timer(1.0).pipe(map(x*i)))
+
+    Args:
+        project: Projecting function which takes the outer observable value
+        and the emission index and emits the inner observable
+
+    Returns:
+        An operator function that maps each value to the inner observable
+        and emits its values in order, emitting values only from the
+        most recently projected Observable.
+
+
+        If an inner observable complete, the resulting sequence does *not*
+        complete.
+        If an inner observable errors, the resulting sequence errors as well.
+        If the outer observable completes/errors, the resulting sequence
+        completes/errors.
+
+    """
+
+    return compose(map_indexed(project), switch_latest())
+
+
 def take(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns a specified number of contiguous elements from the start
     of an observable sequence.
@@ -3653,7 +3769,7 @@ def throttle_with_mapper(
     another value within a computed throttle duration.
 
     Example:
-        >>> op = throttle_with_mapper(lambda x: rx.Scheduler.timer(x+x))
+        >>> op = throttle_with_mapper(lambda x: reactivex.timer(x+x))
 
     Args:
         throttle_duration_mapper: Mapper function to retrieve an
@@ -3852,7 +3968,7 @@ def to_iterable() -> Callable[[Observable[_T]], Observable[List[_T]]]:
     There is also an alias called ``to_list``.
 
     Returns:
-        An operator function that takes an obserable source and
+        An operator function that takes an observable source and
         returns an observable sequence containing a single element with
         an iterable containing all the elements of the source sequence.
     """
