@@ -3362,6 +3362,85 @@ def switch_latest() -> Callable[
     return switch_latest_()
 
 
+def switch_map(
+    project: Optional[Mapper[_T1, Observable[_T2]]] = None
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    """Projects each source value to an Observable which is merged in
+    the output Observable, emitting values only from the most recently
+    projected Observable.
+
+
+    .. marble::
+        :alt: switch_map
+
+        ---a----------b-------c---------|
+        [   switch_map(x: x---x---x|)   ]
+        ---a---a---a--b---b---c---c---c-|
+
+    Examples:
+        >>> op = switch_map(lambda x: reactivex.timer(1.0).pipe(map(lambda x: x)))
+        >>> op = switch_map()
+
+    Args:
+        project: Projecting function which takes the outer observable value
+        and the emission index and emits the inner observable; defaults to `identity`
+
+    Returns:
+        An operator function that maps each value to the inner observable
+        and emits its values in order, emitting values only from the
+        most recently projected Observable.
+
+
+        If an inner observable complete, the resulting sequence does *not*
+        complete.
+        If an inner observable errors, the resulting sequence errors as well.
+        If the outer observable completes/errors, the resulting sequence
+        completes/errors.
+
+    """
+
+    return compose(map(project), switch_latest())
+
+
+def switch_map_indexed(
+    project: Optional[MapperIndexed[_T1, Observable[_T2]]] = None
+) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    """Projects each source value to an Observable which is merged in
+    the output Observable, emitting values only from the most recently
+    projected Observable.
+
+
+    .. marble::
+        :alt: switch_map
+
+        ---a----------b-------c---------------------|
+        [ switch_map_indexed(x,i: x*i---x*i---x*i|) ]
+        ---a---a---a--bb---bb-ccc---ccc---ccc-------|
+
+    Examples:
+        >>> op = switch_map_indexed(lambda x, i: reactivex.timer(1.0).pipe(map(x*i)))
+
+    Args:
+        project: Projecting function which takes the outer observable value
+        and the emission index and emits the inner observable
+
+    Returns:
+        An operator function that maps each value to the inner observable
+        and emits its values in order, emitting values only from the
+        most recently projected Observable.
+
+
+        If an inner observable complete, the resulting sequence does *not*
+        complete.
+        If an inner observable errors, the resulting sequence errors as well.
+        If the outer observable completes/errors, the resulting sequence
+        completes/errors.
+
+    """
+
+    return compose(map_indexed(project), switch_latest())
+
+
 def take(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns a specified number of contiguous elements from the start
     of an observable sequence.
