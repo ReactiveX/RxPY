@@ -1153,6 +1153,9 @@ def timer(
         [ timer(2) ]
         --0-|
 
+        [ timer(2, 4) ]
+        --0----1----2--
+
     Examples:
         >>> res = reactivex.timer(datetime(...))
         >>> res = reactivex.timer(datetime(...), 0.1)

@@ -35,14 +35,14 @@ def observable_timer_duetime_and_period(
         observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None
     ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
-        nonlocal duetime
+        due_time = duetime
 
-        if not isinstance(duetime, datetime):
-            duetime = _scheduler.now + _scheduler.to_timedelta(duetime)
+        if not isinstance(due_time, datetime):
+            due_time = _scheduler.now + _scheduler.to_timedelta(due_time)
 
         p = max(0.0, _scheduler.to_seconds(period))
         mad = MultipleAssignmentDisposable()
-        dt = duetime
+        dt = due_time
         count = 0
 
         def action(scheduler: abc.SchedulerBase, state: Any) -> None:
@@ -107,7 +107,7 @@ def observable_timer_timespan_and_period(
                 return None
 
             if not isinstance(_scheduler, PeriodicScheduler):
-                raise ValueError("Sceduler must be PeriodicScheduler")
+                raise ValueError("Scheduler must be PeriodicScheduler")
             return _scheduler.schedule_periodic(period, action, state=0)
 
         return Observable(subscribe)
