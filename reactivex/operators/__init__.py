@@ -2917,7 +2917,7 @@ def skip_until_with_time(
     Args:
         start_time: Time to start taking elements from the source
             sequence. If this value is less than or equal to
-            `datetime.utcnow()`, no elements will be skipped.
+            `datetime.now(timezone.utc)`, no elements will be skipped.
 
     Returns:
         An operator function that takes an observable source and
@@ -3622,7 +3622,7 @@ def take_until_with_time(
     Args:
         end_time: Time to stop taking elements from the source
             sequence. If this value is less than or equal to
-            `datetime.utcnow()`, the result stream will complete
+            `datetime.now(timezone.utc)`, the result stream will complete
             immediately.
         scheduler: Scheduler to run the timer on.
 
