@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from time import sleep
 
 import pytest
@@ -13,7 +13,7 @@ from twisted.trial import unittest  # isort: skip
 class TestTwistedScheduler(unittest.TestCase):
     def test_twisted_schedule_now(self):
         scheduler = TwistedScheduler(reactor)
-        diff = scheduler.now - datetime.utcfromtimestamp(float(reactor.seconds()))
+        diff = scheduler.now - datetime.fromtimestamp(float(reactor.seconds()), tz=timezone.utc)
         assert abs(diff) < timedelta(milliseconds=1)
 
     def test_twisted_schedule_now_units(self):

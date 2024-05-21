@@ -7,7 +7,7 @@ import reactivex.operators as ops
 Delay the emission of elements to the specified datetime.
 """
 
-now = datetime.datetime.utcnow()
+now = datetime.datetime.now(datetime.timezone.utc)
 dt = datetime.timedelta(seconds=3.0)
 duetime = now + dt
 

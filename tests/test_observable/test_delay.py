@@ -1,6 +1,6 @@
 import logging
 import unittest
-from datetime import datetime
+from datetime import datetime, timezone
 
 from reactivex.operators import delay
 from reactivex.testing import ReactiveTest, TestScheduler
@@ -62,7 +62,7 @@ class TestDelay(unittest.TestCase):
         )
 
         def create():
-            dt = datetime.utcfromtimestamp(300.0)
+            dt = datetime.fromtimestamp(300.0, tz=timezone.utc)
             return xs.pipe(delay(dt))
 
         results = scheduler.start(create)
@@ -107,7 +107,7 @@ class TestDelay(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(delay(datetime.utcfromtimestamp(250)))
+            return xs.pipe(delay(datetime.fromtimestamp(250, tz=timezone.utc)))
 
         results = scheduler.start(create)
 
@@ -153,7 +153,7 @@ class TestDelay(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(delay(datetime.utcfromtimestamp(350)))
+            return xs.pipe(delay(datetime.fromtimestamp(350, tz=timezone.utc)))
 
         results = scheduler.start(create)
 
@@ -201,7 +201,7 @@ class TestDelay(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(delay(datetime.utcfromtimestamp(250)))
+            return xs.pipe(delay(datetime.fromtimestamp(250, tz=timezone.utc)))
 
         results = scheduler.start(create)
 
@@ -244,7 +244,7 @@ class TestDelay(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(delay(datetime.utcfromtimestamp(350)))
+            return xs.pipe(delay(datetime.fromtimestamp(350, tz=timezone.utc)))
 
         results = scheduler.start(create)
 

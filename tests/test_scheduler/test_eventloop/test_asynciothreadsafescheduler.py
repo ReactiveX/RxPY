@@ -2,7 +2,7 @@ import asyncio
 import os
 import threading
 import unittest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -16,7 +16,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
     def test_asyncio_threadsafe_schedule_now(self):
         loop = asyncio.get_event_loop()
         scheduler = AsyncIOThreadSafeScheduler(loop)
-        diff = scheduler.now - datetime.utcfromtimestamp(loop.time())
+        diff = scheduler.now - datetime.fromtimestamp(loop.time(), tz=timezone.utc)
         assert abs(diff) < timedelta(milliseconds=2)
 
     @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
