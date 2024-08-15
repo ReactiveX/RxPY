@@ -353,5 +353,21 @@ class Observable(abc.ObservableBase[_T_out]):
 
         return slice_(start, stop, step)(self)
 
+    def __rshift__(self, __op1: Callable[[Observable[_T_out]], _A]) -> _A:
+        """Shorthand for :func:`pipe <pipe>` (single argument overload).
+
+        Allows you to pipe through a single operator using `>>`.
+
+        Examples:
+            >>> source >> op == source.pipe(op)
+
+        Args:
+            operator: A single operator.
+
+        Returns:
+             The composed observable.
+        """
+        return self.pipe(__op1)
+
 
 __all__ = ["Observable"]
