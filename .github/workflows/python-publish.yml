@@ -10,15 +10,15 @@ jobs:
     name: "Publish library"
     steps:
       - name: Check out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
           fetch-depth: 0
 
       - name: Setup Python Env
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: "3.12"
 
       - name: Install dependencies
         run: pip install poetry dunamai
