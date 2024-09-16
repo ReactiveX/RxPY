@@ -430,6 +430,45 @@ def combine_latest(
     return combine_latest_(*others)
 
 
+def combine_throttle(
+    *args: Observable[Any],
+) -> Callable[[Observable[Any]], Observable[Any]]:
+    """Merges the specified observable sequences into one observable
+    sequence by creating a result whenever all of the
+    observable sequences have produced an element at a corresponding
+    index. Faster observables, that emits events more frequently, are
+    throttled, so that they match speed of slower observables.
+    Speed of emitting items matches speed of slowest source observable.
+    It is somewhat similar to :func:`reactivex.zip` operator, returns tuple,
+    but items of faster observables are dropped, so that only latest values are
+    at each index.
+    It is also similar to :func:`reactivex.combine_latest`, but emits new item
+    only when all sources produce new item. Only latest items are included in
+    resulting tuple, others are dropped, similar to :func:`reactivex.with_latest_from`.
+
+    .. marble::
+        :alt: combine_throttle
+
+        --1---2-3--------4---|
+        -a-------b--c-d------|
+        [ combine_throttle() ]
+        --1,a----3,b-----4,d-|
+
+    Example:
+        >>> res = combine_throttle(obs1, obs2)
+
+    Args:
+        args: Observable sources to combine.
+
+    Returns:
+        An observable sequence containing the result of combining
+        elements of the sources as tuple.
+    """
+    from ._combinethrottle import combine_throttle_
+
+    return combine_throttle_(*args)
+
+
 def concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
     """Concatenates all the observable sequences.
 
