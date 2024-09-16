@@ -1,6 +1,6 @@
 import os
 import unittest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from time import sleep
 
 import pytest
@@ -16,7 +16,7 @@ class TestEventletScheduler(unittest.TestCase):
     def test_eventlet_schedule_now(self):
         scheduler = EventletScheduler(eventlet)
         hub = eventlet.hubs.get_hub()
-        diff = scheduler.now - datetime.utcfromtimestamp(hub.clock())
+        diff = scheduler.now - datetime.fromtimestamp(hub.clock(), tz=timezone.utc)
         assert abs(diff) < timedelta(milliseconds=1)
 
     @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")

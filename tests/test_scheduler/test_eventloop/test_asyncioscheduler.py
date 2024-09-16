@@ -1,7 +1,7 @@
 import asyncio
 import os
 import unittest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -15,7 +15,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
     def test_asyncio_schedule_now(self):
         loop = asyncio.get_event_loop()
         scheduler = AsyncIOScheduler(loop)
-        diff = scheduler.now - datetime.utcfromtimestamp(loop.time())
+        diff = scheduler.now - datetime.fromtimestamp(loop.time(), tz=timezone.utc)
         assert abs(diff) < timedelta(milliseconds=2)  # NOTE: may take 1 ms in CI
 
     @pytest.mark.skipif(CI, reason="Test is flaky in GitHub Actions")
