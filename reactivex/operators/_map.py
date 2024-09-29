@@ -65,7 +65,7 @@ def map_indexed_(
 
     return compose(
         ops.zip_with_iterable(infinite()),
-        ops.starmap_indexed(_mapper_indexed),
+        ops.starmap(_mapper_indexed),
     )
 
 
