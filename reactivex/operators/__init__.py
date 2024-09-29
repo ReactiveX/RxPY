@@ -28,6 +28,7 @@ from reactivex import (
     compose,
     typing,
 )
+from reactivex.curry import curry_flip
 from reactivex.internal.basic import identity
 from reactivex.internal.utils import NotSet
 from reactivex.subject import Subject
@@ -454,9 +455,10 @@ def concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T
     return concat_(*sources)
 
 
+@curry_flip(1)
 def concat_map(
-    project: Mapper[_T1, Observable[_T2]]
-) -> Callable[[Observable[_T1]], Observable[_T2]]:
+    source: Observable[_T1], project: Mapper[_T1, Observable[_T2]]
+) -> Observable[_T2]:
     """Projects each source value to an Observable which is merged in the
     output Observable, in a serialized fashion waiting for each one to complete
     before merging the next.
@@ -488,7 +490,7 @@ def concat_map(
 
     """
 
-    return compose(map(project), merge(max_concurrent=1))
+    return source.pipe(map(project), merge(max_concurrent=1))
 
 
 def contains(
@@ -1905,8 +1907,8 @@ def max_by(
 
 
 def merge(
-    *sources: Observable[Any], max_concurrent: Optional[int] = None
-) -> Callable[[Observable[Any]], Observable[Any]]:
+    *sources: Observable[_T], max_concurrent: Optional[int] = None
+) -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
     """Merges an observable sequence of observable sequences into an
     observable sequence, limiting the number of concurrent
     subscriptions to inner sequences. Or merges two observable
@@ -1930,9 +1932,9 @@ def merge(
             observable sequence.
 
     Returns:
-        An operator function that takes an observable source and
-        returns the observable sequence that merges the elements of the
-        inner sequences.
+        An operator function that takes an observable source and returns
+        the observable sequence that merges the elements of the inner
+        sequences.
     """
     from ._merge import merge_
 
