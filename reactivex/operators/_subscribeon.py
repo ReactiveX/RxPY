@@ -43,7 +43,7 @@ def subscribe_on_(
 
             def action(scheduler: abc.SchedulerBase, state: Optional[Any] = None):
                 d.disposable = ScheduledDisposable(
-                    scheduler, source.subscribe(observer)
+                    scheduler, source.subscribe(observer, scheduler=scheduler)
                 )
 
             m.disposable = scheduler.schedule(action)
