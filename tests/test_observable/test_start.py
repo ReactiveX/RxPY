@@ -16,7 +16,7 @@ created = ReactiveTest.created
 
 class TestStart(unittest.TestCase):
     def test_start_async(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         success = [False]
 
         async def go():
@@ -36,7 +36,7 @@ class TestStart(unittest.TestCase):
         assert all(success)
 
     def test_start_async_error(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         success = [False]
 
         async def go():

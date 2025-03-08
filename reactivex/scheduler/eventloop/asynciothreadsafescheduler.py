@@ -145,13 +145,11 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
         """
         if not self._loop.is_running():
             return True
-        current_loop = None
+
         try:
-            # In python 3.7 there asyncio.get_running_loop() is prefered.
-            current_loop = asyncio.get_event_loop()
+            current_loop = asyncio.get_running_loop()
         except RuntimeError:
-            # If there is no loop in current thread at all, and it is not main
-            # thread, we get error like:
-            # RuntimeError: There is no current event loop in thread 'Thread-1'
-            pass
+            # If no running event loop is found, assume we're in a different thread
+            return True
+
         return self._loop == current_loop
