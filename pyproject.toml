@@ -28,10 +28,11 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">= 3.7, < 4.0"
+python = ">= 3.8, < 4.0"
 typing-extensions = "^4.1.1"
 
 [tool.poetry.dev-dependencies]
+pyyaml = "6.0.2"
 pytest-asyncio = "^0.18.1"
 pytest = "^7.0.1"
 coverage = "^6.3.2"
@@ -75,4 +76,3 @@ asyncio_mode = "strict"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
