@@ -73,7 +73,7 @@ jobs:
           python-version: "3.12"
 
       - name: Cache Poetry
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/pypoetry
