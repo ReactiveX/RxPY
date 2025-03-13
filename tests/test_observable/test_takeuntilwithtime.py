@@ -30,7 +30,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(ops.take_until_with_time(datetime.fromtimestamp(0)), tz=timezone.utc)
+            return xs.pipe(ops.take_until_with_time(datetime.fromtimestamp(0, tz=timezone.utc)))
 
         res = scheduler.start(create)
 
