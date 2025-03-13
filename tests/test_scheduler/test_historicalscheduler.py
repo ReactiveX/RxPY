@@ -20,7 +20,9 @@ def assert_equals(first, second):
 
 
 def time(days):
-    dt = datetime(year=1979, month=10, day=31, hour=4, minute=30, second=15, tzinfo=timezone.utc)
+    dt = datetime(
+        year=1979, month=10, day=31, hour=4, minute=30, second=15, tzinfo=timezone.utc
+    )
     dt = dt + timedelta(days=days)
     return dt
 

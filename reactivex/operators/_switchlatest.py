@@ -11,9 +11,9 @@ from reactivex.disposable import (
 _T = TypeVar("_T")
 
 
-def switch_latest_() -> Callable[
-    [Observable[Union[Observable[_T], "Future[_T]"]]], Observable[_T]
-]:
+def switch_latest_() -> (
+    Callable[[Observable[Union[Observable[_T], "Future[_T]"]]], Observable[_T]]
+):
     def switch_latest(
         source: Observable[Union[Observable[_T], "Future[_T]"]]
     ) -> Observable[_T]:

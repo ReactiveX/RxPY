@@ -20,9 +20,9 @@ class CurrentThreadScheduler(TrampolineScheduler):
     key dictionary.
     """
 
-    _global: MutableMapping[
-        type, MutableMapping[Thread, "CurrentThreadScheduler"]
-    ] = WeakKeyDictionary()
+    _global: MutableMapping[type, MutableMapping[Thread, "CurrentThreadScheduler"]] = (
+        WeakKeyDictionary()
+    )
 
     @classmethod
     def singleton(cls) -> "CurrentThreadScheduler":
@@ -37,9 +37,9 @@ class CurrentThreadScheduler(TrampolineScheduler):
         thread = current_thread()
         class_map = CurrentThreadScheduler._global.get(cls)
         if class_map is None:
-            class_map_: MutableMapping[
-                Thread, "CurrentThreadScheduler"
-            ] = WeakKeyDictionary()
+            class_map_: MutableMapping[Thread, "CurrentThreadScheduler"] = (
+                WeakKeyDictionary()
+            )
             CurrentThreadScheduler._global[cls] = class_map_
         else:
             class_map_ = class_map

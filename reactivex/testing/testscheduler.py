@@ -12,7 +12,6 @@ from .mockobserver import MockObserver
 from .reactivetest import ReactiveTest
 
 _T = TypeVar("_T")
-_TState = TypeVar("_TState")
 
 
 class TestScheduler(VirtualTimeScheduler):
@@ -25,8 +24,8 @@ class TestScheduler(VirtualTimeScheduler):
     def schedule_absolute(
         self,
         duetime: typing.AbsoluteTime,
-        action: typing.ScheduledAction[_TState],
-        state: _TState = None,
+        action: typing.ScheduledAction[Any],
+        state: Any = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at the specified virtual
         time.

@@ -44,7 +44,7 @@ def to_dict_(
                 else:
                     element = cast(_TValue, x)
 
-                m[key] = cast(_TValue, element)
+                m[key] = element
 
             def on_completed() -> None:
                 nonlocal m

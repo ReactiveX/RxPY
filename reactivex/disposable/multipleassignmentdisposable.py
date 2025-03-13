@@ -28,7 +28,7 @@ class MultipleAssignmentDisposable(DisposableBase):
             if not should_dispose:
                 self.current = value
 
-        if should_dispose and value is not None:
+        if should_dispose:
             value.dispose()
 
     disposable = property(get_disposable, set_disposable)

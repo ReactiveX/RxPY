@@ -1,25 +1,23 @@
 from datetime import datetime
-from typing import Any, Optional, TypeVar
+from typing import Any, Optional
 
 from reactivex import abc
 from reactivex.disposable import SingleAssignmentDisposable
 
 from .scheduler import Scheduler
 
-_TState = TypeVar("_TState")
-
 
 class ScheduledItem(object):
     def __init__(
         self,
         scheduler: Scheduler,
-        state: Optional[_TState],
-        action: abc.ScheduledAction[_TState],
+        state: Optional[Any],
+        action: abc.ScheduledAction[Any],
         duetime: datetime,
     ) -> None:
         self.scheduler: Scheduler = scheduler
         self.state: Optional[Any] = state
-        self.action: abc.ScheduledAction[_TState] = action
+        self.action: abc.ScheduledAction[Any] = action
         self.duetime: datetime = duetime
         self.disposable: SingleAssignmentDisposable = SingleAssignmentDisposable()
 

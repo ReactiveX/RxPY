@@ -1,4 +1,4 @@
-from typing import Callable, Optional, TypeVar
+from typing import Callable, Optional, TypeVar, cast
 
 from reactivex import Observable, compose
 from reactivex import operators as ops
@@ -30,7 +30,10 @@ def single_(
     if predicate:
         return compose(ops.filter(predicate), ops.single())
     else:
-        return ops.single_or_default_async(False)
+        return cast(
+            Callable[[Observable[_T]], Observable[_T]],
+            ops.single_or_default_async(False),
+        )
 
 
 __all__ = ["single_"]

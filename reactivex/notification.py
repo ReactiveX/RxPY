@@ -16,7 +16,7 @@ class Notification(Generic[_T]):
     def __init__(self) -> None:
         """Default constructor used by derived types."""
         self.has_value = False
-        self.value: Optional[_T] = None
+        self.value: _T
         self.kind: str = ""
 
     def accept(
