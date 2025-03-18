@@ -84,20 +84,20 @@ def marbles_testing(
     def check() -> None:
         if outside_of_context:
             warn(
-                "context functions should not be called outside of " "with statement.",
+                "context functions should not be called outside of with statement.",
                 UserWarning,
                 stacklevel=3,
             )
 
         if start_called:
             warn(
-                "start() should only be called one time inside " "a with statement.",
+                "start() should only be called one time inside a with statement.",
                 UserWarning,
                 stacklevel=3,
             )
 
     def test_start(
-        create: Union[Observable[Any], Callable[[], Observable[Any]]]
+        create: Union[Observable[Any], Callable[[], Observable[Any]]],
     ) -> List[Recorded[Any]]:
         nonlocal start_called
         check()
@@ -171,7 +171,7 @@ def marbles_testing(
 
 
 def messages_to_records(
-    messages: List[Tuple[typing.RelativeTime, Notification[Any]]]
+    messages: List[Tuple[typing.RelativeTime, Notification[Any]]],
 ) -> List[Recorded[Any]]:
     """
     Helper function to convert messages returned by parse() to a list of
@@ -181,7 +181,7 @@ def messages_to_records(
 
     for message in messages:
         time, notification = message
-        if isinstance(time, float):
+        if isinstance(time, (int, float)):
             time_ = int(time)
         else:
             time_ = time.microseconds // 1000

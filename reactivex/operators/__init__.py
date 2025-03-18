@@ -122,7 +122,7 @@ def as_observable() -> Callable[[Observable[_T]], Observable[_T]]:
 
 
 def average(
-    key_mapper: Optional[Mapper[_T, float]] = None
+    key_mapper: Optional[Mapper[_T, float]] = None,
 ) -> Callable[[Observable[_T]], Observable[float]]:
     """The average operator.
 
@@ -185,7 +185,7 @@ def buffer(
 
 
 def buffer_when(
-    closing_mapper: Callable[[], Observable[Any]]
+    closing_mapper: Callable[[], Observable[Any]],
 ) -> Callable[[Observable[_T]], Observable[List[_T]]]:
     """Projects each element of an observable sequence into zero or
     more buffers.
@@ -366,7 +366,7 @@ def buffer_with_time_or_count(
 def catch(
     handler: Union[
         Observable[_T], Callable[[Exception, Observable[_T]], Observable[_T]]
-    ]
+    ],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
@@ -455,7 +455,7 @@ def concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T
 
 
 def concat_map(
-    project: Mapper[_T1, Observable[_T2]]
+    project: Mapper[_T1, Observable[_T2]],
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     """Projects each source value to an Observable which is merged in the
     output Observable, in a serialized fashion waiting for each one to complete
@@ -593,13 +593,11 @@ throttle_with_timeout = debounce
 @overload
 def default_if_empty(
     default_value: _T,
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    ...
+) -> Callable[[Observable[_T]], Observable[_T]]: ...
 
 
 @overload
-def default_if_empty() -> Callable[[Observable[_T]], Observable[Optional[_T]]]:
-    ...
+def default_if_empty() -> Callable[[Observable[_T]], Observable[Optional[_T]]]: ...
 
 
 def default_if_empty(
@@ -1013,7 +1011,7 @@ def exclusive() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
 
 
 def expand(
-    mapper: typing.Mapper[_T, Observable[_T]]
+    mapper: typing.Mapper[_T, Observable[_T]],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Expands an observable sequence by recursively invoking mapper.
 
@@ -1120,7 +1118,7 @@ def finally_action(action: typing.Action) -> Callable[[Observable[_T]], Observab
 
 
 def find(
-    predicate: Callable[[_T, int, Observable[_T]], bool]
+    predicate: Callable[[_T, int, Observable[_T]], bool],
 ) -> Callable[[Observable[_T]], Observable[Union[_T, None]]]:
     """Searches for an element that matches the conditions defined by
     the specified predicate, and returns the first occurrence within
@@ -1152,7 +1150,7 @@ def find(
 
 
 def find_index(
-    predicate: Callable[[_T, int, Observable[_T]], bool]
+    predicate: Callable[[_T, int, Observable[_T]], bool],
 ) -> Callable[[Observable[_T]], Observable[Union[int, None]]]:
     """Searches for an element that matches the conditions defined by
     the specified predicate, and returns an Observable sequence with the
@@ -1258,29 +1256,25 @@ def first_or_default(
 @overload
 def flat_map(
     mapper: Optional[Iterable[_T2]] = None,
-) -> Callable[[Observable[Any]], Observable[_T2]]:
-    ...
+) -> Callable[[Observable[Any]], Observable[_T2]]: ...
 
 
 @overload
 def flat_map(
     mapper: Optional[Observable[_T2]] = None,
-) -> Callable[[Observable[Any]], Observable[_T2]]:
-    ...
+) -> Callable[[Observable[Any]], Observable[_T2]]: ...
 
 
 @overload
 def flat_map(
-    mapper: Optional[Mapper[_T1, Iterable[_T2]]] = None
-) -> Callable[[Observable[_T1]], Observable[_T2]]:
-    ...
+    mapper: Optional[Mapper[_T1, Iterable[_T2]]] = None,
+) -> Callable[[Observable[_T1]], Observable[_T2]]: ...
 
 
 @overload
 def flat_map(
-    mapper: Optional[Mapper[_T1, Observable[_T2]]] = None
-) -> Callable[[Observable[_T1]], Observable[_T2]]:
-    ...
+    mapper: Optional[Mapper[_T1, Observable[_T2]]] = None,
+) -> Callable[[Observable[_T1]], Observable[_T2]]: ...
 
 
 def flat_map(
@@ -1331,29 +1325,25 @@ def flat_map(
 @overload
 def flat_map_indexed(
     mapper_indexed: Optional[Iterable[_T2]] = None,
-) -> Callable[[Observable[Any]], Observable[_T2]]:
-    ...
+) -> Callable[[Observable[Any]], Observable[_T2]]: ...
 
 
 @overload
 def flat_map_indexed(
     mapper_indexed: Optional[Observable[_T2]] = None,
-) -> Callable[[Observable[Any]], Observable[_T2]]:
-    ...
+) -> Callable[[Observable[Any]], Observable[_T2]]: ...
 
 
 @overload
 def flat_map_indexed(
-    mapper_indexed: Optional[MapperIndexed[_T1, Iterable[_T2]]] = None
-) -> Callable[[Observable[_T1]], Observable[_T2]]:
-    ...
+    mapper_indexed: Optional[MapperIndexed[_T1, Iterable[_T2]]] = None,
+) -> Callable[[Observable[_T1]], Observable[_T2]]: ...
 
 
 @overload
 def flat_map_indexed(
-    mapper_indexed: Optional[MapperIndexed[_T1, Observable[_T2]]] = None
-) -> Callable[[Observable[_T1]], Observable[_T2]]:
-    ...
+    mapper_indexed: Optional[MapperIndexed[_T1, Observable[_T2]]] = None,
+) -> Callable[[Observable[_T1]], Observable[_T2]]: ...
 
 
 def flat_map_indexed(
@@ -1401,7 +1391,7 @@ def flat_map_indexed(
 
 
 def flat_map_latest(
-    mapper: Mapper[_T1, Union[Observable[_T2], "Future[_T2]"]]
+    mapper: Mapper[_T1, Union[Observable[_T2], "Future[_T2]"]],
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     """Projects each element of an observable sequence into a new
     sequence of observable sequences by incorporating the element's
@@ -1703,23 +1693,20 @@ def last(
 
 
 @overload
-def last_or_default() -> Callable[[Observable[_T]], Observable[Optional[_T]]]:
-    ...
+def last_or_default() -> Callable[[Observable[_T]], Observable[Optional[_T]]]: ...
 
 
 @overload
 def last_or_default(
     default_value: _T,
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    ...
+) -> Callable[[Observable[_T]], Observable[_T]]: ...
 
 
 @overload
 def last_or_default(
     default_value: _T,
     predicate: Predicate[_T],
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    ...
+) -> Callable[[Observable[_T]], Observable[_T]]: ...
 
 
 def last_or_default(
@@ -1764,7 +1751,7 @@ def last_or_default(
 
 
 def map(
-    mapper: Optional[Mapper[_T1, _T2]] = None
+    mapper: Optional[Mapper[_T1, _T2]] = None,
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     """The map operator.
 
@@ -1796,7 +1783,7 @@ def map(
 
 
 def map_indexed(
-    mapper_indexed: Optional[MapperIndexed[_T1, _T2]] = None
+    mapper_indexed: Optional[MapperIndexed[_T1, _T2]] = None,
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     """Project each element of an observable sequence into a new form
     by incorporating the element's index.
@@ -2029,15 +2016,13 @@ def min_by(
 
 
 @overload
-def multicast() -> Callable[[Observable[_T]], ConnectableObservable[_T]]:
-    ...
+def multicast() -> Callable[[Observable[_T]], ConnectableObservable[_T]]: ...
 
 
 @overload
 def multicast(
     subject: abc.SubjectBase[_T],
-) -> Callable[[Observable[_T]], ConnectableObservable[_T]]:
-    ...
+) -> Callable[[Observable[_T]], ConnectableObservable[_T]]: ...
 
 
 @overload
@@ -2045,8 +2030,7 @@ def multicast(
     *,
     subject_factory: Callable[[Optional[abc.SchedulerBase]], abc.SubjectBase[_T]],
     mapper: Optional[Callable[[Observable[_T]], Observable[_T2]]] = None,
-) -> Callable[[Observable[_T]], Observable[_T2]]:
-    ...
+) -> Callable[[Observable[_T]], Observable[_T2]]: ...
 
 
 def multicast(
@@ -2272,15 +2256,13 @@ def pluck_attr(prop: str) -> Callable[[Observable[Any]], Observable[Any]]:
 
 
 @overload
-def publish() -> Callable[[Observable[_T1]], ConnectableObservable[_T1]]:
-    ...
+def publish() -> Callable[[Observable[_T1]], ConnectableObservable[_T1]]: ...
 
 
 @overload
 def publish(
     mapper: Mapper[Observable[_T1], Observable[_T2]],
-) -> Callable[[Observable[_T1]], Observable[_T2]]:
-    ...
+) -> Callable[[Observable[_T1]], Observable[_T2]]: ...
 
 
 def publish(
@@ -2319,22 +2301,23 @@ def publish(
 @overload
 def publish_value(
     initial_value: _T1,
-) -> Callable[[Observable[_T1]], ConnectableObservable[_T1]]:
-    ...
+) -> Callable[[Observable[_T1]], ConnectableObservable[_T1]]: ...
 
 
 @overload
 def publish_value(
     initial_value: _T1,
     mapper: Mapper[Observable[_T1], Observable[_T2]],
-) -> Callable[[Observable[_T1]], Observable[_T2]]:
-    ...
+) -> Callable[[Observable[_T1]], Observable[_T2]]: ...
 
 
 def publish_value(
     initial_value: _T1,
     mapper: Optional[Mapper[Observable[_T1], Observable[_T2]]] = None,
-) -> Callable[[Observable[_T1]], Union[Observable[_T2], ConnectableObservable[_T1]]]:
+) -> Union[
+    Callable[[Observable[_T1]], ConnectableObservable[_T1]],
+    Callable[[Observable[_T1]], Observable[_T2]],
+]:
     """Returns an observable sequence that is the result of invoking
     the mapper on a connectable observable sequence that shares a
     single subscription to the underlying sequence and starts with
@@ -2371,16 +2354,14 @@ def publish_value(
 
 @overload
 def reduce(
-    accumulator: Accumulator[_TState, _T]
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    ...
+    accumulator: Accumulator[_TState, _T],
+) -> Callable[[Observable[_T]], Observable[_T]]: ...
 
 
 @overload
 def reduce(
     accumulator: Accumulator[_TState, _T], seed: _TState
-) -> Callable[[Observable[_T]], Observable[_TState]]:
-    ...
+) -> Callable[[Observable[_T]], Observable[_TState]]: ...
 
 
 def reduce(
@@ -2470,8 +2451,7 @@ def replay(
     window: Optional[typing.RelativeTime] = None,
     *,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T1]], ConnectableObservable[_T1]]:
-    ...
+) -> Callable[[Observable[_T1]], ConnectableObservable[_T1]]: ...
 
 
 @overload
@@ -2481,8 +2461,7 @@ def replay(
     *,
     mapper: Optional[Mapper[Observable[_T1], Observable[_T2]]],
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T1]], Observable[_T2]]:
-    ...
+) -> Callable[[Observable[_T1]], Observable[_T2]]: ...
 
 
 def replay(
@@ -2589,16 +2568,14 @@ def sample(
 
 @overload
 def scan(
-    accumulator: Accumulator[_T, _T]
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    ...
+    accumulator: Accumulator[_T, _T],
+) -> Callable[[Observable[_T]], Observable[_T]]: ...
 
 
 @overload
 def scan(
     accumulator: Accumulator[_TState, _T], seed: Union[_TState, Type[NotSet]]
-) -> Callable[[Observable[_T]], Observable[_TState]]:
-    ...
+) -> Callable[[Observable[_T]], Observable[_TState]]: ...
 
 
 def scan(
@@ -2866,7 +2843,7 @@ def skip_last_with_time(
 
 
 def skip_until(
-    other: Union[Observable[Any], "Future[Any]"]
+    other: Union[Observable[Any], "Future[Any]"],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the values from the source observable sequence only
     after the other observable sequence produces a value.
@@ -3112,27 +3089,24 @@ def some(
 
 @overload
 def starmap(
-    mapper: Callable[[_A, _B], _T]
-) -> Callable[[Observable[Tuple[_A, _B]]], Observable[_T]]:
-    ...
+    mapper: Callable[[_A, _B], _T],
+) -> Callable[[Observable[Tuple[_A, _B]]], Observable[_T]]: ...
 
 
 @overload
 def starmap(
-    mapper: Callable[[_A, _B, _C], _T]
-) -> Callable[[Observable[Tuple[_A, _B, _C]]], Observable[_T]]:
-    ...
+    mapper: Callable[[_A, _B, _C], _T],
+) -> Callable[[Observable[Tuple[_A, _B, _C]]], Observable[_T]]: ...
 
 
 @overload
 def starmap(
-    mapper: Callable[[_A, _B, _C, _D], _T]
-) -> Callable[[Observable[Tuple[_A, _B, _C, _D]]], Observable[_T]]:
-    ...
+    mapper: Callable[[_A, _B, _C, _D], _T],
+) -> Callable[[Observable[Tuple[_A, _B, _C, _D]]], Observable[_T]]: ...
 
 
 def starmap(
-    mapper: Optional[Callable[..., Any]] = None
+    mapper: Optional[Callable[..., Any]] = None,
 ) -> Callable[[Observable[Any]], Observable[Any]]:
     """The starmap operator.
 
@@ -3177,34 +3151,30 @@ def starmap(
 
 @overload
 def starmap_indexed(
-    mapper: Callable[[_A, int], _T]
-) -> Callable[[Observable[_A]], Observable[_T]]:
-    ...
+    mapper: Callable[[_A, int], _T],
+) -> Callable[[Observable[_A]], Observable[_T]]: ...
 
 
 @overload
 def starmap_indexed(
-    mapper: Callable[[_A, _B, int], _T]
-) -> Callable[[Observable[Tuple[_A, _B]]], Observable[_T]]:
-    ...
+    mapper: Callable[[_A, _B, int], _T],
+) -> Callable[[Observable[Tuple[_A, _B]]], Observable[_T]]: ...
 
 
 @overload
 def starmap_indexed(
-    mapper: Callable[[_A, _B, _C, int], _T]
-) -> Callable[[Observable[Tuple[_A, _B, _C]]], Observable[_T]]:
-    ...
+    mapper: Callable[[_A, _B, _C, int], _T],
+) -> Callable[[Observable[Tuple[_A, _B, _C]]], Observable[_T]]: ...
 
 
 @overload
 def starmap_indexed(
-    mapper: Callable[[_A, _B, _C, _D, int], _T]
-) -> Callable[[Observable[Tuple[_A, _B, _C, _D]]], Observable[_T]]:
-    ...
+    mapper: Callable[[_A, _B, _C, _D, int], _T],
+) -> Callable[[Observable[Tuple[_A, _B, _C, _D]]], Observable[_T]]: ...
 
 
 def starmap_indexed(
-    mapper: Optional[Callable[..., Any]] = None
+    mapper: Optional[Callable[..., Any]] = None,
 ) -> Callable[[Observable[Any]], Observable[Any]]:
     """Variant of :func:`starmap` which accepts an indexed mapper.
 
@@ -3291,17 +3261,17 @@ def subscribe_on(
 
 
 @overload
-def sum() -> Callable[[Observable[float]], Observable[float]]:
-    ...
+def sum() -> Callable[[Observable[float]], Observable[float]]: ...
 
 
 @overload
-def sum(key_mapper: Mapper[_T, float]) -> Callable[[Observable[_T]], Observable[float]]:
-    ...
+def sum(
+    key_mapper: Mapper[_T, float],
+) -> Callable[[Observable[_T]], Observable[float]]: ...
 
 
 def sum(
-    key_mapper: Optional[Mapper[Any, float]] = None
+    key_mapper: Optional[Mapper[Any, float]] = None,
 ) -> Callable[[Observable[Any]], Observable[float]]:
     """Computes the sum of a sequence of values that are obtained by
     invoking an optional transform function on each element of the
@@ -3333,9 +3303,9 @@ def sum(
     return sum_(key_mapper)
 
 
-def switch_latest() -> Callable[
-    [Observable[Union[Observable[_T], "Future[_T]"]]], Observable[_T]
-]:
+def switch_latest() -> (
+    Callable[[Observable[Union[Observable[_T], "Future[_T]"]]], Observable[_T]]
+):
     """The switch_latest operator.
 
     Transforms an observable sequence of observable sequences into an
@@ -3363,7 +3333,7 @@ def switch_latest() -> Callable[
 
 
 def switch_map(
-    project: Optional[Mapper[_T1, Observable[_T2]]] = None
+    project: Optional[Mapper[_T1, Observable[_T2]]] = None,
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     """Projects each source value to an Observable which is merged in
     the output Observable, emitting values only from the most recently
@@ -3403,7 +3373,7 @@ def switch_map(
 
 
 def switch_map_indexed(
-    project: Optional[MapperIndexed[_T1, Observable[_T2]]] = None
+    project: Optional[MapperIndexed[_T1, Observable[_T2]]] = None,
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     """Projects each source value to an Observable which is merged in
     the output Observable, emitting values only from the most recently
@@ -3761,7 +3731,7 @@ def throttle_first(
 
 
 def throttle_with_mapper(
-    throttle_duration_mapper: Callable[[Any], Observable[Any]]
+    throttle_duration_mapper: Callable[[Any], Observable[Any]],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """The throttle_with_mapper operator.
 
@@ -3943,7 +3913,7 @@ def to_dict(
 
 
 def to_future(
-    future_ctor: Optional[Callable[[], "Future[_T]"]] = None
+    future_ctor: Optional[Callable[[], "Future[_T]"]] = None,
 ) -> Callable[[Observable[_T]], "Future[_T]"]:
     """Converts an existing observable sequence to a Future.
 
@@ -4068,7 +4038,7 @@ def window(
 
 
 def window_when(
-    closing_mapper: Callable[[], Observable[Any]]
+    closing_mapper: Callable[[], Observable[Any]],
 ) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
     """Projects each element of an observable sequence into zero or
     more windows.

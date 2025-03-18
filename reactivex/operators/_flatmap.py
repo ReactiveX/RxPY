@@ -19,9 +19,7 @@ def _flat_map_internal(
         mapper_result: Any = (
             mapper(x)
             if mapper
-            else mapper_indexed(x, i)
-            if mapper_indexed
-            else identity
+            else mapper_indexed(x, i) if mapper_indexed else identity
         )
         if isinstance(mapper_result, Future):
             result: Observable[Any] = from_future(cast("Future[Any]", mapper_result))

@@ -147,16 +147,14 @@ class Observable(abc.ObservableBase[_T_out]):
         return Disposable(auto_detach_observer.dispose)
 
     @overload
-    def pipe(self, __op1: Callable[[Observable[_T_out]], _A]) -> _A:
-        ...
+    def pipe(self, __op1: Callable[[Observable[_T_out]], _A]) -> _A: ...
 
     @overload
     def pipe(
         self,
         __op1: Callable[[Observable[_T_out]], _A],
         __op2: Callable[[_A], _B],
-    ) -> _B:
-        ...
+    ) -> _B: ...
 
     @overload
     def pipe(
@@ -164,8 +162,7 @@ class Observable(abc.ObservableBase[_T_out]):
         __op1: Callable[[Observable[_T_out]], _A],
         __op2: Callable[[_A], _B],
         __op3: Callable[[_B], _C],
-    ) -> _C:
-        ...
+    ) -> _C: ...
 
     @overload
     def pipe(
@@ -174,8 +171,7 @@ class Observable(abc.ObservableBase[_T_out]):
         __op2: Callable[[_A], _B],
         __op3: Callable[[_B], _C],
         __op4: Callable[[_C], _D],
-    ) -> _D:
-        ...
+    ) -> _D: ...
 
     @overload
     def pipe(
@@ -185,8 +181,7 @@ class Observable(abc.ObservableBase[_T_out]):
         __op3: Callable[[_B], _C],
         __op4: Callable[[_C], _D],
         __op5: Callable[[_D], _E],
-    ) -> _E:
-        ...
+    ) -> _E: ...
 
     @overload
     def pipe(
@@ -197,8 +192,7 @@ class Observable(abc.ObservableBase[_T_out]):
         __op4: Callable[[_C], _D],
         __op5: Callable[[_D], _E],
         __op6: Callable[[_E], _F],
-    ) -> _F:
-        ...
+    ) -> _F: ...
 
     @overload
     def pipe(
@@ -210,8 +204,7 @@ class Observable(abc.ObservableBase[_T_out]):
         __op5: Callable[[_D], _E],
         __op6: Callable[[_E], _F],
         __op7: Callable[[_F], _G],
-    ) -> _G:
-        ...
+    ) -> _G: ...
 
     def pipe(self, *operators: Callable[[Any], Any]) -> Any:
         """Compose multiple operators left to right.

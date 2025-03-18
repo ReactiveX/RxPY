@@ -28,7 +28,7 @@ class GroupedObservable(Generic[_TKey, _T], Observable[_T]):
                 underlying_observable.subscribe(observer, scheduler=scheduler),
             )
 
-        self.underlying_observable = (
+        self.underlying_observable: Observable[_T] = (
             underlying_observable if not merged_disposable else Observable(subscribe)
         )
 

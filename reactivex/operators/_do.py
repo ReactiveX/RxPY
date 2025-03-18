@@ -104,7 +104,9 @@ def do_(observer: abc.ObserverBase[_T]) -> Callable[[Observable[_T]], Observable
     return do_action_(observer.on_next, observer.on_error, observer.on_completed)
 
 
-def do_after_next(source: Observable[_T], after_next: typing.OnNext[_T]):
+def do_after_next(
+    source: Observable[_T], after_next: typing.OnNext[_T]
+) -> Observable[_T]:
     """Invokes an action with each element after it has been emitted downstream.
     This can be helpful for debugging, logging, and other side effects.
 
@@ -280,7 +282,6 @@ def do_finally(
             observer: abc.ObserverBase[_T],
             scheduler: Optional[abc.SchedulerBase] = None,
         ) -> abc.DisposableBase:
-
             was_invoked = [False]
 
             def on_completed():

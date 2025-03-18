@@ -21,7 +21,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
     """Virtual Scheduler. This scheduler should work with either
     datetime/timespan or ticks as int/int"""
 
-    def __init__(self, initial_clock: typing.AbsoluteTime = 0) -> None:
+    def __init__(self, initial_clock: AbsoluteTime = 0) -> None:
         """Creates a new virtual time scheduler with the specified
         initial clock value.
 
@@ -30,12 +30,12 @@ class VirtualTimeScheduler(PeriodicScheduler):
         """
 
         super().__init__()
-        self._clock = initial_clock
+        self._clock: AbsoluteTime = initial_clock
         self._is_enabled = False
         self._lock: threading.Lock = threading.Lock()
         self._queue: PriorityQueue[ScheduledItem] = PriorityQueue()
 
-    def _get_clock(self) -> AbsoluteTime:
+    def _get_clock(self) -> typing.AbsoluteTime:
         with self._lock:
             return self._clock
 
@@ -164,7 +164,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
         Args:
             time: Absolute time to advance the schedulers clock to.
         """
-
+        item: ScheduledItem
         dt: datetime = self.to_datetime(time)
         with self._lock:
             if self.now > dt:
@@ -180,7 +180,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
                 if not self._is_enabled or not self._queue:
                     break
 
-                item: ScheduledItem = self._queue.peek()
+                item = self._queue.peek()
 
                 if item.duetime > dt:
                     break

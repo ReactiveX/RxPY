@@ -37,7 +37,7 @@ class SerialDisposable(abc.DisposableBase):
         if old is not None:
             old.dispose()
 
-        if should_dispose and value is not None:
+        if should_dispose:
             value.dispose()
 
     disposable = property(get_disposable, set_disposable)

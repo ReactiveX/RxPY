@@ -8,8 +8,8 @@ _T = TypeVar("_T")
 
 
 def using_(
-    resource_factory: Callable[[], abc.DisposableBase],
-    observable_factory: Callable[[abc.DisposableBase], Observable[_T]],
+    resource_factory: Callable[[], Optional[abc.DisposableBase]],
+    observable_factory: Callable[[Optional[abc.DisposableBase]], Observable[_T]],
 ) -> Observable[_T]:
     """Constructs an observable sequence that depends on a resource
     object, whose lifetime is tied to the resulting observable
