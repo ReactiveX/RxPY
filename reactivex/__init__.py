@@ -185,22 +185,19 @@ def create(subscribe: typing.Subscription[_T]) -> Observable[_T]:
 @overload
 def combine_latest(
     __a: Observable[_A], __b: Observable[_B]
-) -> Observable[Tuple[_A, _B]]:
-    ...
+) -> Observable[Tuple[_A, _B]]: ...
 
 
 @overload
 def combine_latest(
     __a: Observable[_A], __b: Observable[_B], __c: Observable[_C]
-) -> Observable[Tuple[_A, _B, _C]]:
-    ...
+) -> Observable[Tuple[_A, _B, _C]]: ...
 
 
 @overload
 def combine_latest(
     __a: Observable[_A], __b: Observable[_B], __c: Observable[_C], __d: Observable[_D]
-) -> Observable[Tuple[_A, _B, _C, _D]]:
-    ...
+) -> Observable[Tuple[_A, _B, _C, _D]]: ...
 
 
 def combine_latest(*__sources: Observable[Any]) -> Observable[Any]:
@@ -289,7 +286,7 @@ def concat_with_iterable(sources: Iterable[Observable[_T]]) -> Observable[_T]:
 
 
 def defer(
-    factory: Callable[[abc.SchedulerBase], Union[Observable[_T], "Future[_T]"]]
+    factory: Callable[[abc.SchedulerBase], Union[Observable[_T], "Future[_T]"]],
 ) -> Observable[_T]:
     """Returns an observable sequence that invokes the specified
     factory function whenever a new observer subscribes.
@@ -382,22 +379,21 @@ def for_in(
 
 
 @overload
-def fork_join(__a: Observable[_A], __b: Observable[_B]) -> Observable[Tuple[_A, _B]]:
-    ...
+def fork_join(
+    __a: Observable[_A], __b: Observable[_B]
+) -> Observable[Tuple[_A, _B]]: ...
 
 
 @overload
 def fork_join(
     __a: Observable[_A], __b: Observable[_B], __c: Observable[_C]
-) -> Observable[Tuple[_A, _B, _C]]:
-    ...
+) -> Observable[Tuple[_A, _B, _C]]: ...
 
 
 @overload
 def fork_join(
     __a: Observable[_A], __b: Observable[_B], __c: Observable[_C], __d: Observable[_D]
-) -> Observable[Tuple[_A, _B, _C, _D]]:
-    ...
+) -> Observable[Tuple[_A, _B, _C, _D]]: ...
 
 
 @overload
@@ -407,8 +403,7 @@ def fork_join(
     __c: Observable[_C],
     __d: Observable[_D],
     __e: Observable[_E],
-) -> Observable[Tuple[_A, _B, _C, _D, _E]]:
-    ...
+) -> Observable[Tuple[_A, _B, _C, _D, _E]]: ...
 
 
 def fork_join(*sources: Observable[Any]) -> Observable[Any]:
@@ -920,7 +915,7 @@ def of(*args: _T) -> Observable[_T]:
 def on_error_resume_next(
     *sources: Union[
         Observable[_T], "Future[_T]", Callable[[Optional[Exception]], Observable[_T]]
-    ]
+    ],
 ) -> Observable[_T]:
     """Continues an observable sequence that is terminated normally or
     by an exception with the next observable sequence.
@@ -1216,8 +1211,8 @@ def to_async(
 
 
 def using(
-    resource_factory: Callable[[], abc.DisposableBase],
-    observable_factory: Callable[[abc.DisposableBase], Observable[_T]],
+    resource_factory: Callable[[], Optional[abc.DisposableBase]],
+    observable_factory: Callable[[Optional[abc.DisposableBase]], Observable[_T]],
 ) -> Observable[_T]:
     """Constructs an observable sequence that depends on a resource
     object, whose lifetime is tied to the resulting observable

@@ -12,9 +12,8 @@ _T2 = TypeVar("_T2")
 
 
 def map_(
-    mapper: Optional[Mapper[_T1, _T2]] = None
+    mapper: Optional[Mapper[_T1, _T2]] = None,
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
-
     _mapper = mapper or cast(Mapper[_T1, _T2], identity)
 
     def map(source: Observable[_T1]) -> Observable[_T2]:
@@ -56,7 +55,7 @@ def map_(
 
 
 def map_indexed_(
-    mapper_indexed: Optional[MapperIndexed[_T1, _T2]] = None
+    mapper_indexed: Optional[MapperIndexed[_T1, _T2]] = None,
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     def _identity(value: _T1, _: int) -> _T2:
         return cast(_T2, value)
@@ -65,7 +64,7 @@ def map_indexed_(
 
     return compose(
         ops.zip_with_iterable(infinite()),
-        ops.starmap_indexed(_mapper_indexed),
+        ops.starmap_indexed(_mapper_indexed),  # type: ignore
     )
 
 

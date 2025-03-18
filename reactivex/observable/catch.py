@@ -13,7 +13,6 @@ _T = TypeVar("_T")
 
 
 def catch_with_iterable_(sources: Iterable[Observable[_T]]) -> Observable[_T]:
-
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
 
