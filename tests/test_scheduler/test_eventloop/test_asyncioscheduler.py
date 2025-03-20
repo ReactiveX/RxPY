@@ -13,14 +13,14 @@ CI = os.getenv("CI") is not None
 class TestAsyncIOScheduler(unittest.TestCase):
     @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_asyncio_schedule_now(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         scheduler = AsyncIOScheduler(loop)
         diff = scheduler.now - datetime.fromtimestamp(loop.time(), tz=timezone.utc)
         assert abs(diff) < timedelta(milliseconds=2)  # NOTE: may take 1 ms in CI
 
     @pytest.mark.skipif(CI, reason="Test is flaky in GitHub Actions")
     def test_asyncio_schedule_now_units(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         scheduler = AsyncIOScheduler(loop)
         diff = scheduler.now
         yield from asyncio.sleep(0.1)
@@ -28,7 +28,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_asyncio_schedule_action(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
 
         async def go():
             scheduler = AsyncIOScheduler(loop)
@@ -46,7 +46,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
         loop.run_until_complete(go())
 
     def test_asyncio_schedule_action_due(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
 
         async def go():
             scheduler = AsyncIOScheduler(loop)
@@ -67,7 +67,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
         loop.run_until_complete(go())
 
     def test_asyncio_schedule_action_cancel(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
 
         async def go():
             ran = False

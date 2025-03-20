@@ -26,7 +26,7 @@ class AsyncIOScheduler(PeriodicScheduler):
 
         Args:
             loop: Instance of asyncio event loop to use; typically, you would
-                get this by asyncio.get_event_loop()
+                get this by asyncio.get_running_loop()
         """
         super().__init__()
         self._loop: asyncio.AbstractEventLoop = loop

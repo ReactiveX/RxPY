@@ -14,14 +14,14 @@ CI = os.getenv("CI") is not None
 class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
     @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_asyncio_threadsafe_schedule_now(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         scheduler = AsyncIOThreadSafeScheduler(loop)
         diff = scheduler.now - datetime.fromtimestamp(loop.time(), tz=timezone.utc)
         assert abs(diff) < timedelta(milliseconds=2)
 
     @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_asyncio_threadsafe_schedule_now_units(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         scheduler = AsyncIOThreadSafeScheduler(loop)
         diff = scheduler.now
         yield from asyncio.sleep(0.1)
@@ -29,7 +29,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_asyncio_threadsafe_schedule_action(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
 
         async def go():
             scheduler = AsyncIOThreadSafeScheduler(loop)
@@ -50,7 +50,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
         loop.run_until_complete(go())
 
     def test_asyncio_threadsafe_schedule_action_due(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
 
         async def go():
             scheduler = AsyncIOThreadSafeScheduler(loop)
@@ -74,7 +74,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
         loop.run_until_complete(go())
 
     def test_asyncio_threadsafe_schedule_action_cancel(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
 
         async def go():
             ran = False
