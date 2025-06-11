@@ -9,7 +9,7 @@ from reactivex.subject import Subject
 class TestFlatMapAsync(unittest.TestCase):
     def test_flat_map_async(self):
         actual_next = None
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         scheduler = AsyncIOScheduler(loop=loop)
 
         def mapper(i: int):
