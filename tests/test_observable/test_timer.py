@@ -1,6 +1,7 @@
 import unittest
 
 import reactivex
+from reactivex import operators
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -126,3 +127,92 @@ class TestTimer(unittest.TestCase):
 
         results = scheduler.start(create)
         assert results.messages == [on_next(500, 0), on_next(800, 1)]
+
+    def test_periodic_timer_repeat(self):
+        scheduler = TestScheduler()
+        t = reactivex.timer(duetime=130, period=200, scheduler=scheduler)
+
+        def create():
+            return t.pipe(operators.take(3), operators.repeat())
+
+        results = scheduler.start(create)
+        assert results.messages == [
+            on_next(330, 0),
+            on_next(530, 1),
+            on_next(730, 2),
+            on_next(860, 0),
+        ]
+
+    def test_periodic_timer_repeat_with_absolute_datetime(self):
+        scheduler = TestScheduler()
+        t = reactivex.timer(
+            duetime=scheduler.to_datetime(360), period=200, scheduler=scheduler
+        )  # here we have an absolute first value, so on second subscription, the timer should emit immediately
+
+        def create():
+            return t.pipe(operators.take(3), operators.repeat())
+
+        results = scheduler.start(create)
+        assert results.messages == [
+            on_next(360, 0),
+            on_next(560, 1),
+            on_next(760, 2),
+            on_next(
+                760, 0
+            ),  # our duetime is absolute and in the past so new sub emits immediately
+            on_next(960, 1),
+        ]
+
+    def test_periodic_timer_repeat_with_relative_timespan(self):
+        scheduler = TestScheduler()
+        t = reactivex.timer(
+            duetime=scheduler.to_timedelta(130),
+            period=scheduler.to_timedelta(250),
+            scheduler=scheduler,
+        )
+
+        def create():
+            return t.pipe(operators.take(3), operators.repeat())
+
+        results = scheduler.start(create)
+        assert results.messages == [
+            on_next(330, 0),
+            on_next(580, 1),
+            on_next(830, 2),
+            on_next(960, 0),
+        ]
+
+    def test_periodic_timer_second_subscription(self):
+        scheduler = TestScheduler()
+        t = reactivex.timer(duetime=200, period=300, scheduler=scheduler)
+
+        def create():
+            return reactivex.merge(
+                t.pipe(operators.map(lambda x: (x, "first"))),
+                reactivex.concat(reactivex.timer(100, scheduler=scheduler), t).pipe(
+                    operators.map(lambda x: (x, "second"))
+                ),
+            )
+
+        results = scheduler.start(create)
+        assert results.messages == [
+            on_next(300, (0, "second")),
+            on_next(400, (0, "first")),
+            on_next(500, (0, "second")),
+            on_next(700, (1, "first")),
+            on_next(800, (1, "second")),
+        ]
+
+    def test_one_off_timer_repeat(self):
+        scheduler = TestScheduler()
+        t = reactivex.timer(duetime=230, scheduler=scheduler)
+
+        def create():
+            return t.pipe(operators.repeat())
+
+        results = scheduler.start(create)
+        assert results.messages == [
+            on_next(430, 0),
+            on_next(660, 0),
+            on_next(890, 0),
+        ]
