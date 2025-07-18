@@ -1,6 +1,7 @@
 import unittest
 
-from reactivex import operators as ops, create as rx_create
+from reactivex import create as rx_create
+from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -93,6 +94,7 @@ class TestSubscribeOn(unittest.TestCase):
         results = scheduler.start(create)
         assert forwarded_sheduler is scheduler
         assert results.messages == [on_completed(250)]
+
 
 if __name__ == "__main__":
     unittest.main()
