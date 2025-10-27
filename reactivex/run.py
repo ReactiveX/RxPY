@@ -24,6 +24,8 @@ def run(source: Observable[_T], scheduler: Optional[abc.SchedulerBase] = None) -
 
     Args:
         source: Observable source to run.
+        scheduler: Optional scheduler to use for subscription. If not
+            specified, defaults to a NewThreadScheduler.
 
     Raises:
         SequenceContainsNoElementsError: if observable completes
