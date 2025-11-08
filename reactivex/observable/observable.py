@@ -229,7 +229,7 @@ class Observable(abc.ObservableBase[_T_out]):
 
         return pipe_(self, *operators)
 
-    def run(self) -> Any:
+    def run(self, scheduler: Optional[abc.SchedulerBase] = None) -> _T_out:
         """Run source synchronously.
 
         Subscribes to the observable source. Then blocks and waits for the
@@ -249,7 +249,7 @@ class Observable(abc.ObservableBase[_T_out]):
         """
         from ..run import run
 
-        return run(self)
+        return run(self, scheduler)
 
     def __await__(self) -> Generator[Any, None, _T_out]:
         """Awaits the given observable.

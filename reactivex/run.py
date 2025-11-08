@@ -1,17 +1,18 @@
 import threading
 from typing import Optional, TypeVar, cast
 
+from reactivex import abc
 from reactivex.internal.exceptions import SequenceContainsNoElementsError
 from reactivex.scheduler import NewThreadScheduler
 
 from .observable import Observable
 
-scheduler = NewThreadScheduler()
+_default_scheduler = NewThreadScheduler()
 
 _T = TypeVar("_T")
 
 
-def run(source: Observable[_T]) -> _T:
+def run(source: Observable[_T], scheduler: Optional[abc.SchedulerBase] = None) -> _T:
     """Run source synchronously.
 
     Subscribes to the observable source. Then blocks and waits for the
@@ -23,6 +24,8 @@ def run(source: Observable[_T]) -> _T:
 
     Args:
         source: Observable source to run.
+        scheduler: Optional scheduler to use for subscription. If not
+            specified, defaults to a NewThreadScheduler.
 
     Raises:
         SequenceContainsNoElementsError: if observable completes
@@ -32,6 +35,7 @@ def run(source: Observable[_T]) -> _T:
     Returns:
         The last element emitted from the observable.
     """
+    scheduler = scheduler or _default_scheduler
     exception: Optional[Exception] = None
     latch = threading.Event()
     has_result = False
