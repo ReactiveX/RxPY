@@ -236,13 +236,14 @@ choice to create a pool of reusable worker threads.
 
 .. attention::
 
-    `GIL <https://wiki.python.org/moin/GlobalInterpreterLock>`_ has the potential to
-    undermine your concurrency performance, as it prevents multiple threads from
-    accessing the same line of code simultaneously. Libraries like
-    `NumPy <http://www.numpy.org/>`_ can mitigate this for parallel intensive
-    computations as they free the GIL. RxPy may also minimize thread overlap to some
-    degree. Just be sure to test your application with concurrency and ensure there
-    is a performance gain.
+    The `GIL <https://wiki.python.org/moin/GlobalInterpreterLock>`_ has the potential to 
+    undermine your concurrency  performance in Python versions prior to 3.13, as it prevents 
+    multiple threads from accessing the same line of code simultaneously. Starting with Python 3.13, 
+    the GIL can be disabled via the free-threading mode (enabled with the `--disable-gil` build option),
+    allowing for true multi-threading parallelism. Libraries like `NumPy <http://www.numpy.org/>`_ 
+    can mitigate GIL limitations for parallel intensive computations as they release the GIL during 
+    operations. RxPy may also minimize thread overlap to some degree. Just be sure to test your application
+    with concurrency and ensure there is a performance gain, especially when using free-threading builds.
 
 The :func:`subscribe_on() <reactivex.operators.subscribe_on>` instructs the source
 :class:`Observable <reactivex.Observable>` at the start of the chain which scheduler to
