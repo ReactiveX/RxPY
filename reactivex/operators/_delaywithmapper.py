@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from reactivex import Observable, abc, typing
 from reactivex.disposable import (
@@ -39,7 +39,7 @@ def delay_with_mapper_(
 
         if isinstance(subscription_delay, abc.ObservableBase):
             mapper = delay_duration_mapper
-            sub_delay = subscription_delay
+            sub_delay = cast(Observable[Any], subscription_delay)
         else:
             mapper = subscription_delay
 

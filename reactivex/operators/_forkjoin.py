@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any
+from typing import Any, cast
 
 import reactivex
 from reactivex import Observable
@@ -21,7 +21,7 @@ def fork_join_(
             An observable sequence containing the result of combining
             last element from each source in given sequence.
         """
-        return reactivex.fork_join(source, *args)
+        return cast(Observable[tuple[Any, ...]], reactivex.fork_join(source, *args))
 
     return fork_join
 
