@@ -1,4 +1,4 @@
-from typing import Optional, TypeVar
+from typing import TypeVar
 
 import reactivex
 from reactivex import Observable
@@ -7,7 +7,7 @@ from reactivex import operators as ops
 _T = TypeVar("_T")
 
 
-def repeat_value_(value: _T, repeat_count: Optional[int] = None) -> Observable[_T]:
+def repeat_value_(value: _T, repeat_count: int | None = None) -> Observable[_T]:
     """Generates an observable sequence that repeats the given element
     the specified number of times.
 

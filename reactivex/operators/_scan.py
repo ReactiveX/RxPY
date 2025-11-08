@@ -1,4 +1,5 @@
-from typing import Callable, Type, TypeVar, Union, cast
+from collections.abc import Callable
+from typing import TypeVar, cast
 
 from reactivex import Observable, abc, defer
 from reactivex import operators as ops
@@ -10,7 +11,7 @@ _TState = TypeVar("_TState")
 
 
 def scan_(
-    accumulator: Accumulator[_TState, _T], seed: Union[_TState, Type[NotSet]] = NotSet
+    accumulator: Accumulator[_TState, _T], seed: _TState | type[NotSet] = NotSet
 ) -> Callable[[Observable[_T]], Observable[_TState]]:
     has_seed = seed is not NotSet
 

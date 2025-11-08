@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, compose
 from reactivex import operators as ops
@@ -8,9 +9,8 @@ _T = TypeVar("_T")
 
 
 def count_(
-    predicate: Optional[Predicate[_T]] = None,
+    predicate: Predicate[_T] | None = None,
 ) -> Callable[[Observable[_T]], Observable[int]]:
-
     if predicate:
         return compose(
             ops.filter(predicate),

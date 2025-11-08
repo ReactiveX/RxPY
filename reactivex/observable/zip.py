@@ -1,13 +1,13 @@
 from asyncio import Future
 from threading import RLock
-from typing import Any, List, Optional, Tuple
+from typing import Any
 
 from reactivex import Observable, abc, from_future
 from reactivex.disposable import CompositeDisposable, SingleAssignmentDisposable
 from reactivex.internal import synchronized
 
 
-def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
+def zip_(*args: Observable[Any]) -> Observable[tuple[Any, ...]]:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple whenever all of the
     observable sequences have produced an element at a corresponding
@@ -27,10 +27,10 @@ def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
     sources = list(args)
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: abc.SchedulerBase | None = None
     ) -> CompositeDisposable:
         n = len(sources)
-        queues: List[List[Any]] = [[] for _ in range(n)]
+        queues: list[list[Any]] = [[] for _ in range(n)]
         lock = RLock()
         is_completed = [False] * n
 
@@ -62,7 +62,7 @@ def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
             if len(queues[i]) == 0:
                 observer.on_completed()
 
-        subscriptions: List[Optional[abc.DisposableBase]] = [None] * n
+        subscriptions: list[abc.DisposableBase | None] = [None] * n
 
         def func(i: int) -> None:
             source: Observable[Any] = sources[i]

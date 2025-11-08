@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Notification, Observable, abc
 
@@ -19,7 +20,7 @@ def dematerialize_() -> Callable[[Observable[Notification[_T]]], Observable[_T]]
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ):
             def on_next(value: Notification[_T]) -> None:
                 return value.accept(observer)

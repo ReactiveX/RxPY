@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from sys import maxsize
-from typing import Any, Callable, List, Optional, TypeVar
+from typing import Any, TypeVar
 
 from reactivex import Observable
 from reactivex import operators as ops
@@ -9,13 +10,13 @@ _T = TypeVar("_T")
 
 # pylint: disable=redefined-builtin
 def slice_(
-    start: Optional[int] = None, stop: Optional[int] = None, step: Optional[int] = None
+    start: int | None = None, stop: int | None = None, step: int | None = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     _start: int = 0 if start is None else start
     _stop: int = maxsize if stop is None else stop
     _step: int = 1 if step is None else step
 
-    pipeline: List[Callable[[Observable[Any]], Observable[Any]]] = []
+    pipeline: list[Callable[[Observable[Any]], Observable[Any]]] = []
 
     def slice(source: Observable[_T]) -> Observable[_T]:
         """The partially applied slice operator.

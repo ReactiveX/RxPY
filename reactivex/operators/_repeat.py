@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 import reactivex
 from reactivex import Observable
@@ -8,7 +9,7 @@ _T = TypeVar("_T")
 
 
 def repeat_(
-    repeat_count: Optional[int] = None,
+    repeat_count: int | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def repeat(source: Observable[_T]) -> Observable[_T]:
         """Repeats the observable sequence a specified number of times.

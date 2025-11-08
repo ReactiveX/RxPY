@@ -1,16 +1,16 @@
-from typing import Any, Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 import reactivex
-from reactivex import Observable, abc
+from reactivex import Observable, abc, typing
 from reactivex import operators as ops
-from reactivex import typing
 
 _T = TypeVar("_T")
 
 
 def delay_subscription_(
     duetime: typing.AbsoluteOrRelativeTime,
-    scheduler: Optional[abc.SchedulerBase] = None,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def delay_subscription(source: Observable[_T]) -> Observable[_T]:
         """Time shifts the observable sequence by delaying the subscription.

@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Any, Optional, TypeVar
+from typing import Any, TypeVar
 
 from reactivex import abc, typing
 from reactivex.disposable import (
@@ -33,7 +33,7 @@ class EventletScheduler(PeriodicScheduler):
         self._eventlet = eventlet
 
     def schedule(
-        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: typing.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -62,7 +62,7 @@ class EventletScheduler(PeriodicScheduler):
         self,
         duetime: typing.RelativeTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -96,7 +96,7 @@ class EventletScheduler(PeriodicScheduler):
         self,
         duetime: typing.AbsoluteTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 

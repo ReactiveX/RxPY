@@ -1,12 +1,13 @@
-from typing import Callable, List, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, abc
 
 _T = TypeVar("_T")
 
 
-def take_last_buffer_(count: int) -> Callable[[Observable[_T]], Observable[List[_T]]]:
-    def take_last_buffer(source: Observable[_T]) -> Observable[List[_T]]:
+def take_last_buffer_(count: int) -> Callable[[Observable[_T]], Observable[list[_T]]]:
+    def take_last_buffer(source: Observable[_T]) -> Observable[list[_T]]:
         """Returns an array with the specified number of contiguous
         elements from the end of an observable sequence.
 
@@ -28,10 +29,10 @@ def take_last_buffer_(count: int) -> Callable[[Observable[_T]], Observable[List[
         """
 
         def subscribe(
-            observer: abc.ObserverBase[List[_T]],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            observer: abc.ObserverBase[list[_T]],
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
-            q: List[_T] = []
+            q: list[_T] = []
 
             def on_next(x: _T) -> None:
                 with source.lock:

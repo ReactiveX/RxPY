@@ -1,9 +1,9 @@
+from collections.abc import Callable
 from datetime import datetime
-from typing import Any, Callable, List, Optional, TypeVar
+from typing import Any, TypeVar
 
-from reactivex import Notification, Observable, abc
+from reactivex import Notification, Observable, abc, typing
 from reactivex import operators as ops
-from reactivex import typing
 from reactivex.disposable import (
     CompositeDisposable,
     MultipleAssignmentDisposable,
@@ -21,10 +21,10 @@ _T = TypeVar("_T")
 def observable_delay_timespan(
     source: Observable[_T],
     duetime: typing.RelativeTime,
-    scheduler: Optional[abc.SchedulerBase] = None,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Observable[_T]:
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[_T], scheduler_: abc.SchedulerBase | None = None
     ):
         nonlocal duetime
 
@@ -36,10 +36,10 @@ def observable_delay_timespan(
             duetime_ = _scheduler.to_timedelta(duetime)
 
         cancelable = SerialDisposable()
-        exception: Optional[Exception] = None
+        exception: Exception | None = None
         active = [False]
         running = [False]
-        queue: List[Timestamp[Notification[_T]]] = []
+        queue: list[Timestamp[Notification[_T]]] = []
 
         def on_next(notification: Timestamp[Notification[_T]]) -> None:
             nonlocal exception
@@ -117,7 +117,7 @@ def observable_delay_timespan(
 
 
 def delay_(
-    duetime: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
+    duetime: typing.RelativeTime, scheduler: abc.SchedulerBase | None = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def delay(source: Observable[_T]) -> Observable[_T]:
         """Time shifts the observable sequence.

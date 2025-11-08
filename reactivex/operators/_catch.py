@@ -1,5 +1,6 @@
 from asyncio import Future
-from typing import Callable, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import TypeVar, Union
 
 import reactivex
 from reactivex import Observable, abc
@@ -13,7 +14,7 @@ def catch_handler(
     handler: Callable[[Exception, Observable[_T]], Union[Observable[_T], "Future[_T]"]],
 ) -> Observable[_T]:
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[_T], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         d1 = SingleAssignmentDisposable()
         subscription = SerialDisposable()
@@ -43,9 +44,7 @@ def catch_handler(
 
 
 def catch_(
-    handler: Union[
-        Observable[_T], Callable[[Exception, Observable[_T]], Observable[_T]]
-    ]
+    handler: Observable[_T] | Callable[[Exception, Observable[_T]], Observable[_T]],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def catch(source: Observable[_T]) -> Observable[_T]:
         """Continues an observable sequence that is terminated by an

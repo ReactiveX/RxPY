@@ -1,5 +1,6 @@
 import logging
-from typing import Callable, List, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, abc
 from reactivex.disposable import RefCountDisposable, SingleAssignmentDisposable
@@ -12,7 +13,7 @@ _T = TypeVar("_T")
 
 
 def window_with_count_(
-    count: int, skip: Optional[int] = None
+    count: int, skip: int | None = None
 ) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
     """Projects each element of an observable sequence into zero or more
     windows which are produced based on element count information.
@@ -42,12 +43,12 @@ def window_with_count_(
     def window_with_count(source: Observable[_T]) -> Observable[Observable[_T]]:
         def subscribe(
             observer: abc.ObserverBase[Observable[_T]],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ):
             m = SingleAssignmentDisposable()
             refCountDisposable = RefCountDisposable(m)
             n = [0]
-            q: List[Subject[_T]] = []
+            q: list[Subject[_T]] = []
 
             def create_window():
                 s: Subject[_T] = Subject()

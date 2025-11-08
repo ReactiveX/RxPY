@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import ConnectableObservable, Observable, abc
 from reactivex import operators as ops
@@ -11,15 +12,15 @@ _T2 = TypeVar("_T2")
 
 def publish_value_(
     initial_value: _T1,
-    mapper: Optional[Mapper[Observable[_T1], Observable[_T2]]] = None,
-) -> Union[
-    Callable[[Observable[_T1]], ConnectableObservable[_T1]],
-    Callable[[Observable[_T1]], Observable[_T2]],
-]:
+    mapper: Mapper[Observable[_T1], Observable[_T2]] | None = None,
+) -> (
+    Callable[[Observable[_T1]], ConnectableObservable[_T1]]
+    | Callable[[Observable[_T1]], Observable[_T2]]
+):
     if mapper:
 
         def subject_factory(
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> BehaviorSubject[_T1]:
             return BehaviorSubject(initial_value)
 

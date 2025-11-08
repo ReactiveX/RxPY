@@ -8,7 +8,7 @@ from reactivex.subject import Subject
 
 class Frame(wx.Frame):
     def __init__(self):
-        super(Frame, self).__init__(None)
+        super().__init__(None)
         self.SetTitle("Rx for Python rocks")
         self.SetSize((600, 600))
 

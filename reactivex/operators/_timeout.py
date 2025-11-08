@@ -1,6 +1,7 @@
 from asyncio import Future
+from collections.abc import Callable
 from datetime import datetime
-from typing import Any, Callable, Optional, TypeVar, Union
+from typing import Any, TypeVar, Union
 
 from reactivex import Observable, abc, from_future, throw, typing
 from reactivex.disposable import (
@@ -15,10 +16,9 @@ _T = TypeVar("_T")
 
 def timeout_(
     duetime: typing.AbsoluteOrRelativeTime,
-    other: Optional[Union[Observable[_T], "Future[_T]"]] = None,
-    scheduler: Optional[abc.SchedulerBase] = None,
+    other: Union[Observable[_T], "Future[_T]"] | None = None,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
-
     other = other or throw(Exception("Timeout"))
     if isinstance(other, Future):
         obs = from_future(other)
@@ -42,7 +42,7 @@ def timeout_(
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler_: Optional[abc.SchedulerBase] = None,
+            scheduler_: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 

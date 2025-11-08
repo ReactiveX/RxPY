@@ -1,5 +1,6 @@
 from asyncio import Future
-from typing import Callable, TypeVar, Union
+from collections.abc import Callable
+from typing import TypeVar, Union
 
 import reactivex
 from reactivex import Observable, abc
@@ -33,7 +34,7 @@ def if_then_(
         else_source.
     """
 
-    else_source_: Union[Observable[_T], "Future[_T]"] = else_source or reactivex.empty()
+    else_source_: Observable[_T] | Future[_T] = else_source or reactivex.empty()
 
     then_source = (
         reactivex.from_future(then_source)

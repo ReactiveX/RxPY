@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import ConnectableObservable, Observable, abc, compose
 from reactivex import operators as ops
@@ -10,9 +11,9 @@ _TResult = TypeVar("_TResult")
 
 
 def publish_(
-    mapper: Optional[Mapper[Observable[_TSource], Observable[_TResult]]] = None,
+    mapper: Mapper[Observable[_TSource], Observable[_TResult]] | None = None,
 ) -> Callable[
-    [Observable[_TSource]], Union[Observable[_TResult], ConnectableObservable[_TSource]]
+    [Observable[_TSource]], Observable[_TResult] | ConnectableObservable[_TSource]
 ]:
     """Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single
@@ -37,7 +38,7 @@ def publish_(
 
     if mapper:
 
-        def factory(scheduler: Optional[abc.SchedulerBase] = None) -> Subject[_TSource]:
+        def factory(scheduler: abc.SchedulerBase | None = None) -> Subject[_TSource]:
             return Subject()
 
         return ops.multicast(subject_factory=factory, mapper=mapper)

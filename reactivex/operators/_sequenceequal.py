@@ -1,4 +1,5 @@
-from typing import Callable, Iterable, List, Optional, TypeVar, Union
+from collections.abc import Callable, Iterable
+from typing import TypeVar
 
 import reactivex
 from reactivex import Observable, abc, typing
@@ -9,8 +10,8 @@ _T = TypeVar("_T")
 
 
 def sequence_equal_(
-    second: Union[Observable[_T], Iterable[_T]],
-    comparer: Optional[typing.Comparer[_T]] = None,
+    second: Observable[_T] | Iterable[_T],
+    comparer: typing.Comparer[_T] | None = None,
 ) -> Callable[[Observable[_T]], Observable[bool]]:
     comparer_ = comparer or default_comparer
     second_ = (
@@ -43,12 +44,12 @@ def sequence_equal_(
 
         def subscribe(
             observer: abc.ObserverBase[bool],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ):
             donel = [False]
             doner = [False]
-            ql: List[_T] = []
-            qr: List[_T] = []
+            ql: list[_T] = []
+            qr: list[_T] = []
 
             def on_next1(x: _T) -> None:
                 if len(qr) > 0:

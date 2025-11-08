@@ -1,5 +1,6 @@
 from asyncio import Future
-from typing import Callable, List, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import TypeVar, Union
 
 import reactivex
 from reactivex import Observable, abc, from_future, typing
@@ -10,7 +11,7 @@ _T = TypeVar("_T")
 
 
 def merge_(
-    *sources: Observable[_T], max_concurrent: Optional[int] = None
+    *sources: Observable[_T], max_concurrent: int | None = None
 ) -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
     def merge(source: Observable[Observable[_T]]) -> Observable[_T]:
         """Merges an observable sequence of observable sequences into
@@ -35,12 +36,12 @@ def merge_(
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ):
             active_count = [0]
             group = CompositeDisposable()
             is_stopped = [False]
-            queue: List[Observable[_T]] = []
+            queue: list[Observable[_T]] = []
 
             def subscribe(xs: Observable[_T]):
                 subscription = SingleAssignmentDisposable()
@@ -105,7 +106,7 @@ def merge_all_() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ):
             group = CompositeDisposable()
             is_stopped = [False]

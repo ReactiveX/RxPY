@@ -38,4 +38,4 @@ class Recorded(Generic[_T]):
         return str(self)
 
     def __str__(self) -> str:
-        return "%s@%s" % (self.value, self.time)
+        return f"{self.value}@{self.time}"

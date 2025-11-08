@@ -1,6 +1,6 @@
 import logging
 from datetime import timedelta
-from typing import Any, Optional, Set, TypeVar
+from typing import Any, TypeVar
 
 from reactivex import abc, typing
 from reactivex.disposable import (
@@ -28,10 +28,10 @@ class QtScheduler(PeriodicScheduler):
         """
         super().__init__()
         self._qtcore = qtcore
-        self._periodic_timers: Set[Any] = set()
+        self._periodic_timers: set[Any] = set()
 
     def schedule(
-        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: typing.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -49,7 +49,7 @@ class QtScheduler(PeriodicScheduler):
         self,
         duetime: typing.RelativeTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -85,7 +85,7 @@ class QtScheduler(PeriodicScheduler):
         self,
         duetime: typing.AbsoluteTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
@@ -106,7 +106,7 @@ class QtScheduler(PeriodicScheduler):
         self,
         period: typing.RelativeTime,
         action: typing.ScheduledPeriodicAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules a periodic piece of work to be executed in the loop.
 
