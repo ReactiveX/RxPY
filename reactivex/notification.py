@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from collections.abc import Callable
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, cast
 
 from reactivex import abc, typing
 from reactivex.scheduler import ImmediateScheduler
@@ -44,7 +44,7 @@ class Notification(Generic[_T]):
             Result produced by the observation."""
 
         if isinstance(on_next, abc.ObserverBase):
-            return self._accept_observer(on_next)
+            return self._accept_observer(cast(abc.ObserverBase[_T], on_next))
 
         return self._accept(on_next, on_error, on_completed)
 

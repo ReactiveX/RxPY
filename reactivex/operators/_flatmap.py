@@ -27,7 +27,7 @@ def _flat_map_internal(
         if isinstance(mapper_result, Future):
             result: Observable[Any] = from_future(cast("Future[Any]", mapper_result))
         elif isinstance(mapper_result, Observable):
-            result = mapper_result
+            result = cast(Observable[Any], mapper_result)
         else:
             result = from_(mapper_result)
         return result
