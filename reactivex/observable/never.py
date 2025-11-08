@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from reactivex import Observable, abc
 from reactivex.disposable import Disposable
@@ -13,7 +13,7 @@ def never_() -> Observable[Any]:
     """
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         return Disposable()
 

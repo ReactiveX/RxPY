@@ -1,5 +1,6 @@
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Any, Dict, Generator, List, NamedTuple, Optional, Tuple, Union
+from typing import Any, NamedTuple, cast
 from warnings import warn
 
 import reactivex
@@ -18,19 +19,19 @@ new_thread_scheduler = NewThreadScheduler()
 
 class MarblesContext(NamedTuple):
     start: Callable[
-        [Union[Observable[Any], Callable[[], Observable[Any]]]], List[Recorded[Any]]
+        [Observable[Any] | Callable[[], Observable[Any]]], list[Recorded[Any]]
     ]
     cold: Callable[
-        [str, Optional[Dict[Union[str, float], Any]], Optional[Exception]],
+        [str, dict[str | float, Any] | None, Exception | None],
         Observable[Any],
     ]
     hot: Callable[
-        [str, Optional[Dict[Union[str, float], Any]], Optional[Exception]],
+        [str, dict[str | float, Any] | None, Exception | None],
         Observable[Any],
     ]
     exp: Callable[
-        [str, Optional[Dict[Union[str, float], Any]], Optional[Exception]],
-        List[Recorded[Any]],
+        [str, dict[str | float, Any] | None, Exception | None],
+        list[Recorded[Any]],
     ]
 
 
@@ -97,13 +98,13 @@ def marbles_testing(
             )
 
     def test_start(
-        create: Union[Observable[Any], Callable[[], Observable[Any]]],
-    ) -> List[Recorded[Any]]:
+        create: Observable[Any] | Callable[[], Observable[Any]],
+    ) -> list[Recorded[Any]]:
         nonlocal start_called
         check()
 
         if isinstance(create, Observable):
-            create_ = create
+            create_ = cast(Observable[Any], create)
 
             def default_create() -> Observable[Any]:
                 return create_
@@ -123,9 +124,9 @@ def marbles_testing(
 
     def test_expected(
         string: str,
-        lookup: Optional[Dict[Union[str, float], Any]] = None,
-        error: Optional[Exception] = None,
-    ) -> List[Recorded[Any]]:
+        lookup: dict[str | float, Any] | None = None,
+        error: Exception | None = None,
+    ) -> list[Recorded[Any]]:
         messages = parse(
             string,
             timespan=timespan,
@@ -137,8 +138,8 @@ def marbles_testing(
 
     def test_cold(
         string: str,
-        lookup: Optional[Dict[Union[str, float], Any]] = None,
-        error: Optional[Exception] = None,
+        lookup: dict[str | float, Any] | None = None,
+        error: Exception | None = None,
     ) -> Observable[Any]:
         check()
         return reactivex.from_marbles(
@@ -150,8 +151,8 @@ def marbles_testing(
 
     def test_hot(
         string: str,
-        lookup: Optional[Dict[Union[str, float], Any]] = None,
-        error: Optional[Exception] = None,
+        lookup: dict[str | float, Any] | None = None,
+        error: Exception | None = None,
     ) -> Observable[Any]:
         check()
         hot_obs: Observable[Any] = reactivex.hot(
@@ -171,17 +172,17 @@ def marbles_testing(
 
 
 def messages_to_records(
-    messages: List[Tuple[typing.RelativeTime, Notification[Any]]],
-) -> List[Recorded[Any]]:
+    messages: list[tuple[typing.RelativeTime, Notification[Any]]],
+) -> list[Recorded[Any]]:
     """
     Helper function to convert messages returned by parse() to a list of
     Recorded.
     """
-    records: List[Recorded[Any]] = []
+    records: list[Recorded[Any]] = []
 
     for message in messages:
         time, notification = message
-        if isinstance(time, (int, float)):
+        if isinstance(time, (int | float)):
             time_ = int(time)
         else:
             time_ = time.microseconds // 1000

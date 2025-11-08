@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from threading import RLock, Thread
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 from typing_extensions import ParamSpec
 

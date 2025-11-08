@@ -1,5 +1,6 @@
 from asyncio import Future
-from typing import Callable, List, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import TypeVar, Union
 
 from reactivex import Observable, abc, from_future
 from reactivex.disposable import CompositeDisposable, SingleAssignmentDisposable
@@ -8,9 +9,8 @@ _T = TypeVar("_T")
 
 
 def amb_(
-    right_source: Union[Observable[_T], "Future[_T]"]
+    right_source: Union[Observable[_T], "Future[_T]"],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
-
     if isinstance(right_source, Future):
         obs: Observable[_T] = from_future(right_source)
     else:
@@ -19,9 +19,9 @@ def amb_(
     def amb(left_source: Observable[_T]) -> Observable[_T]:
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
-            choice: List[Optional[str]] = [None]
+            choice: list[str | None] = [None]
             left_choice = "L"
             right_choice = "R"
             left_subscription = SingleAssignmentDisposable()

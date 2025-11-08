@@ -1,5 +1,4 @@
 from threading import RLock
-from typing import Optional
 
 from reactivex.abc import DisposableBase
 
@@ -17,12 +16,12 @@ class SingleAssignmentDisposable(DisposableBase):
         class.
         """
         self.is_disposed: bool = False
-        self.current: Optional[DisposableBase] = None
+        self.current: DisposableBase | None = None
         self.lock = RLock()
 
         super().__init__()
 
-    def get_disposable(self) -> Optional[DisposableBase]:
+    def get_disposable(self) -> DisposableBase | None:
         return self.current
 
     def set_disposable(self, value: DisposableBase) -> None:
@@ -41,7 +40,7 @@ class SingleAssignmentDisposable(DisposableBase):
 
     def dispose(self) -> None:
         """Sets the status to disposed"""
-        old: Optional[DisposableBase] = None
+        old: DisposableBase | None = None
 
         with self.lock:
             if not self.is_disposed:

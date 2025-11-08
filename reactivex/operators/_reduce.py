@@ -1,4 +1,5 @@
-from typing import Any, Callable, Type, TypeVar, Union, cast
+from collections.abc import Callable
+from typing import Any, TypeVar, cast
 
 from reactivex import Observable, compose
 from reactivex import operators as ops
@@ -10,7 +11,7 @@ _TState = TypeVar("_TState")
 
 
 def reduce_(
-    accumulator: Accumulator[_TState, _T], seed: Union[_TState, Type[NotSet]] = NotSet
+    accumulator: Accumulator[_TState, _T], seed: _TState | type[NotSet] = NotSet
 ) -> Callable[[Observable[_T]], Observable[Any]]:
     """Applies an accumulator function over an observable sequence,
     returning the result of the aggregation as a single element in the

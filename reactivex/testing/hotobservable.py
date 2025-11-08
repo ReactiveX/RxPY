@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, TypeVar
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc
 from reactivex.disposable import Disposable
@@ -13,14 +13,14 @@ _T = TypeVar("_T")
 
 class HotObservable(Observable[_T]):
     def __init__(
-        self, scheduler: VirtualTimeScheduler, messages: List[Recorded[_T]]
+        self, scheduler: VirtualTimeScheduler, messages: list[Recorded[_T]]
     ) -> None:
         super().__init__()
 
         self.scheduler = scheduler
         self.messages = messages
-        self.subscriptions: List[Subscription] = []
-        self.observers: List[abc.ObserverBase[_T]] = []
+        self.subscriptions: list[Subscription] = []
+        self.observers: list[abc.ObserverBase[_T]] = []
 
         observable = self
 
@@ -43,8 +43,8 @@ class HotObservable(Observable[_T]):
 
     def _subscribe_core(
         self,
-        observer: Optional[abc.ObserverBase[_T]] = None,
-        scheduler: Optional[abc.SchedulerBase] = None,
+        observer: abc.ObserverBase[_T] | None = None,
+        scheduler: abc.SchedulerBase | None = None,
     ) -> abc.DisposableBase:
         if observer:
             self.observers.append(observer)

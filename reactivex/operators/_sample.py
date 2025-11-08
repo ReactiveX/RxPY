@@ -1,4 +1,5 @@
-from typing import Any, Callable, Optional, TypeVar, Union, cast
+from collections.abc import Callable
+from typing import Any, TypeVar, cast
 
 import reactivex
 from reactivex import Observable, abc, typing
@@ -11,7 +12,7 @@ def sample_observable(
     source: Observable[_T], sampler: Observable[Any]
 ) -> Observable[_T]:
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[_T], scheduler: abc.SchedulerBase | None = None
     ):
         at_end = False
         has_value = False
@@ -51,8 +52,8 @@ def sample_observable(
 
 
 def sample_(
-    sampler: Union[typing.RelativeTime, Observable[Any]],
-    scheduler: Optional[abc.SchedulerBase] = None,
+    sampler: typing.RelativeTime | Observable[Any],
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def sample(source: Observable[_T]) -> Observable[_T]:
         """Samples the observable sequence at each interval.

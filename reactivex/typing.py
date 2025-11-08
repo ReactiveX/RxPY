@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from threading import Thread
-from typing import Callable, TypeVar, Union
+from typing import TypeVar
 
 from .abc.observable import Subscription
 from .abc.observer import OnCompleted, OnError, OnNext
@@ -30,7 +31,7 @@ SubComparer = Callable[[_T1, _T1], int]
 Accumulator = Callable[[_TState, _T1], _TState]
 
 
-Startable = Union[StartableBase, Thread]
+Startable = StartableBase | Thread
 StartableTarget = Callable[..., None]
 StartableFactory = Callable[[StartableTarget], Startable]
 

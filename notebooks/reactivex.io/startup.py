@@ -1,6 +1,5 @@
 # Helpers.
 # Run this cell always after kernel restarts. All other cells are autonomous.
-from __future__ import print_function
 
 import inspect
 import logging
@@ -25,12 +24,12 @@ def reset_start_time(show_doc_for=None, title=True, sleep=None):
     "resets global start time and also prints doc strings"
     global ts_glob
     if sleep:
-        log("main thread sleeping %ss" % sleep)
+        log(f"main thread sleeping {sleep}s")
         time.sleep(sleep)
     ts_glob, d = time.time(), show_doc_for
     if title:
         if d:
-            if title == True:
+            if title:
                 title = d.__name__
         header(title)
     if not d:
@@ -40,8 +39,7 @@ def reset_start_time(show_doc_for=None, title=True, sleep=None):
     deco, fdef = inspect.getsource(d).split("def ", 1)
     fdef = "def ".join((deco, fdef.split(")", 1)[0])) + "):"
     print(
-        "module %s\n%s\n%s\n%s"
-        % (
+        "module {}\n{}\n{}\n{}".format(
             d.__module__,
             fdef.strip(),
             ("    " + (d.__doc__ or "n.a.").strip()),
@@ -55,11 +53,11 @@ rst = reset_start_time
 
 def log(*msg):
     s = " ".join([str(s) for s in msg])
-    print("%s %s %s" % (dt(ts_glob), cur_thread(), s))
+    print(f"{dt(ts_glob)} {cur_thread()} {s}")
 
 
 def header(msg):
-    print("\n\n%s %s %s\n" % ("=" * 10, msg, "=" * 10))
+    print("\n\n{} {} {}\n".format("=" * 10, msg, "=" * 10))
 
 
 def rand():
@@ -89,17 +87,14 @@ class Subscriber:
     def __init__(self, observed_stream, **kw):
         print("")
         name = kw.get("name", str(hash(self))[-5:])
-        log(
-            "New subscription (%s) on stream" % str(name).strip(), hash(observed_stream)
-        )
+        log(f"New subscription ({str(name).strip()}) on stream", hash(observed_stream))
         self.ts = time.time()  # tstart, for dts at events
         # no postifx after name, sometimes it ends with '\n':
         self.name = name
 
     def _on(self, what, v=""):
         print(
-            "%s %s [%s] %s: %s -> %s"
-            % (dt(ts_glob), cur_thread(), what, dt(self.ts), v, self.name)
+            f"{dt(ts_glob)} {cur_thread()} [{what}] {dt(self.ts)}: {v} -> {self.name}"
         )
 
     def on_next(self, v):

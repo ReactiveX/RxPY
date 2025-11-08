@@ -1,4 +1,5 @@
-from typing import Any, Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc
 from reactivex.scheduler import CurrentThreadScheduler
@@ -7,7 +8,7 @@ _T = TypeVar("_T")
 
 
 def return_value_(
-    value: _T, scheduler: Optional[abc.SchedulerBase] = None
+    value: _T, scheduler: abc.SchedulerBase | None = None
 ) -> Observable[_T]:
     """Returns an observable sequence that contains a single element,
     using the specified scheduler to send out observer messages.
@@ -26,7 +27,7 @@ def return_value_(
     """
 
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[_T], scheduler_: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
 
@@ -40,10 +41,10 @@ def return_value_(
 
 
 def from_callable_(
-    supplier: Callable[[], _T], scheduler: Optional[abc.SchedulerBase] = None
+    supplier: Callable[[], _T], scheduler: abc.SchedulerBase | None = None
 ) -> Observable[_T]:
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[_T], scheduler_: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
 

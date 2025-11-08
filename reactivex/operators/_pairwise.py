@@ -1,12 +1,13 @@
-from typing import Callable, Optional, Tuple, TypeVar, cast
+from collections.abc import Callable
+from typing import TypeVar, cast
 
 from reactivex import Observable, abc
 
 _T = TypeVar("_T")
 
 
-def pairwise_() -> Callable[[Observable[_T]], Observable[Tuple[_T, _T]]]:
-    def pairwise(source: Observable[_T]) -> Observable[Tuple[_T, _T]]:
+def pairwise_() -> Callable[[Observable[_T]], Observable[tuple[_T, _T]]]:
+    def pairwise(source: Observable[_T]) -> Observable[tuple[_T, _T]]:
         """Partially applied pairwise operator.
 
         Returns a new observable that triggers on the second and
@@ -22,8 +23,8 @@ def pairwise_() -> Callable[[Observable[_T]], Observable[Tuple[_T, _T]]]:
         """
 
         def subscribe(
-            observer: abc.ObserverBase[Tuple[_T, _T]],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            observer: abc.ObserverBase[tuple[_T, _T]],
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             has_previous = False
             previous: _T = cast(_T, None)

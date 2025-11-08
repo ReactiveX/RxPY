@@ -1,5 +1,6 @@
+from collections.abc import MutableMapping
 from threading import Lock
-from typing import MutableMapping, Optional, TypeVar
+from typing import TypeVar
 from weakref import WeakKeyDictionary
 
 from reactivex import abc, typing
@@ -35,7 +36,7 @@ class ImmediateScheduler(Scheduler):
         return cls.singleton()
 
     def schedule(
-        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: typing.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -54,7 +55,7 @@ class ImmediateScheduler(Scheduler):
         self,
         duetime: typing.RelativeTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -78,7 +79,7 @@ class ImmediateScheduler(Scheduler):
         self,
         duetime: typing.AbsoluteTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 

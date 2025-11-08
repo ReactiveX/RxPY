@@ -1,4 +1,5 @@
-from typing import Callable, List, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, typing
 from reactivex.internal.basic import default_sub_comparer
@@ -11,12 +12,11 @@ _TKey = TypeVar("_TKey")
 
 def max_by_(
     key_mapper: typing.Mapper[_T, _TKey],
-    comparer: Optional[typing.SubComparer[_TKey]] = None,
-) -> Callable[[Observable[_T]], Observable[List[_T]]]:
-
+    comparer: typing.SubComparer[_TKey] | None = None,
+) -> Callable[[Observable[_T]], Observable[list[_T]]]:
     cmp = comparer or default_sub_comparer
 
-    def max_by(source: Observable[_T]) -> Observable[List[_T]]:
+    def max_by(source: Observable[_T]) -> Observable[list[_T]]:
         """Partially applied max_by operator.
 
         Returns the elements in an observable sequence with the maximum

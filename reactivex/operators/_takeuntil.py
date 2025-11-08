@@ -1,5 +1,6 @@
 from asyncio import Future
-from typing import Callable, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, abc, from_future
 from reactivex.disposable import CompositeDisposable
@@ -9,7 +10,7 @@ _T = TypeVar("_T")
 
 
 def take_until_(
-    other: Union[Observable[_T], "Future[_T]"]
+    other: Observable[_T] | "Future[_T]",
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     if isinstance(other, Future):
         obs: Observable[_T] = from_future(other)
@@ -31,7 +32,7 @@ def take_until_(
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             def on_completed(_: _T) -> None:
                 observer.on_completed()

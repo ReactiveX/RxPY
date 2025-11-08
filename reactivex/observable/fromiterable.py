@@ -1,4 +1,5 @@
-from typing import Any, Iterable, Optional, TypeVar
+from collections.abc import Iterable
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc
 from reactivex.disposable import CompositeDisposable, Disposable
@@ -8,7 +9,7 @@ _T = TypeVar("_T")
 
 
 def from_iterable_(
-    iterable: Iterable[_T], scheduler: Optional[abc.SchedulerBase] = None
+    iterable: Iterable[_T], scheduler: abc.SchedulerBase | None = None
 ) -> Observable[_T]:
     """Converts an iterable to an observable sequence.
 
@@ -25,7 +26,7 @@ def from_iterable_(
     """
 
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[_T], scheduler_: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
         iterator = iter(iterable)

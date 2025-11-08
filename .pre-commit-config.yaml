@@ -1,24 +1,12 @@
 repos:
-  - hooks:
-      - args:
-          - --remove-all-unused-imports
-          - --in-place
-        id: autoflake
-    repo: https://github.com/PyCQA/autoflake
-    rev: v2.3.1
-  - hooks:
-      - id: isort
-    repo: https://github.com/timothycrosley/isort
-    rev: 5.13.2
-  - hooks:
-      - id: black
-    repo: https://github.com/psf/black
-    rev: 24.10.0
-  - hooks:
-      - id: flake8
-        exclude: (^docs/|^examples/|^notebooks/|^tests/)
-    repo: https://github.com/PyCQA/flake8
-    rev: 7.1.1
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.0
+    hooks:
+      # Run the linter
+      - id: ruff
+        args: [--fix]
+      # Run the formatter
+      - id: ruff-format
   - hooks:
       - id: pyright
         name: pyright
@@ -26,11 +14,10 @@ repos:
         language: node
         pass_filenames: false
         types: [python]
-        additional_dependencies: ["pyright@1.1.388"]
+        additional_dependencies: ["pyright@1.1.407"]
     repo: local
   - hooks:
       - id: mypy
         exclude: (^docs/|^examples/|^notebooks/|^tests/|^reactivex/operators/_\w.*\.py$)
     repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.13.0
-

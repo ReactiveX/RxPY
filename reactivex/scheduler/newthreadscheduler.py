@@ -1,7 +1,7 @@
 import logging
 import threading
 from datetime import datetime
-from typing import Optional, TypeVar
+from typing import TypeVar
 
 from reactivex import abc, typing
 from reactivex.disposable import Disposable
@@ -18,16 +18,14 @@ log = logging.getLogger("Rx")
 class NewThreadScheduler(PeriodicScheduler):
     """Creates an object that schedules each unit of work on a separate thread."""
 
-    def __init__(
-        self, thread_factory: Optional[typing.StartableFactory] = None
-    ) -> None:
+    def __init__(self, thread_factory: typing.StartableFactory | None = None) -> None:
         super().__init__()
         self.thread_factory: typing.StartableFactory = (
             thread_factory or default_thread_factory
         )
 
     def schedule(
-        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: typing.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -49,7 +47,7 @@ class NewThreadScheduler(PeriodicScheduler):
         self,
         duetime: typing.RelativeTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -72,7 +70,7 @@ class NewThreadScheduler(PeriodicScheduler):
         self,
         duetime: typing.AbsoluteTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
@@ -93,7 +91,7 @@ class NewThreadScheduler(PeriodicScheduler):
         self,
         period: typing.RelativeTime,
         action: typing.ScheduledPeriodicAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules a periodic piece of work.
 

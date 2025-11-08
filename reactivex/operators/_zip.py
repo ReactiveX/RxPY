@@ -1,4 +1,5 @@
-from typing import Any, Callable, Iterable, Optional, Tuple, TypeVar
+from collections.abc import Callable, Iterable
+from typing import Any, TypeVar
 
 import reactivex
 from reactivex import Observable, abc
@@ -9,8 +10,8 @@ _TOther = TypeVar("_TOther")
 
 def zip_(
     *args: Observable[Any],
-) -> Callable[[Observable[Any]], Observable[Tuple[Any, ...]]]:
-    def _zip(source: Observable[Any]) -> Observable[Tuple[Any, ...]]:
+) -> Callable[[Observable[Any]], Observable[tuple[Any, ...]]]:
+    def _zip(source: Observable[Any]) -> Observable[tuple[Any, ...]]:
         """Merges the specified observable sequences into one observable
         sequence by creating a tuple whenever all of the
         observable sequences have produced an element at a corresponding
@@ -33,8 +34,8 @@ def zip_(
 
 def zip_with_iterable_(
     seq: Iterable[_TOther],
-) -> Callable[[Observable[_T]], Observable[Tuple[_T, _TOther]]]:
-    def zip_with_iterable(source: Observable[_T]) -> Observable[Tuple[_T, _TOther]]:
+) -> Callable[[Observable[_T]], Observable[tuple[_T, _TOther]]]:
+    def zip_with_iterable(source: Observable[_T]) -> Observable[tuple[_T, _TOther]]:
         """Merges the specified observable sequence and list into one
         observable sequence by creating a tuple whenever all of
         the observable sequences have produced an element at a
@@ -55,8 +56,8 @@ def zip_with_iterable_(
         second = iter(seq)
 
         def subscribe(
-            observer: abc.ObserverBase[Tuple[_T, _TOther]],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            observer: abc.ObserverBase[tuple[_T, _TOther]],
+            scheduler: abc.SchedulerBase | None = None,
         ):
             index = 0
 

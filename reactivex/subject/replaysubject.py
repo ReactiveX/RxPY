@@ -1,7 +1,7 @@
 import sys
 from collections import deque
 from datetime import datetime, timedelta
-from typing import Any, Deque, NamedTuple, Optional, TypeVar, cast
+from typing import Any, NamedTuple, TypeVar, cast
 
 from reactivex.observer.scheduledobserver import ScheduledObserver
 from reactivex.scheduler import CurrentThreadScheduler
@@ -37,9 +37,9 @@ class ReplaySubject(Subject[_T]):
 
     def __init__(
         self,
-        buffer_size: Optional[int] = None,
-        window: Optional[typing.RelativeTime] = None,
-        scheduler: Optional[abc.SchedulerBase] = None,
+        buffer_size: int | None = None,
+        window: typing.RelativeTime | None = None,
+        scheduler: abc.SchedulerBase | None = None,
     ) -> None:
         """Initializes a new instance of the ReplaySubject class with
         the specified buffer size, window and scheduler.
@@ -57,12 +57,12 @@ class ReplaySubject(Subject[_T]):
         self.window = (
             timedelta.max if window is None else self.scheduler.to_timedelta(window)
         )
-        self.queue: Deque[QueueItem] = deque()
+        self.queue: deque[QueueItem] = deque()
 
     def _subscribe_core(
         self,
         observer: abc.ObserverBase[_T],
-        scheduler: Optional[abc.SchedulerBase] = None,
+        scheduler: abc.SchedulerBase | None = None,
     ) -> abc.DisposableBase:
         so = ScheduledObserver(self.scheduler, observer)
         subscription = RemovableDisposable(self, so)

@@ -1,4 +1,5 @@
-from typing import Any, Callable, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import Any, TypeVar, cast
 
 from reactivex import Observable, abc, typing
 from reactivex.disposable import (
@@ -11,12 +12,10 @@ _T = TypeVar("_T")
 
 
 def delay_with_mapper_(
-    subscription_delay: Union[
-        Observable[Any],
-        typing.Mapper[Any, Observable[Any]],
-        None,
-    ] = None,
-    delay_duration_mapper: Optional[typing.Mapper[_T, Observable[Any]]] = None,
+    subscription_delay: Observable[Any]
+    | typing.Mapper[Any, Observable[Any]]
+    | None = None,
+    delay_duration_mapper: typing.Mapper[_T, Observable[Any]] | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def delay_with_mapper(source: Observable[_T]) -> Observable[_T]:
         """Time shifts the observable sequence based on a subscription
@@ -35,18 +34,18 @@ def delay_with_mapper_(
         Returns:
             Time-shifted observable sequence.
         """
-        sub_delay: Optional[Observable[Any]] = None
-        mapper: Optional[typing.Mapper[Any, Observable[Any]]] = None
+        sub_delay: Observable[Any] | None = None
+        mapper: typing.Mapper[Any, Observable[Any]] | None = None
 
         if isinstance(subscription_delay, abc.ObservableBase):
             mapper = delay_duration_mapper
-            sub_delay = subscription_delay
+            sub_delay = cast(Observable[Any], subscription_delay)
         else:
             mapper = subscription_delay
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             delays = CompositeDisposable()
             at_end = [False]

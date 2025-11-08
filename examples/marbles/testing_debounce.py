@@ -8,7 +8,6 @@ https://github.com/ReactiveX/rxjs/blob/master/spec/operators/debounceTime-spec.t
 it should delay all element by the specified time
 """
 with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
-
     e1 = cold("-a--------b------c----|")
     ex = exp("------a--------b------(c,|)")
     expected = ex

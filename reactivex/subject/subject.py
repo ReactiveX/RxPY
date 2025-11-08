@@ -1,5 +1,5 @@
 import threading
-from typing import List, Optional, TypeVar
+from typing import TypeVar
 
 from .. import abc
 from ..disposable import Disposable
@@ -21,8 +21,8 @@ class Subject(Observable[_T], Observer[_T], abc.SubjectBase[_T]):
         super().__init__()
 
         self.is_disposed = False
-        self.observers: List[abc.ObserverBase[_T]] = []
-        self.exception: Optional[Exception] = None
+        self.observers: list[abc.ObserverBase[_T]] = []
+        self.exception: Exception | None = None
 
         self.lock = threading.RLock()
 
@@ -33,7 +33,7 @@ class Subject(Observable[_T], Observer[_T], abc.SubjectBase[_T]):
     def _subscribe_core(
         self,
         observer: abc.ObserverBase[_T],
-        scheduler: Optional[abc.SchedulerBase] = None,
+        scheduler: abc.SchedulerBase | None = None,
     ) -> abc.DisposableBase:
         with self.lock:
             self.check_disposed()

@@ -1,5 +1,4 @@
 from threading import RLock
-from typing import Optional
 
 from reactivex.abc import DisposableBase
 
@@ -13,7 +12,7 @@ class RefCountDisposable(DisposableBase):
 
     class InnerDisposable(DisposableBase):
         def __init__(self, parent: "RefCountDisposable") -> None:
-            self.parent: Optional[RefCountDisposable] = parent
+            self.parent: RefCountDisposable | None = parent
             self.is_disposed = False
             self.lock = RLock()
 

@@ -1,5 +1,6 @@
 from collections import OrderedDict
-from typing import Any, Callable, Optional, TypeVar, cast
+from collections.abc import Callable
+from typing import Any, TypeVar, cast
 
 from reactivex import GroupedObservable, Observable, abc
 from reactivex import operators as ops
@@ -19,9 +20,9 @@ _TValue = TypeVar("_TValue")
 
 def group_by_until_(
     key_mapper: Mapper[_T, _TKey],
-    element_mapper: Optional[Mapper[_T, _TValue]],
+    element_mapper: Mapper[_T, _TValue] | None,
     duration_mapper: Callable[[GroupedObservable[_TKey, _TValue]], Observable[Any]],
-    subject_mapper: Optional[Callable[[], Subject[_TValue]]] = None,
+    subject_mapper: Callable[[], Subject[_TValue]] | None = None,
 ) -> Callable[[Observable[_T]], Observable[GroupedObservable[_TKey, _TValue]]]:
     """Groups the elements of an observable sequence according to a
     specified key mapper function. A duration mapper function is used
@@ -57,7 +58,9 @@ def group_by_until_(
 
     element_mapper_ = element_mapper or cast(Mapper[_T, _TValue], identity)
 
-    default_subject_mapper: Callable[[], Subject[_TValue]] = lambda: Subject()
+    def default_subject_mapper() -> Subject[_TValue]:
+        return Subject()
+
     subject_mapper_ = subject_mapper or default_subject_mapper
 
     def group_by_until(
@@ -65,7 +68,7 @@ def group_by_until_(
     ) -> Observable[GroupedObservable[_TKey, _TValue]]:
         def subscribe(
             observer: abc.ObserverBase[GroupedObservable[_TKey, _TValue]],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             writers: OrderedDict[_TKey, Subject[_TValue]] = OrderedDict()
             group_disposable = CompositeDisposable()

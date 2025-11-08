@@ -1,6 +1,7 @@
 import asyncio
 from asyncio import Future
-from typing import Any, Coroutine, List, TypeVar
+from collections.abc import Coroutine
+from typing import Any, TypeVar
 
 import reactivex
 from reactivex import Notification, Observable
@@ -13,7 +14,7 @@ _T = TypeVar("_T")
 def to_async_generator(sentinel: Any = None) -> Coroutine[Any, Any, Future[Any]]:
     loop = asyncio.get_event_loop()
     future = loop.create_future()
-    notifications: List[Notification[Any]] = []
+    notifications: list[Notification[Any]] = []
 
     def _to_async_generator(source: Observable[_T]):
         def feeder():

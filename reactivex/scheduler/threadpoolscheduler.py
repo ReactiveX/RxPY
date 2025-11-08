@@ -1,5 +1,5 @@
 from concurrent.futures import Future, ThreadPoolExecutor
-from typing import Any, Optional
+from typing import Any
 
 from reactivex import abc, typing
 
@@ -17,7 +17,7 @@ class ThreadPoolScheduler(NewThreadScheduler):
         ):
             self.executor: ThreadPoolExecutor = executor
             self.target: typing.StartableTarget = target
-            self.future: Optional["Future[Any]"] = None
+            self.future: Future[Any] | None = None
 
         def start(self) -> None:
             self.future = self.executor.submit(self.target)
@@ -26,7 +26,7 @@ class ThreadPoolScheduler(NewThreadScheduler):
             if self.future:
                 self.future.cancel()
 
-    def __init__(self, max_workers: Optional[int] = None) -> None:
+    def __init__(self, max_workers: int | None = None) -> None:
         self.executor: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=max_workers)
 
         def thread_factory(

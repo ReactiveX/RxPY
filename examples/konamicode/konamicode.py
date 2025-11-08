@@ -1,5 +1,4 @@
 import os
-from typing import Dict, Union
 
 from tornado import ioloop
 from tornado.escape import json_decode
@@ -19,7 +18,7 @@ class WSHandler(WebSocketHandler):
 
         # A Subject is both an observable and observer, so we can both subscribe
         # to it and also feed (on_next) it with new values
-        self.subject: Subject[Dict[str, int]] = Subject()
+        self.subject: Subject[dict[str, int]] = Subject()
 
         # Now we take on our magic glasses and project the stream of bytes into
         # a ...
@@ -36,7 +35,7 @@ class WSHandler(WebSocketHandler):
         # 4. we then subscribe to the Trues, and signal Konami! if we see any
         query.subscribe(on_next=lambda x: self.write_message("Konami!"))
 
-    def on_message(self, message: Union[str, bytes]):
+    def on_message(self, message: str | bytes):
         obj = json_decode(message)
         self.subject.on_next(obj)
 
@@ -58,7 +57,7 @@ def main():
             (r"/static/(.*)", StaticFileHandler, {"path": "."}),
         ]
     )
-    print("Starting server at port: %s" % port)
+    print(f"Starting server at port: {port}")
     app.listen(int(port))
     ioloop.IOLoop.current().start()
 

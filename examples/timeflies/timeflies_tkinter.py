@@ -1,6 +1,6 @@
 import tkinter
 from tkinter import Event, Frame, Label, Tk
-from typing import Any, Tuple
+from typing import Any
 
 import reactivex
 from reactivex import Observable
@@ -21,14 +21,13 @@ def main() -> None:
 
     text = "TIME FLIES LIKE AN ARROW"
 
-    def on_next(info: Tuple[tkinter.Label, "Event[Frame]", int]) -> None:
+    def on_next(info: tuple[tkinter.Label, "Event[Frame]", int]) -> None:
         label, ev, i = info
         label.place(x=ev.x + i * 12 + 15, y=ev.y)
 
     def label2stream(
         label: tkinter.Label, index: int
-    ) -> Observable[Tuple[tkinter.Label, "Event[Frame]", int]]:
-
+    ) -> Observable[tuple[tkinter.Label, "Event[Frame]", int]]:
         return mousemoves.pipe(
             ops.map(lambda ev: (label, ev, index)),
             ops.delay(index * 0.1),

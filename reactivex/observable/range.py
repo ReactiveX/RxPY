@@ -1,5 +1,5 @@
+from collections.abc import Iterator
 from sys import maxsize
-from typing import Iterator, Optional
 
 from reactivex import Observable, abc
 from reactivex.disposable import MultipleAssignmentDisposable
@@ -8,9 +8,9 @@ from reactivex.scheduler import CurrentThreadScheduler
 
 def range_(
     start: int,
-    stop: Optional[int] = None,
-    step: Optional[int] = None,
-    scheduler: Optional[abc.SchedulerBase] = None,
+    stop: int | None = None,
+    step: int | None = None,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Observable[int]:
     """Generates an observable sequence of integral numbers within a
     specified range, using the specified scheduler to send out observer
@@ -44,7 +44,7 @@ def range_(
         range_t = range(start, _stop, _step)
 
     def subscribe(
-        observer: abc.ObserverBase[int], scheduler_: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[int], scheduler_: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         nonlocal range_t
 
@@ -52,7 +52,7 @@ def range_(
         sd = MultipleAssignmentDisposable()
 
         def action(
-            scheduler: abc.SchedulerBase, iterator: Optional[Iterator[int]]
+            scheduler: abc.SchedulerBase, iterator: Iterator[int] | None
         ) -> None:
             try:
                 assert iterator

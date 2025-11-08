@@ -8,7 +8,7 @@ Uses the RxPY IOLoopScheduler.
 
 import os
 from asyncio import Future
-from typing import Any, Dict, Union
+from typing import Any
 
 from tornado import ioloop
 from tornado.escape import json_decode
@@ -28,7 +28,7 @@ def search_wikipedia(term: str) -> Future[HTTPResponse]:
     """Search Wikipedia for a given term"""
     url = "http://en.wikipedia.org/w/api.php"
 
-    params: Dict[str, str] = {"action": "opensearch", "search": term, "format": "json"}
+    params: dict[str, str] = {"action": "opensearch", "search": term, "format": "json"}
     # Must set a user agent for non-browser requests to Wikipedia
     user_agent = (
         "RxPY/3.0 (https://github.com/dbrattli/RxPY; dag@brattli.net) Tornado/4.0.1"
@@ -46,7 +46,7 @@ class WSHandler(WebSocketHandler):
 
         # A Subject is both an observable and observer, so we can both subscribe
         # to it and also feed (send) it with new values
-        self.subject: Subject[Dict[str, str]] = Subject()
+        self.subject: Subject[dict[str, str]] = Subject()
 
         # Get all distinct key up events from the input and only fire if long enough and distinct
         searcher = self.subject.pipe(
@@ -69,7 +69,7 @@ class WSHandler(WebSocketHandler):
             on_next=send_response, on_error=on_error, scheduler=scheduler
         )
 
-    def on_message(self, message: Union[bytes, str]):
+    def on_message(self, message: bytes | str):
         obj = json_decode(message)
         self.subject.on_next(obj)
 
@@ -91,7 +91,7 @@ def main():
             (r"/static/(.*)", StaticFileHandler, {"path": "."}),
         ]
     )
-    print("Starting server at port: %s" % port)
+    print(f"Starting server at port: {port}")
     app.listen(port)
     ioloop.IOLoop.current().start()
 

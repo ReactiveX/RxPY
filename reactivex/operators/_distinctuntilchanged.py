@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar, cast
+from collections.abc import Callable
+from typing import TypeVar, cast
 
 from reactivex import Observable, abc
 from reactivex.internal.basic import default_comparer, identity
@@ -9,10 +10,9 @@ _TKey = TypeVar("_TKey")
 
 
 def distinct_until_changed_(
-    key_mapper: Optional[Mapper[_T, _TKey]] = None,
-    comparer: Optional[Comparer[_TKey]] = None,
+    key_mapper: Mapper[_T, _TKey] | None = None,
+    comparer: Comparer[_TKey] | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
-
     key_mapper_ = key_mapper or cast(Callable[[_T], _TKey], identity)
     comparer_ = comparer or default_comparer
 
@@ -42,7 +42,7 @@ def distinct_until_changed_(
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             has_current_key = False
             current_key: _TKey = cast(_TKey, None)

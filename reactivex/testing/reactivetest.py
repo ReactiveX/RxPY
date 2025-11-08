@@ -1,6 +1,6 @@
 import math
 import types
-from typing import Any, Generic, TypeVar, Union
+from typing import Any, Generic, TypeVar
 
 from reactivex import typing
 from reactivex.notification import OnCompleted, OnError, OnNext
@@ -68,7 +68,7 @@ class ReactiveTest:
 
     @staticmethod
     def on_error(
-        ticks: int, error: Union[Exception, str, types.FunctionType]
+        ticks: int, error: Exception | str | types.FunctionType
     ) -> Recorded[Any]:
         if isinstance(error, types.FunctionType):
             return Recorded(ticks, OnErrorPredicate(error))

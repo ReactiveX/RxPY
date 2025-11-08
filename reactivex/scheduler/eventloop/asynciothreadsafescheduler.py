@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from concurrent.futures import Future
-from typing import List, Optional, TypeVar
+from typing import TypeVar
 
 from reactivex import abc, typing
 from reactivex.disposable import (
@@ -23,7 +23,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
     """
 
     def schedule(
-        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: typing.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -47,7 +47,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
                 handle.cancel()
                 return
 
-            future: "Future[int]" = Future()
+            future: Future[int] = Future()
 
             def cancel_handle() -> None:
                 handle.cancel()
@@ -62,7 +62,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
         self,
         duetime: typing.RelativeTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -86,7 +86,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
 
         # the operations on the list used here are atomic, so there is no
         # need to protect its access with a lock
-        handle: List[asyncio.Handle] = []
+        handle: list[asyncio.Handle] = []
 
         def stage2() -> None:
             handle.append(self._loop.call_later(seconds, interval))
@@ -105,7 +105,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
                 do_cancel_handles()
                 return
 
-            future: "Future[int]" = Future()
+            future: Future[int] = Future()
 
             def cancel_handle() -> None:
                 do_cancel_handles()
@@ -120,7 +120,7 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
         self,
         duetime: typing.AbsoluteTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
@@ -145,13 +145,11 @@ class AsyncIOThreadSafeScheduler(AsyncIOScheduler):
         """
         if not self._loop.is_running():
             return True
-        current_loop = None
+
         try:
-            # In python 3.7 there asyncio.get_running_loop() is prefered.
-            current_loop = asyncio.get_event_loop()
+            current_loop = asyncio.get_running_loop()
         except RuntimeError:
-            # If there is no loop in current thread at all, and it is not main
-            # thread, we get error like:
-            # RuntimeError: There is no current event loop in thread 'Thread-1'
-            pass
+            # If no running event loop is found, assume we're in a different thread
+            return True
+
         return self._loop == current_loop
