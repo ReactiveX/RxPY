@@ -9,15 +9,11 @@ _T = TypeVar("_T")
 
 
 def to_future_(
-    future_ctor: Optional[Callable[[], "Future[_T]"]] = None,
+    future_ctor: Optional[Callable[[], Future[_T]]] = None,
     scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T]], "Future[_T]"]:
-    future_ctor_: Callable[[], "Future[_T]"] = (
-        future_ctor or asyncio.get_event_loop().create_future
-    )
-    future: "Future[_T]" = future_ctor_()
+) -> Callable[[Observable[_T]], Future[_T]]:
 
-    def to_future(source: Observable[_T]) -> "Future[_T]":
+    def to_future(source: Observable[_T]) -> Future[_T]:
         """Converts an existing observable sequence to a Future.
 
         If the observable emits a single item, then this item is set as the
@@ -33,25 +29,38 @@ def to_future_(
         Returns:
             A future with the last value from the observable sequence.
         """
+        if future_ctor is not None:
+            future_ctor_ = future_ctor
+        else:
+            try:
+                future_ctor_ = asyncio.get_running_loop().create_future
+            except RuntimeError:
+
+                def create_future() -> Future[_T]:
+                    return Future()  # Explicitly using Future[_T]
+
+                future_ctor_ = create_future  # If no running loop
+
+        future: Future[_T] = future_ctor_()
 
         has_value = False
-        last_value = cast(_T, None)
+        last_value: Optional[_T] = None
 
-        def on_next(value: _T):
+        def on_next(value: _T) -> None:
             nonlocal last_value
             nonlocal has_value
             last_value = value
             has_value = True
 
-        def on_error(err: Exception):
+        def on_error(err: Exception) -> None:
             if not future.cancelled():
                 future.set_exception(err)
 
-        def on_completed():
+        def on_completed() -> None:
             nonlocal last_value
             if not future.cancelled():
                 if has_value:
-                    future.set_result(last_value)
+                    future.set_result(cast(_T, last_value))
                 else:
                     future.set_exception(SequenceContainsNoElementsError())
             last_value = None

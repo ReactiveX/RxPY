@@ -259,7 +259,11 @@ class Observable(abc.ObservableBase[_T_out]):
         """
         from ..operators._tofuture import to_future_
 
-        loop = asyncio.get_event_loop()
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+
         future: asyncio.Future[_T_out] = self.pipe(
             to_future_(scheduler=AsyncIOScheduler(loop=loop))
         )
