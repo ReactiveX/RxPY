@@ -1,13 +1,11 @@
-[tool.poetry]
+[project]
 name = "reactivex"
-version = "0.0.0" # NOTE: will be updated by publish script
+version = "0.0.0"
 description = "ReactiveX (Rx) for Python"
+authors = [{ name = "Dag Brattli", email = "dag@brattli.net" }]
+requires-python = ">= 3.8, < 4.0"
 readme = "README.rst"
-authors = ["Dag Brattli <dag@brattli.net>"]
-license = "MIT License"
-homepage = "http://reactivex.io"
-repository = "https://github.com/ReactiveX/RxPY"
-documentation = "https://rxpy.readthedocs.io/en/latest/"
+license = "MIT"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Other Environment",
@@ -23,30 +21,49 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-packages = [
-    { include = "reactivex" },
-    { include = "reactivex/py.typed" }
+dependencies = ["typing-extensions>=4.1.1,<5"]
+
+[project.urls]
+Homepage = "http://reactivex.io"
+Repository = "https://github.com/ReactiveX/RxPY"
+Documentation = "https://rxpy.readthedocs.io/en/latest/"
+
+[dependency-groups]
+test = [
+    "pyyaml==6.0.2",
+    "pytest-asyncio>=0.18.1,<0.19",
+    "pytest>=7.0.1,<8",
+    "coverage>=6.3.2,<7",
+    "pytest-xdist>=2.5.0,<3",
+    "black>=22.1.0,<23",
+    "isort>=5.10.1,<6",
+    "pyright>=0.0.13,<0.0.14",
+    "mypy>=0.931,<0.932",
+    "flake8>=4.0.1,<5",
+    "coveralls>=3.3.1,<4",
+    "pre-commit>=2.17.0,<3",
+    "autoflake~=1.4",
+    "dunamai>=1.9.0,<2",
 ]
 
-[tool.poetry.dependencies]
-python = ">= 3.8, < 4.0"
-typing-extensions = "^4.1.1"
+[tool.uv]
+default-groups = ["test"]
 
-[tool.poetry.group.test.dependencies]
-pyyaml = "6.0.2"
-pytest-asyncio = "^0.18.1"
-pytest = "^7.0.1"
-coverage = "^6.3.2"
-pytest-xdist = "^2.5.0"
-black = "^22.1.0"
-isort = "^5.10.1"
-pyright = "^0.0.13"
-mypy = "^0.931"
-flake8 = "^4.0.1"
-coveralls = "^3.3.1"
-pre-commit = "^2.17.0"
-autoflake = "^1.4"
-dunamai = "^1.9.0"
+[tool.hatch.build.targets.sdist]
+include = [
+    "reactivex",
+    "reactivex/py.typed",
+]
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "reactivex",
+    "reactivex/py.typed",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.black]
 line-length = 88
@@ -72,8 +89,3 @@ disallow_untyped_defs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "strict"
-#addopts = "-n auto"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
