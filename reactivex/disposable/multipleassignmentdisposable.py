@@ -1,5 +1,4 @@
 from threading import RLock
-from typing import Optional
 
 from reactivex.abc import DisposableBase
 
@@ -9,13 +8,13 @@ class MultipleAssignmentDisposable(DisposableBase):
     resource can be replaced by another disposable resource."""
 
     def __init__(self) -> None:
-        self.current: Optional[DisposableBase] = None
+        self.current: DisposableBase | None = None
         self.is_disposed = False
         self.lock = RLock()
 
         super().__init__()
 
-    def get_disposable(self) -> Optional[DisposableBase]:
+    def get_disposable(self) -> DisposableBase | None:
         return self.current
 
     def set_disposable(self, value: DisposableBase) -> None:

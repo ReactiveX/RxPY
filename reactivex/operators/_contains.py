@@ -1,15 +1,15 @@
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
-from reactivex import Observable, compose
+from reactivex import Observable, compose, typing
 from reactivex import operators as ops
-from reactivex import typing
 from reactivex.internal.basic import default_comparer
 
 _T = TypeVar("_T")
 
 
 def contains_(
-    value: _T, comparer: Optional[typing.Comparer[_T]] = None
+    value: _T, comparer: typing.Comparer[_T] | None = None
 ) -> Callable[[Observable[_T]], Observable[bool]]:
     comparer_ = comparer or default_comparer
 

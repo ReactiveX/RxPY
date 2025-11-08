@@ -1,4 +1,5 @@
-from typing import Any, Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc
 from reactivex.disposable import (
@@ -35,13 +36,13 @@ def subscribe_on_(
         """
 
         def subscribe(
-            observer: abc.ObserverBase[_T], _: Optional[abc.SchedulerBase] = None
+            observer: abc.ObserverBase[_T], _: abc.SchedulerBase | None = None
         ):
             m = SingleAssignmentDisposable()
             d = SerialDisposable()
             d.disposable = m
 
-            def action(scheduler: abc.SchedulerBase, state: Optional[Any] = None):
+            def action(scheduler: abc.SchedulerBase, state: Any | None = None):
                 d.disposable = ScheduledDisposable(
                     scheduler, source.subscribe(observer)
                 )

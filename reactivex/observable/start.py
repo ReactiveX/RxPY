@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, abc, to_async
 
@@ -6,7 +7,7 @@ _T = TypeVar("_T")
 
 
 def start_(
-    func: Callable[[], _T], scheduler: Optional[abc.SchedulerBase] = None
+    func: Callable[[], _T], scheduler: abc.SchedulerBase | None = None
 ) -> Observable[_T]:
     """Invokes the specified function asynchronously on the specified
     scheduler, surfacing the result through an observable sequence.

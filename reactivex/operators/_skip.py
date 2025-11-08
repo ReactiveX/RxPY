@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, abc
 from reactivex.internal import ArgumentOutOfRangeException
@@ -26,7 +27,7 @@ def skip_(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ):
             remaining = count
 

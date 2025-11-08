@@ -1,4 +1,5 @@
-from typing import Any, Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from reactivex import Observable, operators
 from reactivex.typing import Predicate
@@ -9,7 +10,7 @@ _T = TypeVar("_T")
 
 
 def last_(
-    predicate: Optional[Predicate[_T]] = None,
+    predicate: Predicate[_T] | None = None,
 ) -> Callable[[Observable[_T]], Observable[Any]]:
     def last(source: Observable[_T]) -> Observable[Any]:
         """Partially applied last operator.

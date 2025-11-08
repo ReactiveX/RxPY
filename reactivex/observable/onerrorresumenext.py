@@ -1,5 +1,6 @@
 from asyncio import Future
-from typing import Callable, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import TypeVar, Union
 
 import reactivex
 from reactivex import Observable, abc
@@ -15,8 +16,8 @@ _T = TypeVar("_T")
 
 def on_error_resume_next_(
     *sources: Union[
-        Observable[_T], "Future[_T]", Callable[[Optional[Exception]], Observable[_T]]
-    ]
+        Observable[_T], "Future[_T]", Callable[[Exception | None], Observable[_T]]
+    ],
 ) -> Observable[_T]:
     """Continues an observable sequence that is terminated normally or
     by an exception with the next observable sequence.
@@ -32,7 +33,7 @@ def on_error_resume_next_(
     sources_ = iter(sources)
 
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[_T], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         scheduler = scheduler or CurrentThreadScheduler.singleton()
 
@@ -40,7 +41,7 @@ def on_error_resume_next_(
         cancelable = SerialDisposable()
 
         def action(
-            scheduler: abc.SchedulerBase, state: Optional[Exception] = None
+            scheduler: abc.SchedulerBase, state: Exception | None = None
         ) -> None:
             try:
                 source = next(sources_)
@@ -57,7 +58,7 @@ def on_error_resume_next_(
             d = SingleAssignmentDisposable()
             subscription.disposable = d
 
-            def on_resume(state: Optional[Exception] = None) -> None:
+            def on_resume(state: Exception | None = None) -> None:
                 scheduler.schedule(action, state)
 
             d.disposable = current.subscribe(

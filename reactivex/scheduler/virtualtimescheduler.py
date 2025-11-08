@@ -1,7 +1,7 @@
 import logging
 import threading
 from datetime import datetime, timedelta
-from typing import Any, Optional, TypeVar
+from typing import Any, TypeVar
 
 from reactivex import abc, typing
 from reactivex.abc.scheduler import AbsoluteTime
@@ -54,7 +54,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
         return self.to_datetime(self._clock)
 
     def schedule(
-        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: typing.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -73,7 +73,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
         self,
         duetime: typing.RelativeTime,
         action: abc.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -94,7 +94,7 @@ class VirtualTimeScheduler(PeriodicScheduler):
         self,
         duetime: typing.AbsoluteTime,
         action: abc.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 

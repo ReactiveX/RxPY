@@ -1,5 +1,6 @@
 from asyncio import Future
-from typing import Any, Callable, Optional, TypeVar, Union, cast
+from collections.abc import Callable
+from typing import Any, TypeVar, Union, cast
 
 from reactivex import Observable, from_, from_future
 from reactivex import operators as ops
@@ -12,14 +13,16 @@ _T2 = TypeVar("_T2")
 
 def _flat_map_internal(
     source: Observable[_T1],
-    mapper: Optional[Mapper[_T1, Any]] = None,
-    mapper_indexed: Optional[MapperIndexed[_T1, Any]] = None,
+    mapper: Mapper[_T1, Any] | None = None,
+    mapper_indexed: MapperIndexed[_T1, Any] | None = None,
 ) -> Observable[Any]:
     def projection(x: _T1, i: int) -> Observable[Any]:
         mapper_result: Any = (
             mapper(x)
             if mapper
-            else mapper_indexed(x, i) if mapper_indexed else identity
+            else mapper_indexed(x, i)
+            if mapper_indexed
+            else identity
         )
         if isinstance(mapper_result, Future):
             result: Observable[Any] = from_future(cast("Future[Any]", mapper_result))
@@ -36,7 +39,7 @@ def _flat_map_internal(
 
 
 def flat_map_(
-    mapper: Optional[Mapper[_T1, Observable[_T2]]] = None
+    mapper: Mapper[_T1, Observable[_T2]] | None = None,
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     def flat_map(source: Observable[_T1]) -> Observable[_T2]:
         """One of the Following:
@@ -68,7 +71,7 @@ def flat_map_(
 
 
 def flat_map_indexed_(
-    mapper_indexed: Optional[Any] = None,
+    mapper_indexed: Any | None = None,
 ) -> Callable[[Observable[Any]], Observable[Any]]:
     def flat_map_indexed(source: Observable[Any]) -> Observable[Any]:
         """One of the Following:
@@ -98,7 +101,7 @@ def flat_map_indexed_(
 
 
 def flat_map_latest_(
-    mapper: Mapper[_T1, Union[Observable[_T2], "Future[_T2]"]]
+    mapper: Mapper[_T1, Union[Observable[_T2], "Future[_T2]"]],
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     def flat_map_latest(source: Observable[_T1]) -> Observable[_T2]:
         """Projects each element of an observable sequence into a new

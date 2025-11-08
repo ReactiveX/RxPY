@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, abc
 from reactivex.observer import ObserveOnObserver
@@ -29,7 +30,7 @@ def observe_on_(
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            subscribe_scheduler: Optional[abc.SchedulerBase] = None,
+            subscribe_scheduler: abc.SchedulerBase | None = None,
         ):
             return source.subscribe(
                 ObserveOnObserver(scheduler, observer), scheduler=subscribe_scheduler

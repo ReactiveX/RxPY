@@ -1,4 +1,5 @@
-from typing import Any, Callable, List, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from reactivex import Observable, compose
 from reactivex import operators as ops
@@ -8,7 +9,7 @@ _T = TypeVar("_T")
 
 def buffer_(
     boundaries: Observable[Any],
-) -> Callable[[Observable[_T]], Observable[List[_T]]]:
+) -> Callable[[Observable[_T]], Observable[list[_T]]]:
     return compose(
         ops.window(boundaries),
         ops.flat_map(ops.to_list()),
@@ -16,8 +17,8 @@ def buffer_(
 
 
 def buffer_when_(
-    closing_mapper: Callable[[], Observable[Any]]
-) -> Callable[[Observable[_T]], Observable[List[_T]]]:
+    closing_mapper: Callable[[], Observable[Any]],
+) -> Callable[[Observable[_T]], Observable[list[_T]]]:
     return compose(
         ops.window_when(closing_mapper),
         ops.flat_map(ops.to_list()),
@@ -26,7 +27,7 @@ def buffer_when_(
 
 def buffer_toggle_(
     openings: Observable[Any], closing_mapper: Callable[[Any], Observable[Any]]
-) -> Callable[[Observable[_T]], Observable[List[_T]]]:
+) -> Callable[[Observable[_T]], Observable[list[_T]]]:
     return compose(
         ops.window_toggle(openings, closing_mapper),
         ops.flat_map(ops.to_list()),
@@ -34,8 +35,8 @@ def buffer_toggle_(
 
 
 def buffer_with_count_(
-    count: int, skip: Optional[int] = None
-) -> Callable[[Observable[_T]], Observable[List[_T]]]:
+    count: int, skip: int | None = None
+) -> Callable[[Observable[_T]], Observable[list[_T]]]:
     """Projects each element of an observable sequence into zero or more
     buffers which are produced based on element count information.
 
@@ -54,18 +55,18 @@ def buffer_with_count_(
         observable sequence of buffers.
     """
 
-    def buffer_with_count(source: Observable[_T]) -> Observable[List[_T]]:
+    def buffer_with_count(source: Observable[_T]) -> Observable[list[_T]]:
         nonlocal skip
 
         if skip is None:
             skip = count
 
-        def mapper(value: Observable[_T]) -> Observable[List[_T]]:
+        def mapper(value: Observable[_T]) -> Observable[list[_T]]:
             return value.pipe(
                 ops.to_list(),
             )
 
-        def predicate(value: List[_T]) -> bool:
+        def predicate(value: list[_T]) -> bool:
             return len(value) > 0
 
         return source.pipe(

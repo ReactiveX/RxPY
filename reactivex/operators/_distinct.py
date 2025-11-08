@@ -1,4 +1,5 @@
-from typing import Callable, Generic, List, Optional, TypeVar, cast
+from collections.abc import Callable
+from typing import Generic, TypeVar, cast
 
 from reactivex import Observable, abc, typing
 from reactivex.internal.basic import default_comparer
@@ -8,7 +9,7 @@ _TKey = TypeVar("_TKey")
 
 
 def array_index_of_comparer(
-    array: List[_TKey], item: _TKey, comparer: typing.Comparer[_TKey]
+    array: list[_TKey], item: _TKey, comparer: typing.Comparer[_TKey]
 ):
     for i, a in enumerate(array):
         if comparer(a, item):
@@ -19,7 +20,7 @@ def array_index_of_comparer(
 class HashSet(Generic[_TKey]):
     def __init__(self, comparer: typing.Comparer[_TKey]):
         self.comparer = comparer
-        self.set: List[_TKey] = []
+        self.set: list[_TKey] = []
 
     def push(self, value: _TKey):
         ret_value = array_index_of_comparer(self.set, value, self.comparer) == -1
@@ -29,8 +30,8 @@ class HashSet(Generic[_TKey]):
 
 
 def distinct_(
-    key_mapper: Optional[typing.Mapper[_T, _TKey]] = None,
-    comparer: Optional[typing.Comparer[_TKey]] = None,
+    key_mapper: typing.Mapper[_T, _TKey] | None = None,
+    comparer: typing.Comparer[_TKey] | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     comparer_ = comparer or cast(typing.Comparer[_TKey], default_comparer)
 
@@ -55,7 +56,7 @@ def distinct_(
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             hashset = HashSet(comparer_)
 

@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar, cast
+from collections.abc import Callable
+from typing import TypeVar, cast
 
 from reactivex import Observable, abc
 from reactivex.internal.exceptions import ArgumentOutOfRangeException
@@ -7,7 +8,7 @@ _T = TypeVar("_T")
 
 
 def element_at_or_default_(
-    index: int, has_default: bool = False, default_value: Optional[_T] = None
+    index: int, has_default: bool = False, default_value: _T | None = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     if index < 0:
         raise ArgumentOutOfRangeException()
@@ -15,7 +16,7 @@ def element_at_or_default_(
     def element_at_or_default(source: Observable[_T]) -> Observable[_T]:
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             index_ = index
 

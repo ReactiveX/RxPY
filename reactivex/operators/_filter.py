@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, abc
 from reactivex.typing import Predicate, PredicateIndexed
@@ -25,7 +26,7 @@ def filter_(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_
         """
 
         def subscribe(
-            observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase]
+            observer: abc.ObserverBase[_T], scheduler: abc.SchedulerBase | None
         ) -> abc.DisposableBase:
             def on_next(value: _T):
                 try:
@@ -47,7 +48,7 @@ def filter_(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_
 
 
 def filter_indexed_(
-    predicate_indexed: Optional[PredicateIndexed[_T]] = None,
+    predicate_indexed: PredicateIndexed[_T] | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def filter_indexed(source: Observable[_T]) -> Observable[_T]:
         """Partially applied indexed filter operator.
@@ -66,7 +67,7 @@ def filter_indexed_(
         """
 
         def subscribe(
-            observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase]
+            observer: abc.ObserverBase[_T], scheduler: abc.SchedulerBase | None
         ):
             count = 0
 

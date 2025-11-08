@@ -1,8 +1,8 @@
-from typing import Callable, Optional, Tuple, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
-from reactivex import Observable, abc, compose
+from reactivex import Observable, abc, compose, typing
 from reactivex import operators as ops
-from reactivex import typing
 
 _T = TypeVar("_T")
 
@@ -30,7 +30,7 @@ def skip_while_(
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ):
             running = False
 
@@ -59,13 +59,13 @@ def skip_while_(
 def skip_while_indexed_(
     predicate: typing.PredicateIndexed[_T],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
-    def indexer(x: _T, i: int) -> Tuple[_T, int]:
+    def indexer(x: _T, i: int) -> tuple[_T, int]:
         return (x, i)
 
-    def skipper(x: Tuple[_T, int]) -> bool:
+    def skipper(x: tuple[_T, int]) -> bool:
         return predicate(*x)
 
-    def mapper(x: Tuple[_T, int]) -> _T:
+    def mapper(x: tuple[_T, int]) -> _T:
         return x[0]
 
     return compose(

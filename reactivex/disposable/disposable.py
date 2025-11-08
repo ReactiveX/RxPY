@@ -1,5 +1,4 @@
 from threading import RLock
-from typing import Optional
 
 from reactivex import typing
 from reactivex.abc import DisposableBase
@@ -10,7 +9,7 @@ from reactivex.typing import Action
 class Disposable(DisposableBase):
     """Main disposable class"""
 
-    def __init__(self, action: Optional[typing.Action] = None) -> None:
+    def __init__(self, action: typing.Action | None = None) -> None:
         """Creates a disposable object that invokes the specified
         action when disposed.
 

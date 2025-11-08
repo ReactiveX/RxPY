@@ -1,4 +1,5 @@
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 from reactivex import Observable, compose
 from reactivex import operators as ops
@@ -6,7 +7,7 @@ from reactivex.typing import Mapper
 
 
 def sum_(
-    key_mapper: Optional[Mapper[Any, float]] = None
+    key_mapper: Mapper[Any, float] | None = None,
 ) -> Callable[[Observable[Any]], Observable[float]]:
     if key_mapper:
         return compose(ops.map(key_mapper), ops.sum())

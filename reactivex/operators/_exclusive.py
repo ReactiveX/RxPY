@@ -1,5 +1,6 @@
 from asyncio import Future
-from typing import Callable, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import TypeVar, Union
 
 import reactivex
 from reactivex import Observable, abc
@@ -21,7 +22,7 @@ def exclusive_() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
     def exclusive(source: Observable[Observable[_T]]) -> Observable[_T]:
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             has_current = [False]
             is_stopped = [False]

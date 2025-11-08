@@ -1,17 +1,17 @@
-from typing import Callable, List, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
-from reactivex import Observable, abc, compose
+from reactivex import Observable, abc, compose, typing
 from reactivex import operators as ops
-from reactivex import typing
 
 _T = TypeVar("_T")
 
 
 def buffer_with_time_(
     timespan: typing.RelativeTime,
-    timeshift: Optional[typing.RelativeTime] = None,
-    scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T]], Observable[List[_T]]]:
+    timeshift: typing.RelativeTime | None = None,
+    scheduler: abc.SchedulerBase | None = None,
+) -> Callable[[Observable[_T]], Observable[list[_T]]]:
     if not timeshift:
         timeshift = timespan
 

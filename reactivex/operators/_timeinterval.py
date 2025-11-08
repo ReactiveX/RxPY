@@ -1,6 +1,7 @@
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Callable, Generic, Optional, TypeVar
+from typing import Generic, TypeVar
 
 from reactivex import Observable, abc
 from reactivex import operators as ops
@@ -16,7 +17,7 @@ class TimeInterval(Generic[_T]):
 
 
 def time_interval_(
-    scheduler: Optional[abc.SchedulerBase] = None,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[TimeInterval[_T]]]:
     def time_interval(source: Observable[_T]) -> Observable[TimeInterval[_T]]:
         """Records the time interval between consecutive values in an
@@ -31,7 +32,7 @@ def time_interval_(
 
         def subscribe(
             observer: abc.ObserverBase[TimeInterval[_T]],
-            scheduler_: Optional[abc.SchedulerBase] = None,
+            scheduler_: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             last = _scheduler.now

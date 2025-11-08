@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, abc
 from reactivex import operators as ops
@@ -8,7 +9,7 @@ _T = TypeVar("_T")
 
 
 def some_(
-    predicate: Optional[Predicate[_T]] = None,
+    predicate: Predicate[_T] | None = None,
 ) -> Callable[[Observable[_T]], Observable[bool]]:
     def some(source: Observable[_T]) -> Observable[bool]:
         """Partially applied operator.
@@ -31,7 +32,7 @@ def some_(
 
         def subscribe(
             observer: abc.ObserverBase[bool],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ):
             def on_next(_: _T):
                 observer.on_next(True)

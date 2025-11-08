@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar, cast
+from collections.abc import Callable
+from typing import TypeVar, cast
 
 from reactivex import Observable, compose
 from reactivex import operators as ops
@@ -11,7 +12,7 @@ _T = TypeVar("_T")
 
 
 def max_(
-    comparer: Optional[Comparer[_T]] = None,
+    comparer: Comparer[_T] | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the maximum value in an observable sequence according to
     the specified comparer.

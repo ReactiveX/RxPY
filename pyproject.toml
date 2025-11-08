@@ -3,7 +3,7 @@ name = "reactivex"
 version = "0.0.0"
 description = "ReactiveX (Rx) for Python"
 authors = [{ name = "Dag Brattli", email = "dag@brattli.net" }]
-requires-python = ">= 3.8, < 4.0"
+requires-python = ">= 3.10, < 4.0"
 readme = "README.rst"
 license = "MIT"
 classifiers = [
@@ -13,11 +13,11 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -35,14 +35,11 @@ test = [
     "pytest>=7.0.1,<8",
     "coverage>=6.3.2,<7",
     "pytest-xdist>=2.5.0,<3",
-    "black>=22.1.0,<23",
-    "isort>=5.10.1,<6",
+    "ruff>=0.14.0,<1",
     "pyright>=0.0.13,<0.0.14",
     "mypy>=0.931,<0.932",
-    "flake8>=4.0.1,<5",
     "coveralls>=3.3.1,<4",
     "pre-commit>=2.17.0,<3",
-    "autoflake~=1.4",
     "dunamai>=1.9.0,<2",
 ]
 
@@ -65,21 +62,38 @@ include = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.black]
+[tool.ruff]
 line-length = 88
-target_version = ['py39']
-include = '\.py$'
+target-version = "py310"
+exclude = [
+    ".git",
+    "__pycache__",
+    "docs/source/conf.py",
+    "old",
+    "build",
+    "dist",
+    "tests",
+    "notebooks",
+    "examples",
+]
 
-[tool.isort]
-profile = "black"
-line_length=88                 # corresponds to -w  flag
-multi_line_output=3            # corresponds to -m  flag
-include_trailing_comma=true    # corresponds to -tc flag
-skip_glob = '^((?!py$).)*$'    # isort all Python files
-float_to_top=true
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "UP", # pyupgrade
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+known-first-party = ["reactivex"]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 follow_imports = "silent"
 files = ["reactivex"]
 exclude = ["reactivex/operators/_\\w.*\\.py$"] # mypy will eventually catch up

@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Optional, TypeVar, Union
+from typing import TypeVar
 
 from .disposable import DisposableBase
 from .observable import ObservableBase
@@ -21,11 +21,11 @@ class SubjectBase(ObserverBase[_T], ObservableBase[_T]):
     @abstractmethod
     def subscribe(
         self,
-        on_next: Optional[Union[OnNext[_T], ObserverBase[_T]]] = None,
-        on_error: Optional[OnError] = None,
-        on_completed: Optional[OnCompleted] = None,
+        on_next: OnNext[_T] | ObserverBase[_T] | None = None,
+        on_error: OnError | None = None,
+        on_completed: OnCompleted | None = None,
         *,
-        scheduler: Optional[SchedulerBase] = None,
+        scheduler: SchedulerBase | None = None,
     ) -> DisposableBase:
         """Subscribe an observer to the observable sequence.
 

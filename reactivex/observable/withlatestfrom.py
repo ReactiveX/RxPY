@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Tuple
+from typing import Any
 
 from reactivex import Observable, abc
 from reactivex.disposable import CompositeDisposable, SingleAssignmentDisposable
@@ -7,16 +7,15 @@ from reactivex.internal.utils import NotSet
 
 def with_latest_from_(
     parent: Observable[Any], *sources: Observable[Any]
-) -> Observable[Tuple[Any, ...]]:
+) -> Observable[tuple[Any, ...]]:
     NO_VALUE = NotSet()
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         def subscribeall(
             parent: Observable[Any], *children: Observable[Any]
-        ) -> List[SingleAssignmentDisposable]:
-
+        ) -> list[SingleAssignmentDisposable]:
             values = [NO_VALUE for _ in children]
 
             def subscribechild(

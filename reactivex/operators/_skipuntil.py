@@ -1,5 +1,6 @@
 from asyncio import Future
-from typing import Any, Callable, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import Any, TypeVar, Union
 
 from reactivex import Observable, abc, from_future
 from reactivex.disposable import CompositeDisposable, SingleAssignmentDisposable
@@ -8,7 +9,7 @@ _T = TypeVar("_T")
 
 
 def skip_until_(
-    other: Union[Observable[Any], "Future[Any]"]
+    other: Union[Observable[Any], "Future[Any]"],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the values from the source observable sequence only after
     the other observable sequence produces a value.
@@ -31,7 +32,7 @@ def skip_until_(
     def skip_until(source: Observable[_T]) -> Observable[_T]:
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ):
             is_open = [False]
 

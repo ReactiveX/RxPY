@@ -1,4 +1,5 @@
-from typing import Any, Callable, Tuple
+from collections.abc import Callable
+from typing import Any
 
 import reactivex
 from reactivex import Observable
@@ -6,8 +7,8 @@ from reactivex import Observable
 
 def fork_join_(
     *args: Observable[Any],
-) -> Callable[[Observable[Any]], Observable[Tuple[Any, ...]]]:
-    def fork_join(source: Observable[Any]) -> Observable[Tuple[Any, ...]]:
+) -> Callable[[Observable[Any]], Observable[tuple[Any, ...]]]:
+    def fork_join(source: Observable[Any]) -> Observable[tuple[Any, ...]]:
         """Wait for observables to complete and then combine last values
         they emitted into a tuple. Whenever any of that observables
         completes without emitting any value, result sequence will

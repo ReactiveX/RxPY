@@ -1,4 +1,5 @@
-from typing import Any, Callable, Dict, List, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc, typing
 from reactivex.scheduler import TimeoutScheduler
@@ -7,7 +8,7 @@ _T = TypeVar("_T")
 
 
 def skip_last_with_time_(
-    duration: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
+    duration: typing.RelativeTime, scheduler: abc.SchedulerBase | None = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Skips elements for the specified duration from the end of the
     observable source sequence.
@@ -34,7 +35,7 @@ def skip_last_with_time_(
     def skip_last_with_time(source: Observable[_T]) -> Observable[_T]:
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler_: Optional[abc.SchedulerBase] = None,
+            scheduler_: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             nonlocal duration
 
@@ -42,7 +43,7 @@ def skip_last_with_time_(
                 scheduler or scheduler_ or TimeoutScheduler.singleton()
             )
             duration = _scheduler.to_timedelta(duration)
-            q: List[Dict[str, Any]] = []
+            q: list[dict[str, Any]] = []
 
             def on_next(x: _T) -> None:
                 now = _scheduler.now

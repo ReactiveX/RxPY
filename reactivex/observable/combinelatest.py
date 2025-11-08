@@ -1,10 +1,10 @@
-from typing import Any, List, Optional, Tuple
+from typing import Any
 
 from reactivex import Observable, abc
 from reactivex.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 
-def combine_latest_(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
+def combine_latest_(*sources: Observable[Any]) -> Observable[tuple[Any, ...]]:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple whenever any of the
     observable sequences produces an element.
@@ -20,9 +20,8 @@ def combine_latest_(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
     parent = sources[0]
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: abc.SchedulerBase | None = None
     ) -> CompositeDisposable:
-
         n = len(sources)
         has_value = [False] * n
         has_value_all = [False]
@@ -46,7 +45,7 @@ def combine_latest_(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
             if all(is_done):
                 observer.on_completed()
 
-        subscriptions: List[Optional[SingleAssignmentDisposable]] = [None] * n
+        subscriptions: list[SingleAssignmentDisposable | None] = [None] * n
 
         def func(i: int) -> None:
             subscriptions[i] = SingleAssignmentDisposable()

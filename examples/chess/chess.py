@@ -62,7 +62,7 @@ def main():
             draw.append((image, imagerect.copy()))
 
         def on_error(err):
-            print("Got error: %s" % err)
+            print(f"Got error: {err}")
             sys.exit()
 
         mousemove.pipe(ops.delay(0.1 * i, scheduler=scheduler)).subscribe(

@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, abc
 from reactivex.notification import Notification, OnCompleted, OnError, OnNext
@@ -23,7 +24,7 @@ def materialize() -> Callable[[Observable[_T]], Observable[Notification[_T]]]:
 
         def subscribe(
             observer: abc.ObserverBase[Notification[_T]],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ):
             def on_next(value: _T) -> None:
                 observer.on_next(OnNext(value))
