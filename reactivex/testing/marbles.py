@@ -1,6 +1,6 @@
 from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Any, NamedTuple, cast
+from typing import Any, NamedTuple
 from warnings import warn
 
 import reactivex
@@ -104,7 +104,7 @@ def marbles_testing(
         check()
 
         if isinstance(create, Observable):
-            create_: Observable[Any] = cast(Observable[Any], create)
+            create_: Observable[Any] = create
 
             def default_create() -> Observable[Any]:
                 return create_
