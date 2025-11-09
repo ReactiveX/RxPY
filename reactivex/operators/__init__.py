@@ -3257,9 +3257,9 @@ def sum(
     return sum_(key_mapper)
 
 
-def switch_latest() -> Callable[
-    [Observable[Union[Observable[_T], "Future[_T]"]]], Observable[_T]
-]:
+def switch_latest() -> (
+    Callable[[Observable[Union[Observable[_T], "Future[_T]"]]], Observable[_T]]
+):
     """The switch_latest operator.
 
     Transforms an observable sequence of observable sequences into an
