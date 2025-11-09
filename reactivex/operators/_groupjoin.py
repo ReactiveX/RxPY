@@ -1,6 +1,7 @@
 import logging
 from collections import OrderedDict
-from typing import Any, Callable, Optional, Tuple, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc
 from reactivex import operators as ops
@@ -22,7 +23,7 @@ def group_join_(
     right: Observable[_TRight],
     left_duration_mapper: Callable[[_TLeft], Observable[Any]],
     right_duration_mapper: Callable[[_TRight], Observable[Any]],
-) -> Callable[[Observable[_TLeft]], Observable[Tuple[_TLeft, Observable[_TRight]]]]:
+) -> Callable[[Observable[_TLeft]], Observable[tuple[_TLeft, Observable[_TRight]]]]:
     """Correlates the elements of two sequences based on overlapping
     durations, and groups the results.
 
@@ -45,10 +46,10 @@ def group_join_(
 
     def group_join(
         left: Observable[_TLeft],
-    ) -> Observable[Tuple[_TLeft, Observable[_TRight]]]:
+    ) -> Observable[tuple[_TLeft, Observable[_TRight]]]:
         def subscribe(
-            observer: abc.ObserverBase[Tuple[_TLeft, Observable[_TRight]]],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            observer: abc.ObserverBase[tuple[_TLeft, Observable[_TRight]]],
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             group = CompositeDisposable()
             rcd = RefCountDisposable(group)
@@ -68,7 +69,7 @@ def group_join_(
                 try:
                     result = (value, add_ref(subject, rcd))
                 except Exception as e:
-                    log.error("*** Exception: %s" % e)
+                    log.error(f"*** Exception: {e}")
                     for left_value in left_map.values():
                         left_value.on_error(e)
 

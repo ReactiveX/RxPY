@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 import reactivex
 from reactivex import Observable
@@ -8,7 +9,7 @@ _T = TypeVar("_T")
 
 
 def retry_(
-    retry_count: Optional[int] = None,
+    retry_count: int | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Repeats the source observable sequence the specified number of
     times or until it successfully terminates. If the retry count is

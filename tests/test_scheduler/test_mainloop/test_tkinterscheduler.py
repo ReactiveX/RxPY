@@ -1,4 +1,6 @@
 import os
+import platform
+import sys
 import unittest
 from datetime import timedelta
 from time import sleep
@@ -7,6 +9,12 @@ import pytest
 
 from reactivex.internal.basic import default_now
 from reactivex.scheduler.mainloop import TkinterScheduler
+
+# Skip entire module on PyPy + macOS due to threading issues with Tkinter
+# Error: "Tcl_AsyncDelete: async handler deleted by the wrong thread"
+# This occurs when pytest-xdist tries to parallelize tests that use Tkinter
+if platform.system() == "Darwin" and hasattr(sys, "pypy_version_info"):
+    pytest.skip("Tkinter tests are incompatible with PyPy on macOS", allow_module_level=True)
 
 tkinter = pytest.importorskip("tkinter")
 

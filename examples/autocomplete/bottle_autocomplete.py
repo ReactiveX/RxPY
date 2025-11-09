@@ -3,6 +3,7 @@ The automcomplete example rewritten for bottle / gevent.
 - Requires besides bottle and gevent also the geventwebsocket pip package
 - Instead of a future we create the inner stream for flat_map_latest manually
 """
+
 import json
 
 import gevent
@@ -38,7 +39,6 @@ scheduler = GEventScheduler(gevent)
 
 @app.route("/ws")
 def handle_websocket():
-
     wsock = request.environ.get("wsgi.websocket")
     if not wsock:
         abort(400, "Expected WebSocket request.")

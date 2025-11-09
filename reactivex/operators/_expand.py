@@ -1,4 +1,5 @@
-from typing import Any, Callable, List, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc, typing
 from reactivex.disposable import (
@@ -12,7 +13,7 @@ _T = TypeVar("_T")
 
 
 def expand_(
-    mapper: typing.Mapper[_T, Observable[_T]]
+    mapper: typing.Mapper[_T, Observable[_T]],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def expand(source: Observable[_T]) -> Observable[_T]:
         """Expands an observable sequence by recursively invoking
@@ -28,11 +29,11 @@ def expand_(
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             scheduler = scheduler or ImmediateScheduler.singleton()
 
-            queue: List[Observable[_T]] = []
+            queue: list[Observable[_T]] = []
             m = SerialDisposable()
             d = CompositeDisposable(m)
             active_count = 0

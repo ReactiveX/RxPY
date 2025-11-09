@@ -1,5 +1,6 @@
 from asyncio import Future
-from typing import Any, Callable, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import Any, TypeVar, Union
 
 from reactivex import Observable, abc, from_future
 from reactivex.disposable import (
@@ -11,11 +12,11 @@ from reactivex.disposable import (
 _T = TypeVar("_T")
 
 
-def switch_latest_() -> Callable[
-    [Observable[Union[Observable[_T], "Future[_T]"]]], Observable[_T]
-]:
+def switch_latest_() -> (
+    Callable[[Observable[Union[Observable[_T], "Future[_T]"]]], Observable[_T]]
+):
     def switch_latest(
-        source: Observable[Union[Observable[_T], "Future[_T]"]]
+        source: Observable[Union[Observable[_T], "Future[_T]"]],
     ) -> Observable[_T]:
         """Partially applied switch_latest operator.
 
@@ -31,7 +32,7 @@ def switch_latest_() -> Callable[
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             inner_subscription = SerialDisposable()
             has_latest = [False]

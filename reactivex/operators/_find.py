@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, abc
 
@@ -7,11 +8,11 @@ _T = TypeVar("_T")
 
 def find_value_(
     predicate: Callable[[_T, int, Observable[_T]], bool], yield_index: bool
-) -> Callable[[Observable[_T]], Observable[Union[_T, int, None]]]:
-    def find_value(source: Observable[_T]) -> Observable[Union[_T, int, None]]:
+) -> Callable[[Observable[_T]], Observable[_T | int | None]]:
+    def find_value(source: Observable[_T]) -> Observable[_T | int | None]:
         def subscribe(
-            observer: abc.ObserverBase[Union[_T, int, None]],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            observer: abc.ObserverBase[_T | int | None],
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             index = 0
 

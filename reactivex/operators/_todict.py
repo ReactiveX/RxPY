@@ -1,4 +1,5 @@
-from typing import Callable, Dict, Optional, TypeVar, cast
+from collections.abc import Callable
+from typing import TypeVar, cast
 
 from reactivex import Observable, abc
 from reactivex.typing import Mapper
@@ -9,9 +10,9 @@ _TValue = TypeVar("_TValue")
 
 
 def to_dict_(
-    key_mapper: Mapper[_T, _TKey], element_mapper: Optional[Mapper[_T, _TValue]] = None
-) -> Callable[[Observable[_T]], Observable[Dict[_TKey, _TValue]]]:
-    def to_dict(source: Observable[_T]) -> Observable[Dict[_TKey, _TValue]]:
+    key_mapper: Mapper[_T, _TKey], element_mapper: Mapper[_T, _TValue] | None = None
+) -> Callable[[Observable[_T]], Observable[dict[_TKey, _TValue]]]:
+    def to_dict(source: Observable[_T]) -> Observable[dict[_TKey, _TValue]]:
         """Converts the observable sequence to a Map if it exists.
 
         Args:
@@ -23,10 +24,10 @@ def to_dict_(
         """
 
         def subscribe(
-            observer: abc.ObserverBase[Dict[_TKey, _TValue]],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            observer: abc.ObserverBase[dict[_TKey, _TValue]],
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
-            m: Dict[_TKey, _TValue] = dict()
+            m: dict[_TKey, _TValue] = dict()
 
             def on_next(x: _T) -> None:
                 try:
@@ -44,7 +45,7 @@ def to_dict_(
                 else:
                     element = cast(_TValue, x)
 
-                m[key] = cast(_TValue, element)
+                m[key] = element
 
             def on_completed() -> None:
                 nonlocal m

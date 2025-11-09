@@ -1,4 +1,5 @@
-from typing import Any, Callable, List, Optional, TypeVar, Union, cast
+from collections.abc import Callable
+from typing import Any, TypeVar, cast
 
 import reactivex
 from reactivex import Observable, abc, typing
@@ -12,7 +13,6 @@ from .mockobserver import MockObserver
 from .reactivetest import ReactiveTest
 
 _T = TypeVar("_T")
-_TState = TypeVar("_TState")
 
 
 class TestScheduler(VirtualTimeScheduler):
@@ -25,8 +25,8 @@ class TestScheduler(VirtualTimeScheduler):
     def schedule_absolute(
         self,
         duetime: typing.AbsoluteTime,
-        action: typing.ScheduledAction[_TState],
-        state: _TState = None,
+        action: typing.ScheduledAction[Any],
+        state: Any = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at the specified virtual
         time.
@@ -47,10 +47,10 @@ class TestScheduler(VirtualTimeScheduler):
 
     def start(
         self,
-        create: Optional[Callable[[], Observable[_T]]] = None,
-        created: Optional[float] = None,
-        subscribed: Optional[float] = None,
-        disposed: Optional[float] = None,
+        create: Callable[[], Observable[_T]] | None = None,
+        created: float | None = None,
+        subscribed: float | None = None,
+        disposed: float | None = None,
     ) -> MockObserver[_T]:
         """Starts the test scheduler and uses the specified virtual
         times to invoke the factory function, subscribe to the
@@ -77,8 +77,8 @@ class TestScheduler(VirtualTimeScheduler):
         disposed = disposed or ReactiveTest.disposed
 
         observer = self.create_observer()
-        subscription: Optional[abc.DisposableBase] = None
-        source: Optional[abc.ObservableBase[_T]] = None
+        subscription: abc.DisposableBase | None = None
+        source: abc.ObservableBase[_T] | None = None
 
         def action_create(
             scheduler: abc.SchedulerBase, state: Any = None
@@ -115,7 +115,7 @@ class TestScheduler(VirtualTimeScheduler):
         return observer
 
     def create_hot_observable(
-        self, *args: Union[Recorded[_T], List[Recorded[_T]]]
+        self, *args: Recorded[_T] | list[Recorded[_T]]
     ) -> HotObservable[_T]:
         """Creates a hot observable using the specified timestamped
         notification messages either as a list or by multiple arguments.
@@ -128,14 +128,14 @@ class TestScheduler(VirtualTimeScheduler):
         of subscriptions and notifications.
         """
 
-        if args and isinstance(args[0], List):
+        if args and isinstance(args[0], list):
             messages = args[0]
         else:
-            messages = cast(List[Recorded[_T]], list(args))
+            messages = cast(list[Recorded[_T]], list(args))
         return HotObservable(self, messages)
 
     def create_cold_observable(
-        self, *args: Union[Recorded[_T], List[Recorded[_T]]]
+        self, *args: Recorded[_T] | list[Recorded[_T]]
     ) -> ColdObservable[_T]:
         """Creates a cold observable using the specified timestamped
         notification messages either as an array or arguments.
@@ -153,7 +153,7 @@ class TestScheduler(VirtualTimeScheduler):
         if args and isinstance(args[0], list):
             messages = args[0]
         else:
-            messages = cast(List[Recorded[_T]], list(args))
+            messages = cast(list[Recorded[_T]], list(args))
         return ColdObservable(self, messages)
 
     def create_observer(self) -> MockObserver[Any]:

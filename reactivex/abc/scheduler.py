@@ -1,17 +1,18 @@
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from datetime import datetime, timedelta
-from typing import Callable, Optional, TypeVar, Union
+from typing import TypeVar
 
 from .disposable import DisposableBase
 
 _TState = TypeVar("_TState")  # Can be anything
 
-AbsoluteTime = Union[datetime, float]
-RelativeTime = Union[timedelta, float]
-AbsoluteOrRelativeTime = Union[datetime, timedelta, float]
+AbsoluteTime = datetime | float
+RelativeTime = timedelta | float
+AbsoluteOrRelativeTime = datetime | timedelta | float
 ScheduledAction = Callable[
-    ["SchedulerBase", Optional[_TState]],
-    Optional[DisposableBase],
+    ["SchedulerBase", _TState | None],
+    DisposableBase | None,
 ]
 
 
@@ -35,7 +36,7 @@ class SchedulerBase(ABC):
 
     @abstractmethod
     def schedule(
-        self, action: ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: ScheduledAction[_TState], state: _TState | None = None
     ) -> DisposableBase:
         """Schedules an action to be executed.
 
@@ -55,7 +56,7 @@ class SchedulerBase(ABC):
         self,
         duetime: RelativeTime,
         action: ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -76,7 +77,7 @@ class SchedulerBase(ABC):
         self,
         duetime: AbsoluteTime,
         action: ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> DisposableBase:
         """Schedules an action to be executed at duetime.
 

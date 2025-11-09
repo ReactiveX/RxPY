@@ -1,12 +1,13 @@
-from typing import Callable, List, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, abc
 
 _T = TypeVar("_T")
 
 
-def to_iterable_() -> Callable[[Observable[_T]], Observable[List[_T]]]:
-    def to_iterable(source: Observable[_T]) -> Observable[List[_T]]:
+def to_iterable_() -> Callable[[Observable[_T]], Observable[list[_T]]]:
+    def to_iterable(source: Observable[_T]) -> Observable[list[_T]]:
         """Creates an iterable from an observable sequence.
 
         Returns:
@@ -16,12 +17,12 @@ def to_iterable_() -> Callable[[Observable[_T]], Observable[List[_T]]]:
         """
 
         def subscribe(
-            observer: abc.ObserverBase[List[_T]],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            observer: abc.ObserverBase[list[_T]],
+            scheduler: abc.SchedulerBase | None = None,
         ):
             nonlocal source
 
-            queue: List[_T] = []
+            queue: list[_T] = []
 
             def on_next(item: _T):
                 queue.append(item)

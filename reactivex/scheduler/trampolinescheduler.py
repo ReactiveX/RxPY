@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, TypeVar
+from typing import TypeVar
 
 from reactivex import abc, typing
 from reactivex.abc.disposable import DisposableBase
@@ -26,14 +26,13 @@ class TrampolineScheduler(Scheduler):
     """
 
     def __init__(self) -> None:
-
         self._tramp = Trampoline()
 
     def get_trampoline(self) -> Trampoline:
         return self._tramp
 
     def schedule(
-        self, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: abc.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -52,7 +51,7 @@ class TrampolineScheduler(Scheduler):
         self,
         duetime: typing.RelativeTime,
         action: abc.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -73,7 +72,7 @@ class TrampolineScheduler(Scheduler):
         self,
         duetime: typing.AbsoluteTime,
         action: abc.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
@@ -108,7 +107,7 @@ class TrampolineScheduler(Scheduler):
 
     def ensure_trampoline(
         self, action: ScheduledAction[_TState]
-    ) -> Optional[DisposableBase]:
+    ) -> DisposableBase | None:
         """Method for testing the TrampolineScheduler."""
 
         if self.schedule_required():

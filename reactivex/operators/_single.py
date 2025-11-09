@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar, cast
 
 from reactivex import Observable, compose
 from reactivex import operators as ops
@@ -8,7 +9,7 @@ _T = TypeVar("_T")
 
 
 def single_(
-    predicate: Optional[Predicate[_T]] = None,
+    predicate: Predicate[_T] | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the only element of an observable sequence that satisfies the
     condition in the optional predicate, and reports an exception if there
@@ -30,7 +31,10 @@ def single_(
     if predicate:
         return compose(ops.filter(predicate), ops.single())
     else:
-        return ops.single_or_default_async(False)
+        return cast(
+            Callable[[Observable[_T]], Observable[_T]],
+            ops.single_or_default_async(False),
+        )
 
 
 __all__ = ["single_"]

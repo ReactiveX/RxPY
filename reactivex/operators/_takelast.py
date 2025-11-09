@@ -1,4 +1,5 @@
-from typing import Callable, List, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, abc
 
@@ -29,9 +30,9 @@ def take_last_(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
-            q: List[_T] = []
+            q: list[_T] = []
 
             def on_next(x: _T) -> None:
                 q.append(x)

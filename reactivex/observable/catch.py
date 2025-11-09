@@ -1,4 +1,5 @@
-from typing import Any, Iterable, Optional, TypeVar
+from collections.abc import Iterable
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc
 from reactivex.disposable import (
@@ -13,7 +14,6 @@ _T = TypeVar("_T")
 
 
 def catch_with_iterable_(sources: Iterable[Observable[_T]]) -> Observable[_T]:
-
     """Continues an observable sequence that is terminated by an
     exception with the next observable sequence.
 
@@ -33,7 +33,7 @@ def catch_with_iterable_(sources: Iterable[Observable[_T]]) -> Observable[_T]:
     sources_ = iter(sources)
 
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[_T], scheduler_: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         _scheduler = scheduler_ or CurrentThreadScheduler.singleton()
 

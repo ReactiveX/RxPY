@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, TypeVar
+from typing import TypeVar
 
 from reactivex import abc, typing
 from reactivex.disposable import Disposable, MultipleAssignmentDisposable
@@ -18,7 +18,7 @@ class PeriodicScheduler(Scheduler, abc.PeriodicSchedulerBase):
         self,
         period: typing.RelativeTime,
         action: typing.ScheduledPeriodicAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules a periodic piece of work.
 
@@ -38,8 +38,8 @@ class PeriodicScheduler(Scheduler, abc.PeriodicSchedulerBase):
         seconds: float = self.to_seconds(period)
 
         def periodic(
-            scheduler: abc.SchedulerBase, state: Optional[_TState] = None
-        ) -> Optional[Disposable]:
+            scheduler: abc.SchedulerBase, state: _TState | None = None
+        ) -> Disposable | None:
             if disp.is_disposed:
                 return None
 

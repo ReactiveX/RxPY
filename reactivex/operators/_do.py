@@ -1,4 +1,5 @@
-from typing import Any, Callable, List, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc, typing
 from reactivex.disposable import CompositeDisposable
@@ -7,9 +8,9 @@ _T = TypeVar("_T")
 
 
 def do_action_(
-    on_next: Optional[typing.OnNext[_T]] = None,
-    on_error: Optional[typing.OnError] = None,
-    on_completed: Optional[typing.OnCompleted] = None,
+    on_next: typing.OnNext[_T] | None = None,
+    on_error: typing.OnError | None = None,
+    on_completed: typing.OnCompleted | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def do_action(source: Observable[_T]) -> Observable[_T]:
         """Invokes an action for each element in the observable
@@ -39,7 +40,7 @@ def do_action_(
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             def _on_next(x: _T) -> None:
                 if not on_next:
@@ -104,7 +105,9 @@ def do_(observer: abc.ObserverBase[_T]) -> Callable[[Observable[_T]], Observable
     return do_action_(observer.on_next, observer.on_error, observer.on_completed)
 
 
-def do_after_next(source: Observable[_T], after_next: typing.OnNext[_T]):
+def do_after_next(
+    source: Observable[_T], after_next: typing.OnNext[_T]
+) -> Observable[_T]:
     """Invokes an action with each element after it has been emitted downstream.
     This can be helpful for debugging, logging, and other side effects.
 
@@ -112,7 +115,7 @@ def do_after_next(source: Observable[_T], after_next: typing.OnNext[_T]):
     """
 
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[_T], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         def on_next(value: _T):
             try:
@@ -137,7 +140,7 @@ def do_on_subscribe(source: Observable[Any], on_subscribe: typing.Action):
     """
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         on_subscribe()
         return source.subscribe(
@@ -165,7 +168,7 @@ def do_on_dispose(source: Observable[Any], on_dispose: typing.Action):
             on_dispose()
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         composite_disposable = CompositeDisposable()
         composite_disposable.add(OnDispose())
@@ -191,7 +194,7 @@ def do_on_terminate(source: Observable[Any], on_terminate: typing.Action):
     """
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         def on_completed():
             try:
@@ -226,7 +229,7 @@ def do_after_terminate(source: Observable[Any], after_terminate: typing.Action):
     """
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         def on_completed():
             observer.on_completed()
@@ -267,7 +270,7 @@ def do_finally(
     """
 
     class OnDispose(abc.DisposableBase):
-        def __init__(self, was_invoked: List[bool]):
+        def __init__(self, was_invoked: list[bool]):
             self.was_invoked = was_invoked
 
         def dispose(self) -> None:
@@ -278,9 +281,8 @@ def do_finally(
     def partial(source: Observable[_T]) -> Observable[_T]:
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
-
             was_invoked = [False]
 
             def on_completed():

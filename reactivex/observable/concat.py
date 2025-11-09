@@ -1,4 +1,5 @@
-from typing import Any, Iterable, Optional, TypeVar
+from collections.abc import Iterable
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc
 from reactivex.disposable import (
@@ -14,7 +15,7 @@ _T = TypeVar("_T")
 
 def concat_with_iterable_(sources: Iterable[Observable[_T]]) -> Observable[_T]:
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[_T], scheduler_: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         _scheduler = scheduler_ or CurrentThreadScheduler.singleton()
 

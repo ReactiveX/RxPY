@@ -23,8 +23,7 @@ class CatchSchedulerTestScheduler(VirtualTimeScheduler):
                 ret = action(scheduler, state)
             except MyException as e:
                 self.exc = e
-            finally:
-                return ret
+            return ret
 
         return _action
 

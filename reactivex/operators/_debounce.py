@@ -1,4 +1,5 @@
-from typing import Any, Callable, List, Optional, TypeVar, cast
+from collections.abc import Callable
+from typing import Any, TypeVar, cast
 
 from reactivex import Observable, abc, typing
 from reactivex.disposable import (
@@ -12,7 +13,7 @@ _T = TypeVar("_T")
 
 
 def debounce_(
-    duetime: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase]
+    duetime: typing.RelativeTime, scheduler: abc.SchedulerBase | None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def debounce(source: Observable[_T]) -> Observable[_T]:
         """Ignores values from an observable sequence which are followed by
@@ -31,13 +32,13 @@ def debounce_(
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler_: Optional[abc.SchedulerBase] = None,
+            scheduler_: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
             cancelable = SerialDisposable()
             has_value = [False]
-            value: List[_T] = [cast(_T, None)]
-            _id: List[int] = [0]
+            value: list[_T] = [cast(_T, None)]
+            _id: list[int] = [0]
 
             def on_next(x: _T) -> None:
                 has_value[0] = True
@@ -80,7 +81,7 @@ def debounce_(
 
 
 def throttle_with_mapper_(
-    throttle_duration_mapper: Callable[[Any], Observable[Any]]
+    throttle_duration_mapper: Callable[[Any], Observable[Any]],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def throttle_with_mapper(source: Observable[_T]) -> Observable[_T]:
         """Partially applied throttle_with_mapper operator.
@@ -100,7 +101,7 @@ def throttle_with_mapper_(
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             cancelable = SerialDisposable()
             has_value: bool = False

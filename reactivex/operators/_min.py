@@ -1,4 +1,5 @@
-from typing import Callable, List, Optional, TypeVar, cast
+from collections.abc import Callable
+from typing import TypeVar, cast
 
 from reactivex import Observable, compose
 from reactivex import operators as ops
@@ -9,7 +10,7 @@ from reactivex.typing import Comparer
 _T = TypeVar("_T")
 
 
-def first_only(x: List[_T]) -> _T:
+def first_only(x: list[_T]) -> _T:
     if not x:
         raise SequenceContainsNoElementsError()
 
@@ -17,7 +18,7 @@ def first_only(x: List[_T]) -> _T:
 
 
 def min_(
-    comparer: Optional[Comparer[_T]] = None,
+    comparer: Comparer[_T] | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """The `min` operator.
 

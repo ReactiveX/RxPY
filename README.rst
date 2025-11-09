@@ -28,7 +28,7 @@ ReactiveX for Python v4
 For v3.X please go to the `v3 branch
 <https://github.com/ReactiveX/RxPY/tree/release/v3.2.x>`_.
 
-ReactiveX for Python v4.x runs on `Python <http://www.python.org/>`_ 3.7 or above. To
+ReactiveX for Python v4.x runs on `Python <http://www.python.org/>`_ 3.9 or above. To
 install:
 
 .. code:: console

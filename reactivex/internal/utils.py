@@ -1,6 +1,7 @@
+from collections.abc import Callable, Iterable
 from functools import update_wrapper
 from types import FunctionType
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from typing_extensions import ParamSpec
 
@@ -19,7 +20,7 @@ def add_ref(xs: "Observable[_T]", r: RefCountDisposable) -> "Observable[_T]":
     from reactivex import Observable
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         return CompositeDisposable(r.disposable, xs.subscribe(observer))
 
@@ -41,8 +42,8 @@ def alias(name: str, doc: str, fun: Callable[_P, _T]) -> Callable[_P, _T]:
     args = (_fun.__code__, _fun.__globals__)
     kwargs = {"name": name, "argdefs": _fun.__defaults__, "closure": _fun.__closure__}
     alias_ = FunctionType(*args, **kwargs)  # type: ignore
-    alias_ = update_wrapper(alias_, _fun)
-    alias_.__kwdefaults__ = _fun.__kwdefaults__
+    alias_ = update_wrapper(alias_, _fun)  # type: ignore
+    alias_.__kwdefaults__ = _fun.__kwdefaults__  # type: ignore
     alias_.__doc__ = doc
     alias_.__annotations__ = _fun.__annotations__
     return cast(Callable[_P, _T], alias_)

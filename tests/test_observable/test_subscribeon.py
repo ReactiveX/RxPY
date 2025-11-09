@@ -1,5 +1,6 @@
 import unittest
 
+from reactivex import create as rx_create
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
 
@@ -70,6 +71,29 @@ class TestSubscribeOn(unittest.TestCase):
 
         assert results.messages == []
         assert xs.subscriptions == [subscribe(200, 1000)]
+
+    def test_subscribe_on_scheduler_forwarding(self):
+        scheduler = TestScheduler()
+        forwarded_sheduler = None
+
+        def source():
+            def subscribe(observer, _scheduler):
+                nonlocal forwarded_sheduler
+                forwarded_sheduler = _scheduler
+
+                def action_on_completed(_, __):
+                    observer.on_completed()
+
+                return _scheduler.schedule_absolute(250, action_on_completed)
+
+            return rx_create(subscribe)
+
+        def create():
+            return source().pipe(ops.subscribe_on(scheduler))
+
+        results = scheduler.start(create)
+        assert forwarded_sheduler is scheduler
+        assert results.messages == [on_completed(250)]
 
 
 if __name__ == "__main__":

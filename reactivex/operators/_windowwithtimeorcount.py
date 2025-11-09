@@ -1,4 +1,5 @@
-from typing import Any, Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc, typing
 from reactivex.disposable import (
@@ -17,12 +18,12 @@ _T = TypeVar("_T")
 def window_with_time_or_count_(
     timespan: typing.RelativeTime,
     count: int,
-    scheduler: Optional[abc.SchedulerBase] = None,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
     def window_with_time_or_count(source: Observable[_T]) -> Observable[Observable[_T]]:
         def subscribe(
             observer: abc.ObserverBase[Observable[_T]],
-            scheduler_: Optional[abc.SchedulerBase] = None,
+            scheduler_: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 

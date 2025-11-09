@@ -1,4 +1,5 @@
-from typing import Callable, List, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable
 from reactivex import operators as ops
@@ -9,8 +10,8 @@ _T = TypeVar("_T")
 
 def partition_(
     predicate: Predicate[_T],
-) -> Callable[[Observable[_T]], List[Observable[_T]]]:
-    def partition(source: Observable[_T]) -> List[Observable[_T]]:
+) -> Callable[[Observable[_T]], list[Observable[_T]]]:
+    def partition(source: Observable[_T]) -> list[Observable[_T]]:
         """The partially applied `partition` operator.
 
         Returns two observables which partition the observations of the
@@ -48,8 +49,8 @@ def partition_(
 
 def partition_indexed_(
     predicate_indexed: PredicateIndexed[_T],
-) -> Callable[[Observable[_T]], List[Observable[_T]]]:
-    def partition_indexed(source: Observable[_T]) -> List[Observable[_T]]:
+) -> Callable[[Observable[_T]], list[Observable[_T]]]:
+    def partition_indexed(source: Observable[_T]) -> list[Observable[_T]]:
         """The partially applied indexed partition operator.
 
         Returns two observables which partition the observations of the

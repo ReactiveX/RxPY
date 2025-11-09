@@ -1,6 +1,5 @@
 from collections import deque
 from threading import Condition, Lock
-from typing import Deque
 
 from reactivex.internal.priorityqueue import PriorityQueue
 
@@ -34,7 +33,7 @@ class Trampoline:
                 self._queue.clear()
 
     def _run(self) -> None:
-        ready: Deque[ScheduledItem] = deque()
+        ready: deque[ScheduledItem] = deque()
         while True:
             with self._lock:
                 while len(self._queue) > 0:

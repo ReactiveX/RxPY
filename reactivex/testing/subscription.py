@@ -1,9 +1,9 @@
 import sys
-from typing import Any, Optional
+from typing import Any
 
 
 class Subscription:
-    def __init__(self, start: int, end: Optional[int] = None):
+    def __init__(self, start: int, end: int | None = None):
         self.subscribe = start
         self.unsubscribe = end or sys.maxsize
 
@@ -22,4 +22,4 @@ class Subscription:
         unsubscribe = (
             "Infinite" if self.unsubscribe == sys.maxsize else self.unsubscribe
         )
-        return "(%s, %s)" % (self.subscribe, unsubscribe)
+        return f"({self.subscribe}, {unsubscribe})"

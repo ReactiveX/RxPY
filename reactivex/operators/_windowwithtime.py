@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from datetime import timedelta
-from typing import Any, Callable, List, Optional, TypeVar
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc, typing
 from reactivex.disposable import (
@@ -17,8 +18,8 @@ _T = TypeVar("_T")
 
 def window_with_time_(
     timespan: typing.RelativeTime,
-    timeshift: Optional[typing.RelativeTime] = None,
-    scheduler: Optional[abc.SchedulerBase] = None,
+    timeshift: typing.RelativeTime | None = None,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
     if timeshift is None:
         timeshift = timespan
@@ -31,7 +32,7 @@ def window_with_time_(
     def window_with_time(source: Observable[_T]) -> Observable[Observable[_T]]:
         def subscribe(
             observer: abc.ObserverBase[Observable[_T]],
-            scheduler_: Optional[abc.SchedulerBase] = None,
+            scheduler_: abc.SchedulerBase | None = None,
         ):
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
@@ -39,7 +40,7 @@ def window_with_time_(
             next_shift = [timeshift]
             next_span = [timespan]
             total_time = [DELTA_ZERO]
-            queue: List[Subject[_T]] = []
+            queue: list[Subject[_T]] = []
 
             group_disposable = CompositeDisposable(timer_d)
             ref_count_disposable = RefCountDisposable(group_disposable)
@@ -70,7 +71,7 @@ def window_with_time_(
 
                 @synchronized(source.lock)
                 def action(scheduler: abc.SchedulerBase, state: Any = None):
-                    s: Optional[Subject[_T]] = None
+                    s: Subject[_T] | None = None
 
                     if is_shift:
                         s = Subject()

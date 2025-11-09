@@ -1,6 +1,7 @@
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Callable, Generic, Optional, TypeVar
+from typing import Generic, TypeVar
 
 from reactivex import Observable, abc, defer, operators
 from reactivex.scheduler import TimeoutScheduler
@@ -15,7 +16,7 @@ class Timestamp(Generic[_T]):
 
 
 def timestamp_(
-    scheduler: Optional[abc.SchedulerBase] = None,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[Timestamp[_T]]]:
     def timestamp(source: Observable[_T]) -> Observable[Timestamp[_T]]:
         """Records the timestamp for each value in an observable sequence.
@@ -33,7 +34,7 @@ def timestamp_(
             An observable sequence with timestamp information on values.
         """
 
-        def factory(scheduler_: Optional[abc.SchedulerBase] = None):
+        def factory(scheduler_: abc.SchedulerBase | None = None):
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
             def mapper(value: _T) -> Timestamp[_T]:

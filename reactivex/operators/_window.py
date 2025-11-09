@@ -1,5 +1,6 @@
 import logging
-from typing import Any, Callable, Optional, Tuple, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc, empty
 from reactivex import operators as ops
@@ -31,7 +32,7 @@ def window_toggle_(
     """
 
     def window_toggle(source: Observable[_T]) -> Observable[Observable[_T]]:
-        def mapper(args: Tuple[Any, Observable[_T]]):
+        def mapper(args: tuple[Any, Observable[_T]]):
             _, window = args
             return window
 
@@ -63,7 +64,7 @@ def window_(
     def window(source: Observable[_T]) -> Observable[Observable[_T]]:
         def subscribe(
             observer: abc.ObserverBase[Observable[_T]],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             window_subject: Subject[_T] = Subject()
             d = CompositeDisposable()
@@ -107,7 +108,7 @@ def window_(
 
 
 def window_when_(
-    closing_mapper: Callable[[], Observable[Any]]
+    closing_mapper: Callable[[], Observable[Any]],
 ) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
     """Projects each element of an observable sequence into zero or
     more windows.
@@ -122,7 +123,7 @@ def window_when_(
     def window_when(source: Observable[_T]) -> Observable[Observable[_T]]:
         def subscribe(
             observer: abc.ObserverBase[Observable[_T]],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ):
             m = SerialDisposable()
             d = CompositeDisposable(m)

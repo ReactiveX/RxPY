@@ -1,4 +1,5 @@
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any, cast
 
 import reactivex
 from reactivex import Observable
@@ -7,7 +8,7 @@ from reactivex import Observable
 def combine_latest_(
     *others: Observable[Any],
 ) -> Callable[[Observable[Any]], Observable[Any]]:
-    def combine_latest(source: Observable[Any]) -> Observable[Any]:
+    def combine_latest(source: Observable[Any]) -> Observable[tuple[Any, ...]]:
         """Merges the specified observable sequences into one
         observable sequence by creating a tuple whenever any
         of the observable sequences produces an element.
@@ -20,9 +21,12 @@ def combine_latest_(
             elements of the sources into a tuple.
         """
 
-        sources = (source,) + others
+        sources: tuple[Observable[Any], ...] = (source, *others)
 
-        return reactivex.combine_latest(*sources)
+        ret: Observable[tuple[Any, ...]] = cast(
+            Observable[tuple[Any, ...]], reactivex.combine_latest(*sources)
+        )
+        return ret
 
     return combine_latest
 

@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Optional, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from reactivex import Observable, operators, typing
 
@@ -13,7 +14,7 @@ class AverageValue:
 
 
 def average_(
-    key_mapper: Optional[typing.Mapper[_T, float]] = None,
+    key_mapper: typing.Mapper[_T, float] | None = None,
 ) -> Callable[[Observable[_T]], Observable[float]]:
     def average(source: Observable[Any]) -> Observable[float]:
         """Partially applied average operator.
