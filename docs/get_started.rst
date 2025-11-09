@@ -115,6 +115,9 @@ transforms emissions from the source in some way. For example, we can
 :func:`filter() <reactivex.operators.filter>` for lengths being at least 5. These will
 yield two separate Observables built off each other.
 
+RxPY supports both **fluent** (method chaining) and **functional** (pipe-based)
+syntax. Here's the functional style:
+
 .. code:: python
 
     from reactivex import of, operators as op
@@ -127,7 +130,18 @@ yield two separate Observables built off each other.
     )
     composed.subscribe(lambda value: print("Received {0}".format(value)))
 
-Output:
+And here's the equivalent fluent style:
+
+.. code:: python
+
+    from reactivex import of
+
+    source = of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
+
+    composed = source.map(lambda s: len(s)).filter(lambda i: i >= 5)
+    composed.subscribe(lambda value: print("Received {0}".format(value)))
+
+Both produce the same output:
 
 .. code:: console
 
@@ -141,6 +155,8 @@ each operator, unless you want to have multiple subscribers at that point.
 Instead, you want to strive to inline and create an "Observable pipeline" of
 operations. That way your code is readable and tells a story much more easily.
 
+**Functional style:**
+
 .. code:: python
 
     from reactivex import of, operators as op
@@ -149,6 +165,21 @@ operations. That way your code is readable and tells a story much more easily.
         op.map(lambda s: len(s)),
         op.filter(lambda i: i >= 5)
     ).subscribe(lambda value: print("Received {0}".format(value)))
+
+**Fluent style:**
+
+.. code:: python
+
+    from reactivex import of
+
+    (of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
+        .map(lambda s: len(s))
+        .filter(lambda i: i >= 5)
+        .subscribe(lambda value: print("Received {0}".format(value)))
+    )
+
+Both styles are fully supported. See :doc:`style_guide` for guidance on choosing
+between them.
 
 Custom operator
 ---------------
