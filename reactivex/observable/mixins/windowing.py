@@ -211,3 +211,478 @@ class WindowingMixin(Generic[_T]):
         from reactivex import operators as ops
 
         return ops.partition_indexed(predicate_indexed)(self._as_observable())
+
+    def buffer_with_count(
+        self, count: int, skip: int | None = None
+    ) -> Observable[list[_T]]:
+        """Buffer elements by count.
+
+        Projects each element of an observable sequence into zero or more buffers
+        which are produced based on element count information.
+
+        Examples:
+            Fluent style:
+            >>> result = source.buffer_with_count(5)
+            >>> result = source.buffer_with_count(5, 3)  # overlapping buffers
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.buffer_with_count(5))
+
+        Args:
+            count: Length of each buffer.
+            skip: Number of elements to skip between creation of consecutive
+                buffers. If not specified, defaults to count.
+
+        Returns:
+            An observable sequence of buffers.
+
+        See Also:
+            - :func:`buffer_with_count <reactivex.operators.buffer_with_count>`
+            - :meth:`buffer`
+            - :meth:`buffer_with_time`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.buffer_with_count(count, skip))
+
+    def buffer_with_time(
+        self,
+        timespan: typing.RelativeTime,
+        timeshift: typing.RelativeTime | None = None,
+        scheduler: Any = None,
+    ) -> Observable[list[_T]]:
+        """Buffer elements by time.
+
+        Projects each element of an observable sequence into zero or more buffers
+        which are produced based on timing information.
+
+        Examples:
+            Fluent style:
+            >>> result = source.buffer_with_time(1.0)
+            >>> result = source.buffer_with_time(1.0, 0.5)  # overlapping buffers
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.buffer_with_time(1.0))
+
+        Args:
+            timespan: Length of each buffer (in seconds).
+            timeshift: Interval between creation of consecutive buffers.
+                If not specified, defaults to timespan.
+            scheduler: Scheduler to run the timer on. If not specified,
+                defaults to timeout scheduler.
+
+        Returns:
+            An observable sequence of buffers.
+
+        See Also:
+            - :func:`buffer_with_time <reactivex.operators.buffer_with_time>`
+            - :meth:`buffer`
+            - :meth:`buffer_with_count`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(
+            ops.buffer_with_time(timespan, timeshift, scheduler)
+        )
+
+    def buffer_with_time_or_count(
+        self,
+        timespan: typing.RelativeTime,
+        count: int,
+        scheduler: Any = None,
+    ) -> Observable[list[_T]]:
+        """Buffer elements by time or count.
+
+        Projects each element of an observable sequence into a buffer that is
+        completed when either it's full or a given amount of time has elapsed.
+
+        Examples:
+            Fluent style:
+            >>> result = source.buffer_with_time_or_count(1.0, 5)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.buffer_with_time_or_count(1.0, 5))
+
+        Args:
+            timespan: Maximum time length of a buffer.
+            count: Maximum element count of a buffer.
+            scheduler: Scheduler to run the timer on. If not specified,
+                defaults to timeout scheduler.
+
+        Returns:
+            An observable sequence of buffers.
+
+        See Also:
+            - :func:`buffer_with_time_or_count
+              <reactivex.operators.buffer_with_time_or_count>`
+            - :meth:`buffer_with_time`
+            - :meth:`buffer_with_count`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(
+            ops.buffer_with_time_or_count(timespan, count, scheduler)
+        )
+
+    def buffer_when(
+        self, closing_mapper: Callable[[], Observable[Any]]
+    ) -> Observable[list[_T]]:
+        """Buffer elements with dynamic boundaries.
+
+        Projects each element of an observable sequence into zero or more buffers.
+
+        Examples:
+            Fluent style:
+            >>> result = source.buffer_when(lambda: rx.timer(1.0))
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.buffer_when(lambda: rx.timer(1.0)))
+
+        Args:
+            closing_mapper: A function invoked to define the closing of each
+                produced buffer. A buffer is started when the previous buffer
+                is closed. The observable returned by the closing_mapper is
+                used to close the buffer when it emits any notification.
+
+        Returns:
+            An observable sequence of buffers.
+
+        See Also:
+            - :func:`buffer_when <reactivex.operators.buffer_when>`
+            - :meth:`buffer`
+            - :meth:`buffer_toggle`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.buffer_when(closing_mapper))
+
+    def buffer_toggle(
+        self,
+        openings: Observable[Any],
+        closing_mapper: Callable[[Any], Observable[Any]],
+    ) -> Observable[list[_T]]:
+        """Buffer elements with opening and closing observables.
+
+        Projects each element of an observable sequence into zero or more buffers.
+
+        Examples:
+            Fluent style:
+            >>> result = source.buffer_toggle(
+            ...     openings=rx.interval(5.0),
+            ...     closing_mapper=lambda x: rx.timer(2.0)
+            ... )
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(
+            ...     ops.buffer_toggle(
+            ...         openings=rx.interval(5.0),
+            ...         closing_mapper=lambda x: rx.timer(2.0)
+            ...     )
+            ... )
+
+        Args:
+            openings: Observable sequence whose elements denote the
+                opening of buffers.
+            closing_mapper: A function invoked to define the closing of
+                each produced buffer. Value emitted by openings observable
+                is provided as argument. The observable returned by
+                closing_mapper is used to close the buffer when it emits
+                any notification.
+
+        Returns:
+            An observable sequence of buffers.
+
+        See Also:
+            - :func:`buffer_toggle <reactivex.operators.buffer_toggle>`
+            - :meth:`buffer_when`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.buffer_toggle(openings, closing_mapper))
+
+    def window(self, boundaries: Observable[Any]) -> Observable[Observable[_T]]:
+        """Window elements based on boundary observable.
+
+        Projects each element of an observable sequence into zero or more windows
+        which are produced based on timing information from another observable
+        sequence.
+
+        Examples:
+            Fluent style:
+            >>> result = source.window(rx.interval(1.0))
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.window(rx.interval(1.0)))
+
+        Args:
+            boundaries: Observable sequence whose elements denote the creation
+                and completion of windows.
+
+        Returns:
+            An observable sequence of windows.
+
+        See Also:
+            - :func:`window <reactivex.operators.window>`
+            - :meth:`window_with_count`
+            - :meth:`window_with_time`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.window(boundaries))
+
+    def window_with_count(
+        self, count: int, skip: int | None = None
+    ) -> Observable[Observable[_T]]:
+        """Window elements by count.
+
+        Projects each element of an observable sequence into zero or more windows
+        which are produced based on element count information.
+
+        Examples:
+            Fluent style:
+            >>> result = source.window_with_count(5)
+            >>> result = source.window_with_count(5, 3)  # overlapping windows
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.window_with_count(5))
+
+        Args:
+            count: Length of each window.
+            skip: Number of elements to skip between creation of consecutive
+                windows. If not specified, defaults to count.
+
+        Returns:
+            An observable sequence of windows.
+
+        See Also:
+            - :func:`window_with_count <reactivex.operators.window_with_count>`
+            - :meth:`window`
+            - :meth:`window_with_time`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.window_with_count(count, skip))
+
+    def window_with_time(
+        self,
+        timespan: typing.RelativeTime,
+        timeshift: typing.RelativeTime | None = None,
+        scheduler: Any = None,
+    ) -> Observable[Observable[_T]]:
+        """Window elements by time.
+
+        Projects each element of an observable sequence into zero or more windows
+        which are produced based on timing information.
+
+        Examples:
+            Fluent style:
+            >>> result = source.window_with_time(1.0)
+            >>> result = source.window_with_time(1.0, 0.5)  # overlapping windows
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.window_with_time(1.0))
+
+        Args:
+            timespan: Length of each window (in seconds).
+            timeshift: Interval between creation of consecutive windows.
+                If not specified, defaults to timespan.
+            scheduler: Scheduler to run the timer on. If not specified,
+                defaults to timeout scheduler.
+
+        Returns:
+            An observable sequence of windows.
+
+        See Also:
+            - :func:`window_with_time <reactivex.operators.window_with_time>`
+            - :meth:`window`
+            - :meth:`window_with_count`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(
+            ops.window_with_time(timespan, timeshift, scheduler)
+        )
+
+    def window_with_time_or_count(
+        self,
+        timespan: typing.RelativeTime,
+        count: int,
+        scheduler: Any = None,
+    ) -> Observable[Observable[_T]]:
+        """Window elements by time or count.
+
+        Projects each element of an observable sequence into a window that is
+        completed when either it's full or a given amount of time has elapsed.
+
+        Examples:
+            Fluent style:
+            >>> result = source.window_with_time_or_count(1.0, 5)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.window_with_time_or_count(1.0, 5))
+
+        Args:
+            timespan: Maximum time length of a window.
+            count: Maximum element count of a window.
+            scheduler: Scheduler to run the timer on. If not specified,
+                defaults to timeout scheduler.
+
+        Returns:
+            An observable sequence of windows.
+
+        See Also:
+            - :func:`window_with_time_or_count
+              <reactivex.operators.window_with_time_or_count>`
+            - :meth:`window_with_time`
+            - :meth:`window_with_count`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(
+            ops.window_with_time_or_count(timespan, count, scheduler)
+        )
+
+    def window_when(
+        self, closing_mapper: Callable[[], Observable[Any]]
+    ) -> Observable[Observable[_T]]:
+        """Window elements with dynamic boundaries.
+
+        Projects each element of an observable sequence into zero or more windows.
+
+        Examples:
+            Fluent style:
+            >>> result = source.window_when(lambda: rx.timer(1.0))
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.window_when(lambda: rx.timer(1.0)))
+
+        Args:
+            closing_mapper: A function invoked to define the closing of each
+                produced window. A window is started when the previous window
+                is closed. The observable returned by the closing_mapper is
+                used to close the window when it emits any notification.
+
+        Returns:
+            An observable sequence of windows.
+
+        See Also:
+            - :func:`window_when <reactivex.operators.window_when>`
+            - :meth:`window`
+            - :meth:`window_toggle`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.window_when(closing_mapper))
+
+    def window_toggle(
+        self,
+        openings: Observable[Any],
+        closing_mapper: Callable[[Any], Observable[Any]],
+    ) -> Observable[Observable[_T]]:
+        """Window elements with opening and closing observables.
+
+        Projects each element of an observable sequence into zero or more windows.
+
+        Examples:
+            Fluent style:
+            >>> result = source.window_toggle(
+            ...     openings=rx.interval(5.0),
+            ...     closing_mapper=lambda x: rx.timer(2.0)
+            ... )
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(
+            ...     ops.window_toggle(
+            ...         openings=rx.interval(5.0),
+            ...         closing_mapper=lambda x: rx.timer(2.0)
+            ...     )
+            ... )
+
+        Args:
+            openings: Observable sequence whose elements denote the
+                opening of windows.
+            closing_mapper: A function invoked to define the closing of
+                each produced window. Value emitted by openings observable
+                is provided as argument. The observable returned by
+                closing_mapper is used to close the window when it emits
+                any notification.
+
+        Returns:
+            An observable sequence of windows.
+
+        See Also:
+            - :func:`window_toggle <reactivex.operators.window_toggle>`
+            - :meth:`window_when`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.window_toggle(openings, closing_mapper))
+
+    def group_by_until(
+        self,
+        key_mapper: typing.Mapper[_T, _A],
+        element_mapper: typing.Mapper[_T, _B] | None,
+        duration_mapper: Callable[[Any], Observable[Any]],
+        subject_mapper: Callable[[], Any] | None = None,
+    ) -> Observable[Any]:
+        """Group elements by key with duration control.
+
+        Groups the elements of an observable sequence according to a specified
+        key mapper function and comparer and selects the resulting elements by
+        using a specified function. A duration mapper is used to control the
+        lifetime of groups.
+
+        Examples:
+            Fluent style:
+            >>> result = source.group_by_until(
+            ...     key_mapper=lambda x: x % 2,
+            ...     element_mapper=None,
+            ...     duration_mapper=lambda grp: rx.timer(5.0)
+            ... )
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(
+            ...     ops.group_by_until(
+            ...         key_mapper=lambda x: x % 2,
+            ...         element_mapper=None,
+            ...         duration_mapper=lambda grp: rx.timer(5.0)
+            ...     )
+            ... )
+
+        Args:
+            key_mapper: A function to extract the key for each element.
+            element_mapper: A function to map each source element to an
+                element in an observable group.
+            duration_mapper: A function to signal the expiration of a group.
+            subject_mapper: A function that returns a subject to use for
+                each group.
+
+        Returns:
+            A sequence of observable groups, each of which corresponds to
+            a unique key value, containing all elements that share that
+            same key value. When a group is expired, a new group with the
+            same key will be created.
+
+        See Also:
+            - :func:`group_by_until <reactivex.operators.group_by_until>`
+            - :meth:`group_by`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(
+            ops.group_by_until(
+                key_mapper, element_mapper, duration_mapper, subject_mapper
+            )
+        )
