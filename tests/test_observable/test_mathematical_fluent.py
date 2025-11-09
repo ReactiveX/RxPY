@@ -97,6 +97,72 @@ class TestMinMaxMethodChaining:
         assert fluent_max_values == pipe_max_values == [9]
 
 
+class TestMinByMaxByMethodChaining:
+    """Tests for min_by() and max_by() methods."""
+
+    def test_min_by_equivalence(self) -> None:
+        """Verify min_by fluent and functional styles are equivalent."""
+        from typing import NamedTuple
+
+        class Person(NamedTuple):
+            name: str
+            age: int
+
+        source: Observable[Person] = rx.of(
+            Person("Alice", 30),
+            Person("Bob", 25),
+            Person("Charlie", 25),
+            Person("David", 35),
+        )
+
+        fluent_result: Observable[list[Person]] = source.min_by(lambda x: x.age)
+        pipe_result: Observable[list[Person]] = source.pipe(
+            ops.min_by(lambda x: x.age)
+        )
+
+        fluent_values: list[list[Person]] = []
+        pipe_values: list[list[Person]] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert len(fluent_values) == len(pipe_values) == 1
+        assert len(fluent_values[0]) == 2  # Bob and Charlie both age 25
+        assert fluent_values[0][0].age == 25
+        assert fluent_values[0][1].age == 25
+
+    def test_max_by_equivalence(self) -> None:
+        """Verify max_by fluent and functional styles are equivalent."""
+        from typing import NamedTuple
+
+        class Person(NamedTuple):
+            name: str
+            age: int
+
+        source: Observable[Person] = rx.of(
+            Person("Alice", 30),
+            Person("Bob", 25),
+            Person("Charlie", 35),
+            Person("David", 35),
+        )
+
+        fluent_result: Observable[list[Person]] = source.max_by(lambda x: x.age)
+        pipe_result: Observable[list[Person]] = source.pipe(
+            ops.max_by(lambda x: x.age)
+        )
+
+        fluent_values: list[list[Person]] = []
+        pipe_values: list[list[Person]] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert len(fluent_values) == len(pipe_values) == 1
+        assert len(fluent_values[0]) == 2  # Charlie and David both age 35
+        assert fluent_values[0][0].age == 35
+        assert fluent_values[0][1].age == 35
+
+
 class TestComplexMathematicalChaining:
     """Tests for complex mathematical operation chaining."""
 

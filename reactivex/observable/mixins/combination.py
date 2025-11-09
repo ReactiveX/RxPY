@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 if TYPE_CHECKING:
@@ -11,6 +12,7 @@ if TYPE_CHECKING:
 
 
 _T = TypeVar("_T", covariant=True)
+_T2 = TypeVar("_T2")
 
 
 class CombinationMixin(Generic[_T]):
@@ -311,3 +313,171 @@ class CombinationMixin(Generic[_T]):
         from reactivex import operators as ops
 
         return self._as_observable().pipe(ops.amb(right_source))
+
+    def merge_all(self) -> Observable[Any]:
+        """Merge all inner observables.
+
+        Merges an observable sequence of observable sequences into an observable
+        sequence.
+
+        Examples:
+            Fluent style:
+            >>> result = source_of_sources.merge_all()
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source_of_sources.pipe(ops.merge_all())
+
+        Returns:
+            An observable sequence that merges the elements of the inner sequences.
+
+        See Also:
+            - :func:`merge_all <reactivex.operators.merge_all>`
+            - :meth:`merge`
+            - :meth:`concat_all`
+        """
+        # Cast is safe: merge_all is meant to be called on Observable of Observables.
+        # The fluent API allows chaining this on nested observable sequences where
+        # _T is Observable[_T2]. We return Observable[Any] as the inner type cannot
+        # be statically inferred from _T without higher-kinded types.
+        from reactivex import operators as ops
+
+        op: Callable[[Observable[Any]], Observable[Any]] = cast(
+            "Callable[[Observable[Any]], Observable[Any]]", ops.merge_all()
+        )
+        return self._as_observable().pipe(op)
+
+    def zip_with_iterable(
+        self, second: Iterable[_T2]
+    ) -> Observable[tuple[_T, _T2]]:
+        """Zip with iterable.
+
+        Merges the specified observable sequence and iterable into one observable
+        sequence by creating a tuple whenever both sequences have produced an element
+        at a corresponding index.
+
+        Examples:
+            Fluent style:
+            >>> result = source.zip_with_iterable([1, 2, 3])
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.zip_with_iterable([1, 2, 3]))
+
+        Args:
+            second: Iterable to zip with the source observable.
+
+        Returns:
+            An observable sequence containing the result of combining elements of the
+            sources as a tuple.
+
+        See Also:
+            - :func:`zip_with_iterable <reactivex.operators.zip_with_iterable>`
+            - :meth:`zip`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.zip_with_iterable(second))
+
+    def join(
+        self,
+        right: Observable[_T2],
+        left_duration_mapper: Callable[[_T], Observable[Any]],
+        right_duration_mapper: Callable[[_T2], Observable[Any]],
+    ) -> Observable[tuple[_T, _T2]]:
+        """Join based on overlapping durations.
+
+        Correlates the elements of two sequences based on overlapping durations.
+
+        Examples:
+            Fluent style:
+            >>> result = left.join(
+            ...     right,
+            ...     lambda x: rx.timer(0.5),
+            ...     lambda x: rx.timer(0.5)
+            ... )
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = left.pipe(
+            ...     ops.join(
+            ...         right,
+            ...         lambda x: rx.timer(0.5),
+            ...         lambda x: rx.timer(0.5)
+            ...     )
+            ... )
+
+        Args:
+            right: The right observable sequence to join elements for.
+            left_duration_mapper: A function to select the duration (expressed as an
+                observable sequence) of each element of the left observable sequence,
+                used to determine overlap.
+            right_duration_mapper: A function to select the duration (expressed as an
+                observable sequence) of each element of the right observable sequence,
+                used to determine overlap.
+
+        Returns:
+            An observable sequence that contains elements combined into a tuple from
+            source elements that have an overlapping duration.
+
+        See Also:
+            - :func:`join <reactivex.operators.join>`
+            - :meth:`group_join`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(
+            ops.join(right, left_duration_mapper, right_duration_mapper)
+        )
+
+    def group_join(
+        self,
+        right: Observable[_T2],
+        left_duration_mapper: Callable[[_T], Observable[Any]],
+        right_duration_mapper: Callable[[_T2], Observable[Any]],
+    ) -> Observable[tuple[_T, Observable[_T2]]]:
+        """Group join based on overlapping durations.
+
+        Correlates the elements of two sequences based on overlapping durations, and
+        groups the results.
+
+        Examples:
+            Fluent style:
+            >>> result = left.group_join(
+            ...     right,
+            ...     lambda x: rx.timer(0.5),
+            ...     lambda x: rx.timer(0.5)
+            ... )
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = left.pipe(
+            ...     ops.group_join(
+            ...         right,
+            ...         lambda x: rx.timer(0.5),
+            ...         lambda x: rx.timer(0.5)
+            ...     )
+            ... )
+
+        Args:
+            right: The right observable sequence to join elements for.
+            left_duration_mapper: A function to select the duration (expressed as an
+                observable sequence) of each element of the left observable sequence,
+                used to determine overlap.
+            right_duration_mapper: A function to select the duration (expressed as an
+                observable sequence) of each element of the right observable sequence,
+                used to determine overlap.
+
+        Returns:
+            An observable sequence that contains elements combined into a tuple from
+            source elements that have an overlapping duration.
+
+        See Also:
+            - :func:`group_join <reactivex.operators.group_join>`
+            - :meth:`join`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(
+            ops.group_join(right, left_duration_mapper, right_duration_mapper)
+        )

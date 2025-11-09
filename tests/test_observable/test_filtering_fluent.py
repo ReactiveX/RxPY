@@ -240,6 +240,96 @@ class TestElementAtMethodChaining:
         assert fluent_values == pipe_values == [30]
 
 
+class TestElementAtOrDefaultMethodChaining:
+    """Tests for element_at_or_default() method."""
+
+    def test_element_at_or_default_equivalence(self) -> None:
+        """Verify element_at_or_default fluent and functional styles are equivalent."""
+        source: Observable[int] = rx.of(10, 20, 30)
+
+        fluent_result: Observable[int] = source.element_at_or_default(5, 99)
+        pipe_result: Observable[int] = source.pipe(ops.element_at_or_default(5, 99))
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [99]
+
+    def test_element_at_or_default_exists(self) -> None:
+        """Test element_at_or_default when element exists."""
+        source: Observable[int] = rx.of(10, 20, 30, 40, 50)
+
+        result: Observable[int] = source.element_at_or_default(2, 99)
+
+        values: list[int] = []
+        result.subscribe(on_next=values.append)
+
+        assert values == [30]
+
+
+class TestSingleMethodChaining:
+    """Tests for single() method."""
+
+    def test_single_equivalence(self) -> None:
+        """Verify single fluent and functional styles are equivalent."""
+        source: Observable[int] = rx.of(42)
+
+        fluent_result: Observable[int] = source.single()
+        pipe_result: Observable[int] = source.pipe(ops.single())
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [42]
+
+    def test_single_with_predicate(self) -> None:
+        """Test single with predicate."""
+        source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
+        result: Observable[int] = source.single(lambda x: x == 3)
+
+        values: list[int] = []
+        result.subscribe(on_next=values.append)
+
+        assert values == [3]
+
+
+class TestSingleOrDefaultMethodChaining:
+    """Tests for single_or_default() method."""
+
+    def test_single_or_default_equivalence(self) -> None:
+        """Verify single_or_default fluent and functional styles are equivalent."""
+        source: Observable[int] = rx.of(42)
+
+        fluent_result: Observable[int] = source.single_or_default(None, 99)
+        pipe_result: Observable[int] = source.pipe(ops.single_or_default(None, 99))
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [42]
+
+    def test_single_or_default_empty(self) -> None:
+        """Test single_or_default with empty source."""
+        source: Observable[int] = rx.empty()
+
+        result: Observable[int] = source.single_or_default(None, 99)
+
+        values: list[int] = []
+        result.subscribe(on_next=values.append)
+
+        assert values == [99]
+
+
 class TestDistinctOperators:
     """Tests for distinct filtering operators."""
 

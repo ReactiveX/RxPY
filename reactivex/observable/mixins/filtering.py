@@ -593,3 +593,121 @@ class FilteringMixin(Generic[_T]):
         from reactivex import operators as ops
 
         return self._as_observable().pipe(ops.skip_while_indexed(predicate_indexed))
+
+    def single(self, predicate: typing.Predicate[_T] | None = None) -> Observable[_T]:
+        """Return single element matching predicate.
+
+        Returns the only element of an observable sequence that satisfies the condition
+        in the optional predicate, and reports an exception if there is not exactly one
+        element in the observable sequence.
+
+        Examples:
+            Fluent style:
+            >>> result = source.single()
+            >>> result = source.single(lambda x: x == 42)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.single())
+            >>> result = source.pipe(ops.single(lambda x: x == 42))
+
+        Args:
+            predicate: A predicate function to evaluate for elements in the source
+                sequence.
+
+        Returns:
+            An observable sequence containing the single element in the observable
+            sequence that satisfies the condition in the predicate.
+
+        Raises:
+            Exception: If there is not exactly one element matching the predicate.
+
+        See Also:
+            - :func:`single <reactivex.operators.single>`
+            - :meth:`single_or_default`
+            - :meth:`first`
+            - :meth:`last`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.single(predicate))
+
+    def single_or_default(
+        self, predicate: typing.Predicate[_T] | None = None, default_value: Any = None
+    ) -> Observable[_T]:
+        """Return single element or default.
+
+        Returns the only element of an observable sequence that matches the predicate,
+        or a default value if no such element exists.
+
+        Examples:
+            Fluent style:
+            >>> result = source.single_or_default()
+            >>> result = source.single_or_default(lambda x: x == 42, 0)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.single_or_default())
+            >>> result = source.pipe(ops.single_or_default(lambda x: x == 42, 0))
+
+        Args:
+            predicate: A predicate function to evaluate for elements in the source
+                sequence.
+            default_value: The default value if no element matches or sequence is empty.
+
+        Returns:
+            An observable sequence containing the single element in the observable
+            sequence that satisfies the condition in the predicate, or the default
+            value if no such element exists.
+
+        See Also:
+            - :func:`single_or_default <reactivex.operators.single_or_default>`
+            - :meth:`single`
+            - :meth:`first_or_default`
+            - :meth:`last_or_default`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(
+            ops.single_or_default(predicate, default_value)
+        )
+
+    def element_at_or_default(
+        self, index: int, default_value: _T | None = None
+    ) -> Observable[_T]:
+        """Get element at index or default.
+
+        Returns the element at a specified index in a sequence or a default value if
+        the index is out of range.
+
+        Examples:
+            Fluent style:
+            >>> result = source.element_at_or_default(5)
+            >>> result = source.element_at_or_default(5, 0)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.element_at_or_default(5))
+            >>> result = source.pipe(ops.element_at_or_default(5, 0))
+
+        Args:
+            index: The zero-based index of the element to retrieve.
+            default_value: The default value if the index is outside the bounds of
+                the source sequence.
+
+        Returns:
+            An observable sequence that produces the element at the specified position
+            in the source sequence, or a default value if the index is outside the
+            bounds of the source sequence.
+
+        See Also:
+            - :func:`element_at_or_default <reactivex.operators.element_at_or_default>`
+            - :meth:`element_at`
+            - :meth:`first_or_default`
+            - :meth:`last_or_default`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(
+            ops.element_at_or_default(index, default_value)
+        )

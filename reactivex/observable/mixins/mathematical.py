@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from reactivex.observable import Observable
 
 _T = TypeVar("_T", covariant=True)
+_TKey = TypeVar("_TKey")
 
 
 class MathematicalMixin(Generic[_T]):
@@ -202,3 +203,75 @@ class MathematicalMixin(Generic[_T]):
         from reactivex import operators as ops
 
         return self._as_observable().pipe(ops.max(comparer))
+
+    def min_by(
+        self,
+        key_mapper: typing.Mapper[_T, _TKey],
+        comparer: typing.Comparer[_TKey] | None = None,
+    ) -> Observable[list[_T]]:
+        """Find all elements with the minimum key value.
+
+        Returns the elements in an observable sequence with the minimum key
+        value according to the specified comparer.
+
+        Examples:
+            Fluent style:
+            >>> result = source.min_by(lambda x: x.value)
+            >>> result = source.min_by(lambda x: x.age, lambda x, y: x < y)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.min_by(lambda x: x.value))
+
+        Args:
+            key_mapper: A function to extract the key from each element.
+            comparer: Optional comparer function for comparing keys.
+
+        Returns:
+            An observable sequence containing a list of zero or more elements
+            that have a minimum key value.
+
+        See Also:
+            - :func:`min_by <reactivex.operators.min_by>`
+            - :meth:`min`
+            - :meth:`max_by`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.min_by(key_mapper, comparer))
+
+    def max_by(
+        self,
+        key_mapper: typing.Mapper[_T, _TKey],
+        comparer: typing.Comparer[_TKey] | None = None,
+    ) -> Observable[list[_T]]:
+        """Find all elements with the maximum key value.
+
+        Returns the elements in an observable sequence with the maximum key
+        value according to the specified comparer.
+
+        Examples:
+            Fluent style:
+            >>> result = source.max_by(lambda x: x.value)
+            >>> result = source.max_by(lambda x: x.age, lambda x, y: x > y)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.max_by(lambda x: x.value))
+
+        Args:
+            key_mapper: A function to extract the key from each element.
+            comparer: Optional comparer function for comparing keys.
+
+        Returns:
+            An observable sequence containing a list of zero or more elements
+            that have a maximum key value.
+
+        See Also:
+            - :func:`max_by <reactivex.operators.max_by>`
+            - :meth:`max`
+            - :meth:`min_by`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.max_by(key_mapper, comparer))
