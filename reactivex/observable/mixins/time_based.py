@@ -133,7 +133,9 @@ class TimeBasedMixin(Generic[_T]):
         """
         from reactivex import operators as ops
 
-        return self._as_observable().pipe(ops.throttle_first(window_duration, scheduler))
+        return self._as_observable().pipe(
+            ops.throttle_first(window_duration, scheduler)
+        )
 
     def throttle_with_mapper(
         self,
@@ -150,10 +152,13 @@ class TimeBasedMixin(Generic[_T]):
 
             Equivalent pipe style:
             >>> from reactivex import operators as ops
-            >>> result = source.pipe(ops.throttle_with_mapper(lambda x: rx.timer(x * 0.1)))
+            >>> result = source.pipe(
+            ...     ops.throttle_with_mapper(lambda x: rx.timer(x * 0.1))
+            ... )
 
         Args:
-            throttle_duration_mapper: Function to compute throttle duration for each item.
+            throttle_duration_mapper: Function to compute throttle duration
+                for each item.
 
         Returns:
             The throttled sequence.
@@ -165,7 +170,9 @@ class TimeBasedMixin(Generic[_T]):
         """
         from reactivex import operators as ops
 
-        return self._as_observable().pipe(ops.throttle_with_mapper(throttle_duration_mapper))
+        return self._as_observable().pipe(
+            ops.throttle_with_mapper(throttle_duration_mapper)
+        )
 
     def throttle_with_timeout(
         self,

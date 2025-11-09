@@ -702,7 +702,8 @@ class FilteringMixin(Generic[_T]):
             or the default value if empty.
 
         See Also:
-            - :func:`single_or_default_async <reactivex.operators.single_or_default_async>`
+            - :func:`single_or_default_async \
+<reactivex.operators.single_or_default_async>`
             - :meth:`single_or_default`
             - :meth:`single`
         """
@@ -834,8 +835,8 @@ class FilteringMixin(Generic[_T]):
         if predicate is None:
             return self._as_observable().pipe(ops.last_or_default(default_value))
 
-        op: Callable[[Observable[Any]], Observable[Any]] = (
-            ops.last_or_default(default_value, predicate)
+        op: Callable[[Observable[Any]], Observable[Any]] = ops.last_or_default(
+            default_value, predicate
         )
         return self._as_observable().pipe(op)
 

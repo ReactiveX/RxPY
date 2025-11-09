@@ -347,9 +347,7 @@ class CombinationMixin(Generic[_T]):
         )
         return self._as_observable().pipe(op)
 
-    def zip_with_iterable(
-        self, second: Iterable[_T2]
-    ) -> Observable[tuple[_T, _T2]]:
+    def zip_with_iterable(self, second: Iterable[_T2]) -> Observable[tuple[_T, _T2]]:
         """Zip with iterable.
 
         Merges the specified observable sequence and iterable into one observable
