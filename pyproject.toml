@@ -30,11 +30,11 @@ Documentation = "https://rxpy.readthedocs.io/en/latest/"
 
 [dependency-groups]
 test = [
-    "pyyaml==6.0.2",
+    "pyyaml>=6.0.3,<7",
     "pytest-asyncio>=1.2.0,<1.3.0",
     "pytest>=8.4.1,<9",
     "coverage>=6.3.2,<7",
-    "pytest-xdist>=2.5.0,<3",
+    "pytest-xdist>=3.8.0,<4",
     "ruff>=0.14.0,<1",
     "pyright>=1.1.407,<1.2.0",
     "mypy>=1.18.2,<1.19.0",
