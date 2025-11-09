@@ -133,13 +133,15 @@ class TestTimingOperators:
 
     def test_time_interval_equivalence(self) -> None:
         """Verify time_interval fluent and functional styles are equivalent."""
-        source: Observable[int] = rx.of(1, 2, 3)
-
-        fluent_result: Observable[Any] = source.time_interval()
-        pipe_result: Observable[Any] = source.pipe(ops.time_interval())
-
         fluent_values: list[Any] = []
         pipe_values: list[Any] = []
+
+        # Use separate source observables to avoid timing issues in PyPy
+        fluent_source: Observable[int] = rx.of(1, 2, 3)
+        pipe_source: Observable[int] = rx.of(1, 2, 3)
+
+        fluent_result: Observable[Any] = fluent_source.time_interval()
+        pipe_result: Observable[Any] = pipe_source.pipe(ops.time_interval())
 
         fluent_result.subscribe(on_next=fluent_values.append)
         pipe_result.subscribe(on_next=pipe_values.append)

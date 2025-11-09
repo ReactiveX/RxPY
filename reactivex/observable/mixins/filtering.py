@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
-from reactivex import typing
+from reactivex import abc, typing
 
 if TYPE_CHECKING:
     from reactivex.observable import Observable
@@ -672,6 +672,46 @@ class FilteringMixin(Generic[_T]):
             ops.single_or_default(predicate, default_value)
         )
 
+    def single_or_default_async(
+        self, has_default: bool = False, default_value: Any = None
+    ) -> Observable[_T]:
+        """Return single element or default (async variant).
+
+        Returns the only element of an observable sequence, or a default value if
+        the sequence is empty. Reports an exception if there is more than one element.
+
+        This is an async variant optimized for certain scenarios.
+
+        Examples:
+            Fluent style:
+            >>> result = source.single_or_default_async()
+            >>> result = source.single_or_default_async(
+            ...     has_default=True, default_value=0
+            ... )
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.single_or_default_async())
+
+        Args:
+            has_default: Whether a default value is provided.
+            default_value: The default value if sequence is empty.
+
+        Returns:
+            An observable sequence containing the single element,
+            or the default value if empty.
+
+        See Also:
+            - :func:`single_or_default_async <reactivex.operators.single_or_default_async>`
+            - :meth:`single_or_default`
+            - :meth:`single`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(
+            ops.single_or_default_async(has_default, default_value)
+        )
+
     def element_at_or_default(
         self, index: int, default_value: _T | None = None
     ) -> Observable[_T]:
@@ -711,3 +751,368 @@ class FilteringMixin(Generic[_T]):
         return self._as_observable().pipe(
             ops.element_at_or_default(index, default_value)
         )
+
+    def first_or_default(
+        self,
+        predicate: typing.Predicate[_T] | None = None,
+        default_value: _T | None = None,
+    ) -> Observable[_T]:
+        """Return first element or default value.
+
+        Returns the first element of an observable sequence that satisfies
+        the condition in the predicate, or a default value if no such element exists.
+
+        Examples:
+            Fluent style:
+            >>> result = source.first_or_default(lambda x: x > 3, default_value=0)
+            >>> result = source.first_or_default(default_value=0)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.first_or_default(lambda x: x > 3, 0))
+
+        Args:
+            predicate: Optional predicate function to test elements.
+            default_value: Default value if no element is found.
+
+        Returns:
+            An observable sequence containing the first element that matches
+            the predicate, or the default value.
+
+        See Also:
+            - :func:`first_or_default <reactivex.operators.first_or_default>`
+            - :meth:`first`
+            - :meth:`last_or_default`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(
+            ops.first_or_default(predicate, default_value)
+        )
+
+    def last_or_default(
+        self,
+        default_value: Any = None,
+        predicate: typing.Predicate[_T] | None = None,
+    ) -> Observable[Any]:
+        """Return last element or default value.
+
+        Returns the last element of an observable sequence that satisfies
+        the condition in the predicate, or a default value if no such element exists.
+
+        Examples:
+            Fluent style:
+            >>> result = source.last_or_default()
+            >>> result = source.last_or_default(default_value=0)
+            >>> result = source.last_or_default(0, lambda x: x > 3)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.last_or_default(0, lambda x: x > 3))
+
+        Args:
+            default_value: Default value if no element is found. Defaults to None.
+            predicate: Optional predicate function to test elements.
+
+        Returns:
+            An observable sequence containing the last element that matches
+            the predicate, or the default value.
+
+        See Also:
+            - :func:`last_or_default <reactivex.operators.last_or_default>`
+            - :meth:`last`
+            - :meth:`first_or_default`
+        """
+        from collections.abc import Callable
+
+        from reactivex import operators as ops
+
+        # Documented cast: Due to covariant TypeVar _T in Generic[_T], we cannot
+        # pass Predicate[_T] to the operator directly. The operator implementation
+        # accepts the signature but overloads don't cover all cases. We handle the
+        # None case separately and cast the operator for the predicate case.
+        if predicate is None:
+            return self._as_observable().pipe(ops.last_or_default(default_value))
+
+        op: Callable[[Observable[Any]], Observable[Any]] = (
+            ops.last_or_default(default_value, predicate)
+        )
+        return self._as_observable().pipe(op)
+
+    def slice(
+        self,
+        start: int | None = None,
+        stop: int | None = None,
+        step: int | None = None,
+    ) -> Observable[_T]:
+        """Extract a slice of the observable sequence.
+
+        Slices the observable using Python slice semantics. This is basically
+        a wrapper around the operators skip, skip_last, take, take_last and filter.
+
+        Examples:
+            Fluent style:
+            >>> result = source.slice(1, 10)  # Elements from index 1 to 9
+            >>> result = source.slice(start=5)  # Skip first 5 elements
+            >>> result = source.slice(step=2)  # Every other element
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.slice(1, 10))
+
+        Args:
+            start: Starting index (inclusive). None means start from beginning.
+            stop: Stopping index (exclusive). None means continue to end.
+            step: Step size. None means step of 1.
+
+        Returns:
+            An observable sequence with the sliced elements.
+
+        See Also:
+            - :func:`slice <reactivex.operators.slice>`
+            - :meth:`skip`
+            - :meth:`take`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.slice(start, stop, step))
+
+    def take_last_buffer(self, count: int) -> Observable[list[_T]]:
+        """Take last N elements as a buffer.
+
+        Returns a list with the last N elements of the observable sequence.
+
+        Examples:
+            Fluent style:
+            >>> result = source.take_last_buffer(3)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.take_last_buffer(3))
+
+        Args:
+            count: Number of elements to take from the end.
+
+        Returns:
+            An observable sequence containing a single list with the last
+            count elements.
+
+        See Also:
+            - :func:`take_last_buffer <reactivex.operators.take_last_buffer>`
+            - :meth:`take_last`
+            - :meth:`to_list`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.take_last_buffer(count))
+
+    def skip_with_time(
+        self,
+        duration: typing.RelativeTime,
+        scheduler: abc.SchedulerBase | None = None,
+    ) -> Observable[_T]:
+        """Skip elements for specified duration from start.
+
+        Skips elements for the specified duration from the start of the
+        observable source sequence.
+
+        Examples:
+            Fluent style:
+            >>> result = source.skip_with_time(5.0)  # Skip first 5 seconds
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.skip_with_time(5.0))
+
+        Args:
+            duration: Duration for skipping elements (in scheduler time units).
+            scheduler: Optional scheduler to use for timing.
+
+        Returns:
+            An observable sequence with elements skipped for the specified
+            duration from the start.
+
+        See Also:
+            - :func:`skip_with_time <reactivex.operators.skip_with_time>`
+            - :meth:`skip`
+            - :meth:`take_with_time`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.skip_with_time(duration, scheduler))
+
+    def take_with_time(
+        self,
+        duration: typing.RelativeTime,
+        scheduler: abc.SchedulerBase | None = None,
+    ) -> Observable[_T]:
+        """Take elements for specified duration from start.
+
+        Takes elements for the specified duration from the start of the
+        observable source sequence.
+
+        Examples:
+            Fluent style:
+            >>> result = source.take_with_time(5.0)  # Take first 5 seconds
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.take_with_time(5.0))
+
+        Args:
+            duration: Duration for taking elements (in scheduler time units).
+            scheduler: Optional scheduler to use for timing.
+
+        Returns:
+            An observable sequence with elements taken for the specified
+            duration from the start.
+
+        See Also:
+            - :func:`take_with_time <reactivex.operators.take_with_time>`
+            - :meth:`take`
+            - :meth:`skip_with_time`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.take_with_time(duration, scheduler))
+
+    def skip_last_with_time(
+        self,
+        duration: typing.RelativeTime,
+        scheduler: abc.SchedulerBase | None = None,
+    ) -> Observable[_T]:
+        """Skip elements for specified duration from end.
+
+        Skips elements for the specified duration from the end of the
+        observable source sequence.
+
+        Examples:
+            Fluent style:
+            >>> result = source.skip_last_with_time(5.0)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.skip_last_with_time(5.0))
+
+        Args:
+            duration: Duration for skipping elements from the end.
+            scheduler: Optional scheduler to use for timing.
+
+        Returns:
+            An observable sequence with elements skipped for the specified
+            duration from the end.
+
+        See Also:
+            - :func:`skip_last_with_time <reactivex.operators.skip_last_with_time>`
+            - :meth:`skip_last`
+            - :meth:`take_last_with_time`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.skip_last_with_time(duration, scheduler))
+
+    def take_last_with_time(
+        self,
+        duration: typing.RelativeTime,
+        scheduler: abc.SchedulerBase | None = None,
+    ) -> Observable[_T]:
+        """Take elements within specified duration from end.
+
+        Returns elements within the specified duration from the end of the
+        observable source sequence.
+
+        Examples:
+            Fluent style:
+            >>> result = source.take_last_with_time(5.0)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.take_last_with_time(5.0))
+
+        Args:
+            duration: Duration for taking elements from the end.
+            scheduler: Optional scheduler to use for timing.
+
+        Returns:
+            An observable sequence with elements within the specified
+            duration from the end.
+
+        See Also:
+            - :func:`take_last_with_time <reactivex.operators.take_last_with_time>`
+            - :meth:`take_last`
+            - :meth:`skip_last_with_time`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.take_last_with_time(duration, scheduler))
+
+    def skip_until_with_time(
+        self,
+        start_time: typing.AbsoluteOrRelativeTime,
+        scheduler: abc.SchedulerBase | None = None,
+    ) -> Observable[_T]:
+        """Skip elements until specified time.
+
+        Skips elements from the observable source sequence until the
+        specified start time.
+
+        Examples:
+            Fluent style:
+            >>> result = source.skip_until_with_time(datetime(2024, 1, 1))
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.skip_until_with_time(datetime(2024, 1, 1)))
+
+        Args:
+            start_time: Time to start taking elements (absolute or relative).
+            scheduler: Optional scheduler to use for timing.
+
+        Returns:
+            An observable sequence with elements skipped until the
+            specified time.
+
+        See Also:
+            - :func:`skip_until_with_time <reactivex.operators.skip_until_with_time>`
+            - :meth:`skip_until`
+            - :meth:`take_until_with_time`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(
+            ops.skip_until_with_time(start_time, scheduler)
+        )
+
+    def take_until_with_time(
+        self,
+        end_time: typing.AbsoluteOrRelativeTime,
+        scheduler: abc.SchedulerBase | None = None,
+    ) -> Observable[_T]:
+        """Take elements until specified time.
+
+        Takes elements for the specified duration until the specified time.
+
+        Examples:
+            Fluent style:
+            >>> result = source.take_until_with_time(datetime(2024, 1, 1))
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.take_until_with_time(datetime(2024, 1, 1)))
+
+        Args:
+            end_time: Time to stop taking elements (absolute or relative).
+            scheduler: Optional scheduler to use for timing.
+
+        Returns:
+            An observable sequence with elements taken until the
+            specified time.
+
+        See Also:
+            - :func:`take_until_with_time <reactivex.operators.take_until_with_time>`
+            - :meth:`take_until`
+            - :meth:`skip_until_with_time`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.take_until_with_time(end_time, scheduler))

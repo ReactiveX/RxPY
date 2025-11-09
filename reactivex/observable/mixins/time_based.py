@@ -99,3 +99,104 @@ class TimeBasedMixin(Generic[_T]):
         from reactivex import operators as ops
 
         return self._as_observable().pipe(ops.debounce(duetime, scheduler))
+
+    def throttle_first(
+        self,
+        window_duration: typing.RelativeTime,
+        scheduler: abc.SchedulerBase | None = None,
+    ) -> Observable[_T]:
+        """Emit only first item in each time window.
+
+        Returns an Observable that emits only the first item emitted by
+        the source Observable during sequential time windows of a specified
+        duration.
+
+        Examples:
+            Fluent style:
+            >>> result = source.throttle_first(1.0)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.throttle_first(1.0))
+
+        Args:
+            window_duration: Time to wait before emitting another value.
+            scheduler: Scheduler to use for timing windows.
+
+        Returns:
+            An observable sequence that emits only the first item in each window.
+
+        See Also:
+            - :func:`throttle_first <reactivex.operators.throttle_first>`
+            - :meth:`debounce`
+            - :meth:`sample`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.throttle_first(window_duration, scheduler))
+
+    def throttle_with_mapper(
+        self,
+        throttle_duration_mapper: typing.Callable[[Any], Observable[Any]],
+    ) -> Observable[_T]:
+        """Throttle with custom duration selector.
+
+        Ignores values from an observable sequence which are followed by
+        another value within a computed throttle duration.
+
+        Examples:
+            Fluent style:
+            >>> result = source.throttle_with_mapper(lambda x: rx.timer(x * 0.1))
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.throttle_with_mapper(lambda x: rx.timer(x * 0.1)))
+
+        Args:
+            throttle_duration_mapper: Function to compute throttle duration for each item.
+
+        Returns:
+            The throttled sequence.
+
+        See Also:
+            - :func:`throttle_with_mapper <reactivex.operators.throttle_with_mapper>`
+            - :meth:`debounce`
+            - :meth:`throttle_first`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.throttle_with_mapper(throttle_duration_mapper))
+
+    def throttle_with_timeout(
+        self,
+        duetime: typing.RelativeTime,
+        scheduler: abc.SchedulerBase | None = None,
+    ) -> Observable[_T]:
+        """Throttle with timeout (alias for debounce).
+
+        Ignores values from an observable sequence which are followed by another
+        value before duetime. This is an alias for debounce.
+
+        Examples:
+            Fluent style:
+            >>> result = source.throttle_with_timeout(0.5)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.throttle_with_timeout(0.5))
+
+        Args:
+            duetime: Duration of the throttle period for each value.
+            scheduler: Scheduler to use for timing throttle.
+
+        Returns:
+            The throttled sequence.
+
+        See Also:
+            - :func:`throttle_with_timeout <reactivex.operators.throttle_with_timeout>`
+            - :meth:`debounce`
+            - :meth:`throttle_first`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.throttle_with_timeout(duetime, scheduler))

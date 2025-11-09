@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic, TypeVar, cast, overload
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast, overload
 
 from reactivex import abc, typing
 
@@ -249,3 +249,58 @@ class MulticastingMixin(Generic[_T]):
         # type variance issues with pipe's generic parameters.
         source = cast("ConnectableObservable[_T]", self._as_observable())
         return ops.ref_count()(source)
+
+    @overload
+    def publish_value(self, initial_value: Any) -> ConnectableObservable[Any]: ...
+
+    @overload
+    def publish_value(
+        self,
+        initial_value: Any,
+        mapper: typing.Mapper[Observable[Any], Observable[_R]],
+    ) -> Observable[_R]: ...
+
+    def publish_value(
+        self,
+        initial_value: Any,
+        mapper: typing.Mapper[Observable[Any], Observable[_R]] | None = None,
+    ) -> Observable[_R] | ConnectableObservable[Any]:
+        """Multicast with an initial value (BehaviorSubject).
+
+        Returns an observable sequence that is the result of invoking
+        the mapper on a connectable observable sequence that shares a
+        single subscription to the underlying sequence and starts with
+        initial_value.
+
+        This is essentially publish with a BehaviorSubject.
+
+        Examples:
+            Fluent style:
+            >>> connectable = source.publish_value(0)
+            >>> result = source.publish_value(0, lambda x: x.take(5))
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> connectable = source.pipe(ops.publish_value(0))
+
+        Args:
+            initial_value: Initial value to emit before source emissions.
+            mapper: Optional selector function which can use the
+                multicasted source sequence.
+
+        Returns:
+            An observable sequence that contains the elements of a
+            sequence produced by multicasting the source sequence within
+            a mapper function, or a connectable observable if no mapper
+            is specified.
+
+        See Also:
+            - :func:`publish_value <reactivex.operators.publish_value>`
+            - :meth:`publish`
+            - :meth:`replay`
+        """
+        from reactivex import operators as ops
+
+        if mapper is None:
+            return self._as_observable().pipe(ops.publish_value(initial_value))
+        return self._as_observable().pipe(ops.publish_value(initial_value, mapper))
