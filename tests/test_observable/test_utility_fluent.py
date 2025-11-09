@@ -133,15 +133,18 @@ class TestTimingOperators:
 
     def test_time_interval_equivalence(self) -> None:
         """Verify time_interval fluent and functional styles are equivalent."""
+        from reactivex.scheduler import ImmediateScheduler
+
+        scheduler = ImmediateScheduler()
         fluent_values: list[Any] = []
         pipe_values: list[Any] = []
 
-        # Use separate source observables to avoid timing issues in PyPy
+        # Use explicit scheduler to avoid timing issues with singleton
         fluent_source: Observable[int] = rx.of(1, 2, 3)
         pipe_source: Observable[int] = rx.of(1, 2, 3)
 
-        fluent_result: Observable[Any] = fluent_source.time_interval()
-        pipe_result: Observable[Any] = pipe_source.pipe(ops.time_interval())
+        fluent_result: Observable[Any] = fluent_source.time_interval(scheduler)
+        pipe_result: Observable[Any] = pipe_source.pipe(ops.time_interval(scheduler))
 
         fluent_result.subscribe(on_next=fluent_values.append)
         pipe_result.subscribe(on_next=pipe_values.append)
