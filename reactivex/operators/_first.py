@@ -1,8 +1,8 @@
-from collections.abc import Callable
-from typing import TypeVar
+from typing import TypeVar, cast
 
-from reactivex import Observable, compose
+from reactivex import Observable
 from reactivex import operators as ops
+from reactivex.internal import curry_flip
 from reactivex.typing import Predicate
 
 from ._firstordefault import first_or_default_async_
@@ -10,32 +10,38 @@ from ._firstordefault import first_or_default_async_
 _T = TypeVar("_T")
 
 
+@curry_flip
 def first_(
+    source: Observable[_T],
     predicate: Predicate[_T] | None = None,
-) -> Callable[[Observable[_T]], Observable[_T]]:
+) -> Observable[_T]:
     """Returns the first element of an observable sequence that
     satisfies the condition in the predicate if present else the first
     item in the sequence.
 
     Examples:
-        >>> res = res = first()(source)
-        >>> res = res = first(lambda x: x > 3)(source)
+        >>> res = source.pipe(first())
+        >>> res = first()(source)
+        >>> res = source.pipe(first(lambda x: x > 3))
 
     Args:
-        predicate -- [Optional] A predicate function to evaluate for
+        source: The source observable sequence.
+        predicate: [Optional] A predicate function to evaluate for
             elements in the source sequence.
 
     Returns:
-        A function that takes an observable source and returns an
-        observable sequence containing the first element in the
+        An observable sequence containing the first element in the
         observable sequence that satisfies the condition in the predicate if
         provided, else the first item in the sequence.
     """
 
     if predicate:
-        return compose(ops.filter(predicate), ops.first())
+        return source.pipe(ops.filter(predicate), ops.first())
 
-    return first_or_default_async_(False)
+    # first_or_default_async_(False) returns a Callable[[Observable[_T]], Observable[_T]]
+    # but the type checker cannot infer the generic type parameter.
+    # This cast is safe because the implementation preserves the type parameter.
+    return cast(Observable[_T], first_or_default_async_(False)(source))
 
 
 __all__ = ["first_"]

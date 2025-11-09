@@ -1,29 +1,30 @@
-from collections.abc import Callable
 from typing import TypeVar
 
 import reactivex
 from reactivex import Observable
+from reactivex.internal import curry_flip
 
 _T = TypeVar("_T")
 
 
-def start_with_(*args: _T) -> Callable[[Observable[_T]], Observable[_T]]:
-    def start_with(source: Observable[_T]) -> Observable[_T]:
-        """Partially applied start_with operator.
+@curry_flip
+def start_with_(source: Observable[_T], *args: _T) -> Observable[_T]:
+    """Prepends a sequence of values to an observable sequence.
 
-        Prepends a sequence of values to an observable sequence.
+    Example:
+        >>> result = source.pipe(start_with(1, 2, 3))
+        >>> result = start_with(1, 2, 3)(source)
 
-        Example:
-            >>> start_with(source)
+    Args:
+        source: The source observable sequence.
+        args: Values to prepend to the source sequence.
 
-        Returns:
-            The source sequence prepended with the specified values.
-        """
-        start = reactivex.from_iterable(args)
-        sequence = [start, source]
-        return reactivex.concat(*sequence)
-
-    return start_with
+    Returns:
+        The source sequence prepended with the specified values.
+    """
+    start = reactivex.from_iterable(args)
+    sequence = [start, source]
+    return reactivex.concat(*sequence)
 
 
 __all__ = ["start_with_"]

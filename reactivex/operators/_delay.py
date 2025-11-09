@@ -1,4 +1,3 @@
-from collections.abc import Callable
 from datetime import datetime
 from typing import Any, TypeVar
 
@@ -9,6 +8,7 @@ from reactivex.disposable import (
     MultipleAssignmentDisposable,
     SerialDisposable,
 )
+from reactivex.internal import curry_flip
 from reactivex.internal.constants import DELTA_ZERO
 from reactivex.notification import OnError
 from reactivex.scheduler import TimeoutScheduler
@@ -116,26 +116,27 @@ def observable_delay_timespan(
     return Observable(subscribe)
 
 
+@curry_flip
 def delay_(
-    duetime: typing.RelativeTime, scheduler: abc.SchedulerBase | None = None
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    def delay(source: Observable[_T]) -> Observable[_T]:
-        """Time shifts the observable sequence.
+    source: Observable[_T],
+    duetime: typing.RelativeTime,
+    scheduler: abc.SchedulerBase | None = None,
+) -> Observable[_T]:
+    """Time shifts the observable sequence.
 
-        A partially applied delay operator function.
+    Examples:
+        >>> res = source.pipe(delay(5.0))
+        >>> res = delay(5.0)(source)
 
-        Examples:
-            >>> res = delay(source)
+    Args:
+        source: The observable sequence to delay.
+        duetime: Time to shift the sequence by.
+        scheduler: Scheduler to use for time operations.
 
-        Args:
-            source: The observable sequence to delay.
-
-        Returns:
-            A time-shifted observable sequence.
-        """
-        return observable_delay_timespan(source, duetime, scheduler)
-
-    return delay
+    Returns:
+        A time-shifted observable sequence.
+    """
+    return observable_delay_timespan(source, duetime, scheduler)
 
 
 __all__ = ["delay_"]

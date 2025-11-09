@@ -1,54 +1,57 @@
-from collections.abc import Callable
 from typing import TypeVar, cast
 
 from reactivex import Observable, abc
+from reactivex.internal import curry_flip
 
 _T = TypeVar("_T")
 
 
-def pairwise_() -> Callable[[Observable[_T]], Observable[tuple[_T, _T]]]:
-    def pairwise(source: Observable[_T]) -> Observable[tuple[_T, _T]]:
-        """Partially applied pairwise operator.
+@curry_flip
+def pairwise_(source: Observable[_T]) -> Observable[tuple[_T, _T]]:
+    """Returns a new observable that triggers on the second and
+    subsequent triggerings of the input observable. The Nth
+    triggering of the input observable passes the arguments from
+    the N-1th and Nth triggering as a pair. The argument passed to
+    the N-1th triggering is held in hidden internal state until the
+    Nth triggering occurs.
 
-        Returns a new observable that triggers on the second and
-        subsequent triggerings of the input observable. The Nth
-        triggering of the input observable passes the arguments from
-        the N-1th and Nth triggering as a pair. The argument passed to
-        the N-1th triggering is held in hidden internal state until the
-        Nth triggering occurs.
+    Examples:
+        >>> res = source.pipe(pairwise())
+        >>> res = pairwise()(source)
 
-        Returns:
-            An observable that triggers on successive pairs of
-            observations from the input observable as an array.
-        """
+    Args:
+        source: The source observable sequence.
 
-        def subscribe(
-            observer: abc.ObserverBase[tuple[_T, _T]],
-            scheduler: abc.SchedulerBase | None = None,
-        ) -> abc.DisposableBase:
-            has_previous = False
-            previous: _T = cast(_T, None)
+    Returns:
+        An observable that triggers on successive pairs of
+        observations from the input observable as an array.
+    """
 
-            def on_next(x: _T) -> None:
-                nonlocal has_previous, previous
-                pair = None
+    def subscribe(
+        observer: abc.ObserverBase[tuple[_T, _T]],
+        scheduler: abc.SchedulerBase | None = None,
+    ) -> abc.DisposableBase:
+        has_previous = False
+        previous: _T = cast(_T, None)
 
-                with source.lock:
-                    if has_previous:
-                        pair = (previous, x)
-                    else:
-                        has_previous = True
+        def on_next(x: _T) -> None:
+            nonlocal has_previous, previous
+            pair = None
 
-                    previous = x
+            with source.lock:
+                if has_previous:
+                    pair = (previous, x)
+                else:
+                    has_previous = True
 
-                if pair:
-                    observer.on_next(pair)
+                previous = x
 
-            return source.subscribe(on_next, observer.on_error, observer.on_completed)
+            if pair:
+                observer.on_next(pair)
 
-        return Observable(subscribe)
+        return source.subscribe(on_next, observer.on_error, observer.on_completed)
 
-    return pairwise
+    return Observable(subscribe)
 
 
 __all__ = ["pairwise_"]

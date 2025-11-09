@@ -1,27 +1,29 @@
-from collections.abc import Callable
 from typing import TypeVar
 
 import reactivex
 from reactivex import Observable
+from reactivex.internal import curry_flip
 
 _T = TypeVar("_T")
 
 
-def concat_(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
-    def concat(source: Observable[_T]) -> Observable[_T]:
-        """Concatenates all the observable sequences.
+@curry_flip
+def concat_(source: Observable[_T], *sources: Observable[_T]) -> Observable[_T]:
+    """Concatenates all the observable sequences.
 
-        Examples:
-            >>> op = concat(xs, ys, zs)
+    Examples:
+        >>> result = source.pipe(concat(xs, ys, zs))
+        >>> result = concat(xs, ys, zs)(source)
 
-        Returns:
-            An operator function that takes one or more observable sources and
-            returns an observable sequence that contains the elements of
-            each given sequence, in sequential order.
-        """
-        return reactivex.concat(source, *sources)
+    Args:
+        source: The source observable sequence.
+        sources: Additional observable sequences to concatenate.
 
-    return concat
+    Returns:
+        An observable sequence that contains the elements of
+        each given sequence, in sequential order.
+    """
+    return reactivex.concat(source, *sources)
 
 
 __all__ = ["concat_"]

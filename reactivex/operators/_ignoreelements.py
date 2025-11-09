@@ -1,33 +1,37 @@
-from collections.abc import Callable
 from typing import TypeVar
 
 from reactivex import Observable, abc
-from reactivex.internal import noop
+from reactivex.internal import curry_flip, noop
 
 _T = TypeVar("_T")
 
 
-def ignore_elements_() -> Callable[[Observable[_T]], Observable[_T]]:
+@curry_flip
+def ignore_elements_(source: Observable[_T]) -> Observable[_T]:
     """Ignores all elements in an observable sequence leaving only the
     termination messages.
 
+    Examples:
+        >>> res = source.pipe(ignore_elements())
+        >>> res = ignore_elements()(source)
+
+    Args:
+        source: The source observable sequence.
+
     Returns:
-        An empty observable {Observable} sequence that signals
+        An empty observable sequence that signals
         termination, successful or exceptional, of the source sequence.
     """
 
-    def ignore_elements(source: Observable[_T]) -> Observable[_T]:
-        def subscribe(
-            observer: abc.ObserverBase[_T],
-            scheduler: abc.SchedulerBase | None = None,
-        ) -> abc.DisposableBase:
-            return source.subscribe(
-                noop, observer.on_error, observer.on_completed, scheduler=scheduler
-            )
+    def subscribe(
+        observer: abc.ObserverBase[_T],
+        scheduler: abc.SchedulerBase | None = None,
+    ) -> abc.DisposableBase:
+        return source.subscribe(
+            noop, observer.on_error, observer.on_completed, scheduler=scheduler
+        )
 
-        return Observable(subscribe)
-
-    return ignore_elements
+    return Observable(subscribe)
 
 
 __all__ = ["ignore_elements_"]

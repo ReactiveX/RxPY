@@ -1,8 +1,9 @@
 from collections.abc import Callable
 from typing import TypeVar, cast
 
-from reactivex import Observable, compose
+from reactivex import Observable
 from reactivex import operators as ops
+from reactivex.internal import curry_flip
 from reactivex.internal.basic import identity
 from reactivex.typing import Comparer
 
@@ -11,25 +12,30 @@ from ._min import first_only
 _T = TypeVar("_T")
 
 
+@curry_flip
 def max_(
+    source: Observable[_T],
     comparer: Comparer[_T] | None = None,
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    """Returns the maximum value in an observable sequence according to
+) -> Observable[_T]:
+    """Returns the maximum value in an observable sequence.
+
+    Returns the maximum value in an observable sequence according to
     the specified comparer.
 
     Examples:
-        >>> op = max()
-        >>> op = max(lambda x, y:  x.value - y.value)
+        >>> result = source.pipe(max())
+        >>> result = max()(source)
+        >>> result = source.pipe(max(lambda x, y: x.value - y.value))
 
     Args:
-        comparer: [Optional] Comparer used to compare elements.
+        source: The source observable.
+        comparer: Optional comparer used to compare elements.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence containing a single element with the
+        An observable sequence containing a single element with the
         maximum element in the source sequence.
     """
-    return compose(
+    return source.pipe(
         ops.max_by(cast(Callable[[_T], _T], identity), comparer),
         ops.map(first_only),
     )

@@ -5,6 +5,7 @@ from typing import TypeVar, Union
 import reactivex
 from reactivex import Observable, abc
 from reactivex.disposable import SerialDisposable, SingleAssignmentDisposable
+from reactivex.internal import curry_flip
 
 _T = TypeVar("_T")
 
@@ -43,35 +44,36 @@ def catch_handler(
     return Observable(subscribe)
 
 
+@curry_flip
 def catch_(
+    source: Observable[_T],
     handler: Observable[_T] | Callable[[Exception, Observable[_T]], Observable[_T]],
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    def catch(source: Observable[_T]) -> Observable[_T]:
-        """Continues an observable sequence that is terminated by an
-        exception with the next observable sequence.
+) -> Observable[_T]:
+    """Continues an observable sequence that is terminated by an
+    exception with the next observable sequence.
 
-        Examples:
-            >>> op = catch(ys)
-            >>> op = catch(lambda ex, src: ys(ex))
+    Examples:
+        >>> res = source.pipe(catch(ys))
+        >>> res = catch(ys)(source)
+        >>> res = source.pipe(catch(lambda ex, src: ys(ex)))
 
-        Args:
-            handler: Second observable sequence used to produce
-                results when an error occurred in the first sequence, or an
-                exception handler function that returns an observable sequence
-                given the error and source observable that occurred in the
-                first sequence.
+    Args:
+        source: The source observable sequence.
+        handler: Second observable sequence used to produce
+            results when an error occurred in the first sequence, or an
+            exception handler function that returns an observable sequence
+            given the error and source observable that occurred in the
+            first sequence.
 
-        Returns:
-            An observable sequence containing the first sequence's
-            elements, followed by the elements of the handler sequence
-            in case an exception occurred.
-        """
-        if callable(handler):
-            return catch_handler(source, handler)
-        else:
-            return reactivex.catch(source, handler)
-
-    return catch
+    Returns:
+        An observable sequence containing the first sequence's
+        elements, followed by the elements of the handler sequence
+        in case an exception occurred.
+    """
+    if callable(handler):
+        return catch_handler(source, handler)
+    else:
+        return reactivex.catch(source, handler)
 
 
 __all__ = ["catch_"]
