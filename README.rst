@@ -1,5 +1,5 @@
-===============================
 The ReactiveX for Python (RxPY)
+===============================
 ===============================
 
 .. image:: https://github.com/ReactiveX/RxPY/workflows/Python%20package/badge.svg
@@ -59,6 +59,43 @@ Schedulers.
     composed.subscribe(lambda value: print("Received {0}".format(value)))
 
 
+Fluent and Functional Syntax
+-----------------------------
+
+RxPY supports both **fluent** (method chaining) and **functional** (pipe-based) syntax,
+giving you the flexibility to choose the style that works best for your codebase:
+
+**Fluent style** - Method chaining for a more Pythonic feel:
+
+.. code:: python
+
+    import reactivex as rx
+
+    result = (rx.of(1, 2, 3, 4, 5)
+        .map(lambda x: x * 2)
+        .filter(lambda x: x > 5)
+        .reduce(lambda acc, x: acc + x, 0)
+    )
+    result.subscribe(print)  # Output: 24
+
+**Functional style** - Pipe-based for functional composition:
+
+.. code:: python
+
+    import reactivex as rx
+    from reactivex import operators as ops
+
+    result = rx.of(1, 2, 3, 4, 5).pipe(
+        ops.map(lambda x: x * 2),
+        ops.filter(lambda x: x > 5),
+        ops.reduce(lambda acc, x: acc + x, 0)
+    )
+    result.subscribe(print)  # Output: 24
+
+Both styles are **fully supported** and can even be mixed in the same pipeline.
+Choose the style that best fits your team's preferences and coding standards.
+
+
 Learning ReactiveX
 ------------------
 
@@ -106,7 +143,11 @@ need to be written with an ``_`` in Python:
 
 .. code:: python
 
+    # Functional style
     group = source.pipe(ops.group_by(lambda i: i % 3))
+
+    # Or fluent style
+    group = source.group_by(lambda i: i % 3)
 
 With ReactiveX for Python you should use `named keyword arguments
 <https://docs.python.org/3/glossary.html>`_ instead of positional arguments when an
@@ -116,34 +157,30 @@ you are giving to the operator (or not).
 Development
 -----------
 
-This project is managed using `Poetry <https://python-poetry.org/>`_. Code is formatted
-using `Black <https://github.com/psf/black>`_, `isort
-<https://github.com/PyCQA/isort>`_. Code is statically type checked using `pyright
-<https://github.com/microsoft/pyright>`_ and `mypy <http://mypy-lang.org/>`_.
+This project is managed using `uv <https://docs.astral.sh/uv/>`_. Code is formatted
+using `Ruff <https://github.com/astral-sh/ruff>`_. Code is statically type checked
+using `pyright <https://github.com/microsoft/pyright>`_.
 
-If you want to take advantage of the default VSCode integration, then
-first configure Poetry to make its virtual environment in the
-repository:
+After cloning the repository, install dependencies:
 
 .. code:: console
 
-    poetry config virtualenvs.in-project true
-
-After cloning the repository, activate the tooling:
-
-.. code:: console
-
-    poetry install
-    poetry run pre-commit install
+    uv sync
 
 Run unit tests:
 
 .. code:: console
 
-    poetry run pytest
+    uv run pytest
+
+Run type checking:
+
+.. code:: console
+
+    uv run pyright
 
 Run code checks (manually):
 
 .. code:: console
 
-    poetry run pre-commit run --all-files
+    uv run pre-commit run --all-files

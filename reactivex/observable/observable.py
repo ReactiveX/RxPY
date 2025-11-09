@@ -12,6 +12,19 @@ from reactivex.scheduler import CurrentThreadScheduler
 from reactivex.scheduler.eventloop import AsyncIOScheduler
 
 from ..observer import AutoDetachObserver
+from .mixins import (
+    CombinationMixin,
+    ConditionalMixin,
+    ErrorHandlingMixin,
+    FilteringMixin,
+    MathematicalMixin,
+    MulticastingMixin,
+    TestingMixin,
+    TimeBasedMixin,
+    TransformationMixin,
+    UtilityMixin,
+    WindowingMixin,
+)
 
 _A = TypeVar("_A")
 _B = TypeVar("_B")
@@ -24,11 +37,39 @@ _G = TypeVar("_G")
 _T_out = TypeVar("_T_out", covariant=True)
 
 
-class Observable(abc.ObservableBase[_T_out]):
-    """Observable base class.
+class Observable(
+    abc.ObservableBase[_T_out],
+    TransformationMixin[_T_out],
+    FilteringMixin[_T_out],
+    CombinationMixin[_T_out],
+    MathematicalMixin[_T_out],
+    ConditionalMixin[_T_out],
+    ErrorHandlingMixin[_T_out],
+    UtilityMixin[_T_out],
+    TimeBasedMixin[_T_out],
+    WindowingMixin[_T_out],
+    MulticastingMixin[_T_out],
+    TestingMixin[_T_out],
+):
+    """Observable with method chaining support.
 
-    Represents a push-style collection, which you can :func:`pipe <pipe>` into
-    :mod:`operators <reactivex.operators>`."""
+    Represents a push-style collection that supports both functional (pipe-based)
+    and fluent (method chaining) styles. You can :func:`pipe <pipe>` into
+    :mod:`operators <reactivex.operators>` or call operator methods directly.
+
+    The Observable class combines all operator categories through mixins:
+    - TransformationMixin: map, reduce, scan, flat_map, etc.
+    - FilteringMixin: filter, take, skip, distinct, etc.
+    - CombinationMixin: merge, zip, combine_latest, etc.
+    - MathematicalMixin: count, sum, average, min, max
+    - ConditionalMixin: default_if_empty, etc.
+    - ErrorHandlingMixin: catch, retry, on_error_resume_next
+    - UtilityMixin: do_action, delay, timestamp, etc.
+    - TimeBasedMixin: sample, debounce, etc.
+    - WindowingMixin: buffer, group_by, partition, etc.
+    - MulticastingMixin: share, publish, replay, etc.
+    - TestingMixin: all, some, is_empty, contains, etc.
+    """
 
     def __init__(self, subscribe: abc.Subscription[_T_out] | None = None) -> None:
         """Creates an observable sequence object from the specified
@@ -346,6 +387,11 @@ class Observable(abc.ObservableBase[_T_out]):
         from ..operators._slice import slice_
 
         return slice_(start, stop, step)(self)
+
+    # All operator methods are provided by mixins:
+    # TransformationMixin, FilteringMixin, CombinationMixin, MathematicalMixin,
+    # ConditionalMixin, ErrorHandlingMixin, UtilityMixin, TimeBasedMixin,
+    # WindowingMixin, MulticastingMixin, TestingMixin
 
 
 __all__ = ["Observable"]

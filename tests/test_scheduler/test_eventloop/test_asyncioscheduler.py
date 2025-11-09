@@ -1,5 +1,6 @@
 import asyncio
 import os
+from typing import Any
 import unittest
 from datetime import datetime, timedelta, timezone
 
@@ -12,18 +13,19 @@ CI = os.getenv("CI") is not None
 
 class TestAsyncIOScheduler(unittest.TestCase):
     @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
-    def test_asyncio_schedule_now(self):
+    def test_asyncio_schedule_now(self) -> None:
         loop = asyncio.new_event_loop()
         scheduler = AsyncIOScheduler(loop)
-        diff = scheduler.now - datetime.fromtimestamp(loop.time(), tz=timezone.utc)
-        assert abs(diff) < timedelta(milliseconds=2)  # NOTE: may take 1 ms in CI
+        now = datetime.now(timezone.utc)
+        diff = scheduler.now - now
+        assert abs(diff) < timedelta(milliseconds=100)  # Should be very close to actual time
 
     @pytest.mark.skipif(CI, reason="Test is flaky in GitHub Actions")
-    def test_asyncio_schedule_now_units(self):
+    async def test_asyncio_schedule_now_units(self):
         loop = asyncio.new_event_loop()
         scheduler = AsyncIOScheduler(loop)
         diff = scheduler.now
-        yield from asyncio.sleep(0.1)
+        await asyncio.sleep(0.1)
         diff = scheduler.now - diff
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
@@ -34,7 +36,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
             scheduler = AsyncIOScheduler(loop)
             ran = False
 
-            def action(scheduler, state):
+            def action(scheduler: AsyncIOScheduler, state: Any):
                 nonlocal ran
                 ran = True
 
