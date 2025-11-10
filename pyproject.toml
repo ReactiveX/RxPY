@@ -75,9 +75,7 @@ exclude = [
     "notebooks",
     "examples",
     # Test directories - remove as each stage is completed
-    "tests/test_core",
-    "tests/test_disposables",
-    "tests/test_testing",
+    # Stage 1 directories removed - now enabled for linting
     "tests/test_subject",
     "tests/test_integration",
     "tests/test_scheduler",
@@ -114,9 +112,7 @@ asyncio_mode = "strict"
 [tool.pyright]
 include = ["reactivex", "tests"]
 exclude = [
-    "tests/test_core",
-    "tests/test_disposables",
-    "tests/test_testing",
+    # Stage 1 directories removed - now enabled for type checking
     "tests/test_subject",
     "tests/test_integration",
     "tests/test_scheduler",
