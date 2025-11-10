@@ -1,6 +1,8 @@
 from collections.abc import Callable
 from threading import Thread
-from typing import TypeVar
+from typing import TypeAlias, TypeVar
+
+from typing_extensions import TypeAliasType
 
 from .abc.observable import Subscription
 from .abc.observer import OnCompleted, OnError, OnNext
@@ -20,20 +22,28 @@ _TState = TypeVar("_TState")
 _T1 = TypeVar("_T1")
 _T2 = TypeVar("_T2")
 
-Action = Callable[[], None]
+# Non-generic type aliases
+Action: TypeAlias = Callable[[], None]
+Startable: TypeAlias = StartableBase | Thread
+StartableTarget: TypeAlias = Callable[..., None]
+StartableFactory: TypeAlias = Callable[[StartableTarget], Startable]
 
-Mapper = Callable[[_T1], _T2]
-MapperIndexed = Callable[[_T1, int], _T2]
-Predicate = Callable[[_T1], bool]
-PredicateIndexed = Callable[[_T1, int], bool]
-Comparer = Callable[[_T1, _T1], bool]
-SubComparer = Callable[[_T1, _T1], int]
-Accumulator = Callable[[_TState, _T1], _TState]
-
-
-Startable = StartableBase | Thread
-StartableTarget = Callable[..., None]
-StartableFactory = Callable[[StartableTarget], Startable]
+# Generic type aliases
+Mapper = TypeAliasType("Mapper", Callable[[_T1], _T2], type_params=(_T1, _T2))
+MapperIndexed = TypeAliasType(
+    "MapperIndexed", Callable[[_T1, int], _T2], type_params=(_T1, _T2)
+)
+Predicate = TypeAliasType("Predicate", Callable[[_T1], bool], type_params=(_T1,))
+PredicateIndexed = TypeAliasType(
+    "PredicateIndexed", Callable[[_T1, int], bool], type_params=(_T1,)
+)
+Comparer = TypeAliasType("Comparer", Callable[[_T1, _T1], bool], type_params=(_T1,))
+SubComparer = TypeAliasType(
+    "SubComparer", Callable[[_T1, _T1], int], type_params=(_T1,)
+)
+Accumulator = TypeAliasType(
+    "Accumulator", Callable[[_TState, _T1], _TState], type_params=(_TState, _T1)
+)
 
 __all__ = [
     "Accumulator",

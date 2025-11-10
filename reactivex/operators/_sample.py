@@ -13,7 +13,7 @@ def sample_observable(
 ) -> Observable[_T]:
     def subscribe(
         observer: abc.ObserverBase[_T], scheduler: abc.SchedulerBase | None = None
-    ):
+    ) -> abc.DisposableBase:
         at_end = False
         has_value = False
         value: _T = cast(_T, None)

@@ -33,7 +33,7 @@ def skip_last_(source: Observable[_T], count: int) -> Observable[_T]:
     def subscribe(
         observer: abc.ObserverBase[_T],
         scheduler: abc.SchedulerBase | None = None,
-    ):
+    ) -> abc.DisposableBase:
         q: list[_T] = []
 
         def on_next(value: _T) -> None:

@@ -526,7 +526,7 @@ test = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "typing-extensions", specifier = ">=4.1.1,<5" }]
+requires-dist = [{ name = "typing-extensions", specifier = ">=4.15.0,<5" }]
 
 [package.metadata.requires-dev]
 test = [

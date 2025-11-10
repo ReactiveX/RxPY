@@ -21,7 +21,7 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-dependencies = ["typing-extensions>=4.1.1,<5"]
+dependencies = ["typing-extensions>=4.15.0,<5"]
 
 [project.urls]
 Homepage = "http://reactivex.io"
