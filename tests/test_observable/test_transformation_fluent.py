@@ -49,7 +49,9 @@ class TestMapMethodChaining:
         """Test chaining multiple map operations."""
         source: Observable[int] = rx.of(1, 2, 3)
 
-        result: Observable[str] = source.map(lambda x: x * 2).map(lambda x: x + 1).map(str)
+        result: Observable[str] = (
+            source.map(lambda x: x * 2).map(lambda x: x + 1).map(str)
+        )
 
         values: list[str] = []
         result.subscribe(on_next=values.append)
@@ -203,8 +205,7 @@ class TestComplexTransformationChaining:
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
 
         result: Observable[int] = (
-            source
-            .filter(lambda x: x > 2)
+            source.filter(lambda x: x > 2)
             .map(lambda x: x * 2)
             .reduce(lambda acc, x: acc + x, 0)
         )
@@ -218,10 +219,8 @@ class TestComplexTransformationChaining:
         """Test scan combined with map."""
         source: Observable[int] = rx.of(1, 2, 3, 4)
 
-        result: Observable[int] = (
-            source
-            .scan(lambda acc, x: acc + x, 0)
-            .map(lambda x: x * 10)
+        result: Observable[int] = source.scan(lambda acc, x: acc + x, 0).map(
+            lambda x: x * 10
         )
 
         values: list[int] = []

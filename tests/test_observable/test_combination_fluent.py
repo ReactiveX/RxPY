@@ -141,9 +141,7 @@ class TestZipWithIterableMethodChaining:
         source: Observable[int] = rx.of(1, 2, 3)
         iterable: list[str] = ["a", "b", "c"]
 
-        fluent_result: Observable[tuple[int, str]] = source.zip_with_iterable(
-            iterable
-        )
+        fluent_result: Observable[tuple[int, str]] = source.zip_with_iterable(iterable)
         pipe_result: Observable[tuple[int, str]] = source.pipe(
             ops.zip_with_iterable(iterable)
         )
@@ -206,7 +204,9 @@ class TestGroupJoinMethodChaining:
         fluent_count: list[int] = []
         pipe_count: list[int] = []
 
-        def subscribe_to_group(x: tuple[int, Observable[int]], count_list: list[int]) -> None:
+        def subscribe_to_group(
+            x: tuple[int, Observable[int]], count_list: list[int]
+        ) -> None:
             _value, group = x
             group_values: list[int] = []
             group.subscribe(on_next=group_values.append)

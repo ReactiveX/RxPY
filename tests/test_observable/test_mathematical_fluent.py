@@ -116,9 +116,7 @@ class TestMinByMaxByMethodChaining:
         )
 
         fluent_result: Observable[list[Person]] = source.min_by(lambda x: x.age)
-        pipe_result: Observable[list[Person]] = source.pipe(
-            ops.min_by(lambda x: x.age)
-        )
+        pipe_result: Observable[list[Person]] = source.pipe(ops.min_by(lambda x: x.age))
 
         fluent_values: list[list[Person]] = []
         pipe_values: list[list[Person]] = []
@@ -147,9 +145,7 @@ class TestMinByMaxByMethodChaining:
         )
 
         fluent_result: Observable[list[Person]] = source.max_by(lambda x: x.age)
-        pipe_result: Observable[list[Person]] = source.pipe(
-            ops.max_by(lambda x: x.age)
-        )
+        pipe_result: Observable[list[Person]] = source.pipe(ops.max_by(lambda x: x.age))
 
         fluent_values: list[list[Person]] = []
         pipe_values: list[list[Person]] = []
@@ -171,13 +167,12 @@ class TestComplexMathematicalChaining:
         source: Observable[int] = rx.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 
         result: Observable[float] = (
-            source
-            .filter(lambda x: x % 2 == 0)       # [2, 4, 6, 8, 10]
-            .take_while(lambda x: x < 9)        # [2, 4, 6, 8]
-            .map(lambda x: x * 2)                # [4, 8, 12, 16]
-            .distinct_until_changed()            # [4, 8, 12, 16]
-            .start_with(0)                       # [0, 4, 8, 12, 16]
-            .average()                           # [8.0]
+            source.filter(lambda x: x % 2 == 0)  # [2, 4, 6, 8, 10]
+            .take_while(lambda x: x < 9)  # [2, 4, 6, 8]
+            .map(lambda x: x * 2)  # [4, 8, 12, 16]
+            .distinct_until_changed()  # [4, 8, 12, 16]
+            .start_with(0)  # [0, 4, 8, 12, 16]
+            .average()  # [8.0]
         )
 
         values: list[float] = []

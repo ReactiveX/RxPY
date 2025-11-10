@@ -19,7 +19,9 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
             scheduler = AsyncIOThreadSafeScheduler(loop)
             now = datetime.now(timezone.utc)
             diff = scheduler.now - now
-            assert abs(diff) < timedelta(milliseconds=100)  # Should be very close to actual time
+            assert abs(diff) < timedelta(
+                milliseconds=100
+            )  # Should be very close to actual time
         finally:
             loop.close()
 
@@ -27,6 +29,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
     def test_asyncio_threadsafe_schedule_now_units(self):
         loop = asyncio.new_event_loop()
         try:
+
             async def go():
                 scheduler = AsyncIOThreadSafeScheduler(loop)
                 diff = scheduler.now
@@ -41,6 +44,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
     def test_asyncio_threadsafe_schedule_action(self):
         loop = asyncio.new_event_loop()
         try:
+
             async def go():
                 scheduler = AsyncIOThreadSafeScheduler(loop)
                 ran = False
@@ -64,6 +68,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
     def test_asyncio_threadsafe_schedule_action_due(self):
         loop = asyncio.new_event_loop()
         try:
+
             async def go():
                 scheduler = AsyncIOThreadSafeScheduler(loop)
                 starttime = loop.time()
@@ -90,6 +95,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
     def test_asyncio_threadsafe_schedule_action_cancel(self):
         loop = asyncio.new_event_loop()
         try:
+
             async def go():
                 ran = False
                 scheduler = AsyncIOThreadSafeScheduler(loop)

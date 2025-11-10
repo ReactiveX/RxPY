@@ -410,11 +410,10 @@ class TestComplexFilteringChaining:
         source: Observable[int] = rx.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 
         result: Observable[int] = (
-            source
-            .filter(lambda x: x % 2 == 0)  # [2, 4, 6, 8, 10]
-            .map(lambda x: x * 2)           # [4, 8, 12, 16, 20]
-            .skip(1)                        # [8, 12, 16, 20]
-            .take(3)                        # [8, 12, 16]
+            source.filter(lambda x: x % 2 == 0)  # [2, 4, 6, 8, 10]
+            .map(lambda x: x * 2)  # [4, 8, 12, 16, 20]
+            .skip(1)  # [8, 12, 16, 20]
+            .take(3)  # [8, 12, 16]
         )
 
         values: list[int] = []
@@ -427,11 +426,10 @@ class TestComplexFilteringChaining:
         source: Observable[int] = rx.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 
         result: Observable[bool] = (
-            source
-            .skip_last(2)                         # [1, 2, 3, 4, 5, 6, 7, 8]
-            .take_last(6)                         # [3, 4, 5, 6, 7, 8]
-            .filter(lambda x: x % 2 == 0)        # [4, 6, 8]
-            .all(lambda x: x > 3)                # Check if all > 3
+            source.skip_last(2)  # [1, 2, 3, 4, 5, 6, 7, 8]
+            .take_last(6)  # [3, 4, 5, 6, 7, 8]
+            .filter(lambda x: x % 2 == 0)  # [4, 6, 8]
+            .all(lambda x: x > 3)  # Check if all > 3
         )
 
         values: list[bool] = []

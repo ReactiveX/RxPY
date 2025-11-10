@@ -97,9 +97,9 @@ class TestDoActionMethodChaining:
         side_effects: list[int] = []
 
         result: Observable[int] = (
-            source.do_action(side_effects.append).map(lambda x: x * 2).filter(
-                lambda x: x > 2
-            )
+            source.do_action(side_effects.append)
+            .map(lambda x: x * 2)
+            .filter(lambda x: x > 2)
         )
 
         values: list[int] = []

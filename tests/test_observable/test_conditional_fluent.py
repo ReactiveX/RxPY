@@ -46,9 +46,7 @@ class TestFindMethodChaining:
         """Verify find fluent and functional styles are equivalent."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
 
-        fluent_result: Observable[int | None] = source.find(
-            lambda x, i, obs: x > 3
-        )
+        fluent_result: Observable[int | None] = source.find(lambda x, i, obs: x > 3)
         pipe_result: Observable[int | None] = source.pipe(
             ops.find(lambda x, i, obs: x > 3)
         )
@@ -99,9 +97,7 @@ class TestFindIndexMethodChaining:
         """Test find_index when element is not found."""
         source: Observable[int] = rx.of(1, 2, 3)
 
-        result: Observable[int | None] = source.find_index(
-            lambda x, i, obs: x > 10
-        )
+        result: Observable[int | None] = source.find_index(lambda x, i, obs: x > 10)
 
         values: list[int | None] = []
         result.subscribe(on_next=values.append)

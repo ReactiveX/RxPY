@@ -58,9 +58,7 @@ class TestLastOrDefaultMethodChaining:
         """Verify last_or_default returns default when empty."""
         source: Observable[int] = rx.empty()
 
-        fluent_result: Observable[int | None] = source.last_or_default(
-            default_value=42
-        )
+        fluent_result: Observable[int | None] = source.last_or_default(default_value=42)
         pipe_result: Observable[int | None] = source.pipe(
             ops.last_or_default(default_value=42)
         )
@@ -199,7 +197,9 @@ class TestSkipLastWithTimeMethodChaining:
 
         # With immediate scheduler and duration=0, should take all
         fluent_result: Observable[int] = source.skip_last_with_time(0, scheduler)
-        pipe_result: Observable[int] = source.pipe(ops.skip_last_with_time(0, scheduler))
+        pipe_result: Observable[int] = source.pipe(
+            ops.skip_last_with_time(0, scheduler)
+        )
 
         fluent_values: list[int] = []
         pipe_values: list[int] = []
@@ -220,7 +220,9 @@ class TestTakeLastWithTimeMethodChaining:
 
         # With immediate scheduler and large duration, should take all
         fluent_result: Observable[int] = source.take_last_with_time(1000, scheduler)
-        pipe_result: Observable[int] = source.pipe(ops.take_last_with_time(1000, scheduler))
+        pipe_result: Observable[int] = source.pipe(
+            ops.take_last_with_time(1000, scheduler)
+        )
 
         fluent_values: list[int] = []
         pipe_values: list[int] = []
@@ -241,7 +243,9 @@ class TestSkipUntilWithTimeMethodChaining:
 
         # With immediate scheduler and start_time in the past, should take all
         fluent_result: Observable[int] = source.skip_until_with_time(0, scheduler)
-        pipe_result: Observable[int] = source.pipe(ops.skip_until_with_time(0, scheduler))
+        pipe_result: Observable[int] = source.pipe(
+            ops.skip_until_with_time(0, scheduler)
+        )
 
         fluent_values: list[int] = []
         pipe_values: list[int] = []
@@ -262,7 +266,9 @@ class TestTakeUntilWithTimeMethodChaining:
 
         # With immediate scheduler, use end_time=0 to avoid WouldBlockException
         fluent_result: Observable[int] = source.take_until_with_time(0, scheduler)
-        pipe_result: Observable[int] = source.pipe(ops.take_until_with_time(0, scheduler))
+        pipe_result: Observable[int] = source.pipe(
+            ops.take_until_with_time(0, scheduler)
+        )
 
         fluent_values: list[int] = []
         pipe_values: list[int] = []

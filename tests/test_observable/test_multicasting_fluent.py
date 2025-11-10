@@ -31,10 +31,7 @@ class TestShareMethodChaining:
         source: Observable[int] = rx.of(1, 2, 3)
 
         result: Observable[int] = (
-            source
-            .share()
-            .map(lambda x: x * 2)
-            .filter(lambda x: x > 2)
+            source.share().map(lambda x: x * 2).filter(lambda x: x > 2)
         )
 
         values: list[int] = []

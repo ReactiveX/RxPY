@@ -33,11 +33,10 @@ class TestComplexChaining:
         source: Observable[int] = rx.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 
         result: Observable[int] = (
-            source
-            .filter(lambda x: x % 2 == 0)  # [2, 4, 6, 8, 10]
-            .map(lambda x: x * 2)           # [4, 8, 12, 16, 20]
-            .skip(1)                        # [8, 12, 16, 20]
-            .take(3)                        # [8, 12, 16]
+            source.filter(lambda x: x % 2 == 0)  # [2, 4, 6, 8, 10]
+            .map(lambda x: x * 2)  # [4, 8, 12, 16, 20]
+            .skip(1)  # [8, 12, 16, 20]
+            .take(3)  # [8, 12, 16]
         )
 
         values: list[int] = []
@@ -50,8 +49,7 @@ class TestComplexChaining:
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
 
         result: Observable[int] = (
-            source
-            .filter(lambda x: x > 2)
+            source.filter(lambda x: x > 2)
             .map(lambda x: x * 2)
             .reduce(lambda acc, x: acc + x, 0)
         )
@@ -66,13 +64,9 @@ class TestComplexChaining:
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
 
         # Start with fluent, then use pipe
-        result: Observable[int] = (
-            source
-            .map(lambda x: x * 2)
-            .pipe(
-                ops.filter(lambda x: x > 5),
-                ops.take(2),
-            )
+        result: Observable[int] = source.map(lambda x: x * 2).pipe(
+            ops.filter(lambda x: x > 5),
+            ops.take(2),
         )
 
         values: list[int] = []
@@ -89,13 +83,12 @@ class TestCrossMixinChaining:
         source: Observable[int] = rx.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 
         result: Observable[float] = (
-            source
-            .filter(lambda x: x % 2 == 0)       # FilteringMixin: [2, 4, 6, 8, 10]
-            .take_while(lambda x: x < 9)        # FilteringMixin: [2, 4, 6, 8]
-            .map(lambda x: x * 2)                # TransformationMixin: [4, 8, 12, 16]
-            .distinct_until_changed()            # FilteringMixin: [4, 8, 12, 16]
-            .start_with(0)                       # CombinationMixin: [0, 4, 8, 12, 16]
-            .average()                           # MathematicalMixin: [8.0]
+            source.filter(lambda x: x % 2 == 0)  # FilteringMixin: [2, 4, 6, 8, 10]
+            .take_while(lambda x: x < 9)  # FilteringMixin: [2, 4, 6, 8]
+            .map(lambda x: x * 2)  # TransformationMixin: [4, 8, 12, 16]
+            .distinct_until_changed()  # FilteringMixin: [4, 8, 12, 16]
+            .start_with(0)  # CombinationMixin: [0, 4, 8, 12, 16]
+            .average()  # MathematicalMixin: [8.0]
         )
 
         values: list[float] = []
@@ -108,11 +101,10 @@ class TestCrossMixinChaining:
         source: Observable[int] = rx.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 
         result: Observable[bool] = (
-            source
-            .skip_last(2)                         # FilteringMixin: [1, 2, 3, 4, 5, 6, 7, 8]
-            .take_last(6)                         # FilteringMixin: [3, 4, 5, 6, 7, 8]
-            .filter(lambda x: x % 2 == 0)        # FilteringMixin: [4, 6, 8]
-            .all(lambda x: x > 3)                # TestingMixin: Check if all > 3
+            source.skip_last(2)  # FilteringMixin: [1, 2, 3, 4, 5, 6, 7, 8]
+            .take_last(6)  # FilteringMixin: [3, 4, 5, 6, 7, 8]
+            .filter(lambda x: x % 2 == 0)  # FilteringMixin: [4, 6, 8]
+            .all(lambda x: x > 3)  # TestingMixin: Check if all > 3
         )
 
         values: list[bool] = []
@@ -131,12 +123,11 @@ class TestCrossMixinChaining:
             action_called = True
 
         result: Observable[list[int]] = (
-            source
-            .do_action(side_effects.append)      # UtilityMixin
-            .filter(lambda x: x > 2)             # FilteringMixin
-            .map(lambda x: x * 2)                # TransformationMixin
-            .to_list()                           # UtilityMixin
-            .finally_action(cleanup_action)      # UtilityMixin
+            source.do_action(side_effects.append)  # UtilityMixin
+            .filter(lambda x: x > 2)  # FilteringMixin
+            .map(lambda x: x * 2)  # TransformationMixin
+            .to_list()  # UtilityMixin
+            .finally_action(cleanup_action)  # UtilityMixin
         )
 
         values: list[list[int]] = []
@@ -152,10 +143,9 @@ class TestCrossMixinChaining:
         fallback: Observable[int] = rx.of(1, 2, 3)
 
         result: Observable[int] = (
-            source
-            .catch(fallback)                     # ErrorHandlingMixin
-            .start_with(0)                       # CombinationMixin
-            .take(3)                             # FilteringMixin
+            source.catch(fallback)  # ErrorHandlingMixin
+            .start_with(0)  # CombinationMixin
+            .take(3)  # FilteringMixin
         )
 
         values: list[int] = []
@@ -170,11 +160,11 @@ class TestCrossMixinChaining:
         # Test partition followed by operations on one partition
         evens, _odds = source.partition(lambda x: x % 2 == 0)
 
-        result: Observable[bool] = (
-            evens
-            .map(lambda x: x * 2)                # TransformationMixin: [4, 8, 12]
-            .all(lambda x: x % 4 == 0)           # TestingMixin: Check divisible by 4
-        )
+        result: Observable[bool] = evens.map(
+            lambda x: x * 2
+        ).all(  # TransformationMixin: [4, 8, 12]
+            lambda x: x % 4 == 0
+        )  # TestingMixin: Check divisible by 4
 
         values: list[bool] = []
         result.subscribe(on_next=values.append)
@@ -190,8 +180,7 @@ class TestPipeToFluentTransition:
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
 
         result: Observable[int] = (
-            source
-            .pipe(
+            source.pipe(
                 ops.filter(lambda x: x > 2),
                 ops.map(lambda x: x * 2),
             )
@@ -209,8 +198,7 @@ class TestPipeToFluentTransition:
         source: Observable[int] = rx.of(1, 2, 3, 4, 5, 6, 7, 8)
 
         result: Observable[int] = (
-            source
-            .filter(lambda x: x > 2)
+            source.filter(lambda x: x > 2)
             .pipe(
                 ops.map(lambda x: x * 2),
                 ops.take(3),
