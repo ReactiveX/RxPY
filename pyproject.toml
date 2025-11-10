@@ -72,9 +72,16 @@ exclude = [
     "old",
     "build",
     "dist",
-    "tests",
     "notebooks",
     "examples",
+    # Test directories - remove as each stage is completed
+    "tests/test_core",
+    "tests/test_disposables",
+    "tests/test_testing",
+    "tests/test_subject",
+    "tests/test_integration",
+    "tests/test_scheduler",
+    "tests/test_observable",
 ]
 
 [tool.ruff.lint]
@@ -103,3 +110,19 @@ disallow_untyped_defs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "strict"
+
+[tool.pyright]
+include = ["reactivex", "tests"]
+exclude = [
+    "tests/test_core",
+    "tests/test_disposables",
+    "tests/test_testing",
+    "tests/test_subject",
+    "tests/test_integration",
+    "tests/test_scheduler",
+    "tests/test_observable",
+]
+reportImportCycles = false
+reportMissingImports = false
+pythonVersion = "3.10"
+typeCheckingMode = "strict"
