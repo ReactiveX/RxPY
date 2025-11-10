@@ -1810,9 +1810,9 @@ def materialize() -> Callable[[Observable[_T]], Observable[Notification[_T]]]:
         returns an observable sequence containing the materialized
         notification values from the source sequence.
     """
-    from ._materialize import materialize
+    from ._materialize import materialize_
 
-    return materialize()
+    return materialize_()
 
 
 def max(

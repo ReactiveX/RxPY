@@ -7,35 +7,13 @@ needed for RxPY operators.
 
 import functools
 from collections.abc import Callable
-from typing import Any, Concatenate, TypeVar
+from typing import Concatenate, TypeVar
 
 from typing_extensions import ParamSpec
 
 _P = ParamSpec("_P")
 _A = TypeVar("_A")
 _B = TypeVar("_B")
-
-
-def _curry(
-    args: tuple[Any, ...], arity: int, fun: Callable[..., Any]
-) -> Callable[..., Any]:
-    """Internal curry implementation.
-
-    Args:
-        args: Accumulated arguments
-        arity: Number of arguments remaining to curry
-        fun: The function to curry
-
-    Returns:
-        A curried function wrapper
-    """
-
-    def wrapper(*args_: Any, **kw: Any) -> Any:
-        if arity == 1:
-            return fun(*args, *args_, **kw)
-        return _curry(args + args_, arity - 1, fun)
-
-    return wrapper
 
 
 def curry_flip(

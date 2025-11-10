@@ -1,4 +1,3 @@
-from collections.abc import Callable
 from datetime import timedelta
 from typing import Any, TypeVar
 
@@ -9,18 +8,37 @@ from reactivex.disposable import (
     SerialDisposable,
     SingleAssignmentDisposable,
 )
-from reactivex.internal import DELTA_ZERO, add_ref, synchronized
+from reactivex.internal import DELTA_ZERO, add_ref, curry_flip, synchronized
 from reactivex.scheduler import TimeoutScheduler
 from reactivex.subject import Subject
 
 _T = TypeVar("_T")
 
 
+@curry_flip
 def window_with_time_(
+    source: Observable[_T],
     timespan: typing.RelativeTime,
     timeshift: typing.RelativeTime | None = None,
     scheduler: abc.SchedulerBase | None = None,
-) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
+) -> Observable[Observable[_T]]:
+    """Projects each element of an observable sequence into zero or more
+    windows which are produced based on timing information.
+
+    Examples:
+        >>> res = source.pipe(window_with_time(1.0))
+        >>> res = source.pipe(window_with_time(1.0, 0.5))
+        >>> res = window_with_time(1.0)(source)
+
+    Args:
+        source: Source observable to window.
+        timespan: Length of each window.
+        timeshift: Interval between creation of consecutive windows.
+        scheduler: Scheduler to use for timing.
+
+    Returns:
+        An observable sequence of windows.
+    """
     if timeshift is None:
         timeshift = timespan
 
@@ -29,94 +47,91 @@ def window_with_time_(
     if not isinstance(timeshift, timedelta):
         timeshift = timedelta(seconds=timeshift)
 
-    def window_with_time(source: Observable[_T]) -> Observable[Observable[_T]]:
-        def subscribe(
-            observer: abc.ObserverBase[Observable[_T]],
-            scheduler_: abc.SchedulerBase | None = None,
-        ):
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
+    def subscribe(
+        observer: abc.ObserverBase[Observable[_T]],
+        scheduler_: abc.SchedulerBase | None = None,
+    ):
+        _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
-            timer_d = SerialDisposable()
-            next_shift = [timeshift]
-            next_span = [timespan]
-            total_time = [DELTA_ZERO]
-            queue: list[Subject[_T]] = []
+        timer_d = SerialDisposable()
+        next_shift = [timeshift]
+        next_span = [timespan]
+        total_time = [DELTA_ZERO]
+        queue: list[Subject[_T]] = []
 
-            group_disposable = CompositeDisposable(timer_d)
-            ref_count_disposable = RefCountDisposable(group_disposable)
+        group_disposable = CompositeDisposable(timer_d)
+        ref_count_disposable = RefCountDisposable(group_disposable)
 
-            def create_timer():
-                m = SingleAssignmentDisposable()
-                timer_d.disposable = m
-                is_span = False
-                is_shift = False
+        def create_timer():
+            m = SingleAssignmentDisposable()
+            timer_d.disposable = m
+            is_span = False
+            is_shift = False
 
-                if next_span[0] == next_shift[0]:
-                    is_span = True
-                    is_shift = True
-                elif next_span[0] < next_shift[0]:
-                    is_span = True
-                else:
-                    is_shift = True
+            if next_span[0] == next_shift[0]:
+                is_span = True
+                is_shift = True
+            elif next_span[0] < next_shift[0]:
+                is_span = True
+            else:
+                is_shift = True
 
-                new_total_time = next_span[0] if is_span else next_shift[0]
+            new_total_time = next_span[0] if is_span else next_shift[0]
 
-                ts = new_total_time - total_time[0]
-                total_time[0] = new_total_time
-                if is_span:
-                    next_span[0] += timeshift
+            ts = new_total_time - total_time[0]
+            total_time[0] = new_total_time
+            if is_span:
+                next_span[0] += timeshift
+
+            if is_shift:
+                next_shift[0] += timeshift
+
+            @synchronized(source.lock)
+            def action(scheduler: abc.SchedulerBase, state: Any = None):
+                s: Subject[_T] | None = None
 
                 if is_shift:
-                    next_shift[0] += timeshift
+                    s = Subject()
+                    queue.append(s)
+                    observer.on_next(add_ref(s, ref_count_disposable))
 
-                @synchronized(source.lock)
-                def action(scheduler: abc.SchedulerBase, state: Any = None):
-                    s: Subject[_T] | None = None
-
-                    if is_shift:
-                        s = Subject()
-                        queue.append(s)
-                        observer.on_next(add_ref(s, ref_count_disposable))
-
-                    if is_span:
-                        s = queue.pop(0)
-                        s.on_completed()
-
-                    create_timer()
-
-                m.disposable = _scheduler.schedule_relative(ts, action)
-
-            queue.append(Subject())
-            observer.on_next(add_ref(queue[0], ref_count_disposable))
-            create_timer()
-
-            def on_next(x: _T) -> None:
-                with source.lock:
-                    for s in queue:
-                        s.on_next(x)
-
-            @synchronized(source.lock)
-            def on_error(e: Exception) -> None:
-                for s in queue:
-                    s.on_error(e)
-
-                observer.on_error(e)
-
-            @synchronized(source.lock)
-            def on_completed() -> None:
-                for s in queue:
+                if is_span:
+                    s = queue.pop(0)
                     s.on_completed()
 
-                observer.on_completed()
+                create_timer()
 
-            group_disposable.add(
-                source.subscribe(on_next, on_error, on_completed, scheduler=scheduler_)
-            )
-            return ref_count_disposable
+            m.disposable = _scheduler.schedule_relative(ts, action)
 
-        return Observable(subscribe)
+        queue.append(Subject())
+        observer.on_next(add_ref(queue[0], ref_count_disposable))
+        create_timer()
 
-    return window_with_time
+        def on_next(x: _T) -> None:
+            with source.lock:
+                for s in queue:
+                    s.on_next(x)
+
+        @synchronized(source.lock)
+        def on_error(e: Exception) -> None:
+            for s in queue:
+                s.on_error(e)
+
+            observer.on_error(e)
+
+        @synchronized(source.lock)
+        def on_completed() -> None:
+            for s in queue:
+                s.on_completed()
+
+            observer.on_completed()
+
+        group_disposable.add(
+            source.subscribe(on_next, on_error, on_completed, scheduler=scheduler_)
+        )
+        return ref_count_disposable
+
+    return Observable(subscribe)
 
 
 __all__ = ["window_with_time_"]

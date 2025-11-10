@@ -37,9 +37,9 @@ def single_(
     if predicate:
         return source.pipe(ops.filter(predicate), ops.single())
     else:
-        # single_or_default_async_(False) returns a Callable[[Observable[_T]], Observable[_T]]
-        # but the type checker cannot infer the generic type parameter.
-        # This cast is safe because the implementation preserves the type parameter.
+        # single_or_default_async_(False) returns
+        # Callable[[Observable[_T]], Observable[_T]] but the type checker
+        # cannot infer it. This cast is safe - implementation preserves type.
         return cast(Observable[_T], single_or_default_async_(False)(source))
 
 

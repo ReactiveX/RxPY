@@ -41,8 +41,8 @@ def last_(
             operators.last(),
         )
 
-    # last_or_default_async returns Observable[_T | None], but when has_default=False
-    # it will never emit None (either emits _T or errors). Safe to cast to Observable[_T].
+    # last_or_default_async returns Observable[_T | None], but when
+    # has_default=False it never emits None. Safe cast to Observable[_T].
     return cast(Observable[_T], last_or_default_async(source, False))
 
 

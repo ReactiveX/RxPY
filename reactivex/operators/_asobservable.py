@@ -1,32 +1,34 @@
-from collections.abc import Callable
 from typing import TypeVar
 
 from reactivex import Observable, abc
+from reactivex.internal import curry_flip
 
 _T = TypeVar("_T")
 
 
-def as_observable_() -> Callable[[Observable[_T]], Observable[_T]]:
-    def as_observable(source: Observable[_T]) -> Observable[_T]:
-        """Hides the identity of an observable sequence.
+@curry_flip
+def as_observable_(source: Observable[_T]) -> Observable[_T]:
+    """Hides the identity of an observable sequence.
 
-        Args:
-            source: Observable source to hide identity from.
+    Examples:
+        >>> res = source.pipe(as_observable())
+        >>> res = as_observable()(source)
 
-        Returns:
-            An observable sequence that hides the identity of the
-            source sequence.
-        """
+    Args:
+        source: Observable source to hide identity from.
 
-        def subscribe(
-            observer: abc.ObserverBase[_T],
-            scheduler: abc.SchedulerBase | None = None,
-        ) -> abc.DisposableBase:
-            return source.subscribe(observer, scheduler=scheduler)
+    Returns:
+        An observable sequence that hides the identity of the
+        source sequence.
+    """
 
-        return Observable(subscribe)
+    def subscribe(
+        observer: abc.ObserverBase[_T],
+        scheduler: abc.SchedulerBase | None = None,
+    ) -> abc.DisposableBase:
+        return source.subscribe(observer, scheduler=scheduler)
 
-    return as_observable
+    return Observable(subscribe)
 
 
 __all__ = ["as_observable_"]
