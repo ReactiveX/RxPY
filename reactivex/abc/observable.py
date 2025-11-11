@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import Generic, TypeVar
 
+from typing_extensions import TypeAliasType
+
 from .disposable import DisposableBase
 from .observer import ObserverBase, OnCompleted, OnError, OnNext
 from .scheduler import SchedulerBase
@@ -41,6 +43,10 @@ class ObservableBase(Generic[_T_out], ABC):
         raise NotImplementedError
 
 
-Subscription = Callable[[ObserverBase[_T_out], SchedulerBase | None], DisposableBase]
+Subscription = TypeAliasType(
+    "Subscription",
+    Callable[[ObserverBase[_T_out], SchedulerBase | None], DisposableBase],
+    type_params=(_T_out,),
+)
 
 __all__ = ["ObservableBase", "Subscription"]

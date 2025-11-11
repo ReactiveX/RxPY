@@ -1,4 +1,3 @@
-from collections.abc import Callable
 from typing import Any, TypeVar
 
 from reactivex import Observable, abc, typing
@@ -7,97 +6,102 @@ from reactivex.disposable import (
     SerialDisposable,
     SingleAssignmentDisposable,
 )
+from reactivex.internal import curry_flip
 from reactivex.scheduler import ImmediateScheduler
 
 _T = TypeVar("_T")
 
 
+@curry_flip
 def expand_(
+    source: Observable[_T],
     mapper: typing.Mapper[_T, Observable[_T]],
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    def expand(source: Observable[_T]) -> Observable[_T]:
-        """Expands an observable sequence by recursively invoking
-        mapper.
+) -> Observable[_T]:
+    """Expands an observable sequence by recursively invoking
+    mapper.
 
-        Args:
-            source: Source obserable to expand.
+    Examples:
+        >>> source.pipe(expand(lambda x: of(x * 2)))
+        >>> expand(lambda x: of(x * 2))(source)
 
-        Returns:
-            An observable sequence containing all the elements produced
-            by the recursive expansion.
-        """
+    Args:
+        source: Source observable to expand.
+        mapper: Function to recursively map elements.
 
-        def subscribe(
-            observer: abc.ObserverBase[_T],
-            scheduler: abc.SchedulerBase | None = None,
-        ) -> abc.DisposableBase:
-            scheduler = scheduler or ImmediateScheduler.singleton()
+    Returns:
+        An observable sequence containing all the elements produced
+        by the recursive expansion.
+    """
 
-            queue: list[Observable[_T]] = []
-            m = SerialDisposable()
-            d = CompositeDisposable(m)
-            active_count = 0
-            is_acquired = False
+    def subscribe(
+        observer: abc.ObserverBase[_T],
+        scheduler: abc.SchedulerBase | None = None,
+    ) -> abc.DisposableBase:
+        scheduler = scheduler or ImmediateScheduler.singleton()
 
-            def ensure_active():
-                nonlocal is_acquired
+        queue: list[Observable[_T]] = []
+        m = SerialDisposable()
+        d = CompositeDisposable(m)
+        active_count = 0
+        is_acquired = False
 
-                is_owner = False
+        def ensure_active():
+            nonlocal is_acquired
+
+            is_owner = False
+            if queue:
+                is_owner = not is_acquired
+                is_acquired = True
+
+            def action(scheduler: abc.SchedulerBase, state: Any = None):
+                nonlocal is_acquired, active_count
+
                 if queue:
-                    is_owner = not is_acquired
-                    is_acquired = True
+                    work = queue.pop(0)
+                else:
+                    is_acquired = False
+                    return
 
-                def action(scheduler: abc.SchedulerBase, state: Any = None):
-                    nonlocal is_acquired, active_count
+                sad = SingleAssignmentDisposable()
+                d.add(sad)
 
-                    if queue:
-                        work = queue.pop(0)
-                    else:
-                        is_acquired = False
+                def on_next(value: _T) -> None:
+                    nonlocal active_count
+
+                    observer.on_next(value)
+                    result = None
+                    try:
+                        result = mapper(value)
+                    except Exception as ex:
+                        observer.on_error(ex)
                         return
 
-                    sad = SingleAssignmentDisposable()
-                    d.add(sad)
+                    queue.append(result)
+                    active_count += 1
+                    ensure_active()
 
-                    def on_next(value: _T) -> None:
-                        nonlocal active_count
+                def on_complete() -> None:
+                    nonlocal active_count
 
-                        observer.on_next(value)
-                        result = None
-                        try:
-                            result = mapper(value)
-                        except Exception as ex:
-                            observer.on_error(ex)
-                            return
+                    d.remove(sad)
+                    active_count -= 1
+                    if active_count == 0:
+                        observer.on_completed()
 
-                        queue.append(result)
-                        active_count += 1
-                        ensure_active()
+                sad.disposable = work.subscribe(
+                    on_next, observer.on_error, on_complete, scheduler=scheduler
+                )
+                m.disposable = scheduler.schedule(action)
 
-                    def on_complete() -> None:
-                        nonlocal active_count
+            if is_owner:
+                m.disposable = scheduler.schedule(action)
 
-                        d.remove(sad)
-                        active_count -= 1
-                        if active_count == 0:
-                            observer.on_completed()
+        queue.append(source)
+        active_count += 1
+        ensure_active()
+        return d
 
-                    sad.disposable = work.subscribe(
-                        on_next, observer.on_error, on_complete, scheduler=scheduler
-                    )
-                    m.disposable = scheduler.schedule(action)
-
-                if is_owner:
-                    m.disposable = scheduler.schedule(action)
-
-            queue.append(source)
-            active_count += 1
-            ensure_active()
-            return d
-
-        return Observable(subscribe)
-
-    return expand
+    return Observable(subscribe)
 
 
 __all__ = ["expand_"]

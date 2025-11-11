@@ -45,7 +45,7 @@ def sequence_equal_(
         def subscribe(
             observer: abc.ObserverBase[bool],
             scheduler: abc.SchedulerBase | None = None,
-        ):
+        ) -> abc.DisposableBase:
             donel = [False]
             doner = [False]
             ql: list[_T] = []

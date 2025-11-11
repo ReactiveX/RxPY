@@ -12,6 +12,8 @@ from typing import (
     overload,
 )
 
+from typing_extensions import TypeVarTuple, Unpack
+
 from reactivex import (
     ConnectableObservable,
     GroupedObservable,
@@ -21,7 +23,6 @@ from reactivex import (
     compose,
     typing,
 )
-from reactivex.internal.basic import identity
 from reactivex.internal.utils import NotSet
 from reactivex.subject import Subject
 from reactivex.typing import (
@@ -42,10 +43,7 @@ _TValue = TypeVar("_TValue")
 _TRight = TypeVar("_TRight")
 _TLeft = TypeVar("_TLeft")
 
-_A = TypeVar("_A")
-_B = TypeVar("_B")
-_C = TypeVar("_C")
-_D = TypeVar("_D")
+_Ts = TypeVarTuple("_Ts")
 
 
 def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]]:
@@ -1812,9 +1810,9 @@ def materialize() -> Callable[[Observable[_T]], Observable[Notification[_T]]]:
         returns an observable sequence containing the materialized
         notification values from the source sequence.
     """
-    from ._materialize import materialize
+    from ._materialize import materialize_
 
-    return materialize()
+    return materialize_()
 
 
 def max(
@@ -3076,25 +3074,17 @@ def some(
 
 
 @overload
-def starmap(
-    mapper: Callable[[_A, _B], _T],
-) -> Callable[[Observable[tuple[_A, _B]]], Observable[_T]]: ...
+def starmap() -> Callable[[Observable[_T]], Observable[_T]]: ...
 
 
 @overload
 def starmap(
-    mapper: Callable[[_A, _B, _C], _T],
-) -> Callable[[Observable[tuple[_A, _B, _C]]], Observable[_T]]: ...
-
-
-@overload
-def starmap(
-    mapper: Callable[[_A, _B, _C, _D], _T],
-) -> Callable[[Observable[tuple[_A, _B, _C, _D]]], Observable[_T]]: ...
+    mapper: Callable[[Unpack[_Ts]], _T],
+) -> Callable[[Observable[tuple[Unpack[_Ts]]]], Observable[_T]]: ...
 
 
 def starmap(
-    mapper: Callable[..., Any] | None = None,
+    mapper: Callable[[Unpack[_Ts]], _T] | None = None,
 ) -> Callable[[Observable[Any]], Observable[Any]]:
     """The starmap operator.
 
@@ -3118,7 +3108,7 @@ def starmap(
 
     Args:
         mapper: A transform function to invoke with unpacked elements
-            as arguments.
+            as arguments. If not provided, returns the tuple unchanged.
 
     Returns:
         An operator function that takes an observable source and
@@ -3126,45 +3116,26 @@ def starmap(
         invoking the mapper function with unpacked elements of the
         source.
     """
-
     if mapper is None:
-        return compose(identity)
 
-    def starred(values: tuple[Any, ...]) -> Any:
-        assert mapper  # mypy is paranoid
+        def identity_fn(x: Any) -> Any:
+            return x
+
+        return compose(map(identity_fn))
+
+    def starred(values: tuple[Unpack[_Ts]]) -> _T:
         return mapper(*values)
 
     return compose(map(starred))
 
 
-@overload
 def starmap_indexed(
-    mapper: Callable[[_A, int], _T],
-) -> Callable[[Observable[_A]], Observable[_T]]: ...
-
-
-@overload
-def starmap_indexed(
-    mapper: Callable[[_A, _B, int], _T],
-) -> Callable[[Observable[tuple[_A, _B]]], Observable[_T]]: ...
-
-
-@overload
-def starmap_indexed(
-    mapper: Callable[[_A, _B, _C, int], _T],
-) -> Callable[[Observable[tuple[_A, _B, _C]]], Observable[_T]]: ...
-
-
-@overload
-def starmap_indexed(
-    mapper: Callable[[_A, _B, _C, _D, int], _T],
-) -> Callable[[Observable[tuple[_A, _B, _C, _D]]], Observable[_T]]: ...
-
-
-def starmap_indexed(
-    mapper: Callable[..., Any] | None = None,
-) -> Callable[[Observable[Any]], Observable[Any]]:
+    mapper: Callable[[Unpack[_Ts], int], _T],
+) -> Callable[[Observable[tuple[Unpack[_Ts], int]]], Observable[_T]]:
     """Variant of :func:`starmap` which accepts an indexed mapper.
+
+    Note: This operator expects the input to already be indexed as flat tuples
+    of (*values, index), which is what map_indexed provides via zip_with_iterable.
 
     .. marble::
         :alt: starmap_indexed
@@ -3178,7 +3149,7 @@ def starmap_indexed(
 
     Args:
         mapper: A transform function to invoke with unpacked elements
-            as arguments.
+            as arguments, plus the index.
 
     Returns:
         An operator function that takes an observable source and
@@ -3186,16 +3157,11 @@ def starmap_indexed(
         invoking the indexed mapper function with unpacked elements
         of the source.
     """
-    from ._map import map_
 
-    if mapper is None:
-        return compose(identity)
+    def starred(indexed_values: tuple[Unpack[_Ts], int]) -> _T:
+        return mapper(*indexed_values)
 
-    def starred(values: tuple[Any, ...]) -> Any:
-        assert mapper  # mypy is paranoid
-        return mapper(*values)
-
-    return compose(map_(starred))
+    return compose(map(starred))
 
 
 def start_with(*args: _T) -> Callable[[Observable[_T]], Observable[_T]]:

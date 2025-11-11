@@ -1,6 +1,7 @@
 from .basic import default_comparer, default_error, noop
 from .concurrency import default_thread_factory, synchronized
 from .constants import DELTA_ZERO, UTC_ZERO
+from .curry import curry_flip
 from .exceptions import (
     ArgumentOutOfRangeException,
     DisposedException,
@@ -13,6 +14,7 @@ __all__ = [
     "add_ref",
     "alias",
     "ArgumentOutOfRangeException",
+    "curry_flip",
     "DisposedException",
     "default_comparer",
     "default_error",

@@ -268,7 +268,6 @@ class TestBuffer(unittest.TestCase):
 
     def test_toggle_closing_with_empty_observable(self):
         with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
-
             lookup = {"a": [2, 3], "b": [5], "c": [7], "d": [8, 9]}
 
             openings = hot("---a-------b------c---d-------|")
@@ -291,7 +290,6 @@ class TestBuffer(unittest.TestCase):
 
     def test_toggle_closing_with_only_first_item(self):
         with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
-
             lookup = {"a": [2, 3], "b": [5], "c": [7], "d": [8, 9]}
 
             openings = hot("---a-------b------c---d-------|")
@@ -319,7 +317,6 @@ class TestBuffer(unittest.TestCase):
         ex = TestException("test exception")
 
         with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
-
             lookup = {"a": [2, 3], "b": [5], "c": [7], "d": [8, 9]}
 
             openings = hot("---a-------b------c---d-------|")
@@ -347,7 +344,6 @@ class TestBuffer(unittest.TestCase):
         ex = TestException("test exception")
 
         with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
-
             lookup = {"a": [2, 3], "b": [5], "c": [7], "d": [8, 9]}
 
             openings = hot("---a-------b-----#", error=ex)
@@ -375,7 +371,6 @@ class TestBuffer(unittest.TestCase):
         ex = TestException("test exception")
 
         with marbles_testing(timespan=1.0) as (start, cold, hot, exp):
-
             lookup = {"a": [2, 3], "b": [5], "c": [7], "d": [8, 9]}
 
             openings = hot("---a-------b------c---d-------|")

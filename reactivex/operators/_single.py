@@ -1,26 +1,32 @@
-from collections.abc import Callable
 from typing import TypeVar, cast
 
-from reactivex import Observable, compose
+from reactivex import Observable
 from reactivex import operators as ops
+from reactivex.internal import curry_flip
 from reactivex.typing import Predicate
+
+from ._singleordefault import single_or_default_async_
 
 _T = TypeVar("_T")
 
 
+@curry_flip
 def single_(
+    source: Observable[_T],
     predicate: Predicate[_T] | None = None,
-) -> Callable[[Observable[_T]], Observable[_T]]:
+) -> Observable[_T]:
     """Returns the only element of an observable sequence that satisfies the
     condition in the optional predicate, and reports an exception if there
     is not exactly one element in the observable sequence.
 
-    Example:
-        >>> res = single()
-        >>> res = single(lambda x: x == 42)
+    Examples:
+        >>> res = source.pipe(single())
+        >>> res = single()(source)
+        >>> res = source.pipe(single(lambda x: x == 42))
 
     Args:
-        predicate -- [Optional] A predicate function to evaluate for
+        source: The source observable sequence.
+        predicate: [Optional] A predicate function to evaluate for
             elements in the source sequence.
 
     Returns:
@@ -29,12 +35,12 @@ def single_(
     """
 
     if predicate:
-        return compose(ops.filter(predicate), ops.single())
+        return source.pipe(ops.filter(predicate), ops.single())
     else:
-        return cast(
-            Callable[[Observable[_T]], Observable[_T]],
-            ops.single_or_default_async(False),
-        )
+        # single_or_default_async_(False) returns
+        # Callable[[Observable[_T]], Observable[_T]] but the type checker
+        # cannot infer it. This cast is safe - implementation preserves type.
+        return cast(Observable[_T], single_or_default_async_(False)(source))
 
 
 __all__ = ["single_"]

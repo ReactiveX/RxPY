@@ -1,7 +1,7 @@
-from collections.abc import Callable
 from typing import Generic, TypeVar, cast
 
 from reactivex import Observable, abc, typing
+from reactivex.internal import curry_flip
 from reactivex.internal.basic import default_comparer
 
 _T = TypeVar("_T")
@@ -29,57 +29,60 @@ class HashSet(Generic[_TKey]):
         return ret_value
 
 
+@curry_flip
 def distinct_(
+    source: Observable[_T],
     key_mapper: typing.Mapper[_T, _TKey] | None = None,
     comparer: typing.Comparer[_TKey] | None = None,
-) -> Callable[[Observable[_T]], Observable[_T]]:
+) -> Observable[_T]:
+    """Returns an observable sequence that contains only distinct elements.
+
+    Returns an observable sequence that contains only distinct
+    elements according to the key_mapper and the comparer. Usage of
+    this operator should be considered carefully due to the
+    maintenance of an internal lookup structure which can grow large.
+
+    Examples:
+        >>> result = source.pipe(distinct())
+        >>> result = distinct()(source)
+        >>> result = source.pipe(distinct(lambda x: x.id))
+
+    Args:
+        source: Source observable to return distinct items from.
+        key_mapper: Optional function to compute a comparison key.
+        comparer: Optional equality comparer for computed keys.
+
+    Returns:
+        An observable sequence only containing the distinct
+        elements, based on a computed key value, from the source
+        sequence.
+    """
     comparer_ = comparer or cast(typing.Comparer[_TKey], default_comparer)
 
-    def distinct(source: Observable[_T]) -> Observable[_T]:
-        """Returns an observable sequence that contains only distinct
-        elements according to the key_mapper and the comparer. Usage of
-        this operator should be considered carefully due to the
-        maintenance of an internal lookup structure which can grow
-        large.
+    def subscribe(
+        observer: abc.ObserverBase[_T],
+        scheduler: abc.SchedulerBase | None = None,
+    ) -> abc.DisposableBase:
+        hashset = HashSet(comparer_)
 
-        Examples:
-            >>> res = obs = distinct(source)
+        def on_next(x: _T) -> None:
+            key = cast(_TKey, x)
 
-        Args:
-            source: Source observable to return distinct items from.
+            if key_mapper:
+                try:
+                    key = key_mapper(x)
+                except Exception as ex:
+                    observer.on_error(ex)
+                    return
 
-        Returns:
-            An observable sequence only containing the distinct
-            elements, based on a computed key value, from the source
-            sequence.
-        """
+            if hashset.push(key):
+                observer.on_next(x)
 
-        def subscribe(
-            observer: abc.ObserverBase[_T],
-            scheduler: abc.SchedulerBase | None = None,
-        ) -> abc.DisposableBase:
-            hashset = HashSet(comparer_)
+        return source.subscribe(
+            on_next, observer.on_error, observer.on_completed, scheduler=scheduler
+        )
 
-            def on_next(x: _T) -> None:
-                key = cast(_TKey, x)
-
-                if key_mapper:
-                    try:
-                        key = key_mapper(x)
-                    except Exception as ex:
-                        observer.on_error(ex)
-                        return
-
-                if hashset.push(key):
-                    observer.on_next(x)
-
-            return source.subscribe(
-                on_next, observer.on_error, observer.on_completed, scheduler=scheduler
-            )
-
-        return Observable(subscribe)
-
-    return distinct
+    return Observable(subscribe)
 
 
 __all__ = ["distinct_"]

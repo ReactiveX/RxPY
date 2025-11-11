@@ -9,6 +9,7 @@ from reactivex.disposable import (
     Disposable,
     SingleAssignmentDisposable,
 )
+from reactivex.internal.basic import default_now
 
 from ..periodicscheduler import PeriodicScheduler
 
@@ -120,4 +121,4 @@ class AsyncIOScheduler(PeriodicScheduler):
              The scheduler's current time, as a datetime instance.
         """
 
-        return self.to_datetime(self._loop.time())
+        return default_now()

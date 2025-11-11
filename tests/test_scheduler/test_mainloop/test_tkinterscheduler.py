@@ -14,7 +14,9 @@ from reactivex.scheduler.mainloop import TkinterScheduler
 # Error: "Tcl_AsyncDelete: async handler deleted by the wrong thread"
 # This occurs when pytest-xdist tries to parallelize tests that use Tkinter
 if platform.system() == "Darwin" and hasattr(sys, "pypy_version_info"):
-    pytest.skip("Tkinter tests are incompatible with PyPy on macOS", allow_module_level=True)
+    pytest.skip(
+        "Tkinter tests are incompatible with PyPy on macOS", allow_module_level=True
+    )
 
 tkinter = pytest.importorskip("tkinter")
 

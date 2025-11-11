@@ -1,58 +1,64 @@
-from collections.abc import Callable
 from datetime import datetime
 from typing import TypeVar
 
 from reactivex import Observable, abc, typing
+from reactivex.internal import curry_flip
 from reactivex.scheduler import TimeoutScheduler
 
 _T = TypeVar("_T")
 
 
+@curry_flip
 def throttle_first_(
-    window_duration: typing.RelativeTime, scheduler: abc.SchedulerBase | None = None
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    def throttle_first(source: Observable[_T]) -> Observable[_T]:
-        """Returns an observable that emits only the first item emitted
-        by the source Observable during sequential time windows of a
-        specified duration.
+    source: Observable[_T],
+    window_duration: typing.RelativeTime,
+    scheduler: abc.SchedulerBase | None = None,
+) -> Observable[_T]:
+    """Returns an observable that emits only the first item emitted
+    by the source Observable during sequential time windows of a
+    specified duration.
 
-        Args:
-            source: Source observable to throttle.
+    Examples:
+        >>> result = source.pipe(throttle_first(1.0))
+        >>> result = throttle_first(1.0)(source)
 
-        Returns:
-            An Observable that performs the throttle operation.
-        """
+    Args:
+        source: Source observable to throttle.
+        window_duration: Duration of windows during which to throttle.
+        scheduler: Optional scheduler to use for timing.
 
-        def subscribe(
-            observer: abc.ObserverBase[_T],
-            scheduler_: abc.SchedulerBase | None = None,
-        ) -> abc.DisposableBase:
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
+    Returns:
+        An Observable that performs the throttle operation.
+    """
 
-            duration = _scheduler.to_timedelta(window_duration or 0.0)
-            if duration <= _scheduler.to_timedelta(0):
-                raise ValueError("window_duration cannot be less or equal zero.")
-            last_on_next: datetime | None = None
+    def subscribe(
+        observer: abc.ObserverBase[_T],
+        scheduler_: abc.SchedulerBase | None = None,
+    ) -> abc.DisposableBase:
+        _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 
-            def on_next(x: _T) -> None:
-                nonlocal last_on_next
-                emit = False
-                now = _scheduler.now
+        duration = _scheduler.to_timedelta(window_duration or 0.0)
+        if duration <= _scheduler.to_timedelta(0):
+            raise ValueError("window_duration cannot be less or equal zero.")
+        last_on_next: datetime | None = None
 
-                with source.lock:
-                    if not last_on_next or now - last_on_next >= duration:
-                        last_on_next = now
-                        emit = True
-                if emit:
-                    observer.on_next(x)
+        def on_next(x: _T) -> None:
+            nonlocal last_on_next
+            emit = False
+            now = _scheduler.now
 
-            return source.subscribe(
-                on_next, observer.on_error, observer.on_completed, scheduler=_scheduler
-            )
+            with source.lock:
+                if not last_on_next or now - last_on_next >= duration:
+                    last_on_next = now
+                    emit = True
+            if emit:
+                observer.on_next(x)
 
-        return Observable(subscribe)
+        return source.subscribe(
+            on_next, observer.on_error, observer.on_completed, scheduler=_scheduler
+        )
 
-    return throttle_first
+    return Observable(subscribe)
 
 
 __all__ = ["throttle_first_"]

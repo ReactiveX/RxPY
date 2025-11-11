@@ -312,7 +312,6 @@ class TestReplay(unittest.TestCase):
         ]
 
     def test_replay_count_multiple_connections(self):
-
         xs = reactivex.never()
         ys = xs.pipe(ops.replay(None, 3))
         connection1 = ys.connect()
