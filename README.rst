@@ -1,5 +1,5 @@
-The ReactiveX for Python (RxPY)
 ===============================
+The ReactiveX for Python (RxPY)
 ===============================
 
 .. image:: https://github.com/ReactiveX/RxPY/workflows/Python%20package/badge.svg
