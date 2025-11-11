@@ -22,51 +22,74 @@
 
 ## Staged Approach
 
-### Stage 0: Format All Test Files (Pre-work)
+### Stage 0: Format All Test Files (Pre-work) ✅ COMPLETED
 
 **Goal**: Handle all formatting issues upfront before type annotations
 
 **Tasks**:
 
-1. Run `ruff format tests/` to auto-format all test files
-2. Review and commit formatting changes
-3. Verify tests still pass after formatting
+1. ✅ Run `ruff format tests/` - 19 files reformatted
+2. ✅ Updated configuration to use specific directory exclusions
+3. ✅ Verified tests still pass after formatting
 
 **Rationale**: Separating formatting from type annotation work makes it easier to review changes and ensures we start from a clean, consistent base.
 
-**Estimated Effort**: ~15-30 minutes
+**Actual Effort**: ~30 minutes
 
-### Stage 1: Infrastructure & Smallest Modules (8 files)
+### Stage 1: Infrastructure & Smallest Modules (8 files) ✅ COMPLETED
 
 **Goal**: Validate the approach and establish patterns
 
 **Tasks**:
 
-1. ✅ **COMPLETED**: Updated ruff configuration to match pyright (specific directory exclusions)
-2. Run `ruff check --fix` on Stage 1 files for auto-fixable issues
-3. Fix **test_core** (4 files) - Core functionality tests
-4. Fix **test_disposables** (2 files) - Disposable tests
-5. Fix **test_testing** (2 files) - Testing utilities tests
-6. Document common patterns and solutions
+1. ✅ Updated ruff configuration to match pyright (specific directory exclusions)
+2. ✅ Ran `ruff check --fix --unsafe-fixes` - auto-fixed 16 errors
+3. ✅ Fixed **test_core/test_priorityqueue.py** - 0 errors
+4. ✅ Fixed **test_core/test_observer.py** - 0 errors
+5. ✅ Fixed **test_core/test_notification.py** - 0 errors (largest file, most complex)
+6. ✅ Fixed **test_disposables/test_disposable.py** - 0 errors (auto-fixed)
+7. ✅ Fixed **test_testing/test_marbles.py** - 0 errors
+8. ✅ All 75 Stage 1 tests pass
+
+**Patterns Discovered**:
+
+- Add `-> None` return types to all test functions
+- Use explicit type parameters for generics (e.g., `OnError[int]`, `OnCompleted[int]`)
+- Convert string exceptions to `Exception("message")` objects
+- Use `cast()` with documented justifications for test patterns that go beyond public API
+- Replace `== None` with `is not None` or `is None`
+- Add type annotations to all observer classes and helper functions
 
 **Rationale**: These are likely the simplest and will help identify common patterns and issues.
 
-**Estimated Effort**: ~2-4 hours (includes setup)
+**Actual Effort**: ~3 hours
 
-### Stage 2: Medium Modules (9 files)
+### Stage 2: Medium Modules (9 files) ⚠️ PARTIAL - test_integration COMPLETE
 
 **Goal**: Build confidence with isolated modules
 
+**Status**: test_integration complete, test_subject deferred to preserve commit checkpoint
+
 **Tasks**:
 
-1. Fix **test_subject** (5 files) - Subject tests
-2. Fix **test_integration** (2 files) - Integration tests
-3. Run full test suite to ensure no regressions
-4. Update pattern documentation
+1. ⏳ Fix **test_subject** (5 files) - Deferred (requires ~2000 lines of fixes)
+2. ✅ Fix **test_integration** (2 files) - COMPLETE
+   - ✅ **test_integration/test_concat_repeat.py** - 0 errors
+   - ✅ **test_integration/test_group_reduce.py** - 0 errors
+   - ✅ All 3 integration tests pass
+3. ✅ Excluded test_subject from pyproject.toml for pre-commit checkpoint
+4. ✅ Verified all enabled tests pass (78 tests total)
 
-**Rationale**: Still manageable size, builds confidence before tackling large modules.
+**Additional Patterns Discovered**:
 
-**Estimated Effort**: ~1-2 hours
+- Marble testing requires `None, None` parameters for value_lookup and error_lookup
+- Complex operator chains (group_by, flat_map): Extract helper function with explicit `Callable[[Observable[Any]], Observable[Any]]` type
+- Integration tests validate runtime behavior, so `Any` types with documented justification are acceptable
+- GroupedObservable type inference issues: Use helper functions instead of inline lambdas
+
+**Rationale**: Still manageable size, builds confidence before tackling large modules. Split to allow checkpoint commit.
+
+**Actual Effort**: ~1 hour (test_integration only)
 
 ### Stage 3: Scheduler Module (27 files)
 
@@ -271,21 +294,23 @@ typeCheckingMode = "strict"
   - [x] Run `ruff format tests/` (19 files reformatted)
   - [x] Review and commit formatting changes (commit: 73495f83)
   - [x] Verify tests still pass
-  - [x] Update ruff config to use specific directory exclusions (commit: pending)
+  - [x] Update ruff config to use specific directory exclusions (commit: ecf450ee)
 
   **Note**: Formatting worked even with blanket "tests" exclusion because explicitly passing paths to ruff overrides excludes by default.
 
-- [ ] Stage 1: Infrastructure & Smallest Modules (8 files)
-  - [ ] Update configuration files
-  - [ ] Fix test_core (4 files)
-  - [ ] Fix test_disposables (2 files)
-  - [ ] Fix test_testing (2 files)
-  - [ ] Document patterns
+- [x] Stage 1: Infrastructure & Smallest Modules (8 files) ✅
+  - [x] Update configuration files
+  - [x] Fix test_core (4 files) - 0 errors
+  - [x] Fix test_disposables (2 files) - 0 errors
+  - [x] Fix test_testing (2 files) - 0 errors
+  - [x] Document patterns
+  - [x] All 75 tests pass
 
-- [ ] Stage 2: Medium Modules (9 files)
-  - [ ] Fix test_subject (5 files)
-  - [ ] Fix test_integration (2 files)
-  - [ ] Run full test suite
+- [x] Stage 2: Medium Modules (9 files) ⚠️ PARTIAL
+  - [ ] Fix test_subject (5 files) - Deferred
+  - [x] Fix test_integration (2 files) - 0 errors, 3 tests pass
+  - [x] Exclude test_subject from pyproject.toml
+  - [x] Run enabled tests (78 tests total)
 
 - [ ] Stage 3: Scheduler Module (27 files)
   - [ ] Fix test_scheduler files

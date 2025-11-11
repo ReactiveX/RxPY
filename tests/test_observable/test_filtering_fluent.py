@@ -436,3 +436,376 @@ class TestComplexFilteringChaining:
         result.subscribe(on_next=values.append)
 
         assert values == [True]
+
+
+class TestFirstOrDefaultMethodChaining:
+    """Tests for first_or_default() method."""
+
+    def test_first_or_default_with_default(self) -> None:
+        """Verify first_or_default returns default when empty."""
+        source: Observable[int] = rx.empty()
+
+        fluent_result: Observable[int | None] = source.first_or_default(
+            default_value=42
+        )
+        pipe_result: Observable[int | None] = source.pipe(
+            ops.first_or_default(default_value=42)
+        )
+
+        fluent_values: list[int | None] = []
+        pipe_values: list[int | None] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [42]
+
+    def test_first_or_default_with_predicate(self) -> None:
+        """Verify first_or_default with predicate."""
+        source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
+        fluent_result: Observable[int | None] = source.first_or_default(
+            lambda x: x > 3, default_value=0
+        )
+        pipe_result: Observable[int | None] = source.pipe(
+            ops.first_or_default(lambda x: x > 3, default_value=0)
+        )
+
+        fluent_values: list[int | None] = []
+        pipe_values: list[int | None] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [4]
+
+
+class TestLastOrDefaultMethodChaining:
+    """Tests for last_or_default() method."""
+
+    def test_last_or_default_with_default(self) -> None:
+        """Verify last_or_default returns default when empty."""
+        source: Observable[int] = rx.empty()
+
+        fluent_result: Observable[int | None] = source.last_or_default(default_value=42)
+        pipe_result: Observable[int | None] = source.pipe(
+            ops.last_or_default(default_value=42)
+        )
+
+        fluent_values: list[int | None] = []
+        pipe_values: list[int | None] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [42]
+
+    def test_last_or_default_with_predicate(self) -> None:
+        """Verify last_or_default with predicate."""
+        source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
+        fluent_result: Observable[int | None] = source.last_or_default(
+            default_value=0, predicate=lambda x: x < 4
+        )
+        pipe_result: Observable[int | None] = source.pipe(
+            ops.last_or_default(default_value=0, predicate=lambda x: x < 4)
+        )
+
+        fluent_values: list[int | None] = []
+        pipe_values: list[int | None] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [3]
+
+
+class TestSliceMethodChaining:
+    """Tests for slice() method."""
+
+    def test_slice_with_start_stop(self) -> None:
+        """Verify slice with start and stop."""
+        source: Observable[int] = rx.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+
+        fluent_result: Observable[int] = source.slice(start=2, stop=7)
+        pipe_result: Observable[int] = source.pipe(ops.slice(start=2, stop=7))
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [2, 3, 4, 5, 6]
+
+    def test_slice_with_step(self) -> None:
+        """Verify slice with step."""
+        source: Observable[int] = rx.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+
+        fluent_result: Observable[int] = source.slice(start=0, stop=10, step=2)
+        pipe_result: Observable[int] = source.pipe(ops.slice(start=0, stop=10, step=2))
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [0, 2, 4, 6, 8]
+
+
+class TestTakeLastBufferMethodChaining:
+    """Tests for take_last_buffer() method."""
+
+    def test_take_last_buffer_equivalence(self) -> None:
+        """Verify take_last_buffer fluent and functional styles are equivalent."""
+        source: Observable[int] = rx.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+
+        fluent_result: Observable[list[int]] = source.take_last_buffer(3)
+        pipe_result: Observable[list[int]] = source.pipe(ops.take_last_buffer(3))
+
+        fluent_values: list[list[int]] = []
+        pipe_values: list[list[int]] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [[8, 9, 10]]
+
+
+class TestSkipWithTimeMethodChaining:
+    """Tests for skip_with_time() method."""
+
+    def test_skip_with_time_equivalence(self) -> None:
+        """Verify skip_with_time fluent and functional styles are equivalent."""
+        from reactivex.scheduler import ImmediateScheduler
+
+        scheduler = ImmediateScheduler()
+        source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
+        # With immediate scheduler, duration doesn't matter much for this simple test
+        fluent_result: Observable[int] = source.skip_with_time(0, scheduler)
+        pipe_result: Observable[int] = source.pipe(ops.skip_with_time(0, scheduler))
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [1, 2, 3, 4, 5]
+
+
+class TestTakeWithTimeMethodChaining:
+    """Tests for take_with_time() method."""
+
+    def test_take_with_time_equivalence(self) -> None:
+        """Verify take_with_time fluent and functional styles are equivalent."""
+        from reactivex.scheduler import ImmediateScheduler
+
+        scheduler = ImmediateScheduler()
+        source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
+        # With immediate scheduler, use duration=0 to avoid WouldBlockException
+        fluent_result: Observable[int] = source.take_with_time(0, scheduler)
+        pipe_result: Observable[int] = source.pipe(ops.take_with_time(0, scheduler))
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        # With duration=0, should take all values emitted immediately
+        assert fluent_values == pipe_values
+
+
+class TestSkipLastWithTimeMethodChaining:
+    """Tests for skip_last_with_time() method."""
+
+    def test_skip_last_with_time_equivalence(self) -> None:
+        """Verify skip_last_with_time fluent and functional styles are equivalent."""
+        from reactivex.scheduler import ImmediateScheduler
+
+        scheduler = ImmediateScheduler()
+        source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
+        # With immediate scheduler and duration=0, should take all
+        fluent_result: Observable[int] = source.skip_last_with_time(0, scheduler)
+        pipe_result: Observable[int] = source.pipe(
+            ops.skip_last_with_time(0, scheduler)
+        )
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [1, 2, 3, 4, 5]
+
+
+class TestTakeLastWithTimeMethodChaining:
+    """Tests for take_last_with_time() method."""
+
+    def test_take_last_with_time_equivalence(self) -> None:
+        """Verify take_last_with_time fluent and functional styles are equivalent."""
+        from reactivex.scheduler import ImmediateScheduler
+
+        scheduler = ImmediateScheduler()
+        source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
+        # With immediate scheduler and large duration, should take all
+        fluent_result: Observable[int] = source.take_last_with_time(1000, scheduler)
+        pipe_result: Observable[int] = source.pipe(
+            ops.take_last_with_time(1000, scheduler)
+        )
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [1, 2, 3, 4, 5]
+
+
+class TestSkipUntilWithTimeMethodChaining:
+    """Tests for skip_until_with_time() method."""
+
+    def test_skip_until_with_time_equivalence(self) -> None:
+        """Verify skip_until_with_time fluent and functional styles are equivalent."""
+        from reactivex.scheduler import ImmediateScheduler
+
+        scheduler = ImmediateScheduler()
+        source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
+        # With immediate scheduler and start_time in the past, should take all
+        fluent_result: Observable[int] = source.skip_until_with_time(0, scheduler)
+        pipe_result: Observable[int] = source.pipe(
+            ops.skip_until_with_time(0, scheduler)
+        )
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [1, 2, 3, 4, 5]
+
+
+class TestTakeUntilWithTimeMethodChaining:
+    """Tests for take_until_with_time() method."""
+
+    def test_take_until_with_time_equivalence(self) -> None:
+        """Verify take_until_with_time fluent and functional styles are equivalent."""
+        from reactivex.scheduler import ImmediateScheduler
+
+        scheduler = ImmediateScheduler()
+        source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
+        # With immediate scheduler, use end_time=0 to avoid WouldBlockException
+        fluent_result: Observable[int] = source.take_until_with_time(0, scheduler)
+        pipe_result: Observable[int] = source.pipe(
+            ops.take_until_with_time(0, scheduler)
+        )
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        # With end_time=0 (past), should take no values
+        assert fluent_values == pipe_values
+
+
+class TestSingleOrDefaultAsyncMethodChaining:
+    """Tests for single_or_default_async() method."""
+
+    def test_single_or_default_async_with_single_element(self) -> None:
+        """Verify single_or_default_async with single element."""
+        source: Observable[int] = rx.of(42)
+
+        fluent_result: Observable[int] = source.single_or_default_async()
+        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [42]
+
+    def test_single_or_default_async_with_empty_and_default(self) -> None:
+        """Verify single_or_default_async returns default when empty."""
+        source: Observable[int] = rx.empty()
+
+        fluent_result: Observable[int] = source.single_or_default_async(
+            has_default=True, default_value=99
+        )
+        pipe_result: Observable[int] = source.pipe(
+            ops.single_or_default_async(has_default=True, default_value=99)
+        )
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [99]
+
+    def test_single_or_default_async_with_empty_no_default(self) -> None:
+        """Verify single_or_default_async errors when empty without default."""
+        source: Observable[int] = rx.empty()
+
+        fluent_result: Observable[int] = source.single_or_default_async()
+        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())
+
+        fluent_errors: list[Exception] = []
+        pipe_errors: list[Exception] = []
+
+        fluent_result.subscribe(on_error=fluent_errors.append)
+        pipe_result.subscribe(on_error=pipe_errors.append)
+
+        assert len(fluent_errors) == len(pipe_errors) == 1
+        assert type(fluent_errors[0]).__name__ == type(pipe_errors[0]).__name__
+
+    def test_single_or_default_async_with_multiple_elements(self) -> None:
+        """Verify single_or_default_async errors with multiple elements."""
+        source: Observable[int] = rx.of(1, 2, 3)
+
+        fluent_result: Observable[int] = source.single_or_default_async()
+        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())
+
+        fluent_errors: list[Exception] = []
+        pipe_errors: list[Exception] = []
+
+        fluent_result.subscribe(on_error=fluent_errors.append)
+        pipe_result.subscribe(on_error=pipe_errors.append)
+
+        assert len(fluent_errors) == len(pipe_errors) == 1
+        assert "more than one element" in str(fluent_errors[0]).lower()
+        assert "more than one element" in str(pipe_errors[0]).lower()
+
+    def test_single_or_default_async_equivalence(self) -> None:
+        """Verify single_or_default_async fluent and functional styles are equivalent."""
+        source: Observable[int] = rx.of(5)
+
+        fluent_result: Observable[int] = source.single_or_default_async(
+            has_default=True, default_value=0
+        )
+        pipe_result: Observable[int] = source.pipe(
+            ops.single_or_default_async(has_default=True, default_value=0)
+        )
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        fluent_result.subscribe(on_next=fluent_values.append)
+        pipe_result.subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [5]

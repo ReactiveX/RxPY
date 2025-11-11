@@ -75,9 +75,8 @@ exclude = [
     "notebooks",
     "examples",
     # Test directories - remove as each stage is completed
-    # Stage 1 directories removed - now enabled for linting
+    # Stage 1 complete, Stage 2 partial (test_integration complete)
     "tests/test_subject",
-    "tests/test_integration",
     "tests/test_scheduler",
     "tests/test_observable",
 ]
@@ -101,7 +100,6 @@ known-first-party = ["reactivex"]
 python_version = "3.10"
 follow_imports = "silent"
 files = ["reactivex"]
-exclude = ["reactivex/operators/_\\w.*\\.py$"] # mypy will eventually catch up
 disallow_any_generics = true
 disallow_untyped_defs = true
 
@@ -112,9 +110,8 @@ asyncio_mode = "strict"
 [tool.pyright]
 include = ["reactivex", "tests"]
 exclude = [
-    # Stage 1 directories removed - now enabled for type checking
+    # Stage 1 complete, Stage 2 partial (test_integration complete)
     "tests/test_subject",
-    "tests/test_integration",
     "tests/test_scheduler",
     "tests/test_observable",
 ]
