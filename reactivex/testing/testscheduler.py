@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any, TypeVar, cast
+from typing import Any, TypeVar, cast, overload
 
 import reactivex
 from reactivex import Observable, abc, typing
@@ -114,6 +114,12 @@ class TestScheduler(VirtualTimeScheduler):
         super().start()
         return observer
 
+    @overload
+    def create_hot_observable(self, *args: Recorded[_T]) -> HotObservable[_T]: ...
+
+    @overload
+    def create_hot_observable(self, *args: list[Recorded[_T]]) -> HotObservable[_T]: ...
+
     def create_hot_observable(
         self, *args: Recorded[_T] | list[Recorded[_T]]
     ) -> HotObservable[_T]:
@@ -134,6 +140,14 @@ class TestScheduler(VirtualTimeScheduler):
             messages = cast(list[Recorded[_T]], list(args))
         return HotObservable(self, messages)
 
+    @overload
+    def create_cold_observable(self, *args: Recorded[_T]) -> ColdObservable[_T]: ...
+
+    @overload
+    def create_cold_observable(
+        self, *args: list[Recorded[_T]]
+    ) -> ColdObservable[_T]: ...
+
     def create_cold_observable(
         self, *args: Recorded[_T] | list[Recorded[_T]]
     ) -> ColdObservable[_T]:
@@ -153,7 +167,7 @@ class TestScheduler(VirtualTimeScheduler):
         if args and isinstance(args[0], list):
             messages = args[0]
         else:
-            messages = cast(list[Recorded[_T]], list(args))
+            messages = cast(list[Recorded[Any]], list(args))
         return ColdObservable(self, messages)
 
     def create_observer(self) -> MockObserver[Any]:
