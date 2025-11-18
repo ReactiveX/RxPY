@@ -1,6 +1,6 @@
 import logging
 import threading
-from typing import Any, Optional, TypeVar
+from typing import Any, TypeVar
 
 from reactivex import abc, typing
 from reactivex.internal import PriorityQueue
@@ -36,7 +36,7 @@ class PyGameScheduler(PeriodicScheduler):
         self._queue: PriorityQueue[ScheduledItem] = PriorityQueue()
 
     def schedule(
-        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: typing.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -56,7 +56,7 @@ class PyGameScheduler(PeriodicScheduler):
         self,
         duetime: typing.RelativeTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
         Args:
@@ -76,7 +76,7 @@ class PyGameScheduler(PeriodicScheduler):
         self,
         duetime: typing.AbsoluteTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 

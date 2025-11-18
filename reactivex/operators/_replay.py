@@ -1,8 +1,8 @@
-from typing import Callable, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import TypeVar
 
-from reactivex import ConnectableObservable, Observable, abc
+from reactivex import ConnectableObservable, Observable, abc, typing
 from reactivex import operators as ops
-from reactivex import typing
 from reactivex.subject import ReplaySubject
 from reactivex.typing import Mapper
 
@@ -11,12 +11,12 @@ _TResult = TypeVar("_TResult")
 
 
 def replay_(
-    mapper: Optional[Mapper[Observable[_TSource], Observable[_TResult]]] = None,
-    buffer_size: Optional[int] = None,
-    window: Optional[typing.RelativeTime] = None,
-    scheduler: Optional[abc.SchedulerBase] = None,
+    mapper: Mapper[Observable[_TSource], Observable[_TResult]] | None = None,
+    buffer_size: int | None = None,
+    window: typing.RelativeTime | None = None,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[
-    [Observable[_TSource]], Union[Observable[_TResult], ConnectableObservable[_TSource]]
+    [Observable[_TSource]], Observable[_TResult] | ConnectableObservable[_TSource]
 ]:
     """Returns an observable sequence that is the result of invoking the
     mapper on a connectable observable sequence that shares a single
@@ -52,7 +52,7 @@ def replay_(
     if mapper:
 
         def subject_factory(
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> ReplaySubject[_TSource]:
             return ReplaySubject(buffer_size, window, scheduler)
 

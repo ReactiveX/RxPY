@@ -18,7 +18,6 @@ created = ReactiveTest.created
 
 class MySubject(Observable, ObserverBase):
     def __init__(self):
-
         super(MySubject, self).__init__()
 
         self.dispose_on_map = {}

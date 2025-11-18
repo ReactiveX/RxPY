@@ -1,6 +1,7 @@
 import itertools
 from asyncio import Future
-from typing import Callable, TypeVar, Union
+from collections.abc import Callable
+from typing import TypeVar, Union
 
 import reactivex
 from reactivex import Observable

@@ -924,7 +924,6 @@ class TestJoin(unittest.TestCase):
         assert subscribe_schedulers["duration_y"] is scheduler
 
     def test_join_op_forward_scheduler_None(self):
-
         subscribe_schedulers = {
             "x": "unknown",
             "y": "unknown",

@@ -1,5 +1,6 @@
 from asyncio import Future
-from typing import Callable, Mapping, Optional, TypeVar, Union
+from collections.abc import Callable, Mapping
+from typing import TypeVar, Union
 
 from reactivex import Observable, abc, defer, empty, from_future
 
@@ -10,19 +11,17 @@ _T = TypeVar("_T")
 def case_(
     mapper: Callable[[], _Key],
     sources: Mapping[_Key, Observable[_T]],
-    default_source: Optional[Union[Observable[_T], "Future[_T]"]] = None,
+    default_source: Union[Observable[_T], "Future[_T]"] | None = None,
 ) -> Observable[_T]:
-
-    default_source_: Union[Observable[_T], "Future[_T]"] = default_source or empty()
+    default_source_: Observable[_T] | Future[_T] = default_source or empty()
 
     def factory(_: abc.SchedulerBase) -> Observable[_T]:
         try:
-            result: Union[Observable[_T], "Future[_T]"] = sources[mapper()]
+            result: Observable[_T] | Future[_T] = sources[mapper()]
         except KeyError:
             result = default_source_
 
         if isinstance(result, Future):
-
             result_: Observable[_T] = from_future(result)
         else:
             result_ = result

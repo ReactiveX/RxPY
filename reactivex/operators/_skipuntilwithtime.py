@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from datetime import datetime
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc, typing
 from reactivex.disposable import CompositeDisposable
@@ -10,7 +11,7 @@ _T = TypeVar("_T")
 
 def skip_until_with_time_(
     start_time: typing.AbsoluteOrRelativeTime,
-    scheduler: Optional[abc.SchedulerBase] = None,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def skip_until_with_time(source: Observable[_T]) -> Observable[_T]:
         """Skips elements from the observable source sequence until the
@@ -41,7 +42,7 @@ def skip_until_with_time_(
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler_: Optional[abc.SchedulerBase] = None,
+            scheduler_: abc.SchedulerBase | None = None,
         ):
             _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
 

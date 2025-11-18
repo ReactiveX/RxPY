@@ -56,7 +56,7 @@ async def go(loop):
 
     ai = reactivex.range(0, 10, scheduler=scheduler).pipe(to_async_iterable())
     async for x in ai:
-        print("got %s" % x)
+        print(f"got {x}")
 
 
 def main():

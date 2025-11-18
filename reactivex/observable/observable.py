@@ -3,7 +3,8 @@ from __future__ import annotations
 
 import asyncio
 import threading
-from typing import Any, Callable, Generator, Optional, TypeVar, Union, cast, overload
+from collections.abc import Callable, Generator
+from typing import Any, TypeVar, cast, overload
 
 from reactivex import abc
 from reactivex.disposable import Disposable
@@ -11,6 +12,19 @@ from reactivex.scheduler import CurrentThreadScheduler
 from reactivex.scheduler.eventloop import AsyncIOScheduler
 
 from ..observer import AutoDetachObserver
+from .mixins import (
+    CombinationMixin,
+    ConditionalMixin,
+    ErrorHandlingMixin,
+    FilteringMixin,
+    MathematicalMixin,
+    MulticastingMixin,
+    TestingMixin,
+    TimeBasedMixin,
+    TransformationMixin,
+    UtilityMixin,
+    WindowingMixin,
+)
 
 _A = TypeVar("_A")
 _B = TypeVar("_B")
@@ -23,13 +37,41 @@ _G = TypeVar("_G")
 _T_out = TypeVar("_T_out", covariant=True)
 
 
-class Observable(abc.ObservableBase[_T_out]):
-    """Observable base class.
+class Observable(
+    abc.ObservableBase[_T_out],
+    TransformationMixin[_T_out],
+    FilteringMixin[_T_out],
+    CombinationMixin[_T_out],
+    MathematicalMixin[_T_out],
+    ConditionalMixin[_T_out],
+    ErrorHandlingMixin[_T_out],
+    UtilityMixin[_T_out],
+    TimeBasedMixin[_T_out],
+    WindowingMixin[_T_out],
+    MulticastingMixin[_T_out],
+    TestingMixin[_T_out],
+):
+    """Observable with method chaining support.
 
-    Represents a push-style collection, which you can :func:`pipe <pipe>` into
-    :mod:`operators <reactivex.operators>`."""
+    Represents a push-style collection that supports both functional (pipe-based)
+    and fluent (method chaining) styles. You can :func:`pipe <pipe>` into
+    :mod:`operators <reactivex.operators>` or call operator methods directly.
 
-    def __init__(self, subscribe: Optional[abc.Subscription[_T_out]] = None) -> None:
+    The Observable class combines all operator categories through mixins:
+    - TransformationMixin: map, reduce, scan, flat_map, etc.
+    - FilteringMixin: filter, take, skip, distinct, etc.
+    - CombinationMixin: merge, zip, combine_latest, etc.
+    - MathematicalMixin: count, sum, average, min, max
+    - ConditionalMixin: default_if_empty, etc.
+    - ErrorHandlingMixin: catch, retry, on_error_resume_next
+    - UtilityMixin: do_action, delay, timestamp, etc.
+    - TimeBasedMixin: sample, debounce, etc.
+    - WindowingMixin: buffer, group_by, partition, etc.
+    - MulticastingMixin: share, publish, replay, etc.
+    - TestingMixin: all, some, is_empty, contains, etc.
+    """
+
+    def __init__(self, subscribe: abc.Subscription[_T_out] | None = None) -> None:
         """Creates an observable sequence object from the specified
         subscription function.
 
@@ -44,19 +86,17 @@ class Observable(abc.ObservableBase[_T_out]):
     def _subscribe_core(
         self,
         observer: abc.ObserverBase[_T_out],
-        scheduler: Optional[abc.SchedulerBase] = None,
+        scheduler: abc.SchedulerBase | None = None,
     ) -> abc.DisposableBase:
         return self._subscribe(observer, scheduler) if self._subscribe else Disposable()
 
     def subscribe(
         self,
-        on_next: Optional[
-            Union[abc.ObserverBase[_T_out], abc.OnNext[_T_out], None]
-        ] = None,
-        on_error: Optional[abc.OnError] = None,
-        on_completed: Optional[abc.OnCompleted] = None,
+        on_next: abc.ObserverBase[_T_out] | abc.OnNext[_T_out] | None | None = None,
+        on_error: abc.OnError | None = None,
+        on_completed: abc.OnCompleted | None = None,
         *,
-        scheduler: Optional[abc.SchedulerBase] = None,
+        scheduler: abc.SchedulerBase | None = None,
     ) -> abc.DisposableBase:
         """Subscribe an observer to the observable sequence.
 
@@ -88,7 +128,7 @@ class Observable(abc.ObservableBase[_T_out]):
 
         Returns:
             Disposable object representing an observer's subscription to
-            the observable sequence.
+            the observable sequence. Call :code:`.dispose()` on it to unsubscribe.
         """
         if (
             isinstance(on_next, abc.ObserverBase)
@@ -105,7 +145,7 @@ class Observable(abc.ObservableBase[_T_out]):
         )
 
         def fix_subscriber(
-            subscriber: Union[abc.DisposableBase, Callable[[], None]]
+            subscriber: abc.DisposableBase | Callable[[], None],
         ) -> abc.DisposableBase:
             """Fixes subscriber to make sure it returns a Disposable instead
             of None or a dispose function"""
@@ -118,9 +158,7 @@ class Observable(abc.ObservableBase[_T_out]):
 
             return Disposable(subscriber)
 
-        def set_disposable(
-            _: Optional[abc.SchedulerBase] = None, __: Any = None
-        ) -> None:
+        def set_disposable(_: abc.SchedulerBase | None = None, __: Any = None) -> None:
             try:
                 subscriber = self._subscribe_core(auto_detach_observer, scheduler)
             except Exception as ex:  # By design. pylint: disable=W0703
@@ -147,16 +185,14 @@ class Observable(abc.ObservableBase[_T_out]):
         return Disposable(auto_detach_observer.dispose)
 
     @overload
-    def pipe(self, __op1: Callable[[Observable[_T_out]], _A]) -> _A:
-        ...
+    def pipe(self, __op1: Callable[[Observable[_T_out]], _A]) -> _A: ...
 
     @overload
     def pipe(
         self,
         __op1: Callable[[Observable[_T_out]], _A],
         __op2: Callable[[_A], _B],
-    ) -> _B:
-        ...
+    ) -> _B: ...
 
     @overload
     def pipe(
@@ -164,8 +200,7 @@ class Observable(abc.ObservableBase[_T_out]):
         __op1: Callable[[Observable[_T_out]], _A],
         __op2: Callable[[_A], _B],
         __op3: Callable[[_B], _C],
-    ) -> _C:
-        ...
+    ) -> _C: ...
 
     @overload
     def pipe(
@@ -174,8 +209,7 @@ class Observable(abc.ObservableBase[_T_out]):
         __op2: Callable[[_A], _B],
         __op3: Callable[[_B], _C],
         __op4: Callable[[_C], _D],
-    ) -> _D:
-        ...
+    ) -> _D: ...
 
     @overload
     def pipe(
@@ -185,8 +219,7 @@ class Observable(abc.ObservableBase[_T_out]):
         __op3: Callable[[_B], _C],
         __op4: Callable[[_C], _D],
         __op5: Callable[[_D], _E],
-    ) -> _E:
-        ...
+    ) -> _E: ...
 
     @overload
     def pipe(
@@ -197,8 +230,7 @@ class Observable(abc.ObservableBase[_T_out]):
         __op4: Callable[[_C], _D],
         __op5: Callable[[_D], _E],
         __op6: Callable[[_E], _F],
-    ) -> _F:
-        ...
+    ) -> _F: ...
 
     @overload
     def pipe(
@@ -210,8 +242,7 @@ class Observable(abc.ObservableBase[_T_out]):
         __op5: Callable[[_D], _E],
         __op6: Callable[[_E], _F],
         __op7: Callable[[_F], _G],
-    ) -> _G:
-        ...
+    ) -> _G: ...
 
     def pipe(self, *operators: Callable[[Any], Any]) -> Any:
         """Compose multiple operators left to right.
@@ -236,7 +267,7 @@ class Observable(abc.ObservableBase[_T_out]):
 
         return pipe_(self, *operators)
 
-    def run(self) -> Any:
+    def run(self, scheduler: abc.SchedulerBase | None = None) -> _T_out:
         """Run source synchronously.
 
         Subscribes to the observable source. Then blocks and waits for the
@@ -256,7 +287,7 @@ class Observable(abc.ObservableBase[_T_out]):
         """
         from ..run import run
 
-        return run(self)
+        return run(self, scheduler)
 
     def __await__(self) -> Generator[Any, None, _T_out]:
         """Awaits the given observable.
@@ -266,7 +297,11 @@ class Observable(abc.ObservableBase[_T_out]):
         """
         from ..operators._tofuture import to_future_
 
-        loop = asyncio.get_event_loop()
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+
         future: asyncio.Future[_T_out] = self.pipe(
             to_future_(scheduler=AsyncIOScheduler(loop=loop))
         )
@@ -288,7 +323,7 @@ class Observable(abc.ObservableBase[_T_out]):
 
         return concat(self, other)
 
-    def __iadd__(self, other: Observable[_T_out]) -> "Observable[_T_out]":
+    def __iadd__(self, other: Observable[_T_out]) -> Observable[_T_out]:
         """Pythonic use of :func:`concat <reactivex.concat>`.
 
         Example:
@@ -304,7 +339,7 @@ class Observable(abc.ObservableBase[_T_out]):
 
         return concat(self, other)
 
-    def __getitem__(self, key: Union[slice, int]) -> Observable[_T_out]:
+    def __getitem__(self, key: slice | int) -> Observable[_T_out]:
         """
         Pythonic version of :func:`slice <reactivex.operators.slice>`.
 
@@ -352,6 +387,11 @@ class Observable(abc.ObservableBase[_T_out]):
         from ..operators._slice import slice_
 
         return slice_(start, stop, step)(self)
+
+    # All operator methods are provided by mixins:
+    # TransformationMixin, FilteringMixin, CombinationMixin, MathematicalMixin,
+    # ConditionalMixin, ErrorHandlingMixin, UtilityMixin, TimeBasedMixin,
+    # WindowingMixin, MulticastingMixin, TestingMixin
 
 
 __all__ = ["Observable"]

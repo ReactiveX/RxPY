@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Any, NoReturn, TypeVar, Union
+from typing import Any, NoReturn, TypeVar
 
 _T = TypeVar("_T")
 
@@ -29,7 +29,7 @@ def default_key_serializer(x: Any) -> str:
     return str(x)
 
 
-def default_error(err: Union[Exception, str]) -> NoReturn:
+def default_error(err: Exception | str) -> NoReturn:
     if isinstance(err, BaseException):
         raise err
 

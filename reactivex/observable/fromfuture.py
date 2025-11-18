@@ -1,6 +1,6 @@
 import asyncio
 from asyncio import Future
-from typing import Any, Optional, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from reactivex import Observable, abc
 from reactivex.disposable import Disposable
@@ -21,7 +21,7 @@ def from_future_(future: "Future[_T]") -> Observable[_T]:
     """
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         def done(future: "Future[_T]") -> None:
             try:

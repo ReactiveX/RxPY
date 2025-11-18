@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 import reactivex
 from reactivex import Observable, abc
@@ -8,8 +9,8 @@ _T = TypeVar("_T")
 
 
 def using_(
-    resource_factory: Callable[[], abc.DisposableBase],
-    observable_factory: Callable[[abc.DisposableBase], Observable[_T]],
+    resource_factory: Callable[[], abc.DisposableBase | None],
+    observable_factory: Callable[[abc.DisposableBase | None], Observable[_T]],
 ) -> Observable[_T]:
     """Constructs an observable sequence that depends on a resource
     object, whose lifetime is tied to the resulting observable
@@ -29,7 +30,7 @@ def using_(
     """
 
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[_T], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         disp: abc.DisposableBase = Disposable()
 

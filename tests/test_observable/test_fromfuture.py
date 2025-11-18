@@ -7,7 +7,7 @@ import reactivex
 
 class TestFromFuture(unittest.TestCase):
     def test_future_success(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         success = [False, True, False]
 
         async def go():
@@ -31,7 +31,7 @@ class TestFromFuture(unittest.TestCase):
         assert all(success)
 
     def test_future_failure(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         success = [True, False, True]
 
         async def go():
@@ -57,7 +57,7 @@ class TestFromFuture(unittest.TestCase):
         assert all(success)
 
     def test_future_cancel(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         success = [True, False, True]
 
         async def go():
@@ -80,7 +80,7 @@ class TestFromFuture(unittest.TestCase):
         assert all(success)
 
     def test_future_dispose(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         success = [True, True, True]
 
         async def go():

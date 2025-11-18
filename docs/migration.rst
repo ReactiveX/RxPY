@@ -1,5 +1,144 @@
 .. _migration:
 
+Migration v5
+============
+
+ReactiveX for Python v5 brings back method chaining support alongside the
+existing pipe-based functional style, giving developers the freedom to choose
+their preferred syntax:
+
+- **Dual syntax support**: Both fluent (method chaining) and functional (pipe)
+  styles are now first-class citizens
+- **Full type safety**: Complete type inference in both styles with strict
+  pyright and mypy checking
+- **Backward compatible**: All existing pipe-based code continues to work
+  without any changes
+- **Mix and match**: Fluent and functional styles can be freely combined in
+  the same operator chain
+
+Fluent Style (Method Chaining)
+-------------------------------
+
+RxPY v5 brings back the intuitive method chaining syntax that many developers
+prefer. All ~160 operators are now available as methods on the Observable class:
+
+.. code:: python
+
+    import reactivex as rx
+
+    # Fluent style - chain operators as methods
+    (
+        rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
+        .map(lambda s: len(s))
+        .filter(lambda i: i >= 5)
+        .subscribe(lambda value: print(f"Received {value}"))
+    )
+
+This style is more concise, easier to read, and provides better IDE
+autocomplete support. Note the use of parentheses for implicit line
+continuation - no backslashes needed!
+
+Functional Style (Pipe)
+------------------------
+
+The pipe-based functional style from RxPY v4 continues to work exactly as before:
+
+.. code:: python
+
+    import reactivex as rx
+    from reactivex import operators as ops
+
+    # Functional style - compose operators with pipe
+    rx.of("Alpha", "Beta", "Gamma", "Delta", "Epsilon").pipe(
+        ops.map(lambda s: len(s)),
+        ops.filter(lambda i: i >= 5)
+    ).subscribe(lambda value: print(f"Received {value}"))
+
+Both styles produce identical results and have the same performance characteristics.
+
+Mixing Both Styles
+------------------
+
+You can freely mix fluent and functional styles in the same chain:
+
+.. code:: python
+
+    import reactivex as rx
+    from reactivex import operators as ops
+
+    # Start with fluent style
+    (
+        rx.of(1, 2, 3, 4, 5)
+        .map(lambda x: x * 2)
+        .filter(lambda x: x > 5)
+        .pipe(  # Switch to functional style
+            ops.take(2),
+            ops.reduce(lambda acc, x: acc + x),
+        )
+        .subscribe(print)
+    )
+
+Choose the style that works best for your use case, or mix them as needed.
+
+Complete Example Comparison
+----------------------------
+
+Here's a complete example showing both styles:
+
+.. code:: python
+
+    import reactivex as rx
+    from reactivex import operators as ops
+
+    # Fluent style
+    source = rx.interval(0.1).take(5)
+
+    result = (
+        source.map(lambda x: x * 2)
+        .filter(lambda x: x > 3)
+        .scan(lambda acc, x: acc + x, 0)
+        .subscribe(lambda x: print(f"Fluent: {x}"))
+    )
+
+    # Functional style (equivalent)
+    source = rx.interval(0.1).take(5)
+
+    result = source.pipe(
+        ops.map(lambda x: x * 2),
+        ops.filter(lambda x: x > 3),
+        ops.scan(lambda acc, x: acc + x, 0)
+    ).subscribe(lambda x: print(f"Functional: {x}"))
+
+Type Safety
+-----------
+
+Both styles maintain full type safety with proper type inference:
+
+.. code:: python
+
+    from reactivex import Observable
+
+    # Type inference works in fluent style
+    source: Observable[int] = rx.of(1, 2, 3)
+    result: Observable[str] = source.map(str)  # int -> str
+
+    # Type inference works in functional style
+    source2: Observable[int] = rx.of(1, 2, 3)
+    result2: Observable[str] = source2.pipe(ops.map(str))
+
+IDE Support
+-----------
+
+The fluent style provides excellent IDE autocomplete support. When you type
+``source.`` your IDE will show all ~160 available operators with their
+documentation and type signatures.
+
+No Breaking Changes
+-------------------
+
+**All existing RxPY v4 code continues to work without modification.** The addition
+of method chaining is purely additive - no APIs were removed or changed.
+
 Migration v4
 ============
 

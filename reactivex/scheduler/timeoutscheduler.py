@@ -1,5 +1,6 @@
+from collections.abc import MutableMapping
 from threading import Lock, Timer
-from typing import MutableMapping, Optional, TypeVar
+from typing import TypeVar
 from weakref import WeakKeyDictionary
 
 from reactivex import abc, typing
@@ -34,7 +35,7 @@ class TimeoutScheduler(PeriodicScheduler):
         return cls.singleton()
 
     def schedule(
-        self, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: abc.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -65,7 +66,7 @@ class TimeoutScheduler(PeriodicScheduler):
         self,
         duetime: typing.RelativeTime,
         action: abc.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -101,7 +102,7 @@ class TimeoutScheduler(PeriodicScheduler):
         self,
         duetime: typing.AbsoluteTime,
         action: abc.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 

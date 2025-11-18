@@ -21,7 +21,9 @@ class TestSkipUntilWithTIme(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(ops.skip_until_with_time(datetime.fromtimestamp(0, tz=timezone.utc)))
+            return xs.pipe(
+                ops.skip_until_with_time(datetime.fromtimestamp(0, tz=timezone.utc))
+            )
 
         res = scheduler.start(create)
 
@@ -35,7 +37,9 @@ class TestSkipUntilWithTIme(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(ops.skip_until_with_time(datetime.fromtimestamp(250, tz=timezone.utc)))
+            return xs.pipe(
+                ops.skip_until_with_time(datetime.fromtimestamp(250, tz=timezone.utc))
+            )
 
         res = scheduler.start(create)
 
@@ -48,7 +52,9 @@ class TestSkipUntilWithTIme(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_error(210, ex))
 
         def create():
-            return xs.pipe(ops.skip_until_with_time(datetime.fromtimestamp(250, tz=timezone.utc)))
+            return xs.pipe(
+                ops.skip_until_with_time(datetime.fromtimestamp(250, tz=timezone.utc))
+            )
 
         res = scheduler.start(create)
 
@@ -60,7 +66,9 @@ class TestSkipUntilWithTIme(unittest.TestCase):
         xs = scheduler.create_hot_observable()
 
         def create():
-            return xs.pipe(ops.skip_until_with_time(datetime.fromtimestamp(250, tz=timezone.utc)))
+            return xs.pipe(
+                ops.skip_until_with_time(datetime.fromtimestamp(250, tz=timezone.utc))
+            )
 
         res = scheduler.start(create)
 

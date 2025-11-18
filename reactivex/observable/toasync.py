@@ -1,4 +1,5 @@
-from typing import Any, Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc
 from reactivex import operators as ops
@@ -9,7 +10,7 @@ _T = TypeVar("_T")
 
 
 def to_async_(
-    func: Callable[..., _T], scheduler: Optional[abc.SchedulerBase] = None
+    func: Callable[..., _T], scheduler: abc.SchedulerBase | None = None
 ) -> Callable[..., Observable[_T]]:
     """Converts the function into an asynchronous function. Each
     invocation of the resulting asynchronous function causes an

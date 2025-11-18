@@ -13,4 +13,4 @@ source1 = reactivex.cold("---x---y---z--|", timespan=0.01, lookup=lookup1)
 
 observable = reactivex.merge(source0, source1).pipe(ops.to_iterable())
 elements = observable.run()
-print("received {}".format(list(elements)))
+print(f"received {list(elements)}")

@@ -1,4 +1,4 @@
-from typing import Generic, Optional, TypeVar
+from typing import Generic, TypeVar
 
 from reactivex import abc
 from reactivex.disposable import CompositeDisposable, Disposable, RefCountDisposable
@@ -14,27 +14,27 @@ class GroupedObservable(Generic[_TKey, _T], Observable[_T]):
         self,
         key: _TKey,
         underlying_observable: Observable[_T],
-        merged_disposable: Optional[RefCountDisposable] = None,
+        merged_disposable: RefCountDisposable | None = None,
     ):
         super().__init__()
         self.key = key
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             return CompositeDisposable(
                 merged_disposable.disposable if merged_disposable else Disposable(),
                 underlying_observable.subscribe(observer, scheduler=scheduler),
             )
 
-        self.underlying_observable = (
+        self.underlying_observable: Observable[_T] = (
             underlying_observable if not merged_disposable else Observable(subscribe)
         )
 
     def _subscribe_core(
         self,
         observer: abc.ObserverBase[_T],
-        scheduler: Optional[abc.SchedulerBase] = None,
+        scheduler: abc.SchedulerBase | None = None,
     ) -> abc.DisposableBase:
         return self.underlying_observable.subscribe(observer, scheduler=scheduler)

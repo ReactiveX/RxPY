@@ -10,7 +10,6 @@ Uses the RxPY AsyncIOScheduler (Python 3.4 is required)
 import asyncio
 import os
 from asyncio import Future
-from typing import Dict, Union
 
 from tornado.escape import json_decode
 from tornado.httpclient import AsyncHTTPClient, HTTPResponse
@@ -48,7 +47,7 @@ class WSHandler(WebSocketHandler):
 
         # A Subject is both an observable and observer, so we can both subscribe
         # to it and also feed (send) it with new values
-        self.subject: Subject[Dict[str, str]] = Subject()
+        self.subject: Subject[dict[str, str]] = Subject()
 
         # Get all distinct key up events from the input and only fire if long enough and distinct
         searcher = self.subject.pipe(
@@ -71,7 +70,7 @@ class WSHandler(WebSocketHandler):
             on_next=send_response, on_error=on_error, scheduler=scheduler
         )
 
-    def on_message(self, message: Union[bytes, str]):
+    def on_message(self, message: bytes | str):
         obj = json_decode(message)
         self.subject.on_next(obj)
 
@@ -96,7 +95,7 @@ def main():
         ]
     )
 
-    print("Starting server at port: %s" % port)
+    print(f"Starting server at port: {port}")
     app.listen(port)
     asyncio.get_event_loop().run_forever()
 

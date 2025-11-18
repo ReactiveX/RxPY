@@ -1,4 +1,5 @@
-from typing import Any, Callable, Optional, TypeVar, cast
+from collections.abc import Callable
+from typing import Any, TypeVar, cast
 
 from reactivex import Observable, abc
 from reactivex.disposable import MultipleAssignmentDisposable
@@ -38,7 +39,7 @@ def generate_with_relative_time_(
 
     def subscribe(
         observer: abc.ObserverBase[_TState],
-        scheduler: Optional[abc.SchedulerBase] = None,
+        scheduler: abc.SchedulerBase | None = None,
     ) -> abc.DisposableBase:
         scheduler = scheduler or TimeoutScheduler.singleton()
         mad = MultipleAssignmentDisposable()
@@ -46,7 +47,7 @@ def generate_with_relative_time_(
         has_result = False
         result: _TState = cast(_TState, None)
         first = True
-        time: Optional[RelativeTime] = None
+        time: RelativeTime | None = None
 
         def action(scheduler: abc.SchedulerBase, _: Any) -> None:
             nonlocal state

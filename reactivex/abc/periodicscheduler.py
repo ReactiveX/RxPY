@@ -1,15 +1,16 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import TypeVar
 
 from .disposable import DisposableBase
 from .scheduler import RelativeTime, ScheduledAction
 
 _TState = TypeVar("_TState")  # Can be anything
 
-ScheduledPeriodicAction = Callable[[Optional[_TState]], Optional[_TState]]
-ScheduledSingleOrPeriodicAction = Union[
-    ScheduledAction[_TState], ScheduledPeriodicAction[_TState]
-]
+ScheduledPeriodicAction = Callable[[_TState | None], _TState | None]
+ScheduledSingleOrPeriodicAction = (
+    ScheduledAction[_TState] | ScheduledPeriodicAction[_TState]
+)
 
 
 class PeriodicSchedulerBase(ABC):
@@ -22,7 +23,7 @@ class PeriodicSchedulerBase(ABC):
         self,
         period: RelativeTime,
         action: ScheduledPeriodicAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> DisposableBase:
         """Schedules a periodic piece of work.
 

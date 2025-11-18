@@ -32,7 +32,7 @@ def mode(source: Observable[Any]) -> Observable[Any]:
         source.group_by(lambda v: v)
         .flat_map(lambda grp: grp.count().map(lambda ct: (grp.key, ct)))
         .to_sorted_list(lambda t: t[1], reverse=True)
-        .flat_map(lambda l: Observable.from_(l).take_while(lambda t: t[1] == l[0][1]))
+        .flat_map(lambda x: Observable.from_(x).take_while(lambda t: t[1] == x[0][1]))
         .map(lambda t: t[0])
     )
 
@@ -45,9 +45,9 @@ def variance(source: Observable) -> Observable:
     squared_values = (
         source.to_list()
         .flat_map(
-            lambda l: Observable.from_(l)
+            lambda x: Observable.from_(x)
             .average()
-            .flat_map(lambda avg: Observable.from_(l).map(lambda i: i - avg))
+            .flat_map(lambda avg: Observable.from_(x).map(lambda i: i - avg))
         )
         .map(lambda i: i * i)
         .publish()

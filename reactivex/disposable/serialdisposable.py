@@ -1,5 +1,4 @@
 from threading import RLock
-from typing import Optional
 
 from reactivex import abc
 
@@ -11,13 +10,13 @@ class SerialDisposable(abc.DisposableBase):
     """
 
     def __init__(self) -> None:
-        self.current: Optional[abc.DisposableBase] = None
+        self.current: abc.DisposableBase | None = None
         self.is_disposed = False
         self.lock = RLock()
 
         super().__init__()
 
-    def get_disposable(self) -> Optional[abc.DisposableBase]:
+    def get_disposable(self) -> abc.DisposableBase | None:
         return self.current
 
     def set_disposable(self, value: abc.DisposableBase) -> None:
@@ -26,7 +25,7 @@ class SerialDisposable(abc.DisposableBase):
         disposable object. Assigning this property disposes the previous
         disposable object."""
 
-        old: Optional[abc.DisposableBase] = None
+        old: abc.DisposableBase | None = None
 
         with self.lock:
             should_dispose = self.is_disposed
@@ -37,7 +36,7 @@ class SerialDisposable(abc.DisposableBase):
         if old is not None:
             old.dispose()
 
-        if should_dispose and value is not None:
+        if should_dispose:
             value.dispose()
 
     disposable = property(get_disposable, set_disposable)
@@ -46,7 +45,7 @@ class SerialDisposable(abc.DisposableBase):
         """Disposes the underlying disposable as well as all future
         replacements."""
 
-        old: Optional[abc.DisposableBase] = None
+        old: abc.DisposableBase | None = None
 
         with self.lock:
             if not self.is_disposed:

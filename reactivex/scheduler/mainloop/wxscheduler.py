@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional, Set, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from reactivex import abc, typing
 from reactivex.disposable import (
@@ -39,7 +39,7 @@ class WxScheduler(PeriodicScheduler):
                 self.callback()
 
         self._timer_class = Timer
-        self._timers: Set[Timer] = set()
+        self._timers: set[Timer] = set()
 
     def cancel_all(self) -> None:
         """Cancel all scheduled actions.
@@ -54,7 +54,7 @@ class WxScheduler(PeriodicScheduler):
         self,
         time: typing.AbsoluteOrRelativeTime,
         action: typing.ScheduledSingleOrPeriodicAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
         periodic: bool = False,
     ) -> abc.DisposableBase:
         scheduler = self
@@ -89,7 +89,7 @@ class WxScheduler(PeriodicScheduler):
         return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule(
-        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: typing.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -120,7 +120,7 @@ class WxScheduler(PeriodicScheduler):
         self,
         duetime: typing.RelativeTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -139,7 +139,7 @@ class WxScheduler(PeriodicScheduler):
         self,
         duetime: typing.AbsoluteTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
@@ -160,7 +160,7 @@ class WxScheduler(PeriodicScheduler):
         self,
         period: typing.RelativeTime,
         action: typing.ScheduledPeriodicAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules a periodic piece of work to be executed in the loop.
 

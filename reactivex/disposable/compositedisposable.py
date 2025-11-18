@@ -1,5 +1,5 @@
 from threading import RLock
-from typing import Any, List
+from typing import Any
 
 from reactivex import abc
 
@@ -10,13 +10,13 @@ class CompositeDisposable(abc.DisposableBase):
 
     def __init__(self, *args: Any):
         if args and isinstance(args[0], list):
-            self.disposable: List[abc.DisposableBase] = args[0]
+            self.disposable: list[abc.DisposableBase] = args[0]
         else:
             self.disposable = list(args)
 
         self.is_disposed = False
         self.lock = RLock()
-        super(CompositeDisposable, self).__init__()
+        super().__init__()
 
     def add(self, item: abc.DisposableBase) -> None:
         """Adds a disposable to the CompositeDisposable or disposes the
@@ -92,7 +92,7 @@ class CompositeDisposable(abc.DisposableBase):
 
         return item in self.disposable
 
-    def to_list(self) -> List[abc.DisposableBase]:
+    def to_list(self) -> list[abc.DisposableBase]:
         return self.disposable[:]
 
     def __len__(self) -> int:

@@ -1,7 +1,7 @@
 import logging
 import threading
 from collections import deque
-from typing import Deque, Optional, TypeVar
+from typing import TypeVar
 
 from reactivex import abc, typing
 from reactivex.disposable import Disposable
@@ -23,7 +23,7 @@ class EventLoopScheduler(PeriodicScheduler, abc.DisposableBase):
 
     def __init__(
         self,
-        thread_factory: Optional[typing.StartableFactory] = None,
+        thread_factory: typing.StartableFactory | None = None,
         exit_if_empty: bool = False,
     ) -> None:
         super().__init__()
@@ -32,15 +32,15 @@ class EventLoopScheduler(PeriodicScheduler, abc.DisposableBase):
         self._thread_factory: typing.StartableFactory = (
             thread_factory or default_thread_factory
         )
-        self._thread: Optional[typing.Startable] = None
+        self._thread: typing.Startable | None = None
         self._condition = threading.Condition(threading.Lock())
         self._queue: PriorityQueue[ScheduledItem] = PriorityQueue()
-        self._ready_list: Deque[ScheduledItem] = deque()
+        self._ready_list: deque[ScheduledItem] = deque()
 
         self._exit_if_empty = exit_if_empty
 
     def schedule(
-        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: typing.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -59,7 +59,7 @@ class EventLoopScheduler(PeriodicScheduler, abc.DisposableBase):
         self,
         duetime: typing.RelativeTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -80,7 +80,7 @@ class EventLoopScheduler(PeriodicScheduler, abc.DisposableBase):
         self,
         duetime: typing.AbsoluteTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
@@ -114,7 +114,7 @@ class EventLoopScheduler(PeriodicScheduler, abc.DisposableBase):
         self,
         period: typing.RelativeTime,
         action: typing.ScheduledPeriodicAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules a periodic piece of work.
 
@@ -154,12 +154,10 @@ class EventLoopScheduler(PeriodicScheduler, abc.DisposableBase):
         The loop is suspended/resumed using the condition which gets notified
         by calls to Schedule or calls to dispose."""
 
-        ready: Deque[ScheduledItem] = deque()
+        ready: deque[ScheduledItem] = deque()
 
         while True:
-
             with self._condition:
-
                 # The notification could be because of a call to dispose. This
                 # takes precedence over everything else: We'll exit the loop
                 # immediately. Subsequent calls to Schedule won't ever create a
@@ -188,7 +186,6 @@ class EventLoopScheduler(PeriodicScheduler, abc.DisposableBase):
 
             # Wait for next cycle, or if we're done let's exit if so configured
             with self._condition:
-
                 if self._ready_list:
                     continue
 

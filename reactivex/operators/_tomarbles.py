@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any
 
 from reactivex import Observable, abc
 from reactivex.scheduler import NewThreadScheduler
@@ -8,7 +8,7 @@ new_thread_scheduler = NewThreadScheduler()
 
 
 def to_marbles(
-    timespan: RelativeTime = 0.1, scheduler: Optional[abc.SchedulerBase] = None
+    timespan: RelativeTime = 0.1, scheduler: abc.SchedulerBase | None = None
 ):
     def to_marbles(source: Observable[Any]) -> Observable[str]:
         """Convert an observable sequence into a marble diagram string.
@@ -25,11 +25,11 @@ def to_marbles(
 
         def subscribe(
             observer: abc.ObserverBase[str],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ):
             scheduler = scheduler or new_thread_scheduler
 
-            result: List[str] = []
+            result: list[str] = []
             last = scheduler.now
 
             def add_timespan():
@@ -70,7 +70,7 @@ def stringify(value: Any) -> str:
     """Utility for stringifying an event."""
     string = str(value)
     if len(string) > 1:
-        string = "(%s)" % string
+        string = f"({string})"
 
     return string
 

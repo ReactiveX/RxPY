@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import ConnectableObservable, Observable, abc
 from reactivex.disposable import Disposable
@@ -12,13 +13,13 @@ def ref_count_() -> Callable[[ConnectableObservable[_T]], Observable[_T]]:
     observable sequence.
     """
 
-    connectable_subscription: Optional[abc.DisposableBase] = None
+    connectable_subscription: abc.DisposableBase | None = None
     count = 0
 
     def ref_count(source: ConnectableObservable[_T]) -> Observable[_T]:
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             nonlocal connectable_subscription, count
 

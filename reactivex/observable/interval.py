@@ -1,12 +1,9 @@
-from typing import Optional
-
 from reactivex import Observable, abc, timer, typing
 
 
 def interval_(
-    period: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
+    period: typing.RelativeTime, scheduler: abc.SchedulerBase | None = None
 ) -> Observable[int]:
-
     return timer(period, period, scheduler)
 
 

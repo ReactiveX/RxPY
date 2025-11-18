@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from datetime import datetime
-from typing import Optional, TypeVar
+from typing import TypeVar
 
 from reactivex import abc, typing
 from reactivex.disposable import (
@@ -9,6 +9,7 @@ from reactivex.disposable import (
     Disposable,
     SingleAssignmentDisposable,
 )
+from reactivex.internal.basic import default_now
 
 from ..periodicscheduler import PeriodicScheduler
 
@@ -26,13 +27,13 @@ class AsyncIOScheduler(PeriodicScheduler):
 
         Args:
             loop: Instance of asyncio event loop to use; typically, you would
-                get this by asyncio.get_event_loop()
+                get this by asyncio.get_running_loop()
         """
         super().__init__()
         self._loop: asyncio.AbstractEventLoop = loop
 
     def schedule(
-        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: typing.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -60,7 +61,7 @@ class AsyncIOScheduler(PeriodicScheduler):
         self,
         duetime: typing.RelativeTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -93,7 +94,7 @@ class AsyncIOScheduler(PeriodicScheduler):
         self,
         duetime: typing.AbsoluteTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
@@ -120,4 +121,4 @@ class AsyncIOScheduler(PeriodicScheduler):
              The scheduler's current time, as a datetime instance.
         """
 
-        return self.to_datetime(self._loop.time())
+        return default_now()

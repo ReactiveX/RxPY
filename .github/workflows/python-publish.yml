@@ -10,28 +10,31 @@ jobs:
     name: "Publish library"
     steps:
       - name: Check out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
           fetch-depth: 0
 
       - name: Setup Python Env
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
 
       - name: Install dependencies
-        run: pip install poetry dunamai
+        run: uv tool install dunamai
 
       - name: Set version
         run: |
-          RX_VERSION=$(dunamai from any --no-metadata --style pep440)
-          poetry version $RX_VERSION
+          RX_VERSION=$(uvx dunamai from any --no-metadata --style pep440)
+          sed -i "s/version = \".*\"/version = \"$RX_VERSION\"/" pyproject.toml
           echo "__version__ = \"$RX_VERSION\"" > reactivex/_version.py
 
       - name: Build package
-        run: poetry build
+        run: uv build
 
       - name: Release to PyPI
         run: |
-          poetry publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} || echo 'Version exists'
+          uv publish --token ${{ secrets.PYPI_API_TOKEN }} || echo 'Version exists'

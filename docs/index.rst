@@ -16,6 +16,7 @@ operators in Python.
     installation
     rationale
     get_started
+    style_guide
     testing
     migration
     operators

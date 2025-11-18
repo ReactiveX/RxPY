@@ -1,13 +1,9 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
 from asyncio import Future
+from collections.abc import Callable, Iterable, Mapping
 from typing import (
     Any,
-    Callable,
-    Iterable,
-    Mapping,
-    Optional,
-    Tuple,
     TypeVar,
     Union,
     overload,
@@ -68,7 +64,7 @@ def amb(*sources: Observable[_T]) -> Observable[_T]:
 def case(
     mapper: Callable[[], _TKey],
     sources: Mapping[_TKey, Observable[_T]],
-    default_source: Optional[Union[Observable[_T], "Future[_T]"]] = None,
+    default_source: Observable[_T] | Future[_T] | None = None,
 ) -> Observable[_T]:
     """Uses mapper to determine which source in sources to use.
 
@@ -185,22 +181,19 @@ def create(subscribe: typing.Subscription[_T]) -> Observable[_T]:
 @overload
 def combine_latest(
     __a: Observable[_A], __b: Observable[_B]
-) -> Observable[Tuple[_A, _B]]:
-    ...
+) -> Observable[tuple[_A, _B]]: ...
 
 
 @overload
 def combine_latest(
     __a: Observable[_A], __b: Observable[_B], __c: Observable[_C]
-) -> Observable[Tuple[_A, _B, _C]]:
-    ...
+) -> Observable[tuple[_A, _B, _C]]: ...
 
 
 @overload
 def combine_latest(
     __a: Observable[_A], __b: Observable[_B], __c: Observable[_C], __d: Observable[_D]
-) -> Observable[Tuple[_A, _B, _C, _D]]:
-    ...
+) -> Observable[tuple[_A, _B, _C, _D]]: ...
 
 
 def combine_latest(*__sources: Observable[Any]) -> Observable[Any]:
@@ -326,7 +319,7 @@ def concat_with_iterable(sources: Iterable[Observable[_T]]) -> Observable[_T]:
 
 
 def defer(
-    factory: Callable[[abc.SchedulerBase], Union[Observable[_T], "Future[_T]"]]
+    factory: Callable[[abc.SchedulerBase], Union[Observable[_T], "Future[_T]"]],
 ) -> Observable[_T]:
     """Returns an observable sequence that invokes the specified
     factory function whenever a new observer subscribes.
@@ -357,7 +350,7 @@ def defer(
     return defer_(factory)
 
 
-def empty(scheduler: Optional[abc.SchedulerBase] = None) -> Observable[Any]:
+def empty(scheduler: abc.SchedulerBase | None = None) -> Observable[Any]:
     """Returns an empty observable sequence.
 
     .. marble::
@@ -419,22 +412,21 @@ def for_in(
 
 
 @overload
-def fork_join(__a: Observable[_A], __b: Observable[_B]) -> Observable[Tuple[_A, _B]]:
-    ...
+def fork_join(
+    __a: Observable[_A], __b: Observable[_B]
+) -> Observable[tuple[_A, _B]]: ...
 
 
 @overload
 def fork_join(
     __a: Observable[_A], __b: Observable[_B], __c: Observable[_C]
-) -> Observable[Tuple[_A, _B, _C]]:
-    ...
+) -> Observable[tuple[_A, _B, _C]]: ...
 
 
 @overload
 def fork_join(
     __a: Observable[_A], __b: Observable[_B], __c: Observable[_C], __d: Observable[_D]
-) -> Observable[Tuple[_A, _B, _C, _D]]:
-    ...
+) -> Observable[tuple[_A, _B, _C, _D]]: ...
 
 
 @overload
@@ -444,8 +436,7 @@ def fork_join(
     __c: Observable[_C],
     __d: Observable[_D],
     __e: Observable[_E],
-) -> Observable[Tuple[_A, _B, _C, _D, _E]]:
-    ...
+) -> Observable[tuple[_A, _B, _C, _D, _E]]: ...
 
 
 def fork_join(*sources: Observable[Any]) -> Observable[Any]:
@@ -479,7 +470,7 @@ def fork_join(*sources: Observable[Any]) -> Observable[Any]:
 
 
 def from_callable(
-    supplier: Callable[[], _T], scheduler: Optional[abc.SchedulerBase] = None
+    supplier: Callable[[], _T], scheduler: abc.SchedulerBase | None = None
 ) -> Observable[_T]:
     """Returns an observable sequence that contains a single element generated
     by the given supplier, using the specified scheduler to send out observer
@@ -514,7 +505,7 @@ def from_callable(
 
 def from_callback(
     func: Callable[..., Callable[..., None]],
-    mapper: Optional[typing.Mapper[Any, Any]] = None,
+    mapper: typing.Mapper[Any, Any] | None = None,
 ) -> Callable[[], Observable[Any]]:
     """Converts a callback function to an observable sequence.
 
@@ -558,7 +549,7 @@ def from_future(future: "Future[_T]") -> Observable[_T]:
 
 
 def from_iterable(
-    iterable: Iterable[_T], scheduler: Optional[abc.SchedulerBase] = None
+    iterable: Iterable[_T], scheduler: abc.SchedulerBase | None = None
 ) -> Observable[_T]:
     """Converts an iterable to an observable sequence.
 
@@ -597,9 +588,9 @@ from_list = alias(
 def from_marbles(
     string: str,
     timespan: typing.RelativeTime = 0.1,
-    scheduler: Optional[abc.SchedulerBase] = None,
-    lookup: Optional[Mapping[Union[str, float], Any]] = None,
-    error: Optional[Exception] = None,
+    scheduler: abc.SchedulerBase | None = None,
+    lookup: Mapping[str | float, Any] | None = None,
+    error: Exception | None = None,
 ) -> Observable[Any]:
     """Convert a marble diagram string to a cold observable sequence, using
     an optional scheduler to enumerate the events.
@@ -743,9 +734,9 @@ def hot(
     string: str,
     timespan: typing.RelativeTime = 0.1,
     duetime: typing.AbsoluteOrRelativeTime = 0.0,
-    scheduler: Optional[abc.SchedulerBase] = None,
-    lookup: Optional[Mapping[Union[str, float], Any]] = None,
-    error: Optional[Exception] = None,
+    scheduler: abc.SchedulerBase | None = None,
+    lookup: Mapping[str | float, Any] | None = None,
+    error: Exception | None = None,
 ) -> Observable[Any]:
     """Convert a marble diagram string to a hot observable sequence, using
     an optional scheduler to enumerate the events.
@@ -854,7 +845,7 @@ def if_then(
 
 
 def interval(
-    period: typing.RelativeTime, scheduler: Optional[abc.SchedulerBase] = None
+    period: typing.RelativeTime, scheduler: abc.SchedulerBase | None = None
 ) -> Observable[int]:
     """Returns an observable sequence that produces a value after each period.
 
@@ -956,8 +947,8 @@ def of(*args: _T) -> Observable[_T]:
 
 def on_error_resume_next(
     *sources: Union[
-        Observable[_T], "Future[_T]", Callable[[Optional[Exception]], Observable[_T]]
-    ]
+        Observable[_T], "Future[_T]", Callable[[Exception | None], Observable[_T]]
+    ],
 ) -> Observable[_T]:
     """Continues an observable sequence that is terminated normally or
     by an exception with the next observable sequence.
@@ -989,9 +980,9 @@ def on_error_resume_next(
 
 def range(
     start: int,
-    stop: Optional[int] = None,
-    step: Optional[int] = None,
-    scheduler: Optional[abc.SchedulerBase] = None,
+    stop: int | None = None,
+    step: int | None = None,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Observable[int]:
     """Generates an observable sequence of integral numbers within a
     specified range, using the specified scheduler to send out observer
@@ -1028,7 +1019,7 @@ def range(
 
 
 def return_value(
-    value: _T, scheduler: Optional[abc.SchedulerBase] = None
+    value: _T, scheduler: abc.SchedulerBase | None = None
 ) -> Observable[_T]:
     """Returns an observable sequence that contains a single element,
     using the specified scheduler to send out observer messages.
@@ -1058,7 +1049,7 @@ def return_value(
 just = alias("just", "Alias for :func:`reactivex.return_value`.", return_value)
 
 
-def repeat_value(value: _T, repeat_count: Optional[int] = None) -> Observable[_T]:
+def repeat_value(value: _T, repeat_count: int | None = None) -> Observable[_T]:
     """Generates an observable sequence that repeats the given element
     the specified number of times.
 
@@ -1087,7 +1078,7 @@ def repeat_value(value: _T, repeat_count: Optional[int] = None) -> Observable[_T
 
 
 def start(
-    func: Callable[[], _T], scheduler: Optional[abc.SchedulerBase] = None
+    func: Callable[[], _T], scheduler: abc.SchedulerBase | None = None
 ) -> Observable[_T]:
     """Invokes the specified function asynchronously on the specified
     scheduler, surfacing the result through an observable sequence.
@@ -1147,7 +1138,7 @@ def start_async(function_async: Callable[[], "Future[_T]"]) -> Observable[_T]:
 
 
 def throw(
-    exception: Union[str, Exception], scheduler: Optional[abc.SchedulerBase] = None
+    exception: str | Exception, scheduler: abc.SchedulerBase | None = None
 ) -> Observable[Any]:
     """Returns an observable sequence that terminates with an exception,
     using the specified scheduler to send out the single OnError message.
@@ -1178,8 +1169,8 @@ def throw(
 
 def timer(
     duetime: typing.AbsoluteOrRelativeTime,
-    period: Optional[typing.RelativeTime] = None,
-    scheduler: Optional[abc.SchedulerBase] = None,
+    period: typing.RelativeTime | None = None,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Observable[int]:
     """Returns an observable sequence that produces a value after
     duetime has elapsed and then after each period.
@@ -1217,7 +1208,7 @@ def timer(
 
 
 def to_async(
-    func: Callable[..., _T], scheduler: Optional[abc.SchedulerBase] = None
+    func: Callable[..., _T], scheduler: abc.SchedulerBase | None = None
 ) -> Callable[..., Observable[_T]]:
     """Converts the function into an asynchronous function. Each
     invocation of the resulting asynchronous function causes an
@@ -1250,8 +1241,8 @@ def to_async(
 
 
 def using(
-    resource_factory: Callable[[], abc.DisposableBase],
-    observable_factory: Callable[[abc.DisposableBase], Observable[_T]],
+    resource_factory: Callable[[], abc.DisposableBase | None],
+    observable_factory: Callable[[abc.DisposableBase | None], Observable[_T]],
 ) -> Observable[_T]:
     """Constructs an observable sequence that depends on a resource
     object, whose lifetime is tied to the resulting observable
@@ -1274,7 +1265,7 @@ def using(
     return using_(resource_factory, observable_factory)
 
 
-def with_latest_from(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
+def with_latest_from(*sources: Observable[Any]) -> Observable[tuple[Any, ...]]:
     """Merges the specified observable sequences into one observable
     sequence by creating a :class:`tuple` only when the first
     observable sequence produces an element.
@@ -1303,7 +1294,7 @@ def with_latest_from(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
     return with_latest_from_(*sources)
 
 
-def zip(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
+def zip(*args: Observable[Any]) -> Observable[tuple[Any, ...]]:
     """Merges the specified observable sequences into one observable
     sequence by creating a :class:`tuple` whenever all of the
     observable sequences have produced an element at a corresponding

@@ -1,4 +1,4 @@
-from typing import List, Optional, TypeVar
+from typing import TypeVar
 
 from reactivex import abc
 from reactivex.disposable import CompositeDisposable, Disposable
@@ -15,7 +15,7 @@ class ConnectableObservable(Observable[_T]):
     def __init__(self, source: abc.ObservableBase[_T], subject: abc.SubjectBase[_T]):
         self.subject = subject
         self.has_subscription = False
-        self.subscription: Optional[abc.DisposableBase] = None
+        self.subscription: abc.DisposableBase | None = None
         self.source = source
 
         super().__init__()
@@ -23,13 +23,13 @@ class ConnectableObservable(Observable[_T]):
     def _subscribe_core(
         self,
         observer: abc.ObserverBase[_T],
-        scheduler: Optional[abc.SchedulerBase] = None,
+        scheduler: abc.SchedulerBase | None = None,
     ) -> abc.DisposableBase:
         return self.subject.subscribe(observer, scheduler=scheduler)
 
     def connect(
-        self, scheduler: Optional[abc.SchedulerBase] = None
-    ) -> Optional[abc.DisposableBase]:
+        self, scheduler: abc.SchedulerBase | None = None
+    ) -> abc.DisposableBase | None:
         """Connects the observable."""
 
         if not self.has_subscription:
@@ -52,7 +52,7 @@ class ConnectableObservable(Observable[_T]):
         subscribers.
         """
 
-        connectable_subscription: List[Optional[abc.DisposableBase]] = [None]
+        connectable_subscription: list[abc.DisposableBase | None] = [None]
         count = [0]
         source = self
         is_connected = [False]
@@ -63,7 +63,7 @@ class ConnectableObservable(Observable[_T]):
 
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             count[0] += 1
             should_connect = count[0] == subscriber_count and not is_connected[0]

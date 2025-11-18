@@ -1,5 +1,6 @@
 from asyncio import Future
-from typing import Callable, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable, from_future, throw
 

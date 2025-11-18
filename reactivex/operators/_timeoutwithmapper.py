@@ -1,4 +1,5 @@
-from typing import Any, Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 import reactivex
 from reactivex import Observable, abc
@@ -12,9 +13,9 @@ _T = TypeVar("_T")
 
 
 def timeout_with_mapper_(
-    first_timeout: Optional[Observable[_T]] = None,
-    timeout_duration_mapper: Optional[Callable[[Any], Observable[Any]]] = None,
-    other: Optional[Observable[_T]] = None,
+    first_timeout: Observable[_T] | None = None,
+    timeout_duration_mapper: Callable[[Any], Observable[Any]] | None = None,
+    other: Observable[_T] | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the source observable sequence, switching to the other
     observable sequence if a timeout is signaled.
@@ -48,7 +49,7 @@ def timeout_with_mapper_(
     def timeout_with_mapper(source: Observable[_T]) -> Observable[_T]:
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             subscription = SerialDisposable()
             timer = SerialDisposable()
