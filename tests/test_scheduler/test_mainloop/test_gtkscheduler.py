@@ -10,10 +10,8 @@ from reactivex.internal.basic import default_now
 from reactivex.scheduler.mainloop import GtkScheduler
 
 gi = pytest.importorskip("gi")
-from gi.repository import GLib, Gtk  # isort: skip
-
-
 gi.require_version("Gtk", "3.0")
+from gi.repository import GLib, Gtk  # isort: skip
 
 
 # Removing GNOME_DESKTOP_SESSION_ID from environment
