@@ -20,7 +20,7 @@ class TestCurrentThreadScheduler(unittest.TestCase):
         assert scheduler[1] is scheduler[2]
 
         gate = [threading.Semaphore(0), threading.Semaphore(0)]
-        scheduler = [None, None]
+        scheduler: list[CurrentThreadScheduler | None] = [None, None]
 
         def run(idx):
             scheduler[idx] = CurrentThreadScheduler.singleton()

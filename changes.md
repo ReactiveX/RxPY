@@ -6,6 +6,12 @@
   f-string upgrades, `object` base class removal) and removed it from the
   ruff exclude list. `tests/test_subject/` also removed from the ruff exclude
   list as it already passed all checks.
+- Testing: Fixed pyright (standard-mode) type errors in `tests/test_scheduler/`:
+  corrected `@classmethod` overrides of `VirtualTimeScheduler.add`,
+  fixed `[None]`-typed list variables, updated optional-import suppression
+  comments (`# type: ignore[import-untyped]`), narrowed callback parameter
+  types, and aligned `ScheduledItemTestScheduler` method signatures with the
+  `Scheduler` base class.
 - CI: Standardised `actions/setup-python` to `@v5` across all workflow jobs.
 
 ## 2.0.0-alpha

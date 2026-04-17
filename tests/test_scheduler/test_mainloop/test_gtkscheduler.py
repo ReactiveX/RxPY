@@ -10,7 +10,7 @@ from reactivex.internal.basic import default_now
 from reactivex.scheduler.mainloop import GtkScheduler
 
 gi = pytest.importorskip("gi")
-from gi.repository import GLib, Gtk  # noqa: E402, I001
+from gi.repository import GLib, Gtk  # noqa: E402, I001  # type: ignore[import-untyped]
 
 
 gi.require_version("Gtk", "3.0")

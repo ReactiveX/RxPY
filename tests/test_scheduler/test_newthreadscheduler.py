@@ -75,13 +75,14 @@ class TestNewThreadScheduler(unittest.TestCase):
         period = 0.05
         counter = 3
 
-        def action(state: int):
+        def action(state: int | None) -> int | None:
             nonlocal counter
             if state:
                 counter -= 1
                 return state - 1
             if counter == 0:
                 gate.release()
+            return None
 
         scheduler.schedule_periodic(period, action, counter)
         gate.acquire()
@@ -92,11 +93,12 @@ class TestNewThreadScheduler(unittest.TestCase):
         period = 0.1
         counter = 4
 
-        def action(state: int):
+        def action(state: int | None) -> int | None:
             nonlocal counter
             if state:
                 counter -= 1
                 return state - 1
+            return None
 
         disp = scheduler.schedule_periodic(period, action, counter)
         sleep(0.4)
