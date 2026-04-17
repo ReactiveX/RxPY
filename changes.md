@@ -9,6 +9,12 @@
   all other pipeable operators. Closes #480 (partial — the operators listed
   in the issue that were not yet fixed).
 
+- Fix: `reactivex.timer(duetime, period)` now correctly resets the initial
+  delay on each resubscription (e.g. via `repeat()`). Previously `nonlocal
+  duetime` in the subscribe closure mutated the shared outer variable so
+  subsequent subscriptions would use the stale absolute time computed by the
+  first subscription, causing the timer to fire immediately instead of waiting
+  for `duetime`. Fixes #697.
 - Testing: Fixed ruff lint issues in `tests/test_scheduler/` (import ordering,
   f-string upgrades, `object` base class removal) and removed it from the
   ruff exclude list. `tests/test_subject/` also removed from the ruff exclude
