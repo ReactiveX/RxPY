@@ -1,6 +1,7 @@
 import unittest
 
 import reactivex
+from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -126,3 +127,25 @@ class TestTimer(unittest.TestCase):
 
         results = scheduler.start(create)
         assert results.messages == [on_next(500, 0), on_next(800, 1)]
+
+    def test_periodic_timer_resubscription_respects_duetime(self):
+        """Regression test for #697: timer with period should respect duetime on
+        each resubscription (e.g. via repeat), not reuse stale absolute time."""
+        scheduler = TestScheduler()
+        source = reactivex.timer(10, 200, scheduler=scheduler)
+
+        results = scheduler.start(
+            lambda: source.pipe(
+                ops.take(2),
+                ops.repeat(),
+            )
+        )
+        assert results.messages == [
+            on_next(210, 0),
+            on_next(410, 1),
+            on_next(420, 0),
+            on_next(620, 1),
+            on_next(630, 0),
+            on_next(830, 1),
+            on_next(840, 0),
+        ]
