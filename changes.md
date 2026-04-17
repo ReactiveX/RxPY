@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- CI: Skip `tests/test_scheduler/test_mainloop/test_tkinterscheduler.py` on
+  PyPy (all platforms). The module creates a Tk root at import time; PyPy's
+  `_tkinter` finalizer calls `threading.notify_all` during interpreter
+  shutdown and aborts the xdist worker, failing whichever unrelated test
+  was running. Previously guarded only on macOS+PyPy.
 - Fix: `reactivex.timer(duetime, period)` now correctly resets the initial
   delay on each resubscription (e.g. via `repeat()`). Previously `nonlocal
   duetime` in the subscribe closure mutated the shared outer variable so
