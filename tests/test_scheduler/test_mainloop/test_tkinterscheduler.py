@@ -15,9 +15,7 @@ from reactivex.scheduler.mainloop import TkinterScheduler
 # interpreter shutdown, which aborts the xdist worker and fails whichever
 # test it was running.
 if hasattr(sys, "pypy_version_info"):
-    pytest.skip(
-        "Tkinter tests are incompatible with PyPy", allow_module_level=True
-    )
+    pytest.skip("Tkinter tests are incompatible with PyPy", allow_module_level=True)
 
 tkinter = pytest.importorskip("tkinter")
 
