@@ -1,55 +1,36 @@
 {
-  "last_run": "2026-04-17T17:55:00Z",
-  "last_run_id": "24578507547",
+  "last_run": "2026-04-17T18:30:00Z",
+  "last_run_id": "24578512702",
   "comments_made": {
-    "697": {
-      "url": "https://github.com/ReactiveX/RxPY/issues/697#issuecomment-2816090000",
-      "date": "2026-04-17T17:39:00Z",
-      "summary": "Root cause identified for timer resubscription bug"
-    }
+    "697": "2026-04-17T17:39:00Z"
   },
   "prs_created": {
     "753": {
       "branch": "repo-assist/testing-improvements-2026-04-17",
       "description": "Fix ruff issues in test_scheduler, remove test_subject/test_scheduler from ruff exclude list, standardise setup-python@v5",
-      "status": "closed",
-      "notes": "Closed by dbrattli (completed)"
+      "status": "merged"
     },
-    "756": {
-      "branch": "repo-assist/fix-issue-697-timer-resubscription",
-      "description": "Fix timer resubscription: remove nonlocal duetime mutation (Closes #697)",
-      "status": "open",
-      "created_run": "24578515970"
-    },
-    "pyright-test-scheduler": {
-      "branch": "repo-assist/eng-pyright-test-scheduler-2026-04-17",
-      "description": "Fix 24 standard-mode pyright errors in tests/test_scheduler/",
-      "status": "open",
-      "created_run": "24578507547"
-    },
-    "fix-issue-480": {
-      "branch": "repo-assist/fix-issue-480-scheduler-forwarding",
-      "description": "Fix scheduler forwarding in pairwise, to_marbles, delay_with_mapper (partial #480)",
-      "status": "open",
-      "created_run": "24578507547"
+    "pyright-cleanup": {
+      "branch": "repo-assist/pyright-cleanup-test-subject-scheduler-2026-04-17",
+      "description": "Fix pyright strict-mode errors in tests/test_subject/; remove from pyright exclude. Typed 227 callback fns, typed closure containers, fixed on_error bug.",
+      "status": "open"
     }
   },
   "issues_labelled": {
-    "480": ["bug", "operators"],
+    "480": ["bug", "operators", "schedulers"],
     "697": ["bug", "operators"],
     "712": ["bug", "operators"]
   },
   "monthly_activity_issue": "754",
   "notes": [
-    "tests/test_subject and tests/test_scheduler pass ruff check; removed from ruff exclude list",
-    "tests/test_subject and tests/test_scheduler still in pyright exclude list - 1110 strict-mode errors in test_scheduler (missing annotations on inner callbacks)",
-    "tests/test_observable still in both exclude lists (160+ pyright errors, many ruff errors)",
-    "Standard-mode pyright: 24 errors in test_scheduler now fixed in files but test_scheduler still excluded from pyright",
-    "Issue #480: pairwise, to_marbles, delay_with_mapper(sub_delay path) now fixed - scheduler forwarding corrected",
-    "Issue #480: throttle_first, timeout_with_mapper, delay_with_mapper main path already fixed in codebase",
-    "Issue #697: PR #756 open - remove nonlocal duetime mutation",
-    "Issue #712: retry(n) counter shared across resubscriptions - not yet fixed",
-    "actions/setup-python@v5 now consistent in python-package.yml"
+    "tests/test_subject: now passes ruff AND pyright (0 errors) - removed from both exclude lists",
+    "tests/test_scheduler: passes ruff, still in pyright exclude (VirtualTimeScheduler/callback typing is complex)",
+    "tests/test_observable: still in both exclude lists - many errors",
+    "Next pyright: fix tests/test_scheduler (complex - scheduler callbacks, VirtualTimeScheduler subclasses)",
+    "Issue #697 (timer resubscription): commented + branch prepared; needs PR creation",
+    "Issue #712 (retry): labelled, not yet fixed",
+    "Issue #753: old instructions issue - may be stale after #755 merged",
+    "actions/setup-python@v5 consistent in python-package.yml"
   ],
   "issue_cursor": null,
   "backlog_cursor": null
