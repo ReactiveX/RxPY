@@ -109,10 +109,8 @@ asyncio_mode = "strict"
 [tool.pyright]
 include = ["reactivex", "tests"]
 exclude = [
-    # Stage 1 complete, Stage 2 partial (test_integration complete)
-    # test_subject and test_scheduler now pass ruff and pyright in standard mode
-    # keeping them excluded until type annotations are added to all callbacks (strict mode)
-    "tests/test_subject",
+    # Stage 1 complete, Stage 2 complete (test_subject done)
+    # test_scheduler still has strict-mode pyright errors
     "tests/test_scheduler",
     "tests/test_observable",
 ]

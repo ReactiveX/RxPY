@@ -2,27 +2,26 @@
 
 ## Unreleased
 
-<<<<<<< repo-assist/fix-issue-480-scheduler-forwarding-ea9c5c512fb11be9
 - Operators: Fixed scheduler forwarding in `pairwise`, `to_marbles`, and
   `delay_with_mapper` (subscription-delay path). These operators now pass the
   `scheduler` argument through to `source.subscribe(...)` and, in the case of
   `delay_with_mapper`, to the subscription-delay observable, consistent with
   all other pipeable operators. Closes #480 (partial — the operators listed
   in the issue that were not yet fixed).
-
-=======
 - CI: Skip `tests/test_scheduler/test_mainloop/test_tkinterscheduler.py` on
   PyPy (all platforms). The module creates a Tk root at import time; PyPy's
   `_tkinter` finalizer calls `threading.notify_all` during interpreter
   shutdown and aborts the xdist worker, failing whichever unrelated test
   was running. Previously guarded only on macOS+PyPy.
->>>>>>> master
 - Fix: `reactivex.timer(duetime, period)` now correctly resets the initial
   delay on each resubscription (e.g. via `repeat()`). Previously `nonlocal
   duetime` in the subscribe closure mutated the shared outer variable so
   subsequent subscriptions would use the stale absolute time computed by the
   first subscription, causing the timer to fire immediately instead of waiting
   for `duetime`. Fixes #697.
+- Testing: Fixed pyright strict-mode type errors in `tests/test_subject/` (added type
+  annotations to closure containers, callback function parameters, and narrowed `None`
+  checks). Removed `tests/test_subject/` from the pyright exclude list.
 - Testing: Fixed ruff lint issues in `tests/test_scheduler/` (import ordering,
   f-string upgrades, `object` base class removal) and removed it from the
   ruff exclude list. `tests/test_subject/` also removed from the ruff exclude
