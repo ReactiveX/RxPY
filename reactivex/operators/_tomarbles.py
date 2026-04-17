@@ -59,7 +59,9 @@ def to_marbles(
                 observer.on_next("".join(n for n in result))
                 observer.on_completed()
 
-            return source.subscribe(on_next, on_error, on_completed)
+            return source.subscribe(
+                on_next, on_error, on_completed, scheduler=scheduler
+            )
 
         return Observable(subscribe)
 

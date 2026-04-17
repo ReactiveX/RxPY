@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Operators: Fixed scheduler forwarding in `pairwise`, `to_marbles`, and
+  `delay_with_mapper` (subscription-delay path). These operators now pass the
+  `scheduler` argument through to `source.subscribe(...)` and, in the case of
+  `delay_with_mapper`, to the subscription-delay observable, consistent with
+  all other pipeable operators. Closes #480 (partial — the operators listed
+  in the issue that were not yet fixed).
+
 - Testing: Fixed ruff lint issues in `tests/test_scheduler/` (import ordering,
   f-string upgrades, `object` base class removal) and removed it from the
   ruff exclude list. `tests/test_subject/` also removed from the ruff exclude
