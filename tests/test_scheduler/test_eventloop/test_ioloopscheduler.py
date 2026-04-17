@@ -7,7 +7,7 @@ import pytest
 from reactivex.scheduler.eventloop import IOLoopScheduler
 
 tornado = pytest.importorskip("tornado")
-from tornado import ioloop  # isort: skip
+from tornado import ioloop  # noqa: E402
 
 
 class TestIOLoopScheduler(unittest.TestCase):

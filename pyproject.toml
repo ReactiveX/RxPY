@@ -76,8 +76,7 @@ exclude = [
     "examples",
     # Test directories - remove as each stage is completed
     # Stage 1 complete, Stage 2 partial (test_integration complete)
-    "tests/test_subject",
-    "tests/test_scheduler",
+    # test_subject and test_scheduler now pass ruff checks
     "tests/test_observable",
 ]
 
@@ -111,6 +110,8 @@ asyncio_mode = "strict"
 include = ["reactivex", "tests"]
 exclude = [
     # Stage 1 complete, Stage 2 partial (test_integration complete)
+    # test_subject and test_scheduler now pass ruff and pyright (run separately)
+    # keeping them excluded until strict-mode pyright issues are resolved
     "tests/test_subject",
     "tests/test_scheduler",
     "tests/test_observable",

@@ -6,8 +6,8 @@ import pytest
 from reactivex.scheduler.eventloop import TwistedScheduler
 
 twisted = pytest.importorskip("twisted")
-from twisted.internet import defer, reactor  # isort: skip
-from twisted.trial import unittest  # isort: skip
+from twisted.internet import defer, reactor  # noqa: E402
+from twisted.trial import unittest  # noqa: E402
 
 
 class TestTwistedScheduler(unittest.TestCase):

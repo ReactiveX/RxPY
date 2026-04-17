@@ -1,5 +1,13 @@
 # Changes
 
+## Unreleased
+
+- Testing: Fixed ruff lint issues in `tests/test_scheduler/` (import ordering,
+  f-string upgrades, `object` base class removal) and removed it from the
+  ruff exclude list. `tests/test_subject/` also removed from the ruff exclude
+  list as it already passed all checks.
+- CI: Standardised `actions/setup-python` to `@v5` across all workflow jobs.
+
 ## 2.0.0-alpha
 
 - Extension methods and extension class methods have been removed. This
