@@ -2,8 +2,11 @@ import datetime
 import unittest
 
 import reactivex
-from reactivex import notification
+from reactivex import Observable, abc, notification
+from reactivex import operators as ops
+from reactivex.disposable import Disposable
 from reactivex.observable.marbles import parse
+from reactivex.scheduler import ImmediateScheduler
 from reactivex.testing import TestScheduler
 from reactivex.testing.reactivetest import ReactiveTest
 
@@ -578,3 +581,22 @@ class TestHot(unittest.TestCase):
             ReactiveTest.on_completed(300.7),
         ]
         assert results == expected
+
+
+class TestToMarbles(unittest.TestCase):
+    def test_to_marbles_forwards_scheduler_to_source(self) -> None:
+        captured: dict[str, abc.SchedulerBase | None] = {}
+        expected: abc.SchedulerBase = ImmediateScheduler()
+
+        def source_subscribe(
+            observer: abc.ObserverBase[int],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
+            captured["scheduler"] = scheduler
+            observer.on_completed()
+            return Disposable()
+
+        source: Observable[int] = Observable(source_subscribe)
+        source.pipe(ops.to_marbles()).subscribe(scheduler=expected)
+
+        assert captured["scheduler"] is expected
