@@ -1,12 +1,12 @@
 import gi
+
+gi.require_version("Gtk", "3.0")
 from gi.repository import Gdk, GLib, Gtk
 
 import reactivex
 from reactivex import operators as ops
 from reactivex.scheduler.mainloop import GtkScheduler
 from reactivex.subject import Subject
-
-gi.require_version("Gtk", "3.0")
 
 
 class Window(Gtk.Window):
