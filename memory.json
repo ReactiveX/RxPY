@@ -1,33 +1,55 @@
 {
-  "last_run": "2026-04-17T17:39:09Z",
-  "last_run_id": "24578515970",
+  "last_run": "2026-04-17T17:55:00Z",
+  "last_run_id": "24578507547",
   "comments_made": {
-    "697": "2026-04-17T17:45:00Z"
-  },
-  "prs_created": {
-    "fix-697": {
-      "branch": "repo-assist/fix-issue-697-timer-resubscription",
-      "description": "Fix timer resubscription: remove nonlocal duetime mutation in observable_timer_duetime_and_period",
-      "status": "patch-saved",
-      "patch": "/tmp/gh-aw/aw-repo-assist-fix-issue-697-timer-resubscription.patch"
+    "697": {
+      "url": "https://github.com/ReactiveX/RxPY/issues/697#issuecomment-2816090000",
+      "date": "2026-04-17T17:39:00Z",
+      "summary": "Root cause identified for timer resubscription bug"
     }
   },
-  "prs_merged": {
-    "755": "Fix ruff lint issues in test_scheduler; merged by dbrattli 2026-04-17T17:37"
+  "prs_created": {
+    "753": {
+      "branch": "repo-assist/testing-improvements-2026-04-17",
+      "description": "Fix ruff issues in test_scheduler, remove test_subject/test_scheduler from ruff exclude list, standardise setup-python@v5",
+      "status": "closed",
+      "notes": "Closed by dbrattli (completed)"
+    },
+    "756": {
+      "branch": "repo-assist/fix-issue-697-timer-resubscription",
+      "description": "Fix timer resubscription: remove nonlocal duetime mutation (Closes #697)",
+      "status": "open",
+      "created_run": "24578515970"
+    },
+    "pyright-test-scheduler": {
+      "branch": "repo-assist/eng-pyright-test-scheduler-2026-04-17",
+      "description": "Fix 24 standard-mode pyright errors in tests/test_scheduler/",
+      "status": "open",
+      "created_run": "24578507547"
+    },
+    "fix-issue-480": {
+      "branch": "repo-assist/fix-issue-480-scheduler-forwarding",
+      "description": "Fix scheduler forwarding in pairwise, to_marbles, delay_with_mapper (partial #480)",
+      "status": "open",
+      "created_run": "24578507547"
+    }
   },
   "issues_labelled": {
     "480": ["bug", "operators"],
     "697": ["bug", "operators"],
     "712": ["bug", "operators"]
   },
-  "monthly_activity_issue": 754,
+  "monthly_activity_issue": "754",
   "notes": [
-    "PR #755 (ruff fix for test_scheduler/test_subject) merged by dbrattli!",
-    "Issue #753 (instructions issue from previous run) may be stale - maintainer should close it",
-    "Timer bug #697: fix prepared on branch repo-assist/fix-issue-697-timer-resubscription (nonlocal duetime mutation)",
-    "Retry bug #712: same root cause pattern - generator created once and shared across subscriptions in catch_with_iterable_; needs separate fix",
-    "tests/test_subject and tests/test_scheduler still in pyright exclude list - have strict-mode errors",
-    "tests/test_observable still in both exclude lists (160+ pyright errors, many ruff errors)"
+    "tests/test_subject and tests/test_scheduler pass ruff check; removed from ruff exclude list",
+    "tests/test_subject and tests/test_scheduler still in pyright exclude list - 1110 strict-mode errors in test_scheduler (missing annotations on inner callbacks)",
+    "tests/test_observable still in both exclude lists (160+ pyright errors, many ruff errors)",
+    "Standard-mode pyright: 24 errors in test_scheduler now fixed in files but test_scheduler still excluded from pyright",
+    "Issue #480: pairwise, to_marbles, delay_with_mapper(sub_delay path) now fixed - scheduler forwarding corrected",
+    "Issue #480: throttle_first, timeout_with_mapper, delay_with_mapper main path already fixed in codebase",
+    "Issue #697: PR #756 open - remove nonlocal duetime mutation",
+    "Issue #712: retry(n) counter shared across resubscriptions - not yet fixed",
+    "actions/setup-python@v5 now consistent in python-package.yml"
   ],
   "issue_cursor": null,
   "backlog_cursor": null
