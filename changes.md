@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Typing: Added `Action` and `StartableFactory` to `reactivex.typing.__all__`,
+  making them part of the explicit public API surface.
+- Docs: Added missing docstring to `on_error_resume_next` operator.
 - Operators: Fixed scheduler forwarding in `pairwise`, `to_marbles`, and
   `delay_with_mapper` (subscription-delay path). These operators now pass the
   `scheduler` argument through to `source.subscribe(...)` and, in the case of
