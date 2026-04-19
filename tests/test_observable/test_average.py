@@ -20,7 +20,7 @@ class TestAverage(unittest.TestCase):
         res = scheduler.start(create=lambda: xs.pipe(_.average())).messages
 
         assert len(res) == 1
-        assert res[0].value.kind == "E" and res[0].value.exception != None
+        assert res[0].value.kind == "E" and res[0].value.exception is not None
         assert res[0].time == 250
 
     def test_average_int32_return(self):

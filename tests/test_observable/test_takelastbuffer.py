@@ -185,23 +185,3 @@ class TestTakeLastBuffer(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 650)]
 
 
-# def test_Take_last_buffer_Three_Error():
-#     var ex, res, scheduler, xs
-#     ex = 'ex'
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(250, 3), on_next(270, 4), on_next(310, 5), on_next(360, 6), on_next(380, 7), on_next(410, 8), on_next(590, 9), on_error(650, ex))
-#     res = scheduler.start(create)
-#         return xs.pipe(ops.take_last_buffer(3))
-
-#     assert res.messages == [on_error(650, ex)]
-#     assert xs.subscriptions == [subscribe(200, 650)]
-
-# def test_Take_last_buffer_Three_Disposed():
-#     var res, scheduler, xs
-#     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(250, 3), on_next(270, 4), on_next(310, 5), on_next(360, 6), on_next(380, 7), on_next(410, 8), on_next(590, 9))
-#     res = scheduler.start(create)
-#         return xs.pipe(ops.take_last_buffer(3))
-
-#     assert res.messages == []
-#     assert xs.subscriptions == [subscribe(200, 1000)]

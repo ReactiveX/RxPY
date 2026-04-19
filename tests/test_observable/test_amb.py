@@ -16,11 +16,11 @@ created = ReactiveTest.created
 class TestAmb(unittest.TestCase):
     def test_amb_never2(self):
         scheduler = TestScheduler()
-        l = reactivex.never()
+        left = reactivex.never()
         r = reactivex.never()
 
         def create():
-            return l.pipe(ops.amb(r))
+            return left.pipe(ops.amb(r))
 
         results = scheduler.start(create)
         assert results.messages == []

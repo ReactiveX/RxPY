@@ -162,11 +162,11 @@ class TestTakeUntil(unittest.TestCase):
         scheduler = TestScheduler()
         left_msgs = [on_next(150, 1), on_next(230, 2), on_completed(240)]
         right_msgs = [on_next(150, 1), on_next(210, 2), on_completed(220)]
-        l = scheduler.create_hot_observable(left_msgs)
+        left = scheduler.create_hot_observable(left_msgs)
         r = scheduler.create_hot_observable(right_msgs)
 
         def create():
-            return l.pipe(ops.take_until(r))
+            return left.pipe(ops.take_until(r))
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(210)]

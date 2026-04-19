@@ -76,8 +76,7 @@ exclude = [
     "examples",
     # Test directories - remove as each stage is completed
     # Stage 1 complete, Stage 2 partial (test_integration complete)
-    # test_subject and test_scheduler now pass ruff checks
-    "tests/test_observable",
+    # test_subject, test_scheduler, and test_observable now pass ruff checks
 ]
 
 [tool.ruff.lint]

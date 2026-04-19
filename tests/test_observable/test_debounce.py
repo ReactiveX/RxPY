@@ -1,8 +1,7 @@
 import unittest
 
-from reactivex import empty, never
+from reactivex import empty, never, throw
 from reactivex import operators as _
-from reactivex import throw
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next

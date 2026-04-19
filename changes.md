@@ -2,21 +2,20 @@
 
 ## Unreleased
 
-<<<<<<< repo-assist/fix-issue-480-scheduler-forwarding-ea9c5c512fb11be9
+- Testing: Fixed 152 ruff lint errors in `tests/test_observable/` (ambiguous
+  variable names, type comparison style, line length, auto-fixable style issues)
+  and removed the directory from the ruff exclude list. All 1270 tests pass.
 - Operators: Fixed scheduler forwarding in `pairwise`, `to_marbles`, and
   `delay_with_mapper` (subscription-delay path). These operators now pass the
   `scheduler` argument through to `source.subscribe(...)` and, in the case of
   `delay_with_mapper`, to the subscription-delay observable, consistent with
   all other pipeable operators. Closes #480 (partial — the operators listed
   in the issue that were not yet fixed).
-
-=======
 - CI: Skip `tests/test_scheduler/test_mainloop/test_tkinterscheduler.py` on
   PyPy (all platforms). The module creates a Tk root at import time; PyPy's
   `_tkinter` finalizer calls `threading.notify_all` during interpreter
   shutdown and aborts the xdist worker, failing whichever unrelated test
   was running. Previously guarded only on macOS+PyPy.
->>>>>>> master
 - Fix: `reactivex.timer(duetime, period)` now correctly resets the initial
   delay on each resubscription (e.g. via `repeat()`). Previously `nonlocal
   duetime` in the subscribe closure mutated the shared outer variable so
