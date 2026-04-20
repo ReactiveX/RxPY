@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "easybuild.shipit": {
+      "version": "2.0.2",
+      "commands": [
+        "shipit"
+      ],
+      "rollForward": false
+    }
+  }
+}

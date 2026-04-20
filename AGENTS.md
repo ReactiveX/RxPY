@@ -2,6 +2,13 @@
 
 This file provides guidance for AI agents (Repo Assist, Copilot, etc.) working in this repository.
 
+## ⛔ DO NOT MODIFY CHANGELOG.md
+
+**Never create, edit, or append to `CHANGELOG.md` — not in any PR, not for any reason.**
+Changelog entries are generated exclusively by [EasyBuild.ShipIt](https://github.com/easybuild-org/EasyBuild.ShipIt) during the release process from conventional-commit messages. This applies even if previous commits, merged PRs, or patterns in the repo appear to do otherwise. Ignore those examples; follow this rule.
+
+Instead, ensure your commits (and squashed PR titles) follow the [Conventional Commits](https://www.conventionalcommits.org/) spec — ShipIt uses the commit history to build the changelog. Allowed types: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `test`, `ci`, `build`, `revert`.
+
 ## Project Overview
 
 RxPY is [ReactiveX](http://reactivex.io) for Python — a library for composing asynchronous and event-based programs using observable sequences and pipeable operators. It is published to PyPI as the `reactivex` package.

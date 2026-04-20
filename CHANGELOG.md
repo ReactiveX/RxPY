@@ -1,4 +1,21 @@
-# Changes
+---
+name: reactivex
+last_commit_released: 8b59bc7394f1b6a8a78e2fc4b5efe200d4f47f89
+pre_release: rc
+force_version: 5.0.0-rc.1
+updaters:
+  - command: ./scripts/shipit_bump_version.sh {version}
+---
+
+# Changelog
+
+All notable changes to this project will be documented in this file. Starting
+with version 5.0.0-rc.1, entries are generated automatically by
+[EasyBuild.ShipIt](https://github.com/easybuild-org/EasyBuild.ShipIt) from
+conventional-commit messages.
+
+PyPI uses PEP 440 (`5.0.0rc1`), while ShipIt records SemVer (`5.0.0-rc.1`) in
+this file; the release script normalizes between them.
 
 ## Unreleased
 

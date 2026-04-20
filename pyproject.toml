@@ -40,7 +40,6 @@ test = [
     "mypy>=1.18.2,<1.19.0",
     "coveralls>=4.0.2,<5",
     "pre-commit>=4.3.0,<5",
-    "dunamai>=1.25.0,<2",
 ]
 
 [tool.uv]

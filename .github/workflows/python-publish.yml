@@ -1,40 +1,62 @@
 name: Publish Package
 
 on:
-  release:
-    types: [created]
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
-  publish:
+  # On every push to master that is NOT a release commit, ask EasyBuild.ShipIt
+  # to open (or update) a "chore: release X.Y.Z" PR that bumps the version in
+  # CHANGELOG.md, pyproject.toml, and reactivex/_version.py.
+  shipit-pr:
+    name: ShipIt - Pull Request
     runs-on: ubuntu-latest
-    name: "Publish library"
+    if: "!startsWith(github.event.head_commit.message, 'chore: release ')"
+    timeout-minutes: 10
     steps:
-      - name: Check out
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          token: "${{ secrets.GITHUB_TOKEN }}"
           fetch-depth: 0
 
-      - name: Setup Python Env
-        uses: actions/setup-python@v5
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
+
+      - name: Restore .NET tools
+        run: dotnet tool restore
+
+      - name: Run ShipIt
+        run: dotnet shipit --pre-release rc
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # When the "chore: release X.Y.Z" PR has been merged, publish to PyPI. The
+  # version in pyproject.toml has already been written by ShipIt's command
+  # updater (scripts/shipit_bump_version.sh), so we just build and publish.
+  release:
+    name: Release to PyPI
+    runs-on: ubuntu-latest
+    if: "startsWith(github.event.head_commit.message, 'chore: release ')"
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4
 
-      - name: Install dependencies
-        run: uv tool install dunamai
-
-      - name: Set version
-        run: |
-          RX_VERSION=$(uvx dunamai from any --no-metadata --style pep440)
-          sed -i "s/version = \".*\"/version = \"$RX_VERSION\"/" pyproject.toml
-          echo "__version__ = \"$RX_VERSION\"" > reactivex/_version.py
-
       - name: Build package
         run: uv build
 
-      - name: Release to PyPI
-        run: |
-          uv publish --token ${{ secrets.PYPI_API_TOKEN }} || echo 'Version exists'
+      - name: Publish to PyPI
+        run: uv publish --token ${{ secrets.PYPI_API_TOKEN }} || echo 'Version exists'
