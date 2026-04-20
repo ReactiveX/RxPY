@@ -1,8 +1,9 @@
 {
-  "last_run": "2026-04-19T03:49:12Z",
-  "last_run_id": "24620325458",
+  "last_run": "2026-04-20T03:51:01Z",
+  "last_run_id": "24647518663",
   "comments_made": {
-    "697": "2026-04-17T17:39:00Z"
+    "697": "2026-04-17T17:39:00Z",
+    "712": "2026-04-20T03:51:00Z"
   },
   "prs_created": {
     "753": {
@@ -39,6 +40,11 @@
       "branch": "repo-assist/ruff-fix-test-observable-2026-04-19",
       "description": "Fix all 152 ruff lint errors in tests/test_observable/; remove from ruff exclude list. 1270 tests pass.",
       "status": "open"
+    },
+    "fix-712-2026-04-20": {
+      "branch": "repo-assist/fix-issue-712-retry-resubscription",
+      "description": "Fix retry(n) generator per-subscription so retry(n).pipe(repeat()) works correctly. Closes #712.",
+      "status": "open"
     }
   },
   "issues_labelled": {
@@ -55,12 +61,13 @@
     "tests/test_subject: passes ruff AND pyright - removed from both exclude lists in #762 (still open PR)",
     "tests/test_scheduler: passes ruff (merged #755), still in pyright exclude (pyright strict errors fixed in #761)",
     "tests/test_observable: passes ruff now! Removed from ruff exclude in new PR (2026-04-19). Still in pyright exclude - next target.",
-    "Issue #712 (retry): labelled bug+operators, not yet investigated for fix",
+    "Issue #712 (retry): FIXED in PR (branch repo-assist/fix-issue-712-retry-resubscription) - awaiting merge",
     "PR #762 (pyright test_subject) open - needs review and merge",
     "PR #763 (typing exports + changes.md conflict) open - needs review",
-    "PR repo-assist/ruff-fix-test-observable-2026-04-19 open - ruff cleanup of test_observable",
-    "changes.md conflict markers resolved in both #763 and new test_observable PR",
-    "Task 1 (labelling): all 24 unlabelled issues blocked by integrity filter - cannot label them"
+    "PR ruff-fix-test-observable-2026-04-19 open - ruff cleanup of test_observable",
+    "changes.md conflict markers resolved in both #763 and fix-712 PRs",
+    "Task 1 (labelling): all 24 unlabelled issues blocked by integrity filter - cannot label them",
+    "Next: fix pyright errors in tests/test_scheduler/ and tests/test_observable/ to remove from pyright exclude list"
   ],
   "issue_cursor": null,
   "backlog_cursor": null
