@@ -20,8 +20,6 @@ this file; the release script normalizes between them.
 
 <strong><small>[View changes on Github](https://github.com/ReactiveX/RxPY/compare/8b59bc7394f1b6a8a78e2fc4b5efe200d4f47f89..2975deb528c9eec73c76cf8bb53fc8780f31de45)</small></strong>
 
-## Unreleased
-
 - Typing: Added `Action` and `StartableFactory` to `reactivex.typing.__all__`,
   making them part of the explicit public API surface.
 - Docs: Added missing docstring to `on_error_resume_next` operator.
