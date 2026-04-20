@@ -54,11 +54,11 @@ this file; the release script normalizes between them.
   `Scheduler` base class.
 - CI: Standardised `actions/setup-python` to `@v5` across all workflow jobs.
 
-## 5.0.0a2
+## 5.0.0-alpha.2
 
 - Documentation header formatting fixes.
 
-## 5.0.0a1
+## 5.0.0-alpha.1
 
 - **Fluent method chaining** — operators are now available as methods on
   `Observable` in addition to the existing `pipe()` style. Both work
