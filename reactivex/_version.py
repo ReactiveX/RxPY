@@ -1,1 +1,1 @@
-__version__ = "0.0.0"  # NOTE: version will be written by ShipIt during release
+__version__ = "5.0.0rc1"
