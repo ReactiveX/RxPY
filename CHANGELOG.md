@@ -54,6 +54,58 @@ this file; the release script normalizes between them.
   `Scheduler` base class.
 - CI: Standardised `actions/setup-python` to `@v5` across all workflow jobs.
 
+## 5.0.0a2
+
+- Documentation header formatting fixes.
+
+## 5.0.0a1
+
+- **Fluent method chaining** — operators are now available as methods on
+  `Observable` in addition to the existing `pipe()` style. Both work
+  interchangeably and can be mixed freely. Implemented via eleven category
+  mixins (transformation, filtering, combination, error handling,
+  windowing/buffering, multicasting, etc.). Zero breaking changes from 4.x —
+  all existing `pipe()`-based code continues to work. (#743)
+- Migrated project tooling from Poetry to `uv`.
+- Replaced Black + isort with Ruff for formatting and linting.
+- Dropped Python 3.8; added support for Python 3.11, 3.12, 3.13.
+- Added `scheduler` parameter to `run()` for consistent scheduling control.
+- Fixed `subscribe_on` not forwarding scheduler to the source. Thanks to
+  @MainRo
+- Minor internal: renamed `ReplaySubject.window` to `ReplaySubject._window`
+  to free the `window` name for the new method.
+
+## 4.0.0
+
+- Renamed the distribution from `rx` to `reactivex` (`pip install reactivex`).
+- Flattened the package: `Observable` and operators now live at the top level
+  (`rx.core` gone).
+- Raised minimum Python to 3.7.
+- Full pyright-strict type coverage; `disallow_untyped_defs` enforced.
+- Migrated from `setup.py` to Poetry.
+- Improved scheduler type annotations and asyncio thread-safety.
+- Internal operators renamed with a leading underscore (`_map`, `_filter`,
+  etc.).
+- Marble-diagram documentation added for every operator.
+- Test scheduler and marble-testing improvements. Thanks to @MainRo
+
+## 3.0.0
+
+- Replaced method chaining with a pipe-based functional API as the
+  recommended style.
+- Dropped Python 2 support; Python 3.6+ only.
+- Renamed the `concurrency` package to `scheduler`; split mainloop and
+  eventloop schedulers into their own modules.
+- Simplified variadic operator signatures (`amb`, `combine_latest`, `concat`,
+  `merge`, `on_error_resume_next`, `catch`, `zip`) — the leading `Iterable`
+  argument is gone.
+- Removed `result_mapper` from `join`, `group_join`, `zip`, `generate`.
+- Added comprehensive type hints and a `py.typed` marker (PEP 561).
+- Collapsed `AnonymousObservable` into `Observable`.
+- Renamed `catch_exception` to `catch`.
+- Added `TrampolineScheduler` and priority-queue scheduler improvements.
+- Replaced the blocking observable with a single `run()` function.
+
 ## 2.0.0-alpha
 
 - Extension methods and extension class methods have been removed. This
