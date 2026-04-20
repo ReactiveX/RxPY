@@ -170,7 +170,7 @@ this file; the release script normalizes between them.
 - Refactored operators to use C# like extensionmethods using function decorators
 - More PEP8 alignment
 
-## 0.15
+## 0.15.0
 
 - Python slicing and indexing of observables. Thus you can write xs[1:-1:2]
 - Aligned backpressure with RxJS
@@ -178,7 +178,7 @@ this file; the release script normalizes between them.
 - `from_` is now an alias for `from_iterable`. Removed `from_array`
 - Fixes for `flat_map`/`flat_map`. Selector may return iterable
 
-## 0.14
+## 0.14.0
 
 - Made `ScheduledObserver` thread safe
 - Thread safe handling for `take_while` and `group_join`
@@ -186,7 +186,7 @@ this file; the release script normalizes between them.
 - Added support for IronPython (by removing six)
 - Aggregate is now an alias for reduce
 
-## 0.13
+## 0.13.0
 
 - Aligning throttle type operator naming with RxJS and RxJava
 - Added `throttle_last()` as alias for `sample()`
