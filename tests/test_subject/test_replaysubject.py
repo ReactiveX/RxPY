@@ -54,6 +54,7 @@ def test_infinite():
     scheduler.schedule_absolute(100, action1)
 
     def action2(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subject[0] is not None
         subscription[0] = xs.subscribe(subject[0])
 
     scheduler.schedule_absolute(200, action2)
@@ -162,6 +163,7 @@ def test_infinite2():
     scheduler.schedule_absolute(100, action1)
 
     def action2(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subject[0] is not None
         subscription[0] = xs.subscribe(subject[0])
 
     scheduler.schedule_absolute(200, action2)
@@ -268,6 +270,7 @@ def test_finite():
     scheduler.schedule_absolute(100, action1)
 
     def action3(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subject[0] is not None
         subscription[0] = xs.subscribe(subject[0])
 
     scheduler.schedule_absolute(200, action3)
@@ -375,6 +378,7 @@ def test_error():
     scheduler.schedule_absolute(100, action1)
 
     def action2(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subject[0] is not None
         subscription[0] = xs.subscribe(subject[0])
 
     scheduler.schedule_absolute(200, action2)
@@ -473,6 +477,7 @@ def test_canceled():
     scheduler.schedule_absolute(100, action1)
 
     def action2(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subject[0] is not None
         subscription[0] = xs.subscribe(subject[0])
 
     scheduler.schedule_absolute(200, action2)
@@ -704,6 +709,7 @@ def test_replay_subject_dies_out():
     scheduler.schedule_absolute(100, action1)
 
     def action2(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subject[0] is not None
         xs.subscribe(subject[0])
 
     scheduler.schedule_absolute(200, action2)
