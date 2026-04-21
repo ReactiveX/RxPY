@@ -1,11 +1,13 @@
 """Tests for MulticastingMixin fluent API methods.
 
-This module tests the multicasting/sharing operators fluent syntax from MulticastingMixin,
-ensuring they produce identical results to the pipe-based functional syntax.
+This module tests the multicasting/sharing operators fluent syntax from
+MulticastingMixin, ensuring they produce identical results to the pipe-based
+functional syntax.
 """
 
 import reactivex as rx
-from reactivex import Observable, operators as ops
+from reactivex import Observable
+from reactivex import operators as ops
 
 
 class TestShareMethodChaining:

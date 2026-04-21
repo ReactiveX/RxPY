@@ -60,7 +60,7 @@ class TestSingleOrDefault(unittest.TestCase):
         res = scheduler.start(create=create)
 
         def predicate(e):
-            return not e is None
+            return e is not None
 
         # assert res.messages == [on_error(220, predicate)]
         assert [on_error(220, predicate)] == res.messages
@@ -99,7 +99,7 @@ class TestSingleOrDefault(unittest.TestCase):
         res = scheduler.start(create=create)
 
         def predicate(e):
-            return not e is None
+            return e is not None
 
         assert [on_error(240, predicate)] == res.messages
         assert xs.subscriptions == [subscribe(200, 240)]
@@ -120,7 +120,6 @@ class TestSingleOrDefault(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 250)]
 
     def test_single_or_default_async_predicate_one(self):
-        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
             on_next(150, 1),

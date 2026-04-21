@@ -14,7 +14,7 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class Timestamp(object):
+class Timestamp:
     def __init__(self, value, timestamp):
         if isinstance(timestamp, datetime):
             timestamp = timestamp - datetime.fromtimestamp(0, tz=timezone.utc)
@@ -26,7 +26,7 @@ class Timestamp(object):
         self.timestamp = timestamp
 
     def __str__(self):
-        return "%s@%s" % (self.value, self.timestamp)
+        return f"{self.value}@{self.timestamp}"
 
     def equals(self, other):
         return other.timestamp == self.timestamp and other.value == self.value

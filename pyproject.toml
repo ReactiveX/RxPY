@@ -73,10 +73,6 @@ exclude = [
     "dist",
     "notebooks",
     "examples",
-    # Test directories - remove as each stage is completed
-    # Stage 1 complete, Stage 2 partial (test_integration complete)
-    # test_subject and test_scheduler now pass ruff checks
-    "tests/test_observable",
 ]
 
 [tool.ruff.lint]
@@ -109,7 +105,7 @@ asyncio_mode = "strict"
 include = ["reactivex", "tests"]
 exclude = [
     # Stage 1 complete, Stage 2 complete (test_subject done)
-    # test_scheduler still has strict-mode pyright errors
+    # test_scheduler and test_observable still have strict-mode pyright errors
     "tests/test_scheduler",
     "tests/test_observable",
 ]

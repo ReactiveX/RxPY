@@ -26,7 +26,7 @@ def _raise(ex):
 
 class MySubject(Observable, ObserverBase):
     def __init__(self):
-        super(MySubject, self).__init__()
+        super().__init__()
 
         self.dispose_on_map = {}
         self.subscribe_count = 0

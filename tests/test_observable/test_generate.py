@@ -75,7 +75,6 @@ class TestGenerate(unittest.TestCase):
 
     def test_generate_dispose(self):
         scheduler = TestScheduler()
-        ex = "ex"
 
         def create():
             return reactivex.generate(

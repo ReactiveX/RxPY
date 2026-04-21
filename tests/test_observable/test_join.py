@@ -14,12 +14,12 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class TimeSpan(object):
+class TimeSpan:
     def from_ticks(self, value):
         return value
 
 
-class TimeInterval(object):
+class TimeInterval:
     def __init__(self, value, interval):
         if isinstance(interval, timedelta):
             interval = int(interval.microseconds / 1000)
@@ -28,7 +28,7 @@ class TimeInterval(object):
         self.interval = interval
 
     def __str__(self):
-        return "%s@%s" % (self.value, self.interval)
+        return f"{self.value}@{self.interval}"
 
     def equals(self, other):
         return other.interval == self.interval and other.value == self.value
@@ -71,7 +71,7 @@ class TestJoin(unittest.TestCase):
         def create():
             def mapper(xy):
                 x, y = xy
-                return "{}{}".format(x.value, y.value)
+                return f"{x.value}{y.value}"
 
             return xs.pipe(
                 ops.join(
@@ -140,7 +140,7 @@ class TestJoin(unittest.TestCase):
         def create():
             def mapper(xy):
                 x, y = xy
-                return "{}{}".format(x.value, y.value)
+                return f"{x.value}{y.value}"
 
             return xs.pipe(
                 ops.join(
@@ -208,7 +208,7 @@ class TestJoin(unittest.TestCase):
         def create():
             def mapper(xy):
                 x, y = xy
-                return "{}{}".format(x.value, y.value)
+                return f"{x.value}{y.value}"
 
             return xs.pipe(
                 ops.join(
@@ -280,7 +280,7 @@ class TestJoin(unittest.TestCase):
         def create():
             def mapper(xy):
                 x, y = xy
-                return "{}{}".format(x.value, y.value)
+                return f"{x.value}{y.value}"
 
             return xs.pipe(
                 ops.join(
@@ -348,7 +348,7 @@ class TestJoin(unittest.TestCase):
         def create():
             def mapper(xy):
                 x, y = xy
-                return "{}{}".format(x.value, y.value)
+                return f"{x.value}{y.value}"
 
             return xs.pipe(
                 ops.join(
@@ -417,7 +417,7 @@ class TestJoin(unittest.TestCase):
         def create():
             def mapper(xy):
                 x, y = xy
-                return "{}{}".format(x.value, y.value)
+                return f"{x.value}{y.value}"
 
             return xs.pipe(
                 ops.join(
@@ -486,7 +486,7 @@ class TestJoin(unittest.TestCase):
         def create():
             def mapper(xy):
                 x, y = xy
-                return "{}{}".format(x.value, y.value)
+                return f"{x.value}{y.value}"
 
             return xs.pipe(
                 ops.join(
@@ -541,7 +541,7 @@ class TestJoin(unittest.TestCase):
         def create():
             def mapper(xy):
                 x, y = xy
-                return "{}{}".format(x.value, y.value)
+                return f"{x.value}{y.value}"
 
             return xs.pipe(
                 ops.join(
@@ -594,7 +594,7 @@ class TestJoin(unittest.TestCase):
         def create():
             def mapper(xy):
                 x, y = xy
-                return "{}{}".format(x.value, y.value)
+                return f"{x.value}{y.value}"
 
             return xs.pipe(
                 ops.join(
@@ -659,7 +659,7 @@ class TestJoin(unittest.TestCase):
         def create():
             def mapper(xy):
                 x, y = xy
-                return "{}{}".format(x.value, y.value)
+                return f"{x.value}{y.value}"
 
             return xs.pipe(
                 ops.join(
@@ -731,7 +731,7 @@ class TestJoin(unittest.TestCase):
         def create():
             def mapper(xy):
                 x, y = xy
-                return "{}{}".format(x.value, y.value)
+                return f"{x.value}{y.value}"
 
             return xs.pipe(
                 ops.join(
@@ -808,7 +808,7 @@ class TestJoin(unittest.TestCase):
 
             def mapper(xy):
                 x, y = xy
-                return "{}{}".format(x.value, y.value)
+                return f"{x.value}{y.value}"
 
             return xs.pipe(
                 ops.join(
@@ -862,7 +862,7 @@ class TestJoin(unittest.TestCase):
 
             def mapper(xy):
                 x, y = xy
-                return "{}{}".format(x.value, y.value)
+                return f"{x.value}{y.value}"
 
             return xs.pipe(
                 ops.join(
@@ -917,7 +917,7 @@ class TestJoin(unittest.TestCase):
                 ),
             )
 
-        results = scheduler.start(create=create)
+        scheduler.start(create=create)
         assert subscribe_schedulers["x"] is scheduler
         assert subscribe_schedulers["y"] is scheduler
         assert subscribe_schedulers["duration_x"] is scheduler

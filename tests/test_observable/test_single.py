@@ -63,7 +63,7 @@ class TestSingle(unittest.TestCase):
         res = scheduler.start(create=create)
 
         def predicate(e):
-            return not e is None
+            return e is not None
 
         assert [on_error(220, predicate)] == res.messages
         assert xs.subscriptions == [subscribe(200, 220)]
@@ -101,7 +101,7 @@ class TestSingle(unittest.TestCase):
         res = scheduler.start(create=create)
 
         def predicate(e):
-            return not e is None
+            return e is not None
 
         assert [on_error(240, predicate)] == res.messages
         assert xs.subscriptions == [subscribe(200, 240)]
@@ -119,7 +119,7 @@ class TestSingle(unittest.TestCase):
         res = scheduler.start(create=create)
 
         def predicate(e):
-            return not e is None
+            return e is not None
 
         assert [on_error(250, predicate)] == res.messages
         assert xs.subscriptions == [subscribe(200, 250)]
