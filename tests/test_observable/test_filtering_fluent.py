@@ -4,7 +4,6 @@ This module tests the filtering operators fluent syntax from FilteringMixin,
 ensuring they produce identical results to the pipe-based functional syntax.
 """
 
-
 import reactivex as rx
 from reactivex import Observable
 from reactivex import operators as ops
@@ -16,6 +15,7 @@ class TestFilterMethodChaining:
     def test_filter_equivalence(self) -> None:
         """Verify fluent and functional styles are equivalent."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5, 6)
+
         def predicate(x: int) -> bool:
             return x % 2 == 0
 
@@ -139,6 +139,7 @@ class TestFirstMethodChaining:
     def test_first_with_predicate(self) -> None:
         """Test first with a predicate."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
         def predicate(x: int) -> bool:
             return x > 3
 
@@ -175,6 +176,7 @@ class TestLastMethodChaining:
     def test_last_with_predicate(self) -> None:
         """Test last with a predicate."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
         def predicate(x: int) -> bool:
             return x < 4
 

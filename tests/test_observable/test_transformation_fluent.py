@@ -4,7 +4,6 @@ This module tests the transformation operators fluent syntax from Transformation
 ensuring they produce identical results to the pipe-based functional syntax.
 """
 
-
 import reactivex as rx
 from reactivex import Observable
 from reactivex import operators as ops
@@ -16,6 +15,7 @@ class TestMapMethodChaining:
     def test_map_equivalence(self) -> None:
         """Verify fluent and functional styles are equivalent."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
         def mapper(x: int) -> int:
             return x * 2
 
@@ -66,6 +66,7 @@ class TestReduceMethodChaining:
     def test_reduce_equivalence(self) -> None:
         """Verify fluent and functional styles are equivalent."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
         def accumulator(acc: int, x: int) -> int:
             return acc + x
 
@@ -87,6 +88,7 @@ class TestReduceMethodChaining:
     def test_reduce_with_seed(self) -> None:
         """Test reduce with an initial seed value."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
         def accumulator(acc: int, x: int) -> int:
             return acc + x
 
@@ -100,6 +102,7 @@ class TestReduceMethodChaining:
     def test_reduce_type_transformation(self) -> None:
         """Test reduce with type transformation (int to str)."""
         source: Observable[int] = rx.of(1, 2, 3)
+
         def accumulator(acc: str, x: int) -> str:
             return acc + str(x)
 
@@ -117,6 +120,7 @@ class TestScanMethodChaining:
     def test_scan_equivalence(self) -> None:
         """Verify fluent and functional styles are equivalent."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
         def accumulator(acc: int, x: int) -> int:
             return acc + x
 
@@ -138,6 +142,7 @@ class TestScanMethodChaining:
     def test_scan_with_seed(self) -> None:
         """Test scan with an initial seed value."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
+
         def accumulator(acc: int, x: int) -> int:
             return acc + x
 
@@ -151,6 +156,7 @@ class TestScanMethodChaining:
     def test_scan_type_transformation(self) -> None:
         """Test scan with type transformation (int to list)."""
         source: Observable[int] = rx.of(1, 2, 3)
+
         def accumulator(acc: list[int], x: int) -> list[int]:
             return acc + [x]
 
