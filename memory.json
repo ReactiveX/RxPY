@@ -1,56 +1,20 @@
 {
-  "last_run": "2026-04-21T03:44:30Z",
-  "last_run_id": "24702845112",
+  "last_run": "2026-04-22T03:39:18Z",
+  "last_run_id": "24758876698",
   "comments_made": {
     "697": "2026-04-17T17:39:00Z",
-    "712": "2026-04-20T03:51:00Z"
+    "712": "2026-04-20T03:51:00Z",
+    "778": "2026-04-22T03:39:00Z"
   },
   "prs_created": {
-    "753": {
-      "branch": "repo-assist/testing-improvements-2026-04-17",
-      "description": "Fix ruff issues in test_scheduler, remove from ruff exclude list, standardise setup-python@v5",
-      "status": "merged"
-    },
-    "755": {
-      "branch": "repo-assist/testing-improvements-2026-04-17",
-      "description": "Fix ruff issues in test_scheduler, remove test_subject/test_scheduler from ruff exclude list",
-      "status": "merged"
-    },
-    "756": {
-      "branch": "repo-assist/fix-issue-697-timer-resubscription",
-      "description": "Fix timer resubscription: remove nonlocal duetime mutation. Closes #697.",
-      "status": "merged"
-    },
-    "757": {
-      "branch": "repo-assist/fix-issue-480-scheduler-forwarding",
-      "description": "fix(operators): forward scheduler in pairwise, to_marbles, delay_with_mapper. Closes #480 partial.",
-      "status": "merged"
-    },
-    "762": {
-      "branch": "repo-assist/pyright-cleanup-test-subject-scheduler-2026-04-17",
-      "description": "Fix pyright strict-mode errors in tests/test_subject/; remove from pyright exclude.",
-      "status": "open"
-    },
-    "763": {
-      "branch": "repo-assist/improve-typing-exports-2026-04-18",
-      "description": "Add Action/StartableFactory to reactivex.typing.__all__; add missing docstring to on_error_resume_next; resolve changes.md merge-conflict markers",
-      "status": "open"
-    },
-    "ruff-fix-test-observable-2026-04-19": {
-      "branch": "repo-assist/ruff-fix-test-observable-2026-04-19",
-      "description": "SUPERSEDED by ruff-cleanup-2026-04-21 - old ruff fix attempt for test_observable",
-      "status": "superseded"
-    },
-    "fix-712-2026-04-20": {
-      "branch": "repo-assist/fix-issue-712-retry-resubscription",
-      "description": "Fix retry(n) generator per-subscription so retry(n).pipe(repeat()) works correctly. Closes #712.",
-      "status": "possibly-merged-as-765"
-    },
-    "ruff-cleanup-2026-04-21": {
-      "branch": "repo-assist/pyright-ruff-cleanup-test-observable-scheduler-2026-04-21",
-      "description": "Fix all 153 ruff lint errors in tests/test_observable/; remove from ruff exclude list. ruff passes cleanly.",
-      "status": "open"
-    }
+    "753": {"branch": "repo-assist/testing-improvements-2026-04-17", "description": "Fix ruff issues in test_scheduler, remove from ruff exclude list, standardise setup-python@v5", "status": "merged"},
+    "755": {"branch": "repo-assist/testing-improvements-2026-04-17", "description": "Fix ruff issues in test_scheduler, remove test_subject/test_scheduler from ruff exclude list", "status": "merged"},
+    "756": {"branch": "repo-assist/fix-issue-697-timer-resubscription", "description": "Fix timer resubscription: remove nonlocal duetime mutation. Closes #697.", "status": "merged"},
+    "757": {"branch": "repo-assist/fix-issue-480-scheduler-forwarding", "description": "fix(operators): forward scheduler in pairwise, to_marbles, delay_with_mapper. Closes #480 partial.", "status": "merged"},
+    "762": {"branch": "repo-assist/pyright-cleanup-test-subject-scheduler-2026-04-17", "description": "Fix pyright strict-mode errors in tests/test_subject/; remove from pyright exclude.", "status": "merged"},
+    "763": {"branch": "repo-assist/improve-typing-exports-2026-04-18", "description": "Add Action/StartableFactory to reactivex.typing.__all__; add missing docstring to on_error_resume_next; resolve changes.md merge-conflict markers", "status": "merged"},
+    "765": {"branch": "repo-assist/fix-issue-712-retry-resubscription", "description": "Fix retry(n) generator per-subscription so retry(n).pipe(repeat()) works correctly. Closes #712.", "status": "merged"},
+    "778": {"branch": "repo-assist/pyright-ruff-cleanup-test-observable-scheduler-2026-04-21-6f569da2d139f64e", "description": "Fix all 153 ruff lint errors in tests/test_observable/; remove from ruff exclude list. Updated 2026-04-22 to fix ruff format issues.", "status": "open"}
   },
   "issues_labelled": {
     "480": ["bug", "operators", "schedulers"],
@@ -60,17 +24,14 @@
   "monthly_activity_issue": "754",
   "issues_closed": {
     "480": "closed via PR #757",
-    "697": "closed via PR #756"
+    "697": "closed via PR #756",
+    "712": "closed via PR #765"
   },
   "notes": [
-    "tests/test_subject: passes ruff AND pyright - removed from both exclude lists in #762 (still open PR)",
+    "tests/test_subject: merged #762 - removed from pyright exclude",
     "tests/test_scheduler: passes ruff (merged #755), still in pyright exclude (~1112 strict-mode errors)",
-    "tests/test_observable: ALL ruff errors fixed! New PR created 2026-04-21. Still in pyright exclude (~6177 strict-mode errors)",
-    "NOTE: running 'pyright <path>' when path is in exclude list returns 0 errors (misleading). Must run full pyright to see errors.",
-    "PR #762 (pyright test_subject) open - needs review and merge",
-    "PR #763 (typing exports + changes.md conflict) open - needs review",
-    "PR ruff-fix-test-observable-2026-04-19 SUPERSEDED by new PR from 2026-04-21",
-    "PR fix-712 may have been merged as #765 (release notes mention 'Reset retry budget per subscription to fix retry+repeat (#765)')",
+    "tests/test_observable: PR #778 open with ruff fixes. Format issues fixed 2026-04-22. Still in pyright exclude (~6177 strict-mode errors).",
+    "PR #778 lint failure: [Repo Assist] prefix conflicts with semantic PR title check. Maintainer should rename title before merge.",
     "Issue labelling: all 24 unlabelled issues blocked by integrity filter - cannot label without min-integrity: approved",
     "Next: fix pyright errors in tests/test_scheduler/ and tests/test_observable/ - 1112 and 6177 errors respectively in strict mode"
   ],
