@@ -1,7 +1,9 @@
 import unittest
+from typing import Any
 
 import pytest
 
+from reactivex import abc
 from reactivex import typing as rx_typing
 from reactivex.internal import ArgumentOutOfRangeException
 from reactivex.internal.constants import DELTA_ZERO, UTC_ZERO
@@ -17,59 +19,60 @@ class VirtualSchedulerTestScheduler(VirtualTimeScheduler):
 
 
 class TestVirtualTimeScheduler(unittest.TestCase):
-    def test_virtual_now_noarg(self):
+    def test_virtual_now_noarg(self) -> None:
         scheduler = VirtualSchedulerTestScheduler()
         assert scheduler.clock == 0.0
         assert scheduler.now == UTC_ZERO
 
-    def test_virtual_now_float(self):
+    def test_virtual_now_float(self) -> None:
         scheduler = VirtualSchedulerTestScheduler(0.0)
         assert scheduler.clock == 0.0
         assert scheduler.now == UTC_ZERO
 
-    def test_virtual_now_timedelta(self):
+    def test_virtual_now_timedelta(self) -> None:
         scheduler = VirtualSchedulerTestScheduler(DELTA_ZERO)  # type: ignore[arg-type]
         assert scheduler.clock == DELTA_ZERO
         assert scheduler.now == UTC_ZERO
 
-    def test_virtual_now_datetime(self):
+    def test_virtual_now_datetime(self) -> None:
         scheduler = VirtualSchedulerTestScheduler(UTC_ZERO)
         assert scheduler.clock == UTC_ZERO
         assert scheduler.now == UTC_ZERO
 
-    def test_virtual_schedule_action(self):
+    def test_virtual_schedule_action(self) -> None:
         scheduler = VirtualSchedulerTestScheduler()
         ran = False
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> abc.DisposableBase | None:
             nonlocal ran
             ran = True
+            return None
 
         scheduler.schedule(action)
 
         scheduler.start()
         assert ran is True
 
-    def test_virtual_schedule_action_error(self):
+    def test_virtual_schedule_action_error(self) -> None:
         scheduler = VirtualSchedulerTestScheduler()
 
         class MyException(Exception):
             pass
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> abc.DisposableBase | None:
             raise MyException()
 
         with pytest.raises(MyException):
             scheduler.schedule(action)
             scheduler.start()
 
-    def test_virtual_schedule_sleep_error(self):
+    def test_virtual_schedule_sleep_error(self) -> None:
         scheduler = VirtualSchedulerTestScheduler()
 
         with pytest.raises(ArgumentOutOfRangeException):
             scheduler.sleep(-1)
 
-    def test_virtual_schedule_advance_clock_error(self):
+    def test_virtual_schedule_advance_clock_error(self) -> None:
         scheduler = VirtualSchedulerTestScheduler()
 
         with pytest.raises(ArgumentOutOfRangeException):

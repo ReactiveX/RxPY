@@ -108,9 +108,9 @@ asyncio_mode = "strict"
 [tool.pyright]
 include = ["reactivex", "tests"]
 exclude = [
-    # Stage 1 complete, Stage 2 complete (test_subject done)
-    # test_scheduler still has strict-mode pyright errors
-    "tests/test_scheduler",
+    # Stage 1 complete, Stage 2 complete (test_subject done), Stage 3 complete (test_scheduler done)
+    # test_scheduler/test_mainloop requires external GUI libraries
+    "tests/test_scheduler/test_mainloop",
     "tests/test_observable",
 ]
 reportImportCycles = false

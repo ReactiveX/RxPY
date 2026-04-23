@@ -1,11 +1,13 @@
 import unittest
 from datetime import datetime, timedelta, timezone
+from typing import Any
 
+from reactivex import abc
 from reactivex.internal.constants import UTC_ZERO
 from reactivex.scheduler import HistoricalScheduler
 
 
-def assert_equals(first, second):
+def assert_equals(first: list[Any], second: list[Any]) -> None:
     if len(first) != len(second):
         print(f"len({len(first)}) != len({len(second)})")
         assert False
@@ -19,7 +21,7 @@ def assert_equals(first, second):
             assert f == s
 
 
-def time(days):
+def time(days: float) -> datetime:
     dt = datetime(
         year=1979, month=10, day=31, hour=4, minute=30, second=15, tzinfo=timezone.utc
     )
@@ -27,37 +29,37 @@ def time(days):
     return dt
 
 
-def from_days(days):
+def from_days(days: float) -> timedelta:
     return timedelta(days=days)
 
 
 class Timestamped:
-    def __init__(self, value, timestamp):
+    def __init__(self, value: Any, timestamp: datetime) -> None:
         self.value = value
         self.timestamp = timestamp
 
-    def assert_equals(self, other):
+    def assert_equals(self, other: Any) -> bool:
         if not other:
             return False
 
         return other.value == self.value and other.timestamp == self.timestamp
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"({self.value}, {self.timestamp})"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
 
 class TestHistoricalScheduler(unittest.TestCase):
-    def test_ctor(self):
+    def test_ctor(self) -> None:
         s = HistoricalScheduler()
         self.assertEqual(UTC_ZERO, s.clock)
         self.assertEqual(False, s._is_enabled)
 
-    def test_start_stop(self):
+    def test_start_stop(self) -> None:
         s = HistoricalScheduler()
-        list = []
+        list: list[Any] = []
 
         s.schedule_absolute(time(0), lambda sc, st: list.append(Timestamped(1, s.now)))
         s.schedule_absolute(time(1), lambda sc, st: list.append(Timestamped(2, s.now)))
@@ -97,10 +99,10 @@ class TestHistoricalScheduler(unittest.TestCase):
             ],
         )
 
-    def test_order(self):
+    def test_order(self) -> None:
         s = HistoricalScheduler()
 
-        list = []
+        list: list[Any] = []
 
         s.schedule_absolute(time(2), lambda a, b: list.append(Timestamped(2, s.now)))
 
@@ -121,18 +123,19 @@ class TestHistoricalScheduler(unittest.TestCase):
             ],
         )
 
-    def test_cancellation(self):
+    def test_cancellation(self) -> None:
         s = HistoricalScheduler()
 
-        list = []
+        list: list[Any] = []
 
         d = s.schedule_absolute(
             time(2), lambda a, b: list.append(Timestamped(2, s.now))
         )
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> abc.DisposableBase | None:
             list.append(Timestamped(0, s.now))
             d.dispose()
+            return None
 
         s.schedule_absolute(time(1), action)
 
@@ -140,10 +143,10 @@ class TestHistoricalScheduler(unittest.TestCase):
 
         assert_equals(list, [Timestamped(0, time(1))])
 
-    def test_advance_to(self):
+    def test_advance_to(self) -> None:
         s = HistoricalScheduler()
 
-        list = []
+        list: list[Any] = []
 
         s.schedule_absolute(time(0), lambda a, b: list.append(Timestamped(0, s.now)))
         s.schedule_absolute(time(1), lambda a, b: list.append(Timestamped(1, s.now)))
@@ -217,10 +220,10 @@ class TestHistoricalScheduler(unittest.TestCase):
             ],
         )
 
-    def test_advance_by(self):
+    def test_advance_by(self) -> None:
         s = HistoricalScheduler()
 
-        list = []
+        list: list[Any] = []
 
         s.schedule_absolute(time(0), lambda a, b: list.append(Timestamped(0, s.now)))
         s.schedule_absolute(time(1), lambda a, b: list.append(Timestamped(1, s.now)))
@@ -294,15 +297,16 @@ class TestHistoricalScheduler(unittest.TestCase):
             ],
         )
 
-    def test_is_enabled(self):
+    def test_is_enabled(self) -> None:
         s = HistoricalScheduler()
 
         self.assertEqual(False, s._is_enabled)
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> abc.DisposableBase | None:
             self.assertEqual(True, s._is_enabled)
             s.stop()
             self.assertEqual(False, s._is_enabled)
+            return None
 
         s.schedule(action)
 
@@ -312,7 +316,7 @@ class TestHistoricalScheduler(unittest.TestCase):
 
         self.assertEqual(False, s._is_enabled)
 
-    def test_sleep1(self):
+    def test_sleep1(self) -> None:
         now = datetime(year=1983, month=2, day=11, hour=12)
 
         s = HistoricalScheduler(now)
@@ -321,14 +325,15 @@ class TestHistoricalScheduler(unittest.TestCase):
 
         self.assertEqual(now + from_days(1), s.clock)
 
-    def test_sleep2(self):
+    def test_sleep2(self) -> None:
         s = HistoricalScheduler()
         n = [0]
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> abc.DisposableBase | None:
             s.sleep(timedelta(3 * 6000))
             n[0] += 1
             s.schedule_absolute(s.now + timedelta(6000), action)
+            return None
 
         s.schedule_absolute(s.now + timedelta(6000), action)
 
@@ -336,13 +341,14 @@ class TestHistoricalScheduler(unittest.TestCase):
 
         self.assertEqual(2, n[0])
 
-    def test_schedule_relative_with_timedelta(self):
+    def test_schedule_relative_with_timedelta(self) -> None:
         s = HistoricalScheduler()
         n = 0
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> abc.DisposableBase | None:
             nonlocal n
             n += 1
+            return None
 
         s.schedule_relative(timedelta(2), action)
 
@@ -354,13 +360,14 @@ class TestHistoricalScheduler(unittest.TestCase):
 
         self.assertEqual(n, 1)
 
-    def test_schedule_relative_with_float(self):
+    def test_schedule_relative_with_float(self) -> None:
         s = HistoricalScheduler()
         n = 0
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> abc.DisposableBase | None:
             nonlocal n
             n += 1
+            return None
 
         s.schedule_relative(1.0, action)
 

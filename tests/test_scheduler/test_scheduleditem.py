@@ -11,7 +11,7 @@ from reactivex.scheduler.scheduler import Scheduler
 
 
 class ScheduledItemTestScheduler(Scheduler):
-    def __init__(self):
+    def __init__(self) -> None:
         super()
         self.action: Any = None
         self.state: Any = None
@@ -52,13 +52,13 @@ class ScheduledItemTestScheduler(Scheduler):
 
 
 class TestScheduledItem(unittest.TestCase):
-    def test_scheduleditem_invoke(self):
+    def test_scheduleditem_invoke(self) -> None:
         scheduler = ScheduledItemTestScheduler()
         disposable = Disposable()
         state = 42
         ran = False
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> abc.DisposableBase | None:
             nonlocal ran
             ran = True
             return disposable
@@ -73,7 +73,7 @@ class TestScheduledItem(unittest.TestCase):
         assert scheduler.state is state
         assert scheduler.action is action
 
-    def test_scheduleditem_cancel(self):
+    def test_scheduleditem_cancel(self) -> None:
         scheduler = ScheduledItemTestScheduler()
 
         item = ScheduledItem(scheduler, None, lambda s, t: None, default_now())
@@ -83,7 +83,7 @@ class TestScheduledItem(unittest.TestCase):
         assert item.disposable.is_disposed
         assert item.is_cancelled()
 
-    def test_scheduleditem_compare(self):
+    def test_scheduleditem_compare(self) -> None:
         scheduler = ScheduledItemTestScheduler()
 
         duetime1 = default_now()
