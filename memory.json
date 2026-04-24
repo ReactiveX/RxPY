@@ -1,6 +1,6 @@
 {
-  "last_run": "2026-04-23T03:49:55Z",
-  "last_run_id": "24815496316",
+  "last_run": "2026-04-24T04:06:24Z",
+  "last_run_id": "24871162070",
   "comments_made": {
     "697": "2026-04-17T17:39:00Z",
     "712": "2026-04-20T03:51:00Z",
@@ -14,8 +14,9 @@
     "762": {"branch": "repo-assist/pyright-cleanup-test-subject-scheduler-2026-04-17", "description": "Fix pyright strict-mode errors in tests/test_subject/; remove from pyright exclude.", "status": "merged"},
     "763": {"branch": "repo-assist/improve-typing-exports-2026-04-18", "description": "Add Action/StartableFactory to reactivex.typing.__all__; add missing docstring to on_error_resume_next; resolve changes.md merge-conflict markers", "status": "merged"},
     "765": {"branch": "repo-assist/fix-issue-712-retry-resubscription", "description": "Fix retry(n) generator per-subscription so retry(n).pipe(repeat()) works correctly. Closes #712.", "status": "merged"},
-    "778": {"branch": "repo-assist/pyright-ruff-cleanup-test-observable-scheduler-2026-04-21-6f569da2d139f64e", "description": "Fix all 153 ruff lint errors in tests/test_observable/; remove from ruff exclude list. Updated 2026-04-22 to fix ruff format issues.", "status": "open"},
-    "TBD-2026-04-23": {"branch": "repo-assist/pyright-cleanup-test-scheduler-2026-04-23", "description": "Fix pyright strict-mode errors in tests/test_scheduler/; remove from pyright exclude. Stage 3 of test linting plan.", "status": "open"}
+    "778": {"branch": "repo-assist/pyright-ruff-cleanup-test-observable-scheduler-2026-04-21-6f569da2d139f64e", "description": "Fix all 153 ruff lint errors in tests/test_observable/; remove from ruff exclude list.", "status": "open"},
+    "779": {"branch": "repo-assist/pyright-cleanup-test-scheduler-2026-04-23", "description": "Fix pyright strict-mode errors in tests/test_scheduler/ (14 files); remove from pyright exclude.", "status": "open"},
+    "TBD-2026-04-24": {"branch": "repo-assist/pyright-cleanup-test-observable-2026-04-24", "description": "Fix pyright strict-mode errors in 16 files in tests/test_observable/ (batch 1 of ~6251 errors). Addresses files with <=5 errors each.", "status": "open"}
   },
   "issues_labelled": {
     "480": ["bug", "operators", "schedulers"],
@@ -30,11 +31,11 @@
   },
   "notes": [
     "tests/test_subject: merged #762 - removed from pyright exclude",
-    "tests/test_scheduler: PR submitted 2026-04-23 to fix all pyright strict-mode errors (14 files annotated); removes test_scheduler from pyright exclude (keeps test_mainloop excluded for GUI deps).",
-    "tests/test_observable: PR #778 open with ruff fixes. Format issues fixed 2026-04-22. Still in pyright exclude (~6177 strict-mode errors).",
-    "PR #778 lint failure: [Repo Assist] prefix conflicts with semantic PR title check. Maintainer should rename title before merge.",
-    "Issue labelling: all 24 unlabelled issues blocked by integrity filter - cannot label without min-integrity: approved",
-    "Next: fix pyright errors in tests/test_observable/ - ~6177 errors in strict mode. This is the largest remaining task (Stage 4)."
+    "tests/test_scheduler: PR #779 open - fixes 14 files, removes test_scheduler from pyright exclude (keeps test_mainloop).",
+    "tests/test_observable: PR #778 open (ruff fixes). Pyright batch 1 PR open 2026-04-24 (16 files, ~40 errors). ~6211 errors remain.",
+    "Pyright batch 1 (2026-04-24) fixes: _raise annotation in 7 files, delete unused _raise in 3 files, on_error annotation, predicate/comparer/init annotations, float->int ticks in test_timer, unused import/var, type:ignore for single_or_default_async.",
+    "Issue labelling: all unlabelled issues blocked by integrity filter.",
+    "Next: continue pyright cleanup in tests/test_observable/ - batch 2 should tackle files with 6-20 errors each."
   ],
   "issue_cursor": null,
   "backlog_cursor": null
