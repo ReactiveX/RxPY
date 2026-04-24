@@ -17,11 +17,6 @@ class RxException(Exception):
     pass
 
 
-# Helper function for raising exceptions within lambdas
-def _raise(ex):
-    raise RxException(ex)
-
-
 class TestSample(unittest.TestCase):
     def test_sample_regular(self):
         scheduler = TestScheduler()

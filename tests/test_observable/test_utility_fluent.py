@@ -6,8 +6,6 @@ ensuring they produce identical results to the pipe-based functional syntax.
 
 from typing import Any
 
-import pytest
-
 import reactivex as rx
 from reactivex import Observable, operators as ops
 from reactivex.scheduler import TimeoutScheduler

@@ -728,8 +728,8 @@ class TestSingleOrDefaultAsyncMethodChaining:
         """Verify single_or_default_async with single element."""
         source: Observable[int] = rx.of(42)
 
-        fluent_result: Observable[int] = source.single_or_default_async()
-        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())
+        fluent_result: Observable[int] = source.single_or_default_async()  # type: ignore[assignment]
+        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())  # type: ignore[assignment]
 
         fluent_values: list[int] = []
         pipe_values: list[int] = []
@@ -762,8 +762,8 @@ class TestSingleOrDefaultAsyncMethodChaining:
         """Verify single_or_default_async errors when empty without default."""
         source: Observable[int] = rx.empty()
 
-        fluent_result: Observable[int] = source.single_or_default_async()
-        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())
+        fluent_result: Observable[int] = source.single_or_default_async()  # type: ignore[assignment]
+        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())  # type: ignore[assignment]
 
         fluent_errors: list[Exception] = []
         pipe_errors: list[Exception] = []
@@ -778,8 +778,8 @@ class TestSingleOrDefaultAsyncMethodChaining:
         """Verify single_or_default_async errors with multiple elements."""
         source: Observable[int] = rx.of(1, 2, 3)
 
-        fluent_result: Observable[int] = source.single_or_default_async()
-        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())
+        fluent_result: Observable[int] = source.single_or_default_async()  # type: ignore[assignment]
+        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())  # type: ignore[assignment]
 
         fluent_errors: list[Exception] = []
         pipe_errors: list[Exception] = []

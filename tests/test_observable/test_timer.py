@@ -18,7 +18,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> None:
     raise RxException(ex)
 
 
@@ -31,7 +31,7 @@ class TestTimer(unittest.TestCase):
             return reactivex.timer(duetime=date)
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(250.0, 0), on_completed(250.0)]
+        assert results.messages == [on_next(250, 0), on_completed(250)]
 
     def test_oneshot_timer_date_passed(self):
         scheduler = TestScheduler()

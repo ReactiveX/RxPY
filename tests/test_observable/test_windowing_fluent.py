@@ -36,7 +36,7 @@ class TestPartitionMethodChaining:
         """Test partition odds stream."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5, 6)
 
-        evens, odds = source.partition(lambda x: x % 2 == 0)
+        _, odds = source.partition(lambda x: x % 2 == 0)
 
         odds_values: list[int] = []
         odds.subscribe(on_next=odds_values.append)
