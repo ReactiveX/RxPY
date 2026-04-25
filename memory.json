@@ -1,6 +1,6 @@
 {
-  "last_run": "2026-04-24T04:06:24Z",
-  "last_run_id": "24871162070",
+  "last_run": "2026-04-25T03:30:59Z",
+  "last_run_id": "24921547657",
   "comments_made": {
     "697": "2026-04-17T17:39:00Z",
     "712": "2026-04-20T03:51:00Z",
@@ -15,8 +15,9 @@
     "763": {"branch": "repo-assist/improve-typing-exports-2026-04-18", "description": "Add Action/StartableFactory to reactivex.typing.__all__; add missing docstring to on_error_resume_next; resolve changes.md merge-conflict markers", "status": "merged"},
     "765": {"branch": "repo-assist/fix-issue-712-retry-resubscription", "description": "Fix retry(n) generator per-subscription so retry(n).pipe(repeat()) works correctly. Closes #712.", "status": "merged"},
     "778": {"branch": "repo-assist/pyright-ruff-cleanup-test-observable-scheduler-2026-04-21-6f569da2d139f64e", "description": "Fix all 153 ruff lint errors in tests/test_observable/; remove from ruff exclude list.", "status": "open"},
-    "779": {"branch": "repo-assist/pyright-cleanup-test-scheduler-2026-04-23", "description": "Fix pyright strict-mode errors in tests/test_scheduler/ (14 files); remove from pyright exclude.", "status": "open"},
-    "TBD-2026-04-24": {"branch": "repo-assist/pyright-cleanup-test-observable-2026-04-24", "description": "Fix pyright strict-mode errors in 16 files in tests/test_observable/ (batch 1 of ~6251 errors). Addresses files with <=5 errors each.", "status": "open"}
+    "779": {"branch": "repo-assist/pyright-cleanup-test-scheduler-2026-04-23", "description": "Fix pyright strict-mode errors in tests/test_scheduler/ (14 files); remove from pyright exclude.", "status": "merged"},
+    "780": {"branch": "repo-assist/pyright-cleanup-test-observable-2026-04-24-5ff1a58fa16f34b4", "description": "Fix pyright strict-mode errors in 16 files in tests/test_observable/ (batch 1 of ~6251 errors). Addresses files with <=5 errors each.", "status": "open"},
+    "TBD-uv-caching-2026-04-25": {"branch": "repo-assist/eng-uv-caching-2026-04-25", "description": "Add enable-cache: true to all astral-sh/setup-uv steps in python-package.yml CI workflow.", "status": "open"}
   },
   "issues_labelled": {
     "480": ["bug", "operators", "schedulers"],
@@ -31,10 +32,10 @@
   },
   "notes": [
     "tests/test_subject: merged #762 - removed from pyright exclude",
-    "tests/test_scheduler: PR #779 open - fixes 14 files, removes test_scheduler from pyright exclude (keeps test_mainloop).",
-    "tests/test_observable: PR #778 open (ruff fixes). Pyright batch 1 PR open 2026-04-24 (16 files, ~40 errors). ~6211 errors remain.",
-    "Pyright batch 1 (2026-04-24) fixes: _raise annotation in 7 files, delete unused _raise in 3 files, on_error annotation, predicate/comparer/init annotations, float->int ticks in test_timer, unused import/var, type:ignore for single_or_default_async.",
-    "Issue labelling: all unlabelled issues blocked by integrity filter.",
+    "tests/test_scheduler: PR #779 merged - removed test_scheduler from pyright exclude (keeps test_mainloop).",
+    "tests/test_observable: PR #778 open (ruff fixes). Pyright batch 1 PR #780 open (16 files, ~40 errors). ~6211 errors remain.",
+    "CI caching: PR (branch repo-assist/eng-uv-caching-2026-04-25) submitted 2026-04-25 - adds enable-cache to all setup-uv steps.",
+    "Issue labelling: all unlabelled issues blocked by integrity filter (24 issues). Requires min-integrity: approved in workflow config.",
     "Next: continue pyright cleanup in tests/test_observable/ - batch 2 should tackle files with 6-20 errors each."
   ],
   "issue_cursor": null,
