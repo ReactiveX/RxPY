@@ -4,28 +4,22 @@ This module contains tests for complex chaining scenarios and mixed fluent/pipe 
 
 The fluent API tests have been reorganized into separate mixin-specific test files:
 
-- test_transformation_fluent.py - TransformationMixin operators
-  (map, reduce, scan, flat_map, etc.)
-- test_filtering_fluent.py - FilteringMixin operators
-  (filter, take, skip, first, last, etc.)
-- test_mathematical_fluent.py - MathematicalMixin operators
-  (count, sum, average, min, max)
+- test_transformation_fluent.py - TransformationMixin operators (map, reduce, scan, flat_map, etc.)
+- test_filtering_fluent.py - FilteringMixin operators (filter, take, skip, first, last, etc.)
+- test_mathematical_fluent.py - MathematicalMixin operators (count, sum, average, min, max)
 - test_conditional_fluent.py - ConditionalMixin operators (default_if_empty, etc.)
-- test_combination_fluent.py - CombinationMixin operators
-  (merge, concat, start_with, etc.)
+- test_combination_fluent.py - CombinationMixin operators (merge, concat, start_with, etc.)
 - test_error_handling_fluent.py - ErrorHandlingMixin operators (catch, retry, etc.)
 - test_testing_fluent.py - TestingMixin operators (all, some, is_empty, contains, etc.)
-- test_utility_fluent.py - UtilityMixin operators
-  (do_action, materialize, timestamp, etc.)
-- test_windowing_fluent.py - WindowingMixin operators
-  (partition, pairwise, group_by, etc.)
+- test_utility_fluent.py - UtilityMixin operators (do_action, materialize, timestamp, etc.)
+- test_windowing_fluent.py - WindowingMixin operators (partition, pairwise, group_by, etc.)
 - test_multicasting_fluent.py - MulticastingMixin operators (share, publish, etc.)
 
 This file now focuses on:
 1. Complex multi-operator chaining scenarios
 2. Mixed fluent and pipe style usage
 3. Cross-mixin integration tests
-"""
+"""  # noqa: E501
 
 import reactivex as rx
 from reactivex import Observable

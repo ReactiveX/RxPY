@@ -73,7 +73,7 @@ class TestSelect(unittest.TestCase):
     def test_starmap_subscription_error(self) -> None:
         mapper: Callable[[Observable[tuple[int, int]]], Observable[tuple[int, int]]] = (
             ops.starmap(lambda x, y: tuple[int, int]((x, y)))
-        )  # noqa: E501
+        )
 
         with self.assertRaises(RxException):
             return_value((1, 10)).pipe(mapper).subscribe(lambda x: _raise("ex"))
@@ -115,7 +115,7 @@ class TestSelect(unittest.TestCase):
 
         d.disposable = xs.pipe(ops.starmap(mapper)).subscribe(
             results, scheduler=scheduler
-        )  # noqa: E501
+        )
 
         def action(
             scheduler: abc.SchedulerBase, state: Any
@@ -420,7 +420,7 @@ class TestStarmapIndexed(unittest.TestCase):
         """Test starmap_indexed with subscription errors."""
         mapper: Callable[[Observable[tuple[int, int, int]]], Observable[int]] = (
             ops.starmap_indexed(lambda x, y, index: x)
-        )  # noqa: E501
+        )
 
         with self.assertRaises(RxException):
             return_value((1, 10, 0)).pipe(mapper).subscribe(lambda x: _raise("ex"))

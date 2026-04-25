@@ -194,11 +194,10 @@ class TestRetry(unittest.TestCase):
             xss.subscribe()
 
     def test_retry_with_count_combined_with_repeat(self):
-        """retry(n) should reset its budget per subscription
-        so repeat() works correctly.
+        """retry(n) should reset its budget per subscription so repeat() works correctly.
 
         Regression test for https://github.com/ReactiveX/RxPY/issues/712.
-        """
+        """  # noqa: E501
         scheduler = TestScheduler()
         xs = scheduler.create_cold_observable(on_next(90, 42), on_completed(200))
 
