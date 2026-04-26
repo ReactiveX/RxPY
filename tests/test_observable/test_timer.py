@@ -57,7 +57,7 @@ class TestTimer(unittest.TestCase):
         scheduler = TestScheduler()
         date = scheduler.to_datetime(250.0)
         xs = reactivex.timer(date)
-        xs.subscribe(lambda x: _raise("ex"), scheduler=scheduler)
+        xs.subscribe(lambda x: _raise(Exception("ex")), scheduler=scheduler)
 
         self.assertRaises(RxException, scheduler.start)
 
@@ -100,13 +100,13 @@ class TestTimer(unittest.TestCase):
     def test_oneshot_timer_timespan_observer_throws(self):
         scheduler1 = TestScheduler()
         xs = reactivex.timer(11)
-        xs.subscribe(lambda x: _raise("ex"), scheduler=scheduler1)
+        xs.subscribe(lambda x: _raise(Exception("ex")), scheduler=scheduler1)
 
         self.assertRaises(RxException, scheduler1.start)
 
         scheduler2 = TestScheduler()
         ys = reactivex.timer(1, period=None)
-        ys.subscribe(on_completed=lambda: _raise("ex"), scheduler=scheduler2)
+        ys.subscribe(on_completed=lambda: _raise(Exception("ex")), scheduler=scheduler2)
 
         self.assertRaises(RxException, scheduler2.start)
 

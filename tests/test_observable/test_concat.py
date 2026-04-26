@@ -225,18 +225,18 @@ class TestConcat(unittest.TestCase):
 
     def test_concat_forward_scheduler(self):
         scheduler = TestScheduler()
-        subscribe_schedulers = {"e1": "unknown", "e2": "unknown"}
+        subscribe_schedulers: dict[str, object] = {"e1": "unknown", "e2": "unknown"}
 
-        def subscribe_e1(observer, scheduler="not_set"):
+        def subscribe_e1(observer, scheduler=None):  # type: ignore[misc]
             subscribe_schedulers["e1"] = scheduler
             observer.on_completed()
 
-        def subscribe_e2(observer, scheduler="not_set"):
+        def subscribe_e2(observer, scheduler=None):  # type: ignore[misc]
             subscribe_schedulers["e2"] = scheduler
             observer.on_completed()
 
-        e1 = reactivex.create(subscribe_e1)
-        e2 = reactivex.create(subscribe_e2)
+        e1 = reactivex.create(subscribe_e1)  # type: ignore[arg-type]
+        e2 = reactivex.create(subscribe_e2)  # type: ignore[arg-type]
 
         stream = e1.pipe(ops.concat(e2))
         stream.subscribe(scheduler=scheduler)
@@ -245,18 +245,18 @@ class TestConcat(unittest.TestCase):
         assert subscribe_schedulers["e2"] is scheduler
 
     def test_concat_forward_none_scheduler(self):
-        subscribe_schedulers = {"e1": "unknown", "e2": "unknown"}
+        subscribe_schedulers: dict[str, object] = {"e1": "unknown", "e2": "unknown"}
 
-        def subscribe_e1(observer, scheduler="not_set"):
+        def subscribe_e1(observer, scheduler=None):  # type: ignore[misc]
             subscribe_schedulers["e1"] = scheduler
             observer.on_completed()
 
-        def subscribe_e2(observer, scheduler="not_set"):
+        def subscribe_e2(observer, scheduler=None):  # type: ignore[misc]
             subscribe_schedulers["e2"] = scheduler
             observer.on_completed()
 
-        e1 = reactivex.create(subscribe_e1)
-        e2 = reactivex.create(subscribe_e2)
+        e1 = reactivex.create(subscribe_e1)  # type: ignore[arg-type]
+        e2 = reactivex.create(subscribe_e2)  # type: ignore[arg-type]
 
         stream = e1.pipe(ops.concat(e2))
         stream.subscribe()

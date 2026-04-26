@@ -45,7 +45,7 @@ class TestThrow(unittest.TestCase):
         scheduler = TestScheduler()
         xs = throw("ex")
         xs.subscribe(
-            lambda x: None, lambda ex: _raise("ex"), lambda: None, scheduler=scheduler
+            lambda x: None, lambda ex: _raise(Exception("ex")), lambda: None, scheduler=scheduler
         )
 
         self.assertRaises(RxException, scheduler.start)

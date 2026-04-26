@@ -37,7 +37,7 @@ class TestFromCallback(unittest.TestCase):
         res.subscribe(on_next, on_error, on_completed)
 
     def test_from_callback_single(self):
-        res = reactivex.from_callback(lambda file, cb: cb(file))("file.txt")
+        res = reactivex.from_callback(lambda file, cb: cb(file))("file.txt")  # type: ignore[call-arg]
 
         def on_next(r):
             self.assertEqual(r, "file.txt")
@@ -52,7 +52,7 @@ class TestFromCallback(unittest.TestCase):
 
     def test_from_node_callback_mapper(self):
         res = reactivex.from_callback(lambda f, s, t, cb: cb(f, s, t), lambda r: r[0])(
-            1, 2, 3
+            1, 2, 3  # type: ignore[call-arg]
         )
 
         def on_next(r):

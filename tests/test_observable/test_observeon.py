@@ -78,12 +78,12 @@ class TestObserveOn(unittest.TestCase):
 
         actual_subscribe_scheduler = None
 
-        def subscribe(observer, scheduler):
+        def subscribe(observer, scheduler=None):
             nonlocal actual_subscribe_scheduler
             actual_subscribe_scheduler = scheduler
             observer.on_completed()
 
-        xs = reactivex.create(subscribe)
+        xs = reactivex.create(subscribe)  # type: ignore[arg-type]
 
         xs.pipe(ops.observe_on(scheduler)).subscribe(
             scheduler=expected_subscribe_scheduler

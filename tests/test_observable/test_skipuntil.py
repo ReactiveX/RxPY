@@ -159,8 +159,9 @@ class TestSkipUntil(unittest.TestCase):
 
         def subscribe(observer, scheduler=None):
             disposed[0] = True
+            return None
 
-        r = Observable(subscribe)
+        r = Observable(subscribe)  # type: ignore[arg-type]
 
         def create():
             return left.pipe(ops.skip_until(r))

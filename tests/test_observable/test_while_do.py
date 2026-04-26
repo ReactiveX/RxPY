@@ -105,9 +105,9 @@ class TestWhile(unittest.TestCase):
             def subscribe(o, scheduler=None):
                 o.on_next(1)
                 o.on_completed()
-                return lambda: None
+                return None
 
-            return reactivex.create(subscribe).pipe(ops.while_do(predicate))
+            return reactivex.create(subscribe).pipe(ops.while_do(predicate))  # type: ignore[arg-type]
 
         results = scheduler.start(create=create)
 

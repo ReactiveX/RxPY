@@ -54,8 +54,8 @@ class TestElementAt(unittest.TestCase):
 
         self.assertEqual(1, len(results.messages))
         self.assertEqual(600, results.messages[0].time)
-        self.assertEqual("E", results.messages[0].value.kind)
-        assert results.messages[0].value.exception
+        self.assertEqual("E", results.messages[0].value.kind)  # type: ignore[union-attr]
+        assert results.messages[0].value.exception  # type: ignore[union-attr]
 
     def test_elementat_error(self):
         ex = "ex"

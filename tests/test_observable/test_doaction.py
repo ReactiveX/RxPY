@@ -55,7 +55,6 @@ class TestDo(unittest.TestCase):
         def create():
             def action(x):
                 i[0] += 1
-                return i[0]
 
             return xs.pipe(_.do_action(action))
 

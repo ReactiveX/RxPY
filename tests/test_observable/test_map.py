@@ -29,21 +29,22 @@ class TestSelect(unittest.TestCase):
     def test_map_throws(self):
         mapper = map(lambda x: x)
         with self.assertRaises(RxException):
-            return_value(1).pipe(mapper).subscribe(lambda x: _raise("ex"))
+            return_value(1).pipe(mapper).subscribe(lambda x: _raise(Exception("ex")))
 
         with self.assertRaises(RxException):
             throw("ex").pipe(mapper).subscribe(on_error=lambda ex: _raise(ex))
 
         with self.assertRaises(RxException):
             empty().pipe(mapper).subscribe(
-                lambda x: x, lambda ex: ex, lambda: _raise("ex")
+                lambda x: x, lambda ex: None, lambda: _raise(Exception("ex"))
             )
 
-        def subscribe(observer, scheduler=None):
-            _raise("ex")
+        def subscribe(observer, scheduler=None):  # type: ignore[misc]
+            _raise(Exception("ex"))
+            return None
 
         with self.assertRaises(RxException):
-            create(subscribe).pipe(map(lambda x: x)).subscribe()
+            create(subscribe).pipe(map(lambda x: x)).subscribe()  # type: ignore[arg-type]
 
     def test_map_disposeinsidemapper(self):
         scheduler = TestScheduler()
@@ -61,7 +62,7 @@ class TestSelect(unittest.TestCase):
                 d.dispose()
             return x
 
-        d.disposable = xs.pipe(map(projection)).subscribe(results, scheduler)
+        d.disposable = xs.pipe(map(projection)).subscribe(results, scheduler=scheduler)
 
         def action(scheduler, state):
             return d.dispose()
@@ -263,10 +264,9 @@ class TestSelect(unittest.TestCase):
         assert invoked[0] == 3
 
     def test_map_with_index_throws(self):
+        mapper = map_indexed(lambda x, index: x)
         with self.assertRaises(RxException):
-            mapper = map_indexed(lambda x, index: x)
-
-            return return_value(1).pipe(mapper).subscribe(lambda x: _raise("ex"))
+            return return_value(1).pipe(mapper).subscribe(lambda x: _raise(Exception("ex")))
 
         with self.assertRaises(RxException):
             return (
@@ -277,11 +277,11 @@ class TestSelect(unittest.TestCase):
             return (
                 empty()
                 .pipe(mapper)
-                .subscribe(lambda x: x, lambda ex: None, lambda: _raise("ex"))
+                .subscribe(lambda x: x, lambda ex: None, lambda: _raise(Exception("ex")))
             )
 
         with self.assertRaises(RxException):
-            return create(lambda o, s: _raise("ex")).pipe(mapper).subscribe()
+            return create(lambda o, s: _raise(Exception("ex"))).pipe(mapper).subscribe()
 
     def test_map_with_index_dispose_inside_mapper(self):
         scheduler = TestScheduler()

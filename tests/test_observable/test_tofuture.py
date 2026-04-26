@@ -102,7 +102,7 @@ class TestToFuture(unittest.TestCase):
         async def using_sub():
             # Since the subject never completes, this await statement
             # will never be complete either. We wait forever.
-            await reactivex.using(lambda: sub, lambda s: s)
+            await reactivex.using(lambda: sub, lambda s: s)  # type: ignore[arg-type]
 
         async def go():
             await asyncio.wait_for(using_sub(), 0.1)

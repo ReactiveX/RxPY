@@ -68,7 +68,7 @@ class TestAmb(unittest.TestCase):
         source_not_disposed = [False]
         o1 = scheduler.create_hot_observable(msgs1)
 
-        def action():
+        def action(_):
             source_not_disposed[0] = True
 
         o2 = scheduler.create_hot_observable(msgs2).pipe(
@@ -91,7 +91,7 @@ class TestAmb(unittest.TestCase):
         source_not_disposed = [False]
         o1 = scheduler.create_hot_observable(msgs1)
 
-        def action():
+        def action(_):
             source_not_disposed[0] = True
 
         o2 = scheduler.create_hot_observable(msgs2).pipe(
@@ -112,7 +112,7 @@ class TestAmb(unittest.TestCase):
         msgs2 = [on_next(150, 1), on_next(210, 3), on_completed(250)]
         source_not_disposed = [False]
 
-        def action():
+        def action(_):
             source_not_disposed[0] = True
 
         o1 = scheduler.create_hot_observable(msgs1).pipe(
@@ -136,7 +136,7 @@ class TestAmb(unittest.TestCase):
         source_not_disposed = [False]
         o1 = scheduler.create_hot_observable(msgs1)
 
-        def action():
+        def action(_):
             source_not_disposed[0] = True
 
         o2 = scheduler.create_hot_observable(msgs2).pipe(

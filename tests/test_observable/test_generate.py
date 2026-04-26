@@ -30,7 +30,7 @@ class TestGenerate(unittest.TestCase):
             return reactivex.generate(
                 0,
                 lambda x: x <= 3,
-                lambda x: x + 1,
+                lambda x: x + 1,  # type: ignore[arg-type]
             )
 
         results = scheduler.start(create)
@@ -51,7 +51,7 @@ class TestGenerate(unittest.TestCase):
             return reactivex.generate(
                 0,
                 lambda x: _raise("ex"),
-                lambda x: x + 1,
+                lambda x: x + 1,  # type: ignore[arg-type]
             )
 
         results = scheduler.start(create)
@@ -80,7 +80,7 @@ class TestGenerate(unittest.TestCase):
             return reactivex.generate(
                 0,
                 lambda x: True,
-                lambda x: x + 1,
+                lambda x: x + 1,  # type: ignore[arg-type]
             )
 
         results = scheduler.start(create, disposed=200)
@@ -93,7 +93,7 @@ class TestGenerate(unittest.TestCase):
             return reactivex.generate(
                 0,
                 lambda x: x <= 3,
-                lambda x: x + 1,
+                lambda x: x + 1,  # type: ignore[arg-type]
             ).pipe(ops.repeat(2))
 
         results = scheduler.start(create)

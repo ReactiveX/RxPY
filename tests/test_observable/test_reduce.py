@@ -88,7 +88,7 @@ class TestReduce(unittest.TestCase):
 
         res = scheduler.start(create=create).messages
         assert len(res) == 1
-        assert res[0].value.kind == "E" and res[0].value.exception is not None
+        assert res[0].value.kind == "E" and res[0].value.exception is not None  # type: ignore[union-attr]
         assert res[0].time == 250
 
     def test_reduce_without_seed_return(self):

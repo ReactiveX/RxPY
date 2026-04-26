@@ -27,8 +27,8 @@ class TestToArray(ReactiveTest, unittest.TestCase):
 
         assert len(results) == 2
         assert results[0].time == 660
-        assert results[0].value.kind == "N"
-        assert results[0].value.value == [2, 3, 4, 5]
+        assert results[0].value.kind == "N"  # type: ignore[union-attr]
+        assert results[0].value.value == [2, 3, 4, 5]  # type: ignore[union-attr]
         assert self.on_completed(660).equals(results[1])
         assert xs.subscriptions == [self.subscribe(200, 660)]
 

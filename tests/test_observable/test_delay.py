@@ -63,7 +63,7 @@ class TestDelay(unittest.TestCase):
 
         def create():
             dt = datetime.fromtimestamp(300.0, tz=timezone.utc)
-            return xs.pipe(delay(dt))
+            return xs.pipe(delay(dt))  # type: ignore[arg-type]
 
         results = scheduler.start(create)
         assert results.messages == [
@@ -107,7 +107,7 @@ class TestDelay(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(delay(datetime.fromtimestamp(250, tz=timezone.utc)))
+            return xs.pipe(delay(datetime.fromtimestamp(250, tz=timezone.utc)))  # type: ignore[arg-type]
 
         results = scheduler.start(create)
 
@@ -153,7 +153,7 @@ class TestDelay(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(delay(datetime.fromtimestamp(350, tz=timezone.utc)))
+            return xs.pipe(delay(datetime.fromtimestamp(350, tz=timezone.utc)))  # type: ignore[arg-type]
 
         results = scheduler.start(create)
 
@@ -201,7 +201,7 @@ class TestDelay(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(delay(datetime.fromtimestamp(250, tz=timezone.utc)))
+            return xs.pipe(delay(datetime.fromtimestamp(250, tz=timezone.utc)))  # type: ignore[arg-type]
 
         results = scheduler.start(create)
 
@@ -244,7 +244,7 @@ class TestDelay(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(delay(datetime.fromtimestamp(350, tz=timezone.utc)))
+            return xs.pipe(delay(datetime.fromtimestamp(350, tz=timezone.utc)))  # type: ignore[arg-type]
 
         results = scheduler.start(create)
 

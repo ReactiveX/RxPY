@@ -27,7 +27,7 @@ class TestExpand(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_completed(300))
 
         def create():
-            def mapper():
+            def mapper(x):
                 return scheduler.create_cold_observable(
                     on_next(100, 1), on_next(200, 2), on_completed(300)
                 )

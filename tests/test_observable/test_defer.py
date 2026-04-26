@@ -40,7 +40,7 @@ class TestDefer(unittest.TestCase):
         results = scheduler.start(create)
         assert results.messages == [on_next(300, 200), on_completed(400)]
         assert 1 == invoked[0]
-        assert xs[0].subscriptions == [subscribe(200, 400)]
+        assert xs[0].subscriptions == [subscribe(200, 400)]  # type: ignore[union-attr]
 
     def test_defer_error(self):
         scheduler = TestScheduler()
@@ -62,7 +62,7 @@ class TestDefer(unittest.TestCase):
 
         assert results.messages == [on_next(300, 200), on_error(400, ex)]
         assert 1 == invoked[0]
-        assert xs[0].subscriptions == [subscribe(200, 400)]
+        assert xs[0].subscriptions == [subscribe(200, 400)]  # type: ignore[union-attr]
 
     def test_defer_dispose(self):
         scheduler = TestScheduler()
@@ -84,7 +84,7 @@ class TestDefer(unittest.TestCase):
         results = scheduler.start(create)
         assert results.messages == [on_next(300, 200), on_next(400, 1)]
         assert 1 == invoked[0]
-        assert xs[0].subscriptions == [subscribe(200, 1000)]
+        assert xs[0].subscriptions == [subscribe(200, 1000)]  # type: ignore[union-attr]
 
     def test_defer_on_error(self):
         scheduler = TestScheduler()

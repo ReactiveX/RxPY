@@ -70,14 +70,14 @@ class TestReturnValue(unittest.TestCase):
     def test_return_observer_throws(self):
         scheduler1 = TestScheduler()
         xs = reactivex.return_value(1)
-        xs.subscribe(lambda x: _raise("ex"), scheduler=scheduler1)
+        xs.subscribe(lambda x: _raise(Exception("ex")), scheduler=scheduler1)
 
         self.assertRaises(RxException, scheduler1.start)
 
         scheduler2 = TestScheduler()
         ys = reactivex.return_value(1)
         ys.subscribe(
-            lambda x: x, lambda ex: ex, lambda: _raise("ex"), scheduler=scheduler2
+            lambda x: None, lambda ex: None, lambda: _raise(Exception("ex")), scheduler=scheduler2
         )
 
         self.assertRaises(RxException, scheduler2.start)
