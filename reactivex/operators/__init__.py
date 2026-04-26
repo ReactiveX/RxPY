@@ -707,7 +707,8 @@ def dematerialize() -> Callable[[Observable[Notification[_T]]], Observable[_T]]:
 
 
 def delay(
-    duetime: typing.RelativeTime, scheduler: abc.SchedulerBase | None = None
+    duetime: typing.AbsoluteOrRelativeTime,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """The delay operator.
 

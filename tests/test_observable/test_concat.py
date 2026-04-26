@@ -1,7 +1,9 @@
 import unittest
 
 import reactivex
+from reactivex import abc
 from reactivex import operators as ops
+from reactivex.disposable import Disposable
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -227,16 +229,24 @@ class TestConcat(unittest.TestCase):
         scheduler = TestScheduler()
         subscribe_schedulers: dict[str, object] = {"e1": "unknown", "e2": "unknown"}
 
-        def subscribe_e1(observer, scheduler=None):  # type: ignore[misc]
+        def subscribe_e1(
+            observer: abc.ObserverBase[int],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
             subscribe_schedulers["e1"] = scheduler
             observer.on_completed()
+            return Disposable()
 
-        def subscribe_e2(observer, scheduler=None):  # type: ignore[misc]
+        def subscribe_e2(
+            observer: abc.ObserverBase[int],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
             subscribe_schedulers["e2"] = scheduler
             observer.on_completed()
+            return Disposable()
 
-        e1 = reactivex.create(subscribe_e1)  # type: ignore[arg-type]
-        e2 = reactivex.create(subscribe_e2)  # type: ignore[arg-type]
+        e1 = reactivex.create(subscribe_e1)
+        e2 = reactivex.create(subscribe_e2)
 
         stream = e1.pipe(ops.concat(e2))
         stream.subscribe(scheduler=scheduler)
@@ -247,16 +257,24 @@ class TestConcat(unittest.TestCase):
     def test_concat_forward_none_scheduler(self):
         subscribe_schedulers: dict[str, object] = {"e1": "unknown", "e2": "unknown"}
 
-        def subscribe_e1(observer, scheduler=None):  # type: ignore[misc]
+        def subscribe_e1(
+            observer: abc.ObserverBase[int],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
             subscribe_schedulers["e1"] = scheduler
             observer.on_completed()
+            return Disposable()
 
-        def subscribe_e2(observer, scheduler=None):  # type: ignore[misc]
+        def subscribe_e2(
+            observer: abc.ObserverBase[int],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
             subscribe_schedulers["e2"] = scheduler
             observer.on_completed()
+            return Disposable()
 
-        e1 = reactivex.create(subscribe_e1)  # type: ignore[arg-type]
-        e2 = reactivex.create(subscribe_e2)  # type: ignore[arg-type]
+        e1 = reactivex.create(subscribe_e1)
+        e2 = reactivex.create(subscribe_e2)
 
         stream = e1.pipe(ops.concat(e2))
         stream.subscribe()

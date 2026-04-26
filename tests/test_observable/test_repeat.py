@@ -157,7 +157,9 @@ class TestRepeat(unittest.TestCase):
 
         scheduler3 = TestScheduler()
         zs = reactivex.return_value(1).pipe(ops.repeat())
-        d = zs.subscribe(on_completed=lambda: _raise(Exception("ex")), scheduler=scheduler3)
+        d = zs.subscribe(
+            on_completed=lambda: _raise(Exception("ex")), scheduler=scheduler3
+        )
 
         scheduler3.schedule_absolute(210, lambda sc, st: d.dispose())
         scheduler3.start()

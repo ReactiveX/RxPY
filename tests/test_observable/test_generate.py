@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, NoReturn
 
 import reactivex
 from reactivex import operators as ops
@@ -18,8 +19,11 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Any) -> NoReturn:
     raise RxException(ex)
+
+
+_INITIAL: int = 0
 
 
 class TestGenerate(unittest.TestCase):
@@ -28,9 +32,9 @@ class TestGenerate(unittest.TestCase):
 
         def create():
             return reactivex.generate(
-                0,
+                _INITIAL,
                 lambda x: x <= 3,
-                lambda x: x + 1,  # type: ignore[arg-type]
+                lambda x: x + 1,
             )
 
         results = scheduler.start(create)
@@ -49,9 +53,9 @@ class TestGenerate(unittest.TestCase):
 
         def create():
             return reactivex.generate(
-                0,
+                _INITIAL,
                 lambda x: _raise("ex"),
-                lambda x: x + 1,  # type: ignore[arg-type]
+                lambda x: x + 1,
             )
 
         results = scheduler.start(create)
@@ -78,9 +82,9 @@ class TestGenerate(unittest.TestCase):
 
         def create():
             return reactivex.generate(
-                0,
+                _INITIAL,
                 lambda x: True,
-                lambda x: x + 1,  # type: ignore[arg-type]
+                lambda x: x + 1,
             )
 
         results = scheduler.start(create, disposed=200)
@@ -91,9 +95,9 @@ class TestGenerate(unittest.TestCase):
 
         def create():
             return reactivex.generate(
-                0,
+                _INITIAL,
                 lambda x: x <= 3,
-                lambda x: x + 1,  # type: ignore[arg-type]
+                lambda x: x + 1,
             ).pipe(ops.repeat(2))
 
         results = scheduler.start(create)

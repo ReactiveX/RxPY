@@ -1,6 +1,7 @@
 import unittest
+from typing import Any, NoReturn
 
-from reactivex import create, empty, return_value, throw
+from reactivex import abc, create, empty, return_value, throw
 from reactivex.disposable import SerialDisposable
 from reactivex.operators import map, map_indexed
 from reactivex.testing import ReactiveTest, TestScheduler
@@ -21,7 +22,7 @@ class RxException(Exception):
 # Helper function for raising exceptions within lambdas
 
 
-def _raise(ex):
+def _raise(ex: Any) -> NoReturn:
     raise RxException(ex)
 
 
@@ -39,12 +40,14 @@ class TestSelect(unittest.TestCase):
                 lambda x: x, lambda ex: None, lambda: _raise(Exception("ex"))
             )
 
-        def subscribe(observer, scheduler=None):  # type: ignore[misc]
+        def subscribe(
+            observer: abc.ObserverBase[int],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
             _raise(Exception("ex"))
-            return None
 
         with self.assertRaises(RxException):
-            create(subscribe).pipe(map(lambda x: x)).subscribe()  # type: ignore[arg-type]
+            create(subscribe).pipe(map(lambda x: x)).subscribe()
 
     def test_map_disposeinsidemapper(self):
         scheduler = TestScheduler()
@@ -266,7 +269,11 @@ class TestSelect(unittest.TestCase):
     def test_map_with_index_throws(self):
         mapper = map_indexed(lambda x, index: x)
         with self.assertRaises(RxException):
-            return return_value(1).pipe(mapper).subscribe(lambda x: _raise(Exception("ex")))
+            return (
+                return_value(1)
+                .pipe(mapper)
+                .subscribe(lambda x: _raise(Exception("ex")))
+            )
 
         with self.assertRaises(RxException):
             return (
@@ -277,7 +284,9 @@ class TestSelect(unittest.TestCase):
             return (
                 empty()
                 .pipe(mapper)
-                .subscribe(lambda x: x, lambda ex: None, lambda: _raise(Exception("ex")))
+                .subscribe(
+                    lambda x: x, lambda ex: None, lambda: _raise(Exception("ex"))
+                )
             )
 
         with self.assertRaises(RxException):

@@ -1,8 +1,9 @@
 import unittest
 
 import reactivex
-from reactivex import Observable
+from reactivex import Observable, abc
 from reactivex import operators as ops
+from reactivex.disposable import Disposable
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -157,11 +158,14 @@ class TestSkipUntil(unittest.TestCase):
         disposed = [False]
         left = scheduler.create_hot_observable(l_msgs)
 
-        def subscribe(observer, scheduler=None):
+        def subscribe(
+            observer: abc.ObserverBase[int],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
             disposed[0] = True
-            return None
+            return Disposable()
 
-        r = Observable(subscribe)  # type: ignore[arg-type]
+        r = Observable(subscribe)
 
         def create():
             return left.pipe(ops.skip_until(r))

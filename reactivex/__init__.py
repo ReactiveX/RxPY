@@ -469,7 +469,7 @@ def from_callable(
 def from_callback(
     func: Callable[..., Callable[..., None]],
     mapper: typing.Mapper[Any, Any] | None = None,
-) -> Callable[[], Observable[Any]]:
+) -> Callable[..., Observable[Any]]:
     """Converts a callback function to an observable sequence.
 
     Args:

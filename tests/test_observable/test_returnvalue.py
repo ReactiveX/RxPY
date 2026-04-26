@@ -77,7 +77,10 @@ class TestReturnValue(unittest.TestCase):
         scheduler2 = TestScheduler()
         ys = reactivex.return_value(1)
         ys.subscribe(
-            lambda x: None, lambda ex: None, lambda: _raise(Exception("ex")), scheduler=scheduler2
+            lambda x: None,
+            lambda ex: None,
+            lambda: _raise(Exception("ex")),
+            scheduler=scheduler2,
         )
 
         self.assertRaises(RxException, scheduler2.start)

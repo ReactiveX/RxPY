@@ -1,7 +1,9 @@
 import unittest
 
 import reactivex
+from reactivex import abc
 from reactivex import operators as ops
+from reactivex.disposable import Disposable
 from reactivex.scheduler import ImmediateScheduler
 from reactivex.testing import ReactiveTest, TestScheduler
 
@@ -78,12 +80,16 @@ class TestObserveOn(unittest.TestCase):
 
         actual_subscribe_scheduler = None
 
-        def subscribe(observer, scheduler=None):
+        def subscribe(
+            observer: abc.ObserverBase[int],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
             nonlocal actual_subscribe_scheduler
             actual_subscribe_scheduler = scheduler
             observer.on_completed()
+            return Disposable()
 
-        xs = reactivex.create(subscribe)  # type: ignore[arg-type]
+        xs = reactivex.create(subscribe)
 
         xs.pipe(ops.observe_on(scheduler)).subscribe(
             scheduler=expected_subscribe_scheduler
