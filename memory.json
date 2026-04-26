@@ -1,23 +1,24 @@
 {
-  "last_run": "2026-04-25T03:30:59Z",
-  "last_run_id": "24921547657",
+  "last_run": "2026-04-26T03:53:20Z",
+  "last_run_id": "24947671217",
   "comments_made": {
     "697": "2026-04-17T17:39:00Z",
     "712": "2026-04-20T03:51:00Z",
     "778": "2026-04-22T03:39:00Z"
   },
   "prs_created": {
-    "753": {"branch": "repo-assist/testing-improvements-2026-04-17", "description": "Fix ruff issues in test_scheduler, remove from ruff exclude list, standardise setup-python@v5", "status": "merged"},
-    "755": {"branch": "repo-assist/testing-improvements-2026-04-17", "description": "Fix ruff issues in test_scheduler, remove test_subject/test_scheduler from ruff exclude list", "status": "merged"},
-    "756": {"branch": "repo-assist/fix-issue-697-timer-resubscription", "description": "Fix timer resubscription: remove nonlocal duetime mutation. Closes #697.", "status": "merged"},
-    "757": {"branch": "repo-assist/fix-issue-480-scheduler-forwarding", "description": "fix(operators): forward scheduler in pairwise, to_marbles, delay_with_mapper. Closes #480 partial.", "status": "merged"},
-    "762": {"branch": "repo-assist/pyright-cleanup-test-subject-scheduler-2026-04-17", "description": "Fix pyright strict-mode errors in tests/test_subject/; remove from pyright exclude.", "status": "merged"},
-    "763": {"branch": "repo-assist/improve-typing-exports-2026-04-18", "description": "Add Action/StartableFactory to reactivex.typing.__all__; add missing docstring to on_error_resume_next; resolve changes.md merge-conflict markers", "status": "merged"},
-    "765": {"branch": "repo-assist/fix-issue-712-retry-resubscription", "description": "Fix retry(n) generator per-subscription so retry(n).pipe(repeat()) works correctly. Closes #712.", "status": "merged"},
-    "778": {"branch": "repo-assist/pyright-ruff-cleanup-test-observable-scheduler-2026-04-21-6f569da2d139f64e", "description": "Fix all 153 ruff lint errors in tests/test_observable/; remove from ruff exclude list.", "status": "open"},
-    "779": {"branch": "repo-assist/pyright-cleanup-test-scheduler-2026-04-23", "description": "Fix pyright strict-mode errors in tests/test_scheduler/ (14 files); remove from pyright exclude.", "status": "merged"},
-    "780": {"branch": "repo-assist/pyright-cleanup-test-observable-2026-04-24-5ff1a58fa16f34b4", "description": "Fix pyright strict-mode errors in 16 files in tests/test_observable/ (batch 1 of ~6251 errors). Addresses files with <=5 errors each.", "status": "open"},
-    "TBD-uv-caching-2026-04-25": {"branch": "repo-assist/eng-uv-caching-2026-04-25", "description": "Add enable-cache: true to all astral-sh/setup-uv steps in python-package.yml CI workflow.", "status": "open"}
+    "753": {"branch": "repo-assist/testing-improvements-2026-04-17", "description": "Fix ruff issues in test_scheduler", "status": "merged"},
+    "755": {"branch": "repo-assist/testing-improvements-2026-04-17", "description": "Fix ruff issues in test_scheduler, remove from ruff exclude", "status": "merged"},
+    "756": {"branch": "repo-assist/fix-issue-697-timer-resubscription", "description": "Fix timer resubscription. Closes #697.", "status": "merged"},
+    "757": {"branch": "repo-assist/fix-issue-480-scheduler-forwarding", "description": "Forward scheduler in pairwise/to_marbles/delay_with_mapper.", "status": "merged"},
+    "762": {"branch": "repo-assist/pyright-cleanup-test-subject-scheduler-2026-04-17", "description": "Fix pyright errors in tests/test_subject/.", "status": "merged"},
+    "763": {"branch": "repo-assist/improve-typing-exports-2026-04-18", "description": "Add Action/StartableFactory to reactivex.typing.__all__.", "status": "merged"},
+    "765": {"branch": "repo-assist/fix-issue-712-retry-resubscription", "description": "Fix retry(n) per-subscription budget. Closes #712.", "status": "merged"},
+    "778": {"branch": "repo-assist/pyright-ruff-cleanup-test-observable-scheduler-2026-04-21", "description": "Fix all 153 ruff lint errors in tests/test_observable/.", "status": "merged"},
+    "779": {"branch": "repo-assist/pyright-cleanup-test-scheduler-2026-04-23", "description": "Fix pyright errors in tests/test_scheduler/; remove from pyright exclude.", "status": "merged"},
+    "780": {"branch": "repo-assist/pyright-cleanup-test-observable-2026-04-24", "description": "Fix pyright errors in 16 files in tests/test_observable/ (batch 1).", "status": "merged"},
+    "TBD-uv-caching-2026-04-25": {"branch": "repo-assist/eng-uv-caching-2026-04-25", "description": "Add enable-cache: true to all astral-sh/setup-uv steps in CI.", "status": "open"},
+    "TBD-pyright-batch2-2026-04-26": {"branch": "repo-assist/pyright-cleanup-test-observable-2026-04-26", "description": "Fix pyright errors in 30 files in tests/test_observable/ (batch 2). ~84 errors fixed.", "status": "open"}
   },
   "issues_labelled": {
     "480": ["bug", "operators", "schedulers"],
@@ -31,12 +32,14 @@
     "712": "closed via PR #765"
   },
   "notes": [
-    "tests/test_subject: merged #762 - removed from pyright exclude",
-    "tests/test_scheduler: PR #779 merged - removed test_scheduler from pyright exclude (keeps test_mainloop).",
-    "tests/test_observable: PR #778 open (ruff fixes). Pyright batch 1 PR #780 open (16 files, ~40 errors). ~6211 errors remain.",
-    "CI caching: PR (branch repo-assist/eng-uv-caching-2026-04-25) submitted 2026-04-25 - adds enable-cache to all setup-uv steps.",
-    "Issue labelling: all unlabelled issues blocked by integrity filter (24 issues). Requires min-integrity: approved in workflow config.",
-    "Next: continue pyright cleanup in tests/test_observable/ - batch 2 should tackle files with 6-20 errors each."
+    "tests/test_subject: merged #762 - removed from pyright exclude.",
+    "tests/test_scheduler: PR #779 merged - removed from pyright exclude.",
+    "tests/test_observable ruff: PR #778 merged - removed from ruff exclude.",
+    "tests/test_observable pyright batch 1: PR #780 merged (16 files, ~40 errors).",
+    "tests/test_observable pyright batch 2: PR (branch repo-assist/pyright-cleanup-test-observable-2026-04-26) submitted 2026-04-26 - 30 files, ~84 errors fixed. ~940 errors remain in larger files.",
+    "CI caching: PR (branch repo-assist/eng-uv-caching-2026-04-25) open - adds enable-cache to all setup-uv steps.",
+    "Issue labelling: all unlabelled issues blocked by integrity filter. Requires min-integrity: approved in workflow config.",
+    "Next: continue pyright cleanup in tests/test_observable/ - batch 3 should tackle files with 8-30 errors each."
   ],
   "issue_cursor": null,
   "backlog_cursor": null
