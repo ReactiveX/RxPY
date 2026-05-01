@@ -291,7 +291,7 @@ class TestMerge(unittest.TestCase):
         source_not_disposed = [False]
         o1 = scheduler.create_hot_observable(msgs1)
 
-        def action():
+        def action(_: object) -> None:
             source_not_disposed[0] = True
 
         o2 = scheduler.create_hot_observable(msgs2).pipe(ops.do_action(on_next=action))

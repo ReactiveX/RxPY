@@ -1,4 +1,5 @@
 import unittest
+from typing import NoReturn
 
 from reactivex import empty, never, throw
 from reactivex import operators as _
@@ -18,7 +19,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> NoReturn:
     raise RxException(ex)
 
 
