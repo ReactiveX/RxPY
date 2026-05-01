@@ -279,7 +279,9 @@ class TestMinBy(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.pipe(ops.min_by(lambda x: _raise(Exception(ex)), reverse_comparer))
+            return xs.pipe(
+                ops.min_by(lambda x: _raise(Exception(ex)), reverse_comparer)
+            )
 
         res = scheduler.start(create=create).messages
         assert res == [on_error(210, ex)]

@@ -1,6 +1,6 @@
 import unittest
-from typing import NoReturn
 from datetime import datetime, timezone
+from typing import NoReturn
 
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler

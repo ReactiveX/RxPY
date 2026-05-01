@@ -1,7 +1,7 @@
 import logging
 import unittest
-from typing import NoReturn
 from datetime import datetime, timezone
+from typing import NoReturn
 
 from reactivex.operators import delay
 from reactivex.testing import ReactiveTest, TestScheduler
