@@ -1,5 +1,5 @@
 ---
-last_commit_released: 2975deb528c9eec73c76cf8bb53fc8780f31de45
+last_commit_released: bee51e432c93d7901dfe956b3c4273799f59f515
 pre_release: rc
 name: reactivex
 updaters:
@@ -15,6 +15,14 @@ conventional-commit messages.
 
 PyPI uses PEP 440 (`5.0.0rc1`), while ShipIt records SemVer (`5.0.0-rc.1`) in
 this file; the release script normalizes between them.
+
+## 5.0.0-rc.2 - 2026-05-31
+
+### 🐞 Bug Fixes
+
+* *(operators)* Reset retry budget per subscription to fix retry+repeat (#765) ([c3f19d5e](https://github.com/ReactiveX/RxPY/commit/c3f19d5e83403f70d44331daf0b5a86d410f76d4))
+
+<strong><small>[View changes on Github](https://github.com/ReactiveX/RxPY/compare/2975deb528c9eec73c76cf8bb53fc8780f31de45..bee51e432c93d7901dfe956b3c4273799f59f515)</small></strong>
 
 ## 5.0.0-rc.1 - 2026-04-20
 

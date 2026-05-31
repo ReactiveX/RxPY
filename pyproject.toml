@@ -1,6 +1,6 @@
 [project]
 name = "reactivex"
-version = "5.0.0rc1"
+version = "5.0.0rc2"
 description = "ReactiveX (Rx) for Python"
 authors = [{ name = "Dag Brattli", email = "dag@brattli.net" }]
 requires-python = ">= 3.10, < 4.0"
