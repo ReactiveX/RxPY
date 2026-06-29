@@ -18,7 +18,7 @@ jobs:
     if: "!startsWith(github.event.head_commit.message, 'chore: release ')"
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -44,7 +44,7 @@ jobs:
     if: "startsWith(github.event.head_commit.message, 'chore: release ')"
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
