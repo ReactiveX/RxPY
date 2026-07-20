@@ -1,6 +1,6 @@
 ---
+force_version: 5.0.0
 last_commit_released: 915311e3e002b933f2eb4d59c9eac1cab327ff78
-pre_release: rc
 name: reactivex
 updaters:
   - command: ./scripts/shipit_bump_version.sh {version}
