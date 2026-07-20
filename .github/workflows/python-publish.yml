@@ -27,6 +27,11 @@ jobs:
         with:
           dotnet-version: '9.x'
 
+      # ShipIt's command updater (scripts/shipit_bump_version.sh) runs `uv lock`
+      # to keep uv.lock's recorded project version in step with pyproject.toml.
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
       - name: Restore .NET tools
         run: dotnet tool restore
 
