@@ -1,6 +1,5 @@
 ---
-force_version: 5.0.0
-last_commit_released: 915311e3e002b933f2eb4d59c9eac1cab327ff78
+last_commit_released: 10ccc0a3deba0d004a8f9b6079802ffdb73d1edd
 name: reactivex
 updaters:
   - command: ./scripts/shipit_bump_version.sh {version}
@@ -15,6 +14,14 @@ conventional-commit messages.
 
 PyPI uses PEP 440 (`5.0.0rc1`), while ShipIt records SemVer (`5.0.0-rc.1`) in
 this file; the release script normalizes between them.
+
+## 5.0.0 - 2026-07-20
+
+### 🐞 Bug Fixes
+
+* *(scripts)* Keep uv.lock in sync and scope the version sed to [project] (#802) ([10ccc0a3](https://github.com/ReactiveX/RxPY/commit/10ccc0a3deba0d004a8f9b6079802ffdb73d1edd))
+
+<strong><small>[View changes on Github](https://github.com/ReactiveX/RxPY/compare/915311e3e002b933f2eb4d59c9eac1cab327ff78..10ccc0a3deba0d004a8f9b6079802ffdb73d1edd)</small></strong>
 
 ## 5.0.0-rc.2 - 2026-07-20
 
