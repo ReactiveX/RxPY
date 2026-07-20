@@ -36,7 +36,7 @@ jobs:
         run: dotnet tool restore
 
       - name: Run ShipIt
-        run: dotnet shipit --pre-release rc --allow-branch master --skip-invalid-commit
+        run: dotnet shipit --allow-branch master --skip-invalid-commit
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
