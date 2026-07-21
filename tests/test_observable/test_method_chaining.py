@@ -19,10 +19,11 @@ This file now focuses on:
 1. Complex multi-operator chaining scenarios
 2. Mixed fluent and pipe style usage
 3. Cross-mixin integration tests
-"""
+"""  # noqa: E501
 
 import reactivex as rx
-from reactivex import Observable, operators as ops
+from reactivex import Observable
+from reactivex import operators as ops
 
 
 class TestComplexChaining:

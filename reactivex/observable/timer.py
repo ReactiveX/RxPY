@@ -35,14 +35,14 @@ def observable_timer_duetime_and_period(
         observer: abc.ObserverBase[int], scheduler_: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
-        nonlocal duetime
 
         if not isinstance(duetime, datetime):
-            duetime = _scheduler.now + _scheduler.to_timedelta(duetime)
+            dt: datetime = _scheduler.now + _scheduler.to_timedelta(duetime)
+        else:
+            dt = duetime
 
         p = max(0.0, _scheduler.to_seconds(period))
         mad = MultipleAssignmentDisposable()
-        dt = duetime
         count = 0
 
         def action(scheduler: abc.SchedulerBase, state: Any) -> None:

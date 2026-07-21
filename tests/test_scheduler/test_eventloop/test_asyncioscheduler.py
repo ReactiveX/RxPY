@@ -1,11 +1,12 @@
 import asyncio
 import os
-from typing import Any
 import unittest
 from datetime import datetime, timedelta, timezone
+from typing import Any
 
 import pytest
 
+from reactivex import abc
 from reactivex.scheduler.eventloop import AsyncIOScheduler
 
 CI = os.getenv("CI") is not None
@@ -49,7 +50,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
                 scheduler = AsyncIOScheduler(loop)
                 ran = False
 
-                def action(scheduler: AsyncIOScheduler, state: Any):
+                def action(scheduler: abc.SchedulerBase, state: Any):
                     nonlocal ran
                     ran = True
 

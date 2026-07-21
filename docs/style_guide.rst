@@ -10,7 +10,7 @@ you understand the differences and choose the right style for your project.
 Both Styles Are First-Class Citizens
 -------------------------------------
 
-Starting with RxPY v4.x, both fluent and functional styles are fully supported,
+Starting with RxPY v5.x, both fluent and functional styles are fully supported,
 type-safe, and equally performant. There is **no performance difference** between
 the two styles - fluent methods internally delegate to the pipe operators.
 
@@ -212,7 +212,7 @@ Both styles are fully type-safe with ``pyright`` strict mode:
     source: Observable[int] = rx.of(1, 2, 3)
     result: Observable[str] = source.pipe(ops.map(lambda x: str(x)))
 
-All 149 operators have complete type annotations in both styles.
+All 150+ operators have complete type annotations in both styles.
 
 Migration from RxPY v4.x
 -------------------------
@@ -312,14 +312,14 @@ there is no additional overhead. The choice is purely stylistic.
 Conclusion
 ----------
 
-RxPY v4.x gives you the freedom to choose the syntax that works best for your
+RxPY v5.x gives you the freedom to choose the syntax that works best for your
 project. Both fluent and functional styles are:
 
 * ✅ Fully supported and maintained
 * ✅ Type-safe with complete annotations
 * ✅ Equally performant (zero overhead)
 * ✅ Well-documented with examples
-* ✅ Compatible with all 149+ operators
+* ✅ Compatible with all 150+ operators
 
 Choose the style that makes your code most readable and maintainable for your
 team. When in doubt, start with the fluent style - it's more Pythonic and easier
@@ -329,5 +329,5 @@ For more information, see:
 
 * :doc:`get_started` - Introduction to RxPY
 * :doc:`operators` - Complete operator reference
-* :doc:`migration` - Migrating from RxPY v3.x or RxJS
+* :doc:`migration` - Migrating from RxPY v3.x or v4.x
 * :doc:`reference_operators` - API reference with both styles

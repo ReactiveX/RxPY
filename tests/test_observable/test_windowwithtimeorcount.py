@@ -31,7 +31,7 @@ class TestWindowWithTime(unittest.TestCase):
         def create():
             def projection(w, i):
                 def inner_proj(x):
-                    return "%s %s" % (i, x)
+                    return f"{i} {x}"
 
                 return w.pipe(ops.map(inner_proj))
 
@@ -75,7 +75,7 @@ class TestWindowWithTime(unittest.TestCase):
         def create():
             def projection(w, i):
                 def inner_proj(x):
-                    return "%s %s" % (i, x)
+                    return f"{i} {x}"
 
                 return w.pipe(ops.map(inner_proj))
 
@@ -119,7 +119,7 @@ class TestWindowWithTime(unittest.TestCase):
         def create():
             def projection(w, i):
                 def inner_proj(x):
-                    return "%s %s" % (i, x)
+                    return f"{i} {x}"
 
                 return w.pipe(ops.map(inner_proj))
 

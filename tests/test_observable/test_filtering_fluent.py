@@ -4,10 +4,9 @@ This module tests the filtering operators fluent syntax from FilteringMixin,
 ensuring they produce identical results to the pipe-based functional syntax.
 """
 
-from typing import Callable
-
 import reactivex as rx
-from reactivex import Observable, operators as ops
+from reactivex import Observable
+from reactivex import operators as ops
 
 
 class TestFilterMethodChaining:
@@ -16,7 +15,9 @@ class TestFilterMethodChaining:
     def test_filter_equivalence(self) -> None:
         """Verify fluent and functional styles are equivalent."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5, 6)
-        predicate: Callable[[int], bool] = lambda x: x % 2 == 0
+
+        def predicate(x: int) -> bool:
+            return x % 2 == 0
 
         # Fluent style
         fluent_result: Observable[int] = source.filter(predicate)
@@ -138,7 +139,9 @@ class TestFirstMethodChaining:
     def test_first_with_predicate(self) -> None:
         """Test first with a predicate."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
-        predicate: Callable[[int], bool] = lambda x: x > 3
+
+        def predicate(x: int) -> bool:
+            return x > 3
 
         result: Observable[int] = source.first(predicate)
 
@@ -173,7 +176,9 @@ class TestLastMethodChaining:
     def test_last_with_predicate(self) -> None:
         """Test last with a predicate."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
-        predicate: Callable[[int], bool] = lambda x: x < 4
+
+        def predicate(x: int) -> bool:
+            return x < 4
 
         result: Observable[int] = source.last(predicate)
 
@@ -728,8 +733,8 @@ class TestSingleOrDefaultAsyncMethodChaining:
         """Verify single_or_default_async with single element."""
         source: Observable[int] = rx.of(42)
 
-        fluent_result: Observable[int] = source.single_or_default_async()
-        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())
+        fluent_result: Observable[int] = source.single_or_default_async()  # type: ignore[assignment]
+        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())  # type: ignore[assignment]
 
         fluent_values: list[int] = []
         pipe_values: list[int] = []
@@ -762,8 +767,8 @@ class TestSingleOrDefaultAsyncMethodChaining:
         """Verify single_or_default_async errors when empty without default."""
         source: Observable[int] = rx.empty()
 
-        fluent_result: Observable[int] = source.single_or_default_async()
-        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())
+        fluent_result: Observable[int] = source.single_or_default_async()  # type: ignore[assignment]
+        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())  # type: ignore[assignment]
 
         fluent_errors: list[Exception] = []
         pipe_errors: list[Exception] = []
@@ -778,8 +783,8 @@ class TestSingleOrDefaultAsyncMethodChaining:
         """Verify single_or_default_async errors with multiple elements."""
         source: Observable[int] = rx.of(1, 2, 3)
 
-        fluent_result: Observable[int] = source.single_or_default_async()
-        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())
+        fluent_result: Observable[int] = source.single_or_default_async()  # type: ignore[assignment]
+        pipe_result: Observable[int] = source.pipe(ops.single_or_default_async())  # type: ignore[assignment]
 
         fluent_errors: list[Exception] = []
         pipe_errors: list[Exception] = []
@@ -792,7 +797,7 @@ class TestSingleOrDefaultAsyncMethodChaining:
         assert "more than one element" in str(pipe_errors[0]).lower()
 
     def test_single_or_default_async_equivalence(self) -> None:
-        """Verify single_or_default_async fluent and functional styles are equivalent."""
+        """Verify single_or_default_async fluent and functional styles are equivalent."""  # noqa: E501
         source: Observable[int] = rx.of(5)
 
         fluent_result: Observable[int] = source.single_or_default_async(

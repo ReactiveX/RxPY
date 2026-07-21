@@ -1,6 +1,7 @@
 import unittest
 
 from reactivex import operators as ops
+from reactivex.notification import OnError
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -54,8 +55,9 @@ class TestElementAt(unittest.TestCase):
 
         self.assertEqual(1, len(results.messages))
         self.assertEqual(600, results.messages[0].time)
-        self.assertEqual("E", results.messages[0].value.kind)
-        assert results.messages[0].value.exception
+        value = results.messages[0].value
+        assert isinstance(value, OnError)
+        assert value.exception
 
     def test_elementat_error(self):
         ex = "ex"

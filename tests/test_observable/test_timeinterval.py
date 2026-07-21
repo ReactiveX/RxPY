@@ -14,7 +14,7 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class TimeInterval(object):
+class TimeInterval:
     def __init__(self, value, interval):
         if isinstance(interval, timedelta):
             interval = int(
@@ -25,7 +25,7 @@ class TimeInterval(object):
         self.interval = interval
 
     def __str__(self):
-        return "%s@%s" % (self.value, self.interval)
+        return f"{self.value}@{self.interval}"
 
     def equals(self, other):
         return other.interval == self.interval and other.value == self.value
@@ -100,8 +100,8 @@ class TestTimeInterval(unittest.TestCase):
             ops.pluck_attr("interval"),
         )
 
-        l = []
-        d = xs.subscribe(l.append)
+        items = []
+        xs.subscribe(items.append)
         time.sleep(0.1)
-        self.assertEqual(len(l), 2)
-        [self.assertIsInstance(el, datetime.timedelta) for el in l]
+        self.assertEqual(len(items), 2)
+        [self.assertIsInstance(el, datetime.timedelta) for el in items]

@@ -108,7 +108,7 @@ Output:
 Operators and Chaining
 --------------------------
 
-You can also derive new Observables using over 130 operators available in RxPY.
+You can also derive new Observables using over 150 operators available in RxPY.
 Each operator will yield a new :class:`Observable <reactivex.Observable>` that
 transforms emissions from the source in some way. For example, we can
 :func:`map() <reactivex.operators.map>` each `String` to its length, then

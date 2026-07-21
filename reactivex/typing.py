@@ -49,6 +49,7 @@ __all__ = [
     "Accumulator",
     "AbsoluteTime",
     "AbsoluteOrRelativeTime",
+    "Action",
     "Comparer",
     "Mapper",
     "MapperIndexed",
@@ -63,6 +64,7 @@ __all__ = [
     "ScheduledSingleOrPeriodicAction",
     "ScheduledAction",
     "Startable",
+    "StartableFactory",
     "StartableTarget",
     "Subscription",
 ]

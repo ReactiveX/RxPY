@@ -1,6 +1,6 @@
 [project]
 name = "reactivex"
-version = "0.0.0"
+version = "5.0.0"
 description = "ReactiveX (Rx) for Python"
 authors = [{ name = "Dag Brattli", email = "dag@brattli.net" }]
 requires-python = ">= 3.10, < 4.0"
@@ -31,16 +31,15 @@ Documentation = "https://rxpy.readthedocs.io/en/latest/"
 [dependency-groups]
 test = [
     "pyyaml>=6.0.3,<7",
-    "pytest-asyncio>=1.2.0,<1.3.0",
-    "pytest>=8.4.1,<9",
-    "coverage>=6.3.2,<7",
+    "pytest-asyncio>=1.2.0,<1.4.0",
+    "pytest>=8.4.1,<10",
+    "coverage>=6.3.2,<8",
     "pytest-xdist>=3.8.0,<4",
     "ruff>=0.14.0,<1",
     "pyright>=1.1.407,<1.2.0",
-    "mypy>=1.18.2,<1.19.0",
+    "mypy>=1.18.2,<1.21.0",
     "coveralls>=4.0.2,<5",
     "pre-commit>=4.3.0,<5",
-    "dunamai>=1.25.0,<2",
 ]
 
 [tool.uv]
@@ -74,11 +73,6 @@ exclude = [
     "dist",
     "notebooks",
     "examples",
-    # Test directories - remove as each stage is completed
-    # Stage 1 complete, Stage 2 partial (test_integration complete)
-    "tests/test_subject",
-    "tests/test_scheduler",
-    "tests/test_observable",
 ]
 
 [tool.ruff.lint]
@@ -110,8 +104,8 @@ asyncio_mode = "strict"
 [tool.pyright]
 include = ["reactivex", "tests"]
 exclude = [
-    # Stage 1 complete, Stage 2 partial (test_integration complete)
-    "tests/test_subject",
+    # Stage 1 complete, Stage 2 complete (test_subject done)
+    # test_scheduler and test_observable still have strict-mode pyright errors
     "tests/test_scheduler",
     "tests/test_observable",
 ]

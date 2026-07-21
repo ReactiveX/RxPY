@@ -45,6 +45,9 @@ def group_by_until_(
 
     Args:
         key_mapper: A function to extract the key for each element.
+        element_mapper: [Optional] A function to map each source element to
+            the element emitted in the group. If None, elements are forwarded
+            as-is.
         duration_mapper: A function to signal the expiration of a group.
         subject_mapper: A function that returns a subject used to initiate
             a grouped observable. Default mapper returns a Subject object.

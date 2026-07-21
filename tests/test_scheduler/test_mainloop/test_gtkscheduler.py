@@ -11,7 +11,7 @@ from reactivex.scheduler.mainloop import GtkScheduler
 
 gi = pytest.importorskip("gi")
 gi.require_version("Gtk", "3.0")
-from gi.repository import GLib, Gtk  # isort: skip
+from gi.repository import GLib, Gtk  # noqa: E402, I001  # type: ignore[import-untyped]
 
 
 # Removing GNOME_DESKTOP_SESSION_ID from environment

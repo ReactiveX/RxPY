@@ -18,7 +18,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> None:
     raise RxException(ex)
 
 
@@ -472,7 +472,7 @@ class TestCombineLatest(unittest.TestCase):
         ]
 
     def test_combine_latest_mapper_throws(self):
-        ex = "ex"
+        ex = Exception("ex")
         scheduler = TestScheduler()
         msgs1 = [on_next(150, 1), on_next(215, 2), on_completed(230)]
         msgs2 = [on_next(150, 1), on_next(220, 3), on_completed(240)]
