@@ -13,7 +13,6 @@
 
 import os
 import sys
-from distutils.command.config import config
 
 import guzzle_sphinx_theme
 import tomli
@@ -29,13 +28,15 @@ sys.path.insert(0, root)
 with open(os.path.join(root, "pyproject.toml"), "rb") as f:
     config = tomli.load(f)
 
-project_meta = config["tool"]["poetry"]
+# Metadata lives in the PEP 621 [project] table (the project migrated off
+# Poetry). authors is a list of {name, email} tables and the homepage moved
+# under [project.urls].
+project_meta = config["project"]
 
-print(project_meta)
 project = project_meta["name"]
-author = project_meta["authors"][0]
+author = project_meta["authors"][0]["name"]
 description = project_meta["description"]
-url = project_meta["homepage"]
+url = project_meta["urls"]["Homepage"]
 title = project + " Documentation"
 
 _version = Version.from_git()
