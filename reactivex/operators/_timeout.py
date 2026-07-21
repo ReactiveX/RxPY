@@ -1,4 +1,3 @@
-from asyncio import Future
 from datetime import datetime
 from typing import Any, TypeVar, Union
 
@@ -8,7 +7,7 @@ from reactivex.disposable import (
     SerialDisposable,
     SingleAssignmentDisposable,
 )
-from reactivex.internal import curry_flip
+from reactivex.internal import curry_flip, is_future
 from reactivex.scheduler import TimeoutScheduler
 
 _T = TypeVar("_T")
@@ -18,7 +17,7 @@ _T = TypeVar("_T")
 def timeout_(
     source: Observable[_T],
     duetime: typing.AbsoluteOrRelativeTime,
-    other: Union[Observable[_T], "Future[_T]"] | None = None,
+    other: Union[Observable[_T], "typing.AnyFuture[_T]"] | None = None,
     scheduler: abc.SchedulerBase | None = None,
 ) -> Observable[_T]:
     """Returns the source observable sequence or the other observable
@@ -39,7 +38,7 @@ def timeout_(
         case of a timeout.
     """
     other = other or throw(Exception("Timeout"))
-    if isinstance(other, Future):
+    if is_future(other):
         obs = from_future(other)
     else:
         obs = other

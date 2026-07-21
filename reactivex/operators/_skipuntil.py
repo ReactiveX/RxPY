@@ -1,9 +1,9 @@
-from asyncio import Future
 from typing import Any, TypeVar, Union
 
 from reactivex import Observable, abc, from_future
 from reactivex.disposable import CompositeDisposable, SingleAssignmentDisposable
-from reactivex.internal import curry_flip
+from reactivex.internal import curry_flip, is_future
+from reactivex.typing import AnyFuture
 
 _T = TypeVar("_T")
 
@@ -11,7 +11,7 @@ _T = TypeVar("_T")
 @curry_flip
 def skip_until_(
     source: Observable[_T],
-    other: Union[Observable[Any], "Future[Any]"],
+    other: Union[Observable[Any], "AnyFuture[Any]"],
 ) -> Observable[_T]:
     """Returns the values from the source observable sequence only after
     the other observable sequence produces a value.
@@ -31,7 +31,7 @@ def skip_until_(
         propagation.
     """
 
-    if isinstance(other, Future):
+    if is_future(other):
         obs: Observable[Any] = from_future(other)
     else:
         obs = other

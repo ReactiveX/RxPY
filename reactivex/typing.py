@@ -1,3 +1,5 @@
+import asyncio
+import concurrent.futures
 from collections.abc import Callable
 from threading import Thread
 from typing import TypeAlias, TypeVar
@@ -44,12 +46,22 @@ SubComparer = TypeAliasType(
 Accumulator = TypeAliasType(
     "Accumulator", Callable[[_TState, _T1], _TState], type_params=(_TState, _T1)
 )
+AnyFuture = TypeAliasType(
+    "AnyFuture",
+    asyncio.Future[_T1] | concurrent.futures.Future[_T1],
+    type_params=(_T1,),
+)
+"""Any future-like object, i.e. either an :class:`asyncio.Future` or a
+:class:`concurrent.futures.Future`. Both provide the ``add_done_callback``,
+``result`` and ``cancel`` methods that RxPY needs in order to lift a future
+into an :class:`Observable`."""
 
 __all__ = [
     "Accumulator",
     "AbsoluteTime",
     "AbsoluteOrRelativeTime",
     "Action",
+    "AnyFuture",
     "Comparer",
     "Mapper",
     "MapperIndexed",

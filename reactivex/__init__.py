@@ -1,6 +1,5 @@
 # pylint: disable=too-many-lines,redefined-outer-name,redefined-builtin
 
-from asyncio import Future
 from collections.abc import Callable, Iterable, Mapping
 from typing import (
     Any,
@@ -64,7 +63,7 @@ def amb(*sources: Observable[_T]) -> Observable[_T]:
 def case(
     mapper: Callable[[], _TKey],
     sources: Mapping[_TKey, Observable[_T]],
-    default_source: Observable[_T] | Future[_T] | None = None,
+    default_source: Observable[_T] | typing.AnyFuture[_T] | None = None,
 ) -> Observable[_T]:
     """Uses mapper to determine which source in sources to use.
 
@@ -282,7 +281,9 @@ def concat_with_iterable(sources: Iterable[Observable[_T]]) -> Observable[_T]:
 
 
 def defer(
-    factory: Callable[[abc.SchedulerBase], Union[Observable[_T], "Future[_T]"]],
+    factory: Callable[
+        [abc.SchedulerBase], Union[Observable[_T], "typing.AnyFuture[_T]"]
+    ],
 ) -> Observable[_T]:
     """Returns an observable sequence that invokes the specified
     factory function whenever a new observer subscribes.
@@ -489,7 +490,7 @@ def from_callback(
     return from_callback_(func, mapper)
 
 
-def from_future(future: "Future[_T]") -> Observable[_T]:
+def from_future(future: "typing.AnyFuture[_T]") -> Observable[_T]:
     """Converts a Future to an Observable sequence
 
     .. marble::
@@ -771,8 +772,8 @@ def hot(
 
 def if_then(
     condition: Callable[[], bool],
-    then_source: Union[Observable[_T], "Future[_T]"],
-    else_source: Union[None, Observable[_T], "Future[_T]"] = None,
+    then_source: Union[Observable[_T], "typing.AnyFuture[_T]"],
+    else_source: Union[None, Observable[_T], "typing.AnyFuture[_T]"] = None,
 ) -> Observable[_T]:
     """Determines whether an observable collection contains values.
 
@@ -910,7 +911,9 @@ def of(*args: _T) -> Observable[_T]:
 
 def on_error_resume_next(
     *sources: Union[
-        Observable[_T], "Future[_T]", Callable[[Exception | None], Observable[_T]]
+        Observable[_T],
+        "typing.AnyFuture[_T]",
+        Callable[[Exception | None], Observable[_T]],
     ],
 ) -> Observable[_T]:
     """Continues an observable sequence that is terminated normally or
@@ -1077,7 +1080,7 @@ def start(
     return start_(func, scheduler)
 
 
-def start_async(function_async: Callable[[], "Future[_T]"]) -> Observable[_T]:
+def start_async(function_async: Callable[[], "typing.AnyFuture[_T]"]) -> Observable[_T]:
     """Invokes the asynchronous function, surfacing the result through
     an observable sequence.
 

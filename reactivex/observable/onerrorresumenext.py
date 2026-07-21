@@ -1,4 +1,3 @@
-from asyncio import Future
 from collections.abc import Callable
 from typing import TypeVar, Union
 
@@ -9,14 +8,16 @@ from reactivex.disposable import (
     SerialDisposable,
     SingleAssignmentDisposable,
 )
+from reactivex.internal import is_future
 from reactivex.scheduler import CurrentThreadScheduler
+from reactivex.typing import AnyFuture
 
 _T = TypeVar("_T")
 
 
 def on_error_resume_next_(
     *sources: Union[
-        Observable[_T], "Future[_T]", Callable[[Exception | None], Observable[_T]]
+        Observable[_T], "AnyFuture[_T]", Callable[[Exception | None], Observable[_T]]
     ],
 ) -> Observable[_T]:
     """Continues an observable sequence that is terminated normally or
@@ -51,9 +52,7 @@ def on_error_resume_next_(
 
             # Allow source to be a factory method taking an error
             source = source(state) if callable(source) else source
-            current = (
-                reactivex.from_future(source) if isinstance(source, Future) else source
-            )
+            current = reactivex.from_future(source) if is_future(source) else source
 
             d = SingleAssignmentDisposable()
             subscription.disposable = d
