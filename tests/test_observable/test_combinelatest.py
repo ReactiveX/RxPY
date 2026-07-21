@@ -488,6 +488,25 @@ class TestCombineLatest(unittest.TestCase):
         results = scheduler.start(create)
         assert results.messages == [on_error(220, ex)]
 
+    def test_combine_latest_no_sources_raises(self) -> None:
+        with self.assertRaises(ValueError):
+            reactivex.combine_latest()
+
+    def test_combine_latest_single_source(self) -> None:
+        scheduler = TestScheduler()
+        msgs = [on_next(150, 1), on_next(215, 2), on_next(225, 4), on_completed(230)]
+        e1 = scheduler.create_hot_observable(msgs)
+
+        def create() -> reactivex.Observable[int]:
+            return reactivex.combine_latest(e1).pipe(ops.map(sum))
+
+        results = scheduler.start(create)
+        assert results.messages == [
+            on_next(215, 2),
+            on_next(225, 4),
+            on_completed(230),
+        ]
+
 
 if __name__ == "__main__":
     unittest.main()
