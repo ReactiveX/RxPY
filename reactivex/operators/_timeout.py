@@ -9,9 +9,11 @@ from reactivex.disposable import (
     SingleAssignmentDisposable,
 )
 from reactivex.internal import curry_flip
-from reactivex.scheduler import TimeoutScheduler
+from reactivex.scheduler import EventLoopScheduler
 
 _T = TypeVar("_T")
+
+_default_timeout_scheduler = EventLoopScheduler()
 
 
 @curry_flip
@@ -48,7 +50,7 @@ def timeout_(
         observer: abc.ObserverBase[_T],
         scheduler_: abc.SchedulerBase | None = None,
     ) -> abc.DisposableBase:
-        _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
+        _scheduler = scheduler or scheduler_ or _default_timeout_scheduler
 
         switched = [False]
         _id = [0]
