@@ -1,7 +1,7 @@
 # pylint: disable=too-many-lines,redefined-builtin,import-outside-toplevel
 
 
-from asyncio import Future
+import asyncio
 from collections.abc import Callable, Iterable
 from typing import (
     TYPE_CHECKING,
@@ -74,7 +74,9 @@ def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]
     return all_(predicate)
 
 
-def amb(right_source: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
+def amb(
+    right_source: Union[Observable[_T], "typing.AnyFuture[_T]"],
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Propagates the observable sequence that reacts first.
 
     .. marble::
@@ -1265,6 +1267,18 @@ def flat_map(
 ) -> Callable[[Observable[_T1]], Observable[_T2]]: ...
 
 
+@overload
+def flat_map(
+    mapper: "typing.AnyFuture[_T2] | None" = None,
+) -> Callable[[Observable[Any]], Observable[_T2]]: ...
+
+
+@overload
+def flat_map(
+    mapper: Mapper[_T1, "typing.AnyFuture[_T2]"] | None = None,
+) -> Callable[[Observable[_T1]], Observable[_T2]]: ...
+
+
 def flat_map(
     mapper: Any | None = None,
 ) -> Callable[[Observable[Any]], Observable[Any]]:
@@ -1379,7 +1393,7 @@ def flat_map_indexed(
 
 
 def flat_map_latest(
-    mapper: Mapper[_T1, Union[Observable[_T2], "Future[_T2]"]],
+    mapper: Mapper[_T1, Union[Observable[_T2], "typing.AnyFuture[_T2]"]],
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     """Projects each element of an observable sequence into a new
     sequence of observable sequences by incorporating the element's
@@ -1914,7 +1928,9 @@ def merge(
     return merge_(*sources, max_concurrent=max_concurrent)
 
 
-def merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
+def merge_all() -> Callable[
+    [Observable[Union[Observable[_T], "typing.AnyFuture[_T]"]]], Observable[_T]
+]:
     """The merge_all operator.
 
     Merges an observable sequence of observable sequences into an
@@ -2830,7 +2846,7 @@ def skip_last_with_time(
 
 
 def skip_until(
-    other: Union[Observable[Any], "Future[Any]"],
+    other: Union[Observable[Any], "typing.AnyFuture[Any]"],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the values from the source observable sequence only
     after the other observable sequence produces a value.
@@ -3259,7 +3275,7 @@ def sum(
 
 
 def switch_latest() -> Callable[
-    [Observable[Union[Observable[_T], "Future[_T]"]]], Observable[_T]
+    [Observable[Union[Observable[_T], "typing.AnyFuture[_T]"]]], Observable[_T]
 ]:
     """The switch_latest operator.
 
@@ -3499,7 +3515,9 @@ def take_last_with_time(
     return take_last_with_time_(duration, scheduler=scheduler)
 
 
-def take_until(other: Observable[Any]) -> Callable[[Observable[_T]], Observable[_T]]:
+def take_until(
+    other: Union[Observable[Any], "typing.AnyFuture[Any]"],
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the values from the source observable sequence until the
     other observable sequence produces a value.
 
@@ -3780,7 +3798,7 @@ def timestamp(
 
 def timeout(
     duetime: typing.AbsoluteOrRelativeTime,
-    other: Observable[_T] | None = None,
+    other: Union[Observable[_T], "typing.AnyFuture[_T]"] | None = None,
     scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the source observable sequence or the other observable
@@ -3909,8 +3927,8 @@ def to_dict(
 
 
 def to_future(
-    future_ctor: Callable[[], "Future[_T]"] | None = None,
-) -> Callable[[Observable[_T]], "Future[_T]"]:
+    future_ctor: Callable[[], "asyncio.Future[_T]"] | None = None,
+) -> Callable[[Observable[_T]], "asyncio.Future[_T]"]:
     """Converts an existing observable sequence to a Future.
 
     Example:

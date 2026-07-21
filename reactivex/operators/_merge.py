@@ -1,10 +1,9 @@
-from asyncio import Future
 from typing import TypeVar, Union
 
 import reactivex
 from reactivex import Observable, abc, from_future, typing
 from reactivex.disposable import CompositeDisposable, SingleAssignmentDisposable
-from reactivex.internal import curry_flip, synchronized
+from reactivex.internal import curry_flip, is_future, synchronized
 
 _T = TypeVar("_T")
 
@@ -92,7 +91,9 @@ def merge_(
 
 
 @curry_flip
-def merge_all_(source: Observable[Observable[_T]]) -> Observable[_T]:
+def merge_all_(
+    source: Observable[Union[Observable[_T], "typing.AnyFuture[_T]"]],
+) -> Observable[_T]:
     """Merges an observable sequence of observable sequences into an
     observable sequence.
 
@@ -117,14 +118,12 @@ def merge_all_(source: Observable[Observable[_T]]) -> Observable[_T]:
         m = SingleAssignmentDisposable()
         group.add(m)
 
-        def on_next(inner_source: Union[Observable[_T], "Future[_T]"]):
+        def on_next(inner_source: Union[Observable[_T], "typing.AnyFuture[_T]"]):
             inner_subscription = SingleAssignmentDisposable()
             group.add(inner_subscription)
 
             inner_source = (
-                from_future(inner_source)
-                if isinstance(inner_source, Future)
-                else inner_source
+                from_future(inner_source) if is_future(inner_source) else inner_source
             )
 
             @synchronized(source.lock)

@@ -1,17 +1,18 @@
-from asyncio import Future
 from collections.abc import Callable
 from typing import TypeVar, Union
 
 import reactivex
 from reactivex import Observable, abc
+from reactivex.internal import is_future
+from reactivex.typing import AnyFuture
 
 _T = TypeVar("_T")
 
 
 def if_then_(
     condition: Callable[[], bool],
-    then_source: Union[Observable[_T], "Future[_T]"],
-    else_source: Union[None, Observable[_T], "Future[_T]"] = None,
+    then_source: Union[Observable[_T], "AnyFuture[_T]"],
+    else_source: Union[None, Observable[_T], "AnyFuture[_T]"] = None,
 ) -> Observable[_T]:
     """Determines whether an observable collection contains values.
 
@@ -34,20 +35,16 @@ def if_then_(
         else_source.
     """
 
-    else_source_: Observable[_T] | Future[_T] = else_source or reactivex.empty()
+    else_source_: Observable[_T] | AnyFuture[_T] = else_source or reactivex.empty()
 
     then_source = (
-        reactivex.from_future(then_source)
-        if isinstance(then_source, Future)
-        else then_source
+        reactivex.from_future(then_source) if is_future(then_source) else then_source
     )
     else_source_ = (
-        reactivex.from_future(else_source_)
-        if isinstance(else_source_, Future)
-        else else_source_
+        reactivex.from_future(else_source_) if is_future(else_source_) else else_source_
     )
 
-    def factory(_: abc.SchedulerBase) -> Union[Observable[_T], "Future[_T]"]:
+    def factory(_: abc.SchedulerBase) -> Union[Observable[_T], "AnyFuture[_T]"]:
         return then_source if condition() else else_source_
 
     return reactivex.defer(factory)
