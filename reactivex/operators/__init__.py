@@ -3665,6 +3665,47 @@ def take_with_time(
     return take_with_time_(duration, scheduler=scheduler)
 
 
+def tap(
+    on_next: typing.OnNext[_T] | None = None,
+    on_error: typing.OnError | None = None,
+    on_completed: typing.OnCompleted | None = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    """Alias for :func:`do_action`.
+
+    Invokes an action for each element in the observable sequence and
+    invokes an action on graceful or exceptional termination of the
+    observable sequence. This method can be used for debugging,
+    logging, etc. of query behavior by intercepting the message stream
+    to run arbitrary actions for messages on the pipeline.
+
+    .. marble::
+        :alt: tap
+
+        ----1---2---3---4---|
+        [   tap(i: foo())   ]
+        ----1---2---3---4---|
+
+    Examples:
+        >>> tap(send)
+        >>> tap(on_next, on_error)
+        >>> tap(on_next, on_error, on_completed)
+
+    Args:
+        on_next: [Optional] Action to invoke for each element in the
+            observable sequence.
+        on_error: [Optional] Action to invoke on exceptional
+            termination of the observable sequence.
+        on_completed: [Optional] Action to invoke on graceful
+            termination of the observable sequence.
+
+    Returns:
+        An operator function that takes the source observable an
+        returns the source sequence with the side-effecting behavior
+        applied.
+    """
+    return do_action(on_next, on_error, on_completed)
+
+
 def throttle_first(
     window_duration: typing.RelativeTime, scheduler: abc.SchedulerBase | None = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -4322,6 +4363,7 @@ __all__ = [
     "take_while",
     "take_while_indexed",
     "take_with_time",
+    "tap",
     "throttle_first",
     "throttle_with_mapper",
     "timestamp",
