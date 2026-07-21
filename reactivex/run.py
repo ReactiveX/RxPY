@@ -1,38 +1,42 @@
 import threading
-from typing import Optional, TypeVar, cast
+from typing import TypeVar, cast
 
+from reactivex import abc
 from reactivex.internal.exceptions import SequenceContainsNoElementsError
 from reactivex.scheduler import NewThreadScheduler
 
 from .observable import Observable
 
-scheduler = NewThreadScheduler()
+_default_scheduler = NewThreadScheduler()
 
 _T = TypeVar("_T")
 
 
-def run(source: Observable[_T]) -> _T:
+def run(source: Observable[_T], scheduler: abc.SchedulerBase | None = None) -> _T:
     """Run source synchronously.
 
     Subscribes to the observable source. Then blocks and waits for the
     observable source to either complete or error. Returns the
-    last value emitted, or throws exception if any error occured.
+    last value emitted, or throws exception if any error occurred.
 
     Examples:
         >>> result = run(source)
 
     Args:
         source: Observable source to run.
+        scheduler: Optional scheduler to use for subscription. If not
+            specified, defaults to a NewThreadScheduler.
 
     Raises:
         SequenceContainsNoElementsError: if observable completes
             (on_completed) without any values being emitted.
-        Exception: raises exception if any error (on_error) occured.
+        Exception: raises exception if any error (on_error) occurred.
 
     Returns:
         The last element emitted from the observable.
     """
-    exception: Optional[Exception] = None
+    scheduler = scheduler or _default_scheduler
+    exception: Exception | None = None
     latch = threading.Event()
     has_result = False
     result: _T = cast(_T, None)

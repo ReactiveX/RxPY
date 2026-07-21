@@ -1,16 +1,16 @@
-from typing import Any, Optional, Union
+from typing import Any
 
 from reactivex import Observable, abc
 from reactivex.scheduler import ImmediateScheduler
 
 
 def throw_(
-    exception: Union[str, Exception], scheduler: Optional[abc.SchedulerBase] = None
+    exception: str | Exception, scheduler: abc.SchedulerBase | None = None
 ) -> Observable[Any]:
     exception_ = exception if isinstance(exception, Exception) else Exception(exception)
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         _scheduler = scheduler or ImmediateScheduler.singleton()
 

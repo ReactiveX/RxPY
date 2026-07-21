@@ -1,4 +1,4 @@
-from typing import Any, Optional, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from reactivex import abc, typing
 from reactivex.disposable import (
@@ -36,10 +36,9 @@ class GtkScheduler(PeriodicScheduler):
         self,
         time: typing.AbsoluteOrRelativeTime,
         action: typing.ScheduledSingleOrPeriodicAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
         periodic: bool = False,
     ) -> abc.DisposableBase:
-
         msecs = max(0, int(self.to_seconds(time) * 1000.0))
 
         sad = SingleAssignmentDisposable()
@@ -69,7 +68,7 @@ class GtkScheduler(PeriodicScheduler):
         return CompositeDisposable(sad, Disposable(dispose))
 
     def schedule(
-        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: typing.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -87,7 +86,7 @@ class GtkScheduler(PeriodicScheduler):
         self,
         duetime: typing.RelativeTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -106,7 +105,7 @@ class GtkScheduler(PeriodicScheduler):
         self,
         duetime: typing.AbsoluteTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
@@ -127,7 +126,7 @@ class GtkScheduler(PeriodicScheduler):
         self,
         period: typing.RelativeTime,
         action: typing.ScheduledPeriodicAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules a periodic piece of work to be executed in the loop.
 

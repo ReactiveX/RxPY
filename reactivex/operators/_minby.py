@@ -1,4 +1,5 @@
-from typing import Callable, List, Optional, TypeVar, cast
+from collections.abc import Callable
+from typing import TypeVar, cast
 
 from reactivex import Observable, abc, typing
 from reactivex.internal.basic import default_sub_comparer
@@ -11,14 +12,14 @@ def extrema_by(
     source: Observable[_T],
     key_mapper: typing.Mapper[_T, _TKey],
     comparer: typing.SubComparer[_TKey],
-) -> Observable[List[_T]]:
+) -> Observable[list[_T]]:
     def subscribe(
-        observer: abc.ObserverBase[List[_T]],
-        scheduler: Optional[abc.SchedulerBase] = None,
+        observer: abc.ObserverBase[list[_T]],
+        scheduler: abc.SchedulerBase | None = None,
     ) -> abc.DisposableBase:
         has_value = False
         last_key: _TKey = cast(_TKey, None)
-        items: List[_T] = []
+        items: list[_T] = []
 
         def on_next(x: _T) -> None:
             nonlocal has_value, last_key
@@ -60,8 +61,8 @@ def extrema_by(
 
 def min_by_(
     key_mapper: typing.Mapper[_T, _TKey],
-    comparer: Optional[typing.SubComparer[_TKey]] = None,
-) -> Callable[[Observable[_T]], Observable[List[_T]]]:
+    comparer: typing.SubComparer[_TKey] | None = None,
+) -> Callable[[Observable[_T]], Observable[list[_T]]]:
     """The `min_by` operator.
 
     Returns the elements in an observable sequence with the minimum key
@@ -82,7 +83,7 @@ def min_by_(
 
     cmp = comparer or default_sub_comparer
 
-    def min_by(source: Observable[_T]) -> Observable[List[_T]]:
+    def min_by(source: Observable[_T]) -> Observable[list[_T]]:
         return extrema_by(source, key_mapper, lambda x, y: -cmp(x, y))
 
     return min_by

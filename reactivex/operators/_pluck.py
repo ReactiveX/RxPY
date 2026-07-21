@@ -1,4 +1,5 @@
-from typing import Any, Callable, Dict, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from reactivex import Observable
 from reactivex import operators as ops
@@ -9,7 +10,7 @@ _TValue = TypeVar("_TValue")
 
 def pluck_(
     key: _TKey,
-) -> Callable[[Observable[Dict[_TKey, _TValue]]], Observable[_TValue]]:
+) -> Callable[[Observable[dict[_TKey, _TValue]]], Observable[_TValue]]:
     """Retrieves the value of a specified key using dict-like access (as in
     element[key]) from all elements in the Observable sequence.
 
@@ -21,7 +22,7 @@ def pluck_(
     To pluck an attribute of each element, use pluck_attr.
     """
 
-    def mapper(x: Dict[_TKey, _TValue]) -> _TValue:
+    def mapper(x: dict[_TKey, _TValue]) -> _TValue:
         return x[key]
 
     return ops.map(mapper)

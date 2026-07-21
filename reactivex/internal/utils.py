@@ -1,12 +1,16 @@
+import asyncio
+import concurrent.futures
+from collections.abc import Callable, Iterable
 from functools import update_wrapper
 from types import FunctionType
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
-from typing_extensions import ParamSpec
+from typing_extensions import ParamSpec, TypeIs
 
 from reactivex import abc
 from reactivex.disposable import CompositeDisposable
 from reactivex.disposable.refcountdisposable import RefCountDisposable
+from reactivex.typing import AnyFuture
 
 if TYPE_CHECKING:
     from reactivex import Observable
@@ -19,11 +23,27 @@ def add_ref(xs: "Observable[_T]", r: RefCountDisposable) -> "Observable[_T]":
     from reactivex import Observable
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         return CompositeDisposable(r.disposable, xs.subscribe(observer))
 
     return Observable(subscribe)
+
+
+def is_future(value: Any) -> TypeIs[AnyFuture[Any]]:
+    """Tests if the given value is a future.
+
+    Both :class:`asyncio.Future` and :class:`concurrent.futures.Future`
+    are considered futures, as are objects that follow the asyncio future
+    protocol, e.g. :class:`asyncio.Task`.
+
+    Args:
+        value: The value to test.
+
+    Returns:
+        True if the value is a future, False otherwise.
+    """
+    return asyncio.isfuture(value) or isinstance(value, concurrent.futures.Future)
 
 
 def infinite() -> Iterable[int]:
@@ -58,4 +78,4 @@ class NotSet:
         return "NotSet"
 
 
-__all__ = ["add_ref", "infinite", "alias", "NotSet"]
+__all__ = ["add_ref", "infinite", "alias", "is_future", "NotSet"]

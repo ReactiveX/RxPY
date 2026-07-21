@@ -1,37 +1,111 @@
 name: Publish Package
 
 on:
-  release:
-    types: [created]
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
-  publish:
+  # On every push to master that is NOT a release commit, ask EasyBuild.ShipIt
+  # to open (or update) a "chore: release X.Y.Z" PR that bumps the version in
+  # CHANGELOG.md, pyproject.toml, and reactivex/_version.py.
+  shipit-pr:
+    name: ShipIt - Pull Request
     runs-on: ubuntu-latest
-    name: "Publish library"
+    if: "!startsWith(github.event.head_commit.message, 'chore: release ')"
+    timeout-minutes: 10
     steps:
-      - name: Check out
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
-          token: "${{ secrets.GITHUB_TOKEN }}"
           fetch-depth: 0
 
-      - name: Setup Python Env
-        uses: actions/setup-python@v5
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '9.x'
+
+      # ShipIt's command updater (scripts/shipit_bump_version.sh) runs `uv lock`
+      # to keep uv.lock's recorded project version in step with pyproject.toml.
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Restore .NET tools
+        run: dotnet tool restore
+
+      - name: Run ShipIt
+        run: dotnet shipit --allow-branch master --skip-invalid-commit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # When the "chore: release X.Y.Z" PR has been merged, publish to PyPI. The
+  # version in pyproject.toml has already been written by ShipIt's command
+  # updater (scripts/shipit_bump_version.sh), so we just build and publish.
+  release:
+    name: Release to PyPI
+    runs-on: ubuntu-latest
+    if: "startsWith(github.event.head_commit.message, 'chore: release ')"
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
-        run: pip install poetry dunamai
-
-      - name: Set version
-        run: |
-          RX_VERSION=$(dunamai from any --no-metadata --style pep440)
-          poetry version $RX_VERSION
-          echo "__version__ = \"$RX_VERSION\"" > reactivex/_version.py
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
 
       - name: Build package
-        run: poetry build
+        run: uv build
 
-      - name: Release to PyPI
+      # Fail loudly on real publish errors (bad token, network, rejected
+      # metadata); only a genuine "already exists" is treated as success so
+      # that re-running the job on an already-published version is a no-op.
+      - name: Publish to PyPI
         run: |
-          poetry publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} || echo 'Version exists'
+          set -o pipefail
+          if uv publish --token "${{ secrets.PYPI_API_TOKEN }}" 2>&1 | tee publish.log; then
+            echo "Published to PyPI."
+          elif grep -qiE 'already exist' publish.log; then
+            echo "Version already present on PyPI; nothing to publish."
+          else
+            echo "::error::uv publish failed"
+            exit 1
+          fi
+
+      - name: Read released version
+        id: version
+        run: |
+          VERSION=$(grep -m1 '^version = ' pyproject.toml | sed -E 's/^version = "(.*)"/\1/')
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not read version from pyproject.toml"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      # ShipIt does not tag releases, so do it here once the publish succeeded.
+      - name: Tag and create GitHub release
+        run: |
+          TAG="v${{ steps.version.outputs.version }}"
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "Tag $TAG already exists; skipping."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "$TAG"
+          # PEP 440 pre-releases (5.0.0rc1, 5.1.0b2, ...) are marked as such.
+          PRERELEASE=""
+          if echo "${{ steps.version.outputs.version }}" | grep -qE '(a|b|rc)[0-9]+$'; then
+            PRERELEASE="--prerelease"
+          fi
+          gh release create "$TAG" --title "$TAG" $PRERELEASE \
+            --notes "See [CHANGELOG.md](https://github.com/ReactiveX/RxPY/blob/master/CHANGELOG.md) for details."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

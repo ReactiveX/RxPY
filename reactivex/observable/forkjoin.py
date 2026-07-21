@@ -1,10 +1,10 @@
-from typing import Any, List, Optional, Tuple, cast
+from typing import Any, cast
 
 from reactivex import Observable, abc
 from reactivex.disposable import CompositeDisposable, SingleAssignmentDisposable
 
 
-def fork_join_(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
+def fork_join_(*sources: Observable[Any]) -> Observable[tuple[Any, ...]]:
     """Wait for observables to complete and then combine last values
     they emitted into a tuple. Whenever any of that observables completes
     without emitting any value, result sequence will complete at that moment as well.
@@ -20,8 +20,8 @@ def fork_join_(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
     parent = sources[0]
 
     def subscribe(
-        observer: abc.ObserverBase[Tuple[Any, ...]],
-        scheduler: Optional[abc.SchedulerBase] = None,
+        observer: abc.ObserverBase[tuple[Any, ...]],
+        scheduler: abc.SchedulerBase | None = None,
     ) -> abc.DisposableBase:
         n = len(sources)
         values = [None] * n
@@ -42,7 +42,7 @@ def fork_join_(*sources: Observable[Any]) -> Observable[Tuple[Any, ...]]:
                 else:
                     observer.on_completed()
 
-        subscriptions: List[SingleAssignmentDisposable] = [
+        subscriptions: list[SingleAssignmentDisposable] = [
             cast(SingleAssignmentDisposable, None)
         ] * n
 

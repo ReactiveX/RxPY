@@ -1,4 +1,4 @@
-from typing import Optional, TypeVar
+from typing import TypeVar
 
 from reactivex.disposable import SingleAssignmentDisposable
 from reactivex.internal import default_error, noop
@@ -11,9 +11,9 @@ _T_in = TypeVar("_T_in", contravariant=True)
 class AutoDetachObserver(abc.ObserverBase[_T_in]):
     def __init__(
         self,
-        on_next: Optional[typing.OnNext[_T_in]] = None,
-        on_error: Optional[typing.OnError] = None,
-        on_completed: Optional[typing.OnCompleted] = None,
+        on_next: typing.OnNext[_T_in] | None = None,
+        on_error: typing.OnError | None = None,
+        on_completed: typing.OnCompleted | None = None,
     ) -> None:
         self._on_next = on_next or noop
         self._on_error = on_error or default_error

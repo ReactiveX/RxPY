@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar, cast
+from collections.abc import Callable
+from typing import TypeVar, cast
 
 from reactivex import Observable, abc, compose
 from reactivex import operators as ops
@@ -9,12 +10,12 @@ _T = TypeVar("_T")
 
 
 def first_or_default_async_(
-    has_default: bool = False, default_value: Optional[_T] = None
+    has_default: bool = False, default_value: _T | None = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     def first_or_default_async(source: Observable[_T]) -> Observable[_T]:
         def subscribe(
             observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ):
             def on_next(x: _T):
                 observer.on_next(x)
@@ -37,7 +38,7 @@ def first_or_default_async_(
 
 
 def first_or_default_(
-    predicate: Optional[Predicate[_T]] = None, default_value: Optional[_T] = None
+    predicate: Predicate[_T] | None = None, default_value: _T | None = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the first element of an observable sequence that
     satisfies the condition in the predicate, or a default value if no

@@ -39,7 +39,6 @@ scheduler = GEventScheduler(gevent)
 
 @app.route("/ws")
 def handle_websocket():
-
     wsock = request.environ.get("wsgi.websocket")
     if not wsock:
         abort(400, "Expected WebSocket request.")

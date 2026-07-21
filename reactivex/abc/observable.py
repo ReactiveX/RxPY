@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Generic, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import Generic, TypeVar
+
+from typing_extensions import TypeAliasType
 
 from .disposable import DisposableBase
 from .observer import ObserverBase, OnCompleted, OnError, OnNext
@@ -18,11 +21,11 @@ class ObservableBase(Generic[_T_out], ABC):
     @abstractmethod
     def subscribe(
         self,
-        on_next: Optional[Union[OnNext[_T_out], ObserverBase[_T_out]]] = None,
-        on_error: Optional[OnError] = None,
-        on_completed: Optional[OnCompleted] = None,
+        on_next: OnNext[_T_out] | ObserverBase[_T_out] | None = None,
+        on_error: OnError | None = None,
+        on_completed: OnCompleted | None = None,
         *,
-        scheduler: Optional[SchedulerBase] = None,
+        scheduler: SchedulerBase | None = None,
     ) -> DisposableBase:
         """Subscribe an observer to the observable sequence.
 
@@ -40,6 +43,10 @@ class ObservableBase(Generic[_T_out], ABC):
         raise NotImplementedError
 
 
-Subscription = Callable[[ObserverBase[_T_out], Optional[SchedulerBase]], DisposableBase]
+Subscription = TypeAliasType(
+    "Subscription",
+    Callable[[ObserverBase[_T_out], SchedulerBase | None], DisposableBase],
+    type_params=(_T_out,),
+)
 
 __all__ = ["ObservableBase", "Subscription"]

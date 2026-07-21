@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from reactivex import abc
 from reactivex.disposable import SingleAssignmentDisposable
@@ -7,16 +7,16 @@ from reactivex.disposable import SingleAssignmentDisposable
 from .scheduler import Scheduler
 
 
-class ScheduledItem(object):
+class ScheduledItem:
     def __init__(
         self,
         scheduler: Scheduler,
-        state: Optional[Any],
+        state: Any | None,
         action: abc.ScheduledAction[Any],
         duetime: datetime,
     ) -> None:
         self.scheduler: Scheduler = scheduler
-        self.state: Optional[Any] = state
+        self.state: Any | None = state
         self.action: abc.ScheduledAction[Any] = action
         self.duetime: datetime = duetime
         self.disposable: SingleAssignmentDisposable = SingleAssignmentDisposable()

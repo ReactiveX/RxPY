@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from functools import reduce
-from typing import Any, Callable, TypeVar, overload
+from typing import Any, TypeVar, overload
 
 _A = TypeVar("_A")
 _B = TypeVar("_B")

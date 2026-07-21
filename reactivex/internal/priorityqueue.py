@@ -1,6 +1,6 @@
 import heapq
 from sys import maxsize
-from typing import Generic, List, Tuple, TypeVar
+from typing import Generic, TypeVar
 
 _T1 = TypeVar("_T1")
 
@@ -11,7 +11,7 @@ class PriorityQueue(Generic[_T1]):
     MIN_COUNT = ~maxsize
 
     def __init__(self) -> None:
-        self.items: List[Tuple[_T1, int]] = []
+        self.items: list[tuple[_T1, int]] = []
         self.count = PriorityQueue.MIN_COUNT  # Monotonic increasing for sort stability
 
     def __len__(self) -> int:

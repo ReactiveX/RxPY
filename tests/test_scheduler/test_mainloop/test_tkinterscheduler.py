@@ -1,4 +1,5 @@
 import os
+import sys
 import unittest
 from datetime import timedelta
 from time import sleep
@@ -7,6 +8,14 @@ import pytest
 
 from reactivex.internal.basic import default_now
 from reactivex.scheduler.mainloop import TkinterScheduler
+
+# Skip entire module on PyPy due to Tkinter interpreter/finalizer issues.
+# On macOS: "Tcl_AsyncDelete: async handler deleted by the wrong thread".
+# On Linux: PyPy's _tkinter app __del__ calls threading.notify_all during
+# interpreter shutdown, which aborts the xdist worker and fails whichever
+# test it was running.
+if hasattr(sys, "pypy_version_info"):
+    pytest.skip("Tkinter tests are incompatible with PyPy", allow_module_level=True)
 
 tkinter = pytest.importorskip("tkinter")
 

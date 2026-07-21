@@ -1,22 +1,25 @@
 from .basic import default_comparer, default_error, noop
 from .concurrency import default_thread_factory, synchronized
 from .constants import DELTA_ZERO, UTC_ZERO
+from .curry import curry_flip
 from .exceptions import (
     ArgumentOutOfRangeException,
     DisposedException,
     SequenceContainsNoElementsError,
 )
 from .priorityqueue import PriorityQueue
-from .utils import NotSet, add_ref, alias, infinite
+from .utils import NotSet, add_ref, alias, infinite, is_future
 
 __all__ = [
     "add_ref",
     "alias",
     "ArgumentOutOfRangeException",
+    "curry_flip",
     "DisposedException",
     "default_comparer",
     "default_error",
     "infinite",
+    "is_future",
     "noop",
     "NotSet",
     "SequenceContainsNoElementsError",

@@ -1,7 +1,8 @@
 import re
 import threading
+from collections.abc import Mapping
 from datetime import datetime, timedelta
-from typing import Any, List, Mapping, Optional, Tuple, Union
+from typing import Any
 
 from reactivex import Notification, Observable, abc, notification, typing
 from reactivex.disposable import CompositeDisposable, Disposable
@@ -34,9 +35,9 @@ def hot(
     string: str,
     timespan: typing.RelativeTime = 0.1,
     duetime: typing.AbsoluteOrRelativeTime = 0.0,
-    lookup: Optional[Mapping[Union[str, float], Any]] = None,
-    error: Optional[Exception] = None,
-    scheduler: Optional[abc.SchedulerBase] = None,
+    lookup: Mapping[str | float, Any] | None = None,
+    error: Exception | None = None,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Observable[Any]:
     _scheduler = scheduler or new_thread_scheduler
 
@@ -54,10 +55,10 @@ def hot(
 
     lock = threading.RLock()
     is_stopped = False
-    observers: List[abc.ObserverBase[Any]] = []
+    observers: list[abc.ObserverBase[Any]] = []
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         # should a hot observable already completed or on error
         # re-push on_completed/on_error at subscription time?
@@ -100,22 +101,22 @@ def hot(
 def from_marbles(
     string: str,
     timespan: typing.RelativeTime = 0.1,
-    lookup: Optional[Mapping[Union[str, float], Any]] = None,
-    error: Optional[Exception] = None,
-    scheduler: Optional[abc.SchedulerBase] = None,
+    lookup: Mapping[str | float, Any] | None = None,
+    error: Exception | None = None,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Observable[Any]:
     messages = parse(
         string, timespan=timespan, lookup=lookup, error=error, raise_stopped=True
     )
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler_: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler_: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or new_thread_scheduler
         disp = CompositeDisposable()
 
         def schedule_msg(
-            message: Tuple[typing.RelativeTime, Notification[Any]]
+            message: tuple[typing.RelativeTime, Notification[Any]],
         ) -> None:
             duetime, notification = message
 
@@ -137,10 +138,10 @@ def parse(
     string: str,
     timespan: typing.RelativeTime = 1.0,
     time_shift: typing.RelativeTime = 0.0,
-    lookup: Optional[Mapping[Union[str, float], Any]] = None,
-    error: Optional[Exception] = None,
+    lookup: Mapping[str | float, Any] | None = None,
+    error: Exception | None = None,
     raise_stopped: bool = False,
-) -> List[Tuple[typing.RelativeTime, notification.Notification[Any]]]:
+) -> list[tuple[typing.RelativeTime, notification.Notification[Any]]]:
     """Convert a marble diagram string to a list of messages.
 
     Each character in the string will advance time by timespan
@@ -209,7 +210,7 @@ def parse(
     string = string.replace(" ", "")
 
     # try to cast a string to an int, then to a float
-    def try_number(element: str) -> Union[float, str]:
+    def try_number(element: str) -> float | str:
         try:
             return int(element)
         except ValueError:
@@ -220,7 +221,7 @@ def parse(
 
     def map_element(
         time: typing.RelativeTime, element: str
-    ) -> Tuple[typing.RelativeTime, Notification[Any]]:
+    ) -> tuple[typing.RelativeTime, Notification[Any]]:
         if element == "|":
             return (time, notification.OnCompleted())
         elif element == "#":
@@ -242,7 +243,7 @@ def parse(
                 is_stopped = True
 
     iframe = 0
-    messages: List[Tuple[typing.RelativeTime, Notification[Any]]] = []
+    messages: list[tuple[typing.RelativeTime, Notification[Any]]] = []
 
     for results in tokens.findall(string):
         timestamp = iframe * timespan + time_shift

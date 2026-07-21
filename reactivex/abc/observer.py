@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Generic, TypeVar
+from collections.abc import Callable
+from typing import Generic, TypeVar
 
 _T = TypeVar("_T")
 _T_in = TypeVar("_T_in", contravariant=True)

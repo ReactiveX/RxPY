@@ -1,74 +1,95 @@
-from typing import Callable, Optional, Tuple, TypeVar
+from typing import TypeVar
 
-from reactivex import Observable, abc, compose
+from reactivex import Observable, abc, typing
 from reactivex import operators as ops
-from reactivex import typing
+from reactivex.internal import curry_flip
 
 _T = TypeVar("_T")
 
 
+@curry_flip
 def skip_while_(
+    source: Observable[_T],
     predicate: typing.Predicate[_T],
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    def skip_while(source: Observable[_T]) -> Observable[_T]:
-        """Bypasses elements in an observable sequence as long as a
-        specified condition is true and then returns the remaining
-        elements. The element's index is used in the logic of the
-        predicate function.
+) -> Observable[_T]:
+    """Bypasses elements in an observable sequence as long as a
+    specified condition is true and then returns the remaining
+    elements.
 
-        Example:
-            >>> skip_while(source)
+    Examples:
+        >>> res = source.pipe(skip_while(lambda x: x < 3))
+        >>> res = skip_while(lambda x: x < 3)(source)
 
-        Args:
-            source: The source observable to skip elements from.
+    Args:
+        source: The source observable to skip elements from.
+        predicate: A function to test each element for a condition.
 
-        Returns:
-            An observable sequence that contains the elements from the
-            input sequence starting at the first element in the linear
-            series that does not pass the test specified by predicate.
-        """
+    Returns:
+        An observable sequence that contains the elements from the
+        input sequence starting at the first element in the linear
+        series that does not pass the test specified by predicate.
+    """
 
-        def subscribe(
-            observer: abc.ObserverBase[_T],
-            scheduler: Optional[abc.SchedulerBase] = None,
-        ):
-            running = False
+    def subscribe(
+        observer: abc.ObserverBase[_T],
+        scheduler: abc.SchedulerBase | None = None,
+    ):
+        running = False
 
-            def on_next(value: _T):
-                nonlocal running
+        def on_next(value: _T):
+            nonlocal running
 
-                if not running:
-                    try:
-                        running = not predicate(value)
-                    except Exception as exn:
-                        observer.on_error(exn)
-                        return
+            if not running:
+                try:
+                    running = not predicate(value)
+                except Exception as exn:
+                    observer.on_error(exn)
+                    return
 
-                if running:
-                    observer.on_next(value)
+            if running:
+                observer.on_next(value)
 
-            return source.subscribe(
-                on_next, observer.on_error, observer.on_completed, scheduler=scheduler
-            )
+        return source.subscribe(
+            on_next, observer.on_error, observer.on_completed, scheduler=scheduler
+        )
 
-        return Observable(subscribe)
-
-    return skip_while
+    return Observable(subscribe)
 
 
+@curry_flip
 def skip_while_indexed_(
+    source: Observable[_T],
     predicate: typing.PredicateIndexed[_T],
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    def indexer(x: _T, i: int) -> Tuple[_T, int]:
+) -> Observable[_T]:
+    """Bypasses elements in an observable sequence as long as a
+    specified condition is true and then returns the remaining
+    elements. The element's index is used in the logic of the
+    predicate function.
+
+    Examples:
+        >>> res = source.pipe(skip_while_indexed(lambda x, i: i < 3))
+        >>> res = skip_while_indexed(lambda x, i: i < 3)(source)
+
+    Args:
+        source: The source observable to skip elements from.
+        predicate: A function to test each element and its index for a condition.
+
+    Returns:
+        An observable sequence that contains the elements from the
+        input sequence starting at the first element that does not
+        pass the test specified by predicate.
+    """
+
+    def indexer(x: _T, i: int) -> tuple[_T, int]:
         return (x, i)
 
-    def skipper(x: Tuple[_T, int]) -> bool:
+    def skipper(x: tuple[_T, int]) -> bool:
         return predicate(*x)
 
-    def mapper(x: Tuple[_T, int]) -> _T:
+    def mapper(x: tuple[_T, int]) -> _T:
         return x[0]
 
-    return compose(
+    return source.pipe(
         ops.map_indexed(indexer),
         ops.skip_while(skipper),
         ops.map(mapper),

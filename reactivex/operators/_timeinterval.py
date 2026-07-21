@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Callable, Generic, Optional, TypeVar
+from typing import Generic, TypeVar
 
 from reactivex import Observable, abc
 from reactivex import operators as ops
+from reactivex.internal import curry_flip
 from reactivex.scheduler import TimeoutScheduler
 
 _T = TypeVar("_T")
@@ -15,39 +16,42 @@ class TimeInterval(Generic[_T]):
     interval: timedelta
 
 
+@curry_flip
 def time_interval_(
-    scheduler: Optional[abc.SchedulerBase] = None,
-) -> Callable[[Observable[_T]], Observable[TimeInterval[_T]]]:
-    def time_interval(source: Observable[_T]) -> Observable[TimeInterval[_T]]:
-        """Records the time interval between consecutive values in an
-        observable sequence.
+    source: Observable[_T],
+    scheduler: abc.SchedulerBase | None = None,
+) -> Observable[TimeInterval[_T]]:
+    """Records the time interval between consecutive values in an
+    observable sequence.
 
-            >>> res = time_interval(source)
+    Examples:
+        >>> res = source.pipe(time_interval())
+        >>> res = time_interval()(source)
 
-        Return:
-            An observable sequence with time interval information on
-            values.
-        """
+    Args:
+        source: The source observable sequence.
+        scheduler: Scheduler to use for timing.
 
-        def subscribe(
-            observer: abc.ObserverBase[TimeInterval[_T]],
-            scheduler_: Optional[abc.SchedulerBase] = None,
-        ) -> abc.DisposableBase:
-            _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
-            last = _scheduler.now
+    Returns:
+        An observable sequence with time interval information on
+        values.
+    """
 
-            def mapper(value: _T) -> TimeInterval[_T]:
-                nonlocal last
+    def subscribe(
+        observer: abc.ObserverBase[TimeInterval[_T]],
+        scheduler_: abc.SchedulerBase | None = None,
+    ) -> abc.DisposableBase:
+        _scheduler = scheduler or scheduler_ or TimeoutScheduler.singleton()
+        last = _scheduler.now
 
-                now = _scheduler.now
-                span = now - last
-                last = now
-                return TimeInterval(value=value, interval=span)
+        def mapper(value: _T) -> TimeInterval[_T]:
+            nonlocal last
 
-            return source.pipe(ops.map(mapper)).subscribe(
-                observer, scheduler=_scheduler
-            )
+            now = _scheduler.now
+            span = now - last
+            last = now
+            return TimeInterval(value=value, interval=span)
 
-        return Observable(subscribe)
+        return source.pipe(ops.map(mapper)).subscribe(observer, scheduler=_scheduler)
 
-    return time_interval
+    return Observable(subscribe)

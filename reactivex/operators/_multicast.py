@@ -1,4 +1,5 @@
-from typing import Callable, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import ConnectableObservable, Observable, abc
 from reactivex import operators as ops
@@ -9,14 +10,13 @@ _TResult = TypeVar("_TResult")
 
 
 def multicast_(
-    subject: Optional[abc.SubjectBase[_TSource]] = None,
+    subject: abc.SubjectBase[_TSource] | None = None,
     *,
-    subject_factory: Optional[
-        Callable[[Optional[abc.SchedulerBase]], abc.SubjectBase[_TSource]]
-    ] = None,
-    mapper: Optional[Callable[[Observable[_TSource]], Observable[_TResult]]] = None,
+    subject_factory: Callable[[abc.SchedulerBase | None], abc.SubjectBase[_TSource]]
+    | None = None,
+    mapper: Callable[[Observable[_TSource]], Observable[_TResult]] | None = None,
 ) -> Callable[
-    [Observable[_TSource]], Union[Observable[_TResult], ConnectableObservable[_TSource]]
+    [Observable[_TSource]], Observable[_TResult] | ConnectableObservable[_TSource]
 ]:
     """Multicasts the source sequence notifications through an
     instantiated subject into all uses of the sequence within a mapper
@@ -50,12 +50,12 @@ def multicast_(
 
     def multicast(
         source: Observable[_TSource],
-    ) -> Union[Observable[_TResult], ConnectableObservable[_TSource]]:
+    ) -> Observable[_TResult] | ConnectableObservable[_TSource]:
         if subject_factory:
 
             def subscribe(
                 observer: abc.ObserverBase[_TResult],
-                scheduler: Optional[abc.SchedulerBase] = None,
+                scheduler: abc.SchedulerBase | None = None,
             ) -> abc.DisposableBase:
                 assert subject_factory
                 connectable = source.pipe(

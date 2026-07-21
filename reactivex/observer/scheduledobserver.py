@@ -1,5 +1,5 @@
 import threading
-from typing import Any, List, TypeVar
+from typing import Any, TypeVar
 
 from reactivex import abc, typing
 from reactivex.disposable import SerialDisposable
@@ -21,7 +21,7 @@ class ScheduledObserver(Observer[_T_in]):
         self.lock = threading.RLock()
         self.is_acquired = False
         self.has_faulted = False
-        self.queue: List[typing.Action] = []
+        self.queue: list[typing.Action] = []
         self.disposable = SerialDisposable()
 
         # Note to self: list append is thread safe

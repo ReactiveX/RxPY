@@ -1,4 +1,4 @@
-from typing import Optional, TypeVar, cast
+from typing import TypeVar, cast
 
 from .. import abc
 from ..disposable import Disposable
@@ -25,7 +25,7 @@ class AsyncSubject(Subject[_T]):
     def _subscribe_core(
         self,
         observer: abc.ObserverBase[_T],
-        scheduler: Optional[abc.SchedulerBase] = None,
+        scheduler: abc.SchedulerBase | None = None,
     ) -> abc.DisposableBase:
         with self.lock:
             self.check_disposed()

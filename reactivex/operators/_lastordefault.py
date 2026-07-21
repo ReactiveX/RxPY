@@ -1,8 +1,8 @@
-from typing import Any, Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
-from reactivex import Observable, abc
+from reactivex import Observable, abc, typing
 from reactivex import operators as ops
-from reactivex import typing
 from reactivex.internal.exceptions import SequenceContainsNoElementsError
 
 _T = TypeVar("_T")
@@ -11,11 +11,11 @@ _T = TypeVar("_T")
 def last_or_default_async(
     source: Observable[_T],
     has_default: bool = False,
-    default_value: Optional[_T] = None,
-) -> Observable[Optional[_T]]:
+    default_value: _T | None = None,
+) -> Observable[_T | None]:
     def subscribe(
-        observer: abc.ObserverBase[Optional[_T]],
-        scheduler: Optional[abc.SchedulerBase] = None,
+        observer: abc.ObserverBase[_T | None],
+        scheduler: abc.SchedulerBase | None = None,
     ):
         value = [default_value]
         seen_value = [False]
@@ -39,7 +39,7 @@ def last_or_default_async(
 
 
 def last_or_default(
-    default_value: Optional[_T] = None, predicate: Optional[typing.Predicate[_T]] = None
+    default_value: _T | None = None, predicate: typing.Predicate[_T] | None = None
 ) -> Callable[[Observable[_T]], Observable[Any]]:
     def last_or_default(source: Observable[Any]) -> Observable[Any]:
         """Return last or default element.

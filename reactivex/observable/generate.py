@@ -1,4 +1,4 @@
-from typing import Any, Optional, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from reactivex import Observable, abc, typing
 from reactivex.disposable import MultipleAssignmentDisposable
@@ -14,7 +14,7 @@ def generate_(
 ) -> Observable[_TState]:
     def subscribe(
         observer: abc.ObserverBase[_TState],
-        scheduler: Optional[abc.SchedulerBase] = None,
+        scheduler: abc.SchedulerBase | None = None,
     ) -> abc.DisposableBase:
         scheduler = scheduler or CurrentThreadScheduler.singleton()
         first = True

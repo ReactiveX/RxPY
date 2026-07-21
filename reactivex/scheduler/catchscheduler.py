@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from datetime import datetime
-from typing import Callable, Optional, TypeVar, cast
+from typing import TypeVar, cast
 
 from reactivex import abc, typing
 from reactivex.abc.scheduler import SchedulerBase
@@ -28,8 +29,8 @@ class CatchScheduler(PeriodicScheduler):
         super().__init__()
         self._scheduler: abc.SchedulerBase = scheduler
         self._handler: Callable[[Exception], bool] = handler
-        self._recursive_original: Optional[abc.SchedulerBase] = None
-        self._recursive_wrapper: Optional["CatchScheduler"] = None
+        self._recursive_original: abc.SchedulerBase | None = None
+        self._recursive_wrapper: CatchScheduler | None = None
 
     @property
     def now(self) -> datetime:
@@ -44,7 +45,7 @@ class CatchScheduler(PeriodicScheduler):
         return self._scheduler.now
 
     def schedule(
-        self, action: typing.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: typing.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -64,7 +65,7 @@ class CatchScheduler(PeriodicScheduler):
         self,
         duetime: typing.RelativeTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -85,7 +86,7 @@ class CatchScheduler(PeriodicScheduler):
         self,
         duetime: typing.AbsoluteTime,
         action: typing.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
@@ -106,7 +107,7 @@ class CatchScheduler(PeriodicScheduler):
         self,
         period: typing.RelativeTime,
         action: typing.ScheduledPeriodicAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules a periodic piece of work.
 
@@ -129,7 +130,7 @@ class CatchScheduler(PeriodicScheduler):
         disp: SingleAssignmentDisposable = SingleAssignmentDisposable()
         failed: bool = False
 
-        def periodic(state: Optional[_TState] = None) -> Optional[_TState]:
+        def periodic(state: _TState | None = None) -> _TState | None:
             nonlocal failed
             if failed:
                 return None
@@ -155,8 +156,8 @@ class CatchScheduler(PeriodicScheduler):
         parent = self
 
         def wrapped_action(
-            self: abc.SchedulerBase, state: Optional[_TState]
-        ) -> Optional[abc.DisposableBase]:
+            self: abc.SchedulerBase, state: _TState | None
+        ) -> abc.DisposableBase | None:
             try:
                 return action(parent._get_recursive_wrapper(self), state)
             except Exception as ex:

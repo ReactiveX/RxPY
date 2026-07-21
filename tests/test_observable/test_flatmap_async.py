@@ -9,7 +9,7 @@ from reactivex.subject import Subject
 class TestFlatMapAsync(unittest.TestCase):
     def test_flat_map_async(self):
         actual_next = None
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         scheduler = AsyncIOScheduler(loop=loop)
 
         def mapper(i: int):
@@ -22,7 +22,7 @@ class TestFlatMapAsync(unittest.TestCase):
             nonlocal actual_next
             actual_next = i
 
-        def on_error(ex):
+        def on_error(ex: Exception) -> None:
             print("Error", ex)
 
         async def test_flat_map():

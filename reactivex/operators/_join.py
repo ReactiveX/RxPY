@@ -1,5 +1,6 @@
 from collections import OrderedDict
-from typing import Any, Callable, Optional, Tuple, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from reactivex import Observable, abc
 from reactivex.disposable import CompositeDisposable, SingleAssignmentDisposable
@@ -14,8 +15,8 @@ def join_(
     right: Observable[_T2],
     left_duration_mapper: Callable[[Any], Observable[Any]],
     right_duration_mapper: Callable[[Any], Observable[Any]],
-) -> Callable[[Observable[_T1]], Observable[Tuple[_T1, _T2]]]:
-    def join(source: Observable[_T1]) -> Observable[Tuple[_T1, _T2]]:
+) -> Callable[[Observable[_T1]], Observable[tuple[_T1, _T2]]]:
+    def join(source: Observable[_T1]) -> Observable[tuple[_T1, _T2]]:
         """Correlates the elements of two sequences based on
         overlapping durations.
 
@@ -31,8 +32,8 @@ def join_(
         left = source
 
         def subscribe(
-            observer: abc.ObserverBase[Tuple[_T1, _T2]],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            observer: abc.ObserverBase[tuple[_T1, _T2]],
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             group = CompositeDisposable()
             left_done = False

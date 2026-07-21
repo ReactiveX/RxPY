@@ -1,4 +1,5 @@
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 from reactivex import Observable, abc, typing
 from reactivex.disposable import Disposable
@@ -6,8 +7,8 @@ from reactivex.disposable import Disposable
 
 def from_callback_(
     func: Callable[..., Callable[..., None]],
-    mapper: Optional[typing.Mapper[Any, Any]] = None,
-) -> Callable[[], Observable[Any]]:
+    mapper: typing.Mapper[Any, Any] | None = None,
+) -> Callable[..., Observable[Any]]:
     """Converts a callback function to an observable sequence.
 
     Args:
@@ -27,7 +28,7 @@ def from_callback_(
 
         def subscribe(
             observer: abc.ObserverBase[Any],
-            scheduler: Optional[abc.SchedulerBase] = None,
+            scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
             def handler(*args: Any) -> None:
                 results = list(args)

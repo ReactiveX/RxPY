@@ -1,18 +1,19 @@
 import asyncio
-from asyncio import Future
-from typing import Any, Optional, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from reactivex import Observable, abc
 from reactivex.disposable import Disposable
+from reactivex.typing import AnyFuture
 
 _T = TypeVar("_T")
 
 
-def from_future_(future: "Future[_T]") -> Observable[_T]:
+def from_future_(future: "AnyFuture[_T]") -> Observable[_T]:
     """Converts a Future to an Observable sequence
 
     Args:
-        future -- A Python 3 compatible future.
+        future -- A future, either an :class:`asyncio.Future` or a
+            :class:`concurrent.futures.Future`.
             https://docs.python.org/3/library/asyncio-task.html#future
 
     Returns:
@@ -21,9 +22,9 @@ def from_future_(future: "Future[_T]") -> Observable[_T]:
     """
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
-        def done(future: "Future[_T]") -> None:
+        def done(future: "AnyFuture[_T]") -> None:
             try:
                 value: Any = future.result()
             except Exception as ex:

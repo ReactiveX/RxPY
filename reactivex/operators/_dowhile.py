@@ -1,4 +1,5 @@
-from typing import Callable, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from reactivex import Observable
 from reactivex import operators as ops
@@ -7,7 +8,7 @@ _T = TypeVar("_T")
 
 
 def do_while_(
-    condition: Callable[[Observable[_T]], bool]
+    condition: Callable[[Observable[_T]], bool],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Repeats source as long as condition holds emulating a do while
     loop.

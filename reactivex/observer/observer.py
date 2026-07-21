@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Optional, TypeVar
+from collections.abc import Callable
+from typing import TYPE_CHECKING, TypeVar
 
 from reactivex import abc
 from reactivex.internal.basic import default_error, noop
@@ -24,9 +25,9 @@ class Observer(abc.ObserverBase[_T_in], abc.DisposableBase):
 
     def __init__(
         self,
-        on_next: Optional[OnNext[_T_in]] = None,
-        on_error: Optional[OnError] = None,
-        on_completed: Optional[OnCompleted] = None,
+        on_next: OnNext[_T_in] | None = None,
+        on_error: OnError | None = None,
+        on_completed: OnCompleted | None = None,
     ) -> None:
         self.is_stopped = False
         self._handler_on_next: OnNext[_T_in] = on_next or noop

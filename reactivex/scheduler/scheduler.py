@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from datetime import datetime, timedelta, timezone
-from typing import Optional, TypeVar
+from typing import TypeVar
 
 from reactivex import abc, typing
 from reactivex.disposable import Disposable
@@ -30,7 +30,7 @@ class Scheduler(abc.SchedulerBase):
 
     @abstractmethod
     def schedule(
-        self, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: abc.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Schedules an action to be executed.
 
@@ -50,7 +50,7 @@ class Scheduler(abc.SchedulerBase):
         self,
         duetime: typing.RelativeTime,
         action: abc.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed after duetime.
 
@@ -71,7 +71,7 @@ class Scheduler(abc.SchedulerBase):
         self,
         duetime: typing.AbsoluteTime,
         action: abc.ScheduledAction[_TState],
-        state: Optional[_TState] = None,
+        state: _TState | None = None,
     ) -> abc.DisposableBase:
         """Schedules an action to be executed at duetime.
 
@@ -88,7 +88,7 @@ class Scheduler(abc.SchedulerBase):
         return NotImplemented
 
     def invoke_action(
-        self, action: abc.ScheduledAction[_TState], state: Optional[_TState] = None
+        self, action: abc.ScheduledAction[_TState], state: _TState | None = None
     ) -> abc.DisposableBase:
         """Invoke the given given action. This is typically called by instances
         of ScheduledItem.
