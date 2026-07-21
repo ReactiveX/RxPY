@@ -20,7 +20,7 @@ Fluent Style (Method Chaining)
 -------------------------------
 
 RxPY v5 brings back the intuitive method chaining syntax that many developers
-prefer. All ~160 operators are now available as methods on the Observable class:
+prefer. All 150+ operators are now available as methods on the Observable class:
 
 .. code:: python
 
@@ -130,7 +130,7 @@ IDE Support
 -----------
 
 The fluent style provides excellent IDE autocomplete support. When you type
-``source.`` your IDE will show all ~160 available operators with their
+``source.`` your IDE will show all 150+ available operators with their
 documentation and type signatures.
 
 No Breaking Changes
@@ -138,6 +138,22 @@ No Breaking Changes
 
 **All existing RxPY v4 code continues to work without modification.** The addition
 of method chaining is purely additive - no APIs were removed or changed.
+
+Tooling and Python Support
+--------------------------
+
+Beyond the new fluent API, v5 modernizes the project itself. None of these
+affect application code:
+
+- **Python support**: Python 3.8 and 3.9 were dropped; v5 supports Python 3.10
+  through 3.14.
+- **Project tooling**: the build backend moved from Poetry to `uv
+  <https://docs.astral.sh/uv/>`_, and Black plus isort were replaced by `Ruff
+  <https://docs.astral.sh/ruff/>`_ for formatting and linting.
+- **Operator fixes**: several operators had scheduler-forwarding and
+  resubscription bugs corrected (for example ``timer`` resetting its delay on
+  each resubscription, and ``pairwise`` / ``to_marbles`` / ``delay_with_mapper``
+  forwarding the ``scheduler`` argument). These are bug fixes, not API changes.
 
 Migration v4
 ============
@@ -155,7 +171,8 @@ current Python standards:
   new function ``pipe`` that works similar to the ``pipe`` method.
 - RxPY is now a modern Python project using ``pyproject.toml`` instead
   of ``setup.py``, and using modern tools such as Poetry, Black
-  formatter and isort.
+  formatter and isort. (As of v5 these have been replaced by uv and Ruff;
+  see `Tooling and Python Support`_ above.)
 
 .. code:: python
 
