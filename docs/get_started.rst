@@ -287,6 +287,15 @@ moving an emission from one thread to another. Some :ref:`Observable factories
 thus will ignore any :func:`subscribe_on() <reactivex.operators.subscribe_on>` you
 specify (although you can pass a *Scheduler* usually as an argument).
 
+.. important::
+
+    Neither operator makes the items of a *single* sequence run in parallel.
+    An :class:`Observable <reactivex.Observable>` must deliver its notifications
+    one at a time, so :func:`observe_on() <reactivex.operators.observe_on>`
+    changes **which** thread your callbacks run on, not **how many** items are
+    processed at once. To parallelize the items of one stream, see
+    `Parallelizing Work Within a Single Stream`_ below.
+
 Below, we run three different processes concurrently rather than sequentially
 using :func:`subscribe_on() <reactivex.operators.subscribe_on>` as well as an
 :func:`observe_on() <reactivex.operators.observe_on>`.
@@ -360,6 +369,72 @@ using :func:`subscribe_on() <reactivex.operators.subscribe_on>` as well as an
     PROCESS 1: Thread-1 Delta
     PROCESS 2: Thread-2 4
     PROCESS 3: Thread-7 300
+
+
+Parallelizing Work Within a Single Stream
+..........................................
+
+The example above runs three *independent* pipelines at the same time. A
+different question is how to process the items of **one** pipeline in parallel.
+
+Adding :func:`observe_on() <reactivex.operators.observe_on>` does not do this.
+An :class:`Observable <reactivex.Observable>` is required to deliver its
+notifications one at a time, so the following processes ``Alpha``, ``Beta`` and
+``Gamma`` strictly one after another — taking six seconds in total, even though
+the pool has five threads available:
+
+.. code:: python
+
+    # Sequential: each item waits for the previous one to finish.
+    reactivex.of("Alpha", "Beta", "Gamma").pipe(
+        ops.observe_on(pool_scheduler),
+        ops.map(intense_calculation),
+    ).subscribe(print)
+
+To actually run the items concurrently, give each one its **own** subscription
+and merge the results back together with :func:`flat_map()
+<reactivex.operators.flat_map>`. Each inner sequence is subscribed on the pool,
+so each gets its own worker thread:
+
+.. code:: python
+
+    # Parallel: three subscriptions, one per item, merged back into one stream.
+    reactivex.of("Alpha", "Beta", "Gamma").pipe(
+        ops.flat_map(
+            lambda value: reactivex.just(value).pipe(
+                ops.subscribe_on(pool_scheduler),
+                ops.map(intense_calculation),
+            )
+        )
+    ).subscribe(print)
+
+When the work is a plain function call, :func:`from_callable()
+<reactivex.from_callable>` expresses the same thing more directly:
+
+.. code:: python
+
+    reactivex.of("Alpha", "Beta", "Gamma").pipe(
+        ops.flat_map(
+            lambda value: reactivex.from_callable(
+                lambda: intense_calculation(value), scheduler=pool_scheduler
+            )
+        )
+    ).subscribe(print)
+
+Both versions complete in about two seconds rather than six.
+
+.. note::
+
+    :func:`flat_map() <reactivex.operators.flat_map>` emits results in the order
+    they *complete*, not the order they were sent. If you need the original
+    order, use :func:`concat_map() <reactivex.operators.concat_map>` instead —
+    but that runs the inner sequences one after another, giving up the
+    parallelism. To bound how many run at once, use :func:`merge()
+    <reactivex.operators.merge>` with a ``max_concurrent`` argument.
+
+Remember that the GIL caveat above applies here too: this pattern pays off for
+IO-bound work, or for calls into libraries that release the GIL, more than it
+does for pure-Python computation.
 
 
 IO Concurrency
