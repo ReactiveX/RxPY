@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from datetime import datetime
 from typing import TypeVar
 
 from reactivex import abc, typing
@@ -9,7 +8,6 @@ from reactivex.disposable import (
     Disposable,
     SingleAssignmentDisposable,
 )
-from reactivex.internal.basic import default_now
 
 from ..periodicscheduler import PeriodicScheduler
 
@@ -110,15 +108,3 @@ class AsyncIOScheduler(PeriodicScheduler):
 
         duetime = self.to_datetime(duetime)
         return self.schedule_relative(duetime - self.now, action, state=state)
-
-    @property
-    def now(self) -> datetime:
-        """Represents a notion of time for this scheduler. Tasks being
-        scheduled on a scheduler will adhere to the time denoted by this
-        property.
-
-        Returns:
-             The scheduler's current time, as a datetime instance.
-        """
-
-        return default_now()

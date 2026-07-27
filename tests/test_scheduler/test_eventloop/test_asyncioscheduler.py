@@ -87,6 +87,28 @@ class TestAsyncIOScheduler(unittest.TestCase):
         finally:
             loop.close()
 
+    def test_asyncio_schedule_action_absolute(self) -> None:
+        loop = asyncio.new_event_loop()
+        try:
+
+            async def go() -> None:
+                scheduler = AsyncIOScheduler(loop)
+                ran = False
+
+                def action(scheduler: abc.SchedulerBase, state: Any) -> None:
+                    nonlocal ran
+                    ran = True
+
+                duetime = datetime.now(timezone.utc) + timedelta(milliseconds=100)
+                scheduler.schedule_absolute(duetime, action)
+
+                await asyncio.sleep(0.3)
+                assert ran is True
+
+            loop.run_until_complete(go())
+        finally:
+            loop.close()
+
     def test_asyncio_schedule_action_cancel(self):
         loop = asyncio.new_event_loop()
         try:
