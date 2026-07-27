@@ -1,8 +1,8 @@
-from collections.abc import Callable
 from typing import Any, TypeVar, cast
 
-from reactivex import Observable, compose
+from reactivex import Observable
 from reactivex import operators as ops
+from reactivex.internal import curry_flip
 from reactivex.internal.utils import NotSet
 from reactivex.typing import Accumulator
 
@@ -10,9 +10,12 @@ _T = TypeVar("_T")
 _TState = TypeVar("_TState")
 
 
+@curry_flip
 def reduce_(
-    accumulator: Accumulator[_TState, _T], seed: _TState | type[NotSet] = NotSet
-) -> Callable[[Observable[_T]], Observable[Any]]:
+    source: Observable[_T],
+    accumulator: Accumulator[_TState, _T],
+    seed: _TState | type[NotSet] = NotSet,
+) -> Observable[Any]:
     """Applies an accumulator function over an observable sequence,
     returning the result of the aggregation as a single element in the
     result sequence. The specified seed value is used as the initial
@@ -22,28 +25,28 @@ def reduce_(
     `scan()`.
 
     Examples:
-        >>> res = reduce(lambda acc, x: acc + x)
-        >>> res = reduce(lambda acc, x: acc + x, 0)
+        >>> result = source.pipe(reduce(lambda acc, x: acc + x))
+        >>> result = reduce(lambda acc, x: acc + x)(source)
+        >>> result = source.pipe(reduce(lambda acc, x: acc + x, 0))
 
     Args:
-        accumulator: An accumulator function to be
-            invoked on each element.
+        source: The source observable.
+        accumulator: An accumulator function to be invoked on each element.
         seed: Optional initial accumulator value.
 
     Returns:
-        An operator function that takes an observable source and returns
-        an observable sequence containing a single element with the
+        An observable sequence containing a single element with the
         final accumulator value.
     """
     if seed is not NotSet:
         seed_: _TState = cast(_TState, seed)
         scanner = ops.scan(accumulator, seed=seed_)
-        return compose(
+        return source.pipe(
             scanner,
             ops.last_or_default(default_value=seed_),
         )
 
-    return compose(
+    return source.pipe(
         ops.scan(cast(Accumulator[_T, _T], accumulator)),
         ops.last(),
     )

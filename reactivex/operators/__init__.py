@@ -1,7 +1,7 @@
 # pylint: disable=too-many-lines,redefined-builtin,import-outside-toplevel
 
 
-from asyncio import Future
+import asyncio
 from collections.abc import Callable, Iterable
 from typing import (
     TYPE_CHECKING,
@@ -12,6 +12,8 @@ from typing import (
     overload,
 )
 
+from typing_extensions import TypeVarTuple, Unpack
+
 from reactivex import (
     ConnectableObservable,
     GroupedObservable,
@@ -21,7 +23,6 @@ from reactivex import (
     compose,
     typing,
 )
-from reactivex.internal.basic import identity
 from reactivex.internal.utils import NotSet
 from reactivex.subject import Subject
 from reactivex.typing import (
@@ -42,10 +43,7 @@ _TValue = TypeVar("_TValue")
 _TRight = TypeVar("_TRight")
 _TLeft = TypeVar("_TLeft")
 
-_A = TypeVar("_A")
-_B = TypeVar("_B")
-_C = TypeVar("_C")
-_D = TypeVar("_D")
+_Ts = TypeVarTuple("_Ts")
 
 
 def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]]:
@@ -76,7 +74,9 @@ def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]
     return all_(predicate)
 
 
-def amb(right_source: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
+def amb(
+    right_source: Union[Observable[_T], "typing.AnyFuture[_T]"],
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Propagates the observable sequence that reacts first.
 
     .. marble::
@@ -709,7 +709,8 @@ def dematerialize() -> Callable[[Observable[Notification[_T]]], Observable[_T]]:
 
 
 def delay(
-    duetime: typing.RelativeTime, scheduler: abc.SchedulerBase | None = None
+    duetime: typing.AbsoluteOrRelativeTime,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """The delay operator.
 
@@ -1266,6 +1267,18 @@ def flat_map(
 ) -> Callable[[Observable[_T1]], Observable[_T2]]: ...
 
 
+@overload
+def flat_map(
+    mapper: "typing.AnyFuture[_T2] | None" = None,
+) -> Callable[[Observable[Any]], Observable[_T2]]: ...
+
+
+@overload
+def flat_map(
+    mapper: Mapper[_T1, "typing.AnyFuture[_T2]"] | None = None,
+) -> Callable[[Observable[_T1]], Observable[_T2]]: ...
+
+
 def flat_map(
     mapper: Any | None = None,
 ) -> Callable[[Observable[Any]], Observable[Any]]:
@@ -1380,7 +1393,7 @@ def flat_map_indexed(
 
 
 def flat_map_latest(
-    mapper: Mapper[_T1, Union[Observable[_T2], "Future[_T2]"]],
+    mapper: Mapper[_T1, Union[Observable[_T2], "typing.AnyFuture[_T2]"]],
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     """Projects each element of an observable sequence into a new
     sequence of observable sequences by incorporating the element's
@@ -1812,9 +1825,9 @@ def materialize() -> Callable[[Observable[_T]], Observable[Notification[_T]]]:
         returns an observable sequence containing the materialized
         notification values from the source sequence.
     """
-    from ._materialize import materialize
+    from ._materialize import materialize_
 
-    return materialize()
+    return materialize_()
 
 
 def max(
@@ -1915,7 +1928,9 @@ def merge(
     return merge_(*sources, max_concurrent=max_concurrent)
 
 
-def merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
+def merge_all() -> Callable[
+    [Observable[Union[Observable[_T], "typing.AnyFuture[_T]"]]], Observable[_T]
+]:
     """The merge_all operator.
 
     Merges an observable sequence of observable sequences into an
@@ -2831,7 +2846,7 @@ def skip_last_with_time(
 
 
 def skip_until(
-    other: Union[Observable[Any], "Future[Any]"],
+    other: Union[Observable[Any], "typing.AnyFuture[Any]"],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the values from the source observable sequence only
     after the other observable sequence produces a value.
@@ -3076,25 +3091,17 @@ def some(
 
 
 @overload
-def starmap(
-    mapper: Callable[[_A, _B], _T],
-) -> Callable[[Observable[tuple[_A, _B]]], Observable[_T]]: ...
+def starmap() -> Callable[[Observable[_T]], Observable[_T]]: ...
 
 
 @overload
 def starmap(
-    mapper: Callable[[_A, _B, _C], _T],
-) -> Callable[[Observable[tuple[_A, _B, _C]]], Observable[_T]]: ...
-
-
-@overload
-def starmap(
-    mapper: Callable[[_A, _B, _C, _D], _T],
-) -> Callable[[Observable[tuple[_A, _B, _C, _D]]], Observable[_T]]: ...
+    mapper: Callable[[Unpack[_Ts]], _T],
+) -> Callable[[Observable[tuple[Unpack[_Ts]]]], Observable[_T]]: ...
 
 
 def starmap(
-    mapper: Callable[..., Any] | None = None,
+    mapper: Callable[[Unpack[_Ts]], _T] | None = None,
 ) -> Callable[[Observable[Any]], Observable[Any]]:
     """The starmap operator.
 
@@ -3118,7 +3125,7 @@ def starmap(
 
     Args:
         mapper: A transform function to invoke with unpacked elements
-            as arguments.
+            as arguments. If not provided, returns the tuple unchanged.
 
     Returns:
         An operator function that takes an observable source and
@@ -3126,45 +3133,26 @@ def starmap(
         invoking the mapper function with unpacked elements of the
         source.
     """
-
     if mapper is None:
-        return compose(identity)
 
-    def starred(values: tuple[Any, ...]) -> Any:
-        assert mapper  # mypy is paranoid
+        def identity_fn(x: Any) -> Any:
+            return x
+
+        return compose(map(identity_fn))
+
+    def starred(values: tuple[Unpack[_Ts]]) -> _T:
         return mapper(*values)
 
     return compose(map(starred))
 
 
-@overload
 def starmap_indexed(
-    mapper: Callable[[_A, int], _T],
-) -> Callable[[Observable[_A]], Observable[_T]]: ...
-
-
-@overload
-def starmap_indexed(
-    mapper: Callable[[_A, _B, int], _T],
-) -> Callable[[Observable[tuple[_A, _B]]], Observable[_T]]: ...
-
-
-@overload
-def starmap_indexed(
-    mapper: Callable[[_A, _B, _C, int], _T],
-) -> Callable[[Observable[tuple[_A, _B, _C]]], Observable[_T]]: ...
-
-
-@overload
-def starmap_indexed(
-    mapper: Callable[[_A, _B, _C, _D, int], _T],
-) -> Callable[[Observable[tuple[_A, _B, _C, _D]]], Observable[_T]]: ...
-
-
-def starmap_indexed(
-    mapper: Callable[..., Any] | None = None,
-) -> Callable[[Observable[Any]], Observable[Any]]:
+    mapper: Callable[[Unpack[_Ts], int], _T],
+) -> Callable[[Observable[tuple[Unpack[_Ts], int]]], Observable[_T]]:
     """Variant of :func:`starmap` which accepts an indexed mapper.
+
+    Note: This operator expects the input to already be indexed as flat tuples
+    of (*values, index), which is what map_indexed provides via zip_with_iterable.
 
     .. marble::
         :alt: starmap_indexed
@@ -3178,7 +3166,7 @@ def starmap_indexed(
 
     Args:
         mapper: A transform function to invoke with unpacked elements
-            as arguments.
+            as arguments, plus the index.
 
     Returns:
         An operator function that takes an observable source and
@@ -3186,16 +3174,11 @@ def starmap_indexed(
         invoking the indexed mapper function with unpacked elements
         of the source.
     """
-    from ._map import map_
 
-    if mapper is None:
-        return compose(identity)
+    def starred(indexed_values: tuple[Unpack[_Ts], int]) -> _T:
+        return mapper(*indexed_values)
 
-    def starred(values: tuple[Any, ...]) -> Any:
-        assert mapper  # mypy is paranoid
-        return mapper(*values)
-
-    return compose(map_(starred))
+    return compose(map(starred))
 
 
 def start_with(*args: _T) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -3291,9 +3274,9 @@ def sum(
     return sum_(key_mapper)
 
 
-def switch_latest() -> (
-    Callable[[Observable[Union[Observable[_T], "Future[_T]"]]], Observable[_T]]
-):
+def switch_latest() -> Callable[
+    [Observable[Union[Observable[_T], "typing.AnyFuture[_T]"]]], Observable[_T]
+]:
     """The switch_latest operator.
 
     Transforms an observable sequence of observable sequences into an
@@ -3532,7 +3515,9 @@ def take_last_with_time(
     return take_last_with_time_(duration, scheduler=scheduler)
 
 
-def take_until(other: Observable[Any]) -> Callable[[Observable[_T]], Observable[_T]]:
+def take_until(
+    other: Union[Observable[Any], "typing.AnyFuture[Any]"],
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the values from the source observable sequence until the
     other observable sequence produces a value.
 
@@ -3698,6 +3683,47 @@ def take_with_time(
     return take_with_time_(duration, scheduler=scheduler)
 
 
+def tap(
+    on_next: typing.OnNext[_T] | None = None,
+    on_error: typing.OnError | None = None,
+    on_completed: typing.OnCompleted | None = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    """Alias for :func:`do_action`.
+
+    Invokes an action for each element in the observable sequence and
+    invokes an action on graceful or exceptional termination of the
+    observable sequence. This method can be used for debugging,
+    logging, etc. of query behavior by intercepting the message stream
+    to run arbitrary actions for messages on the pipeline.
+
+    .. marble::
+        :alt: tap
+
+        ----1---2---3---4---|
+        [   tap(i: foo())   ]
+        ----1---2---3---4---|
+
+    Examples:
+        >>> tap(send)
+        >>> tap(on_next, on_error)
+        >>> tap(on_next, on_error, on_completed)
+
+    Args:
+        on_next: [Optional] Action to invoke for each element in the
+            observable sequence.
+        on_error: [Optional] Action to invoke on exceptional
+            termination of the observable sequence.
+        on_completed: [Optional] Action to invoke on graceful
+            termination of the observable sequence.
+
+    Returns:
+        An operator function that takes the source observable an
+        returns the source sequence with the side-effecting behavior
+        applied.
+    """
+    return do_action(on_next, on_error, on_completed)
+
+
 def throttle_first(
     window_duration: typing.RelativeTime, scheduler: abc.SchedulerBase | None = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -3772,7 +3798,7 @@ def timestamp(
 
 def timeout(
     duetime: typing.AbsoluteOrRelativeTime,
-    other: Observable[_T] | None = None,
+    other: Union[Observable[_T], "typing.AnyFuture[_T]"] | None = None,
     scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the source observable sequence or the other observable
@@ -3901,8 +3927,8 @@ def to_dict(
 
 
 def to_future(
-    future_ctor: Callable[[], "Future[_T]"] | None = None,
-) -> Callable[[Observable[_T]], "Future[_T]"]:
+    future_ctor: Callable[[], "asyncio.Future[_T]"] | None = None,
+) -> Callable[[Observable[_T]], "asyncio.Future[_T]"]:
     """Converts an existing observable sequence to a Future.
 
     Example:
@@ -4355,6 +4381,7 @@ __all__ = [
     "take_while",
     "take_while_indexed",
     "take_with_time",
+    "tap",
     "throttle_first",
     "throttle_with_mapper",
     "timestamp",

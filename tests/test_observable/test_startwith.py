@@ -27,7 +27,7 @@ class TestStartWith(unittest.TestCase):
 
     # def test_start_with_scheduler(self):
     #     scheduler = TestScheduler()
-    #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))
+    #     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(220, 2), on_completed(250))  # noqa: E501
 
     #     def create():
     #         return xs.pipe(_.start_with(scheduler)

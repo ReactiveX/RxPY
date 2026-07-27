@@ -208,7 +208,7 @@ class TestCount(unittest.TestCase):
         )
 
         def create():
-            def predicate(x):
+            def predicate(x: int) -> bool:
                 if x == 3:
                     raise Exception(ex)
                 else:

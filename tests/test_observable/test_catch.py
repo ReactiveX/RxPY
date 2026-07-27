@@ -171,7 +171,6 @@ class TestCatch(unittest.TestCase):
         assert handler_called[0]
 
     def test_catch_error_specific_caught_immediate(self):
-        ex = "ex"
         handler_called = [False]
         scheduler = TestScheduler()
         msgs2 = [on_next(240, 4), on_completed(250)]

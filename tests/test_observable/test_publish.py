@@ -1,4 +1,5 @@
 import unittest
+from typing import NoReturn
 
 import reactivex
 from reactivex import ConnectableObservable, Observable
@@ -20,13 +21,13 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> NoReturn:
     raise RxException(ex)
 
 
 class MySubject(Observable, ObserverBase):
     def __init__(self):
-        super(MySubject, self).__init__()
+        super().__init__()
 
         self.dispose_on_map = {}
         self.subscribe_count = 0

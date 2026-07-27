@@ -1,45 +1,50 @@
-from collections.abc import Callable
 from typing import TypeVar
 
 from reactivex import Observable, abc
+from reactivex.internal import curry_flip
 
 _T = TypeVar("_T")
 
 
-def to_iterable_() -> Callable[[Observable[_T]], Observable[list[_T]]]:
-    def to_iterable(source: Observable[_T]) -> Observable[list[_T]]:
-        """Creates an iterable from an observable sequence.
+@curry_flip
+def to_iterable_(source: Observable[_T]) -> Observable[list[_T]]:
+    """Creates an iterable from an observable sequence.
 
-        Returns:
-            An observable sequence containing a single element with an
-            iterable containing all the elements of the source
-            sequence.
-        """
+    Examples:
+        >>> res = source.pipe(to_iterable())
+        >>> res = to_iterable()(source)
 
-        def subscribe(
-            observer: abc.ObserverBase[list[_T]],
-            scheduler: abc.SchedulerBase | None = None,
-        ):
-            nonlocal source
+    Args:
+        source: Source observable.
 
-            queue: list[_T] = []
+    Returns:
+        An observable sequence containing a single element with an
+        iterable containing all the elements of the source
+        sequence.
+    """
 
-            def on_next(item: _T):
-                queue.append(item)
+    def subscribe(
+        observer: abc.ObserverBase[list[_T]],
+        scheduler: abc.SchedulerBase | None = None,
+    ):
+        nonlocal source
 
-            def on_completed():
-                nonlocal queue
-                observer.on_next(queue)
-                queue = []
-                observer.on_completed()
+        queue: list[_T] = []
 
-            return source.subscribe(
-                on_next, observer.on_error, on_completed, scheduler=scheduler
-            )
+        def on_next(item: _T):
+            queue.append(item)
 
-        return Observable(subscribe)
+        def on_completed():
+            nonlocal queue
+            observer.on_next(queue)
+            queue = []
+            observer.on_completed()
 
-    return to_iterable
+        return source.subscribe(
+            on_next, observer.on_error, on_completed, scheduler=scheduler
+        )
+
+    return Observable(subscribe)
 
 
 __all__ = ["to_iterable_"]

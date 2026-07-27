@@ -1,4 +1,5 @@
 import unittest
+from typing import NoReturn
 
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
@@ -17,7 +18,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> NoReturn:
     raise RxException(ex)
 
 
@@ -278,7 +279,9 @@ class TestMinBy(unittest.TestCase):
         xs = scheduler.create_hot_observable(msgs)
 
         def create():
-            return xs.pipe(ops.min_by(lambda x: _raise(ex), reverse_comparer))
+            return xs.pipe(
+                ops.min_by(lambda x: _raise(Exception(ex)), reverse_comparer)
+            )
 
         res = scheduler.start(create=create).messages
         assert res == [on_error(210, ex)]
@@ -295,7 +298,7 @@ class TestMinBy(unittest.TestCase):
         ]
 
         def reverse_comparer(a, b):
-            _raise(ex)
+            _raise(Exception(ex))
 
         xs = scheduler.create_hot_observable(msgs)
 

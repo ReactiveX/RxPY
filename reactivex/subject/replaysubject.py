@@ -54,7 +54,7 @@ class ReplaySubject(Subject[_T]):
         super().__init__()
         self.buffer_size = sys.maxsize if buffer_size is None else buffer_size
         self.scheduler = scheduler or CurrentThreadScheduler.singleton()
-        self.window = (
+        self._window = (
             timedelta.max if window is None else self.scheduler.to_timedelta(window)
         )
         self.queue: deque[QueueItem] = deque()
@@ -87,7 +87,7 @@ class ReplaySubject(Subject[_T]):
         while len(self.queue) > self.buffer_size:
             self.queue.popleft()
 
-        while self.queue and (now - self.queue[0].interval) > self.window:
+        while self.queue and (now - self.queue[0].interval) > self._window:
             self.queue.popleft()
 
     def _on_next_core(self, value: _T) -> None:

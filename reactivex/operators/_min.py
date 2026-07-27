@@ -1,8 +1,9 @@
 from collections.abc import Callable
 from typing import TypeVar, cast
 
-from reactivex import Observable, compose
+from reactivex import Observable
 from reactivex import operators as ops
+from reactivex.internal import curry_flip
 from reactivex.internal.basic import identity
 from reactivex.internal.exceptions import SequenceContainsNoElementsError
 from reactivex.typing import Comparer
@@ -17,26 +18,30 @@ def first_only(x: list[_T]) -> _T:
     return x[0]
 
 
+@curry_flip
 def min_(
+    source: Observable[_T],
     comparer: Comparer[_T] | None = None,
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    """The `min` operator.
+) -> Observable[_T]:
+    """Returns the minimum element in an observable sequence.
 
     Returns the minimum element in an observable sequence according to
     the optional comparer else a default greater than less than check.
 
     Examples:
-        >>> res = source.min()
-        >>> res = source.min(lambda x, y: x.value - y.value)
+        >>> result = source.pipe(min())
+        >>> result = min()(source)
+        >>> result = source.pipe(min(lambda x, y: x.value - y.value))
 
     Args:
-        comparer: [Optional] Comparer used to compare elements.
+        source: The source observable.
+        comparer: Optional comparer used to compare elements.
 
     Returns:
         An observable sequence containing a single element
         with the minimum element in the source sequence.
     """
-    return compose(
+    return source.pipe(
         ops.min_by(cast(Callable[[_T], _T], identity), comparer),
         ops.map(first_only),
     )

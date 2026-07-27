@@ -68,7 +68,7 @@ class TestFromFuture(unittest.TestCase):
                 success[0] = False
 
             def on_error(err):
-                success[1] = type(err) == asyncio.CancelledError
+                success[1] = isinstance(err, asyncio.CancelledError)
 
             def on_completed():
                 success[2] = False

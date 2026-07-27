@@ -20,11 +20,6 @@ class RxException(Exception):
     pass
 
 
-# Helper function for raising exceptions within lambdas
-def _raise(ex):
-    raise RxException(ex)
-
-
 class TestBlocking(unittest.TestCase):
     def test_run_empty(self):
         with pytest.raises(SequenceContainsNoElementsError):

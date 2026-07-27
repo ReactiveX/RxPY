@@ -252,7 +252,7 @@ class TestFilter(unittest.TestCase):
     def test_filter_dispose_in_predicate(self):
         scheduler = TestScheduler()
         invoked = [0]
-        ys = [None]
+        ys: list[Observable[int] | None] = [None]
         xs = scheduler.create_hot_observable(
             on_next(110, 1),
             on_next(180, 2),
@@ -282,11 +282,11 @@ class TestFilter(unittest.TestCase):
                 return is_prime(x)
 
             ys[0] = xs.pipe(filter(predicate))
-            return ys[0]
 
         scheduler.schedule_absolute(created, action)
 
         def action1(scheduler, state):
+            assert ys[0] is not None
             d.disposable = ys[0].subscribe(results)
 
         scheduler.schedule_absolute(subscribed, action1)
@@ -510,7 +510,7 @@ class TestFilter(unittest.TestCase):
 
     def test_filter_indexed_dispose_in_predicate(self):
         scheduler = TestScheduler()
-        ys = [None]
+        ys: list[Observable[int] | None] = [None]
         invoked = [0]
         xs = scheduler.create_hot_observable(
             on_next(110, 1),
@@ -545,6 +545,7 @@ class TestFilter(unittest.TestCase):
         scheduler.schedule_absolute(created, action1)
 
         def action2(scheduler, state):
+            assert ys[0] is not None
             d.disposable = ys[0].subscribe(results)
 
         scheduler.schedule_absolute(subscribed, action2)

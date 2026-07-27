@@ -7,7 +7,7 @@ from reactivex.scheduler import HistoricalScheduler
 
 def assert_equals(first, second):
     if len(first) != len(second):
-        print("len(%d) != len(%d)" % (len(first), len(second)))
+        print(f"len({len(first)}) != len({len(second)})")
         assert False
 
     for i in range(len(first)):
@@ -31,7 +31,7 @@ def from_days(days):
     return timedelta(days=days)
 
 
-class Timestamped(object):
+class Timestamped:
     def __init__(self, value, timestamp):
         self.value = value
         self.timestamp = timestamp
@@ -43,7 +43,7 @@ class Timestamped(object):
         return other.value == self.value and other.timestamp == self.timestamp
 
     def __str__(self):
-        return "(%s, %s)" % (self.value, self.timestamp)
+        return f"({self.value}, {self.timestamp})"
 
     def __repr__(self):
         return str(self)

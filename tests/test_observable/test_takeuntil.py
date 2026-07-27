@@ -162,11 +162,11 @@ class TestTakeUntil(unittest.TestCase):
         scheduler = TestScheduler()
         left_msgs = [on_next(150, 1), on_next(230, 2), on_completed(240)]
         right_msgs = [on_next(150, 1), on_next(210, 2), on_completed(220)]
-        l = scheduler.create_hot_observable(left_msgs)
+        left = scheduler.create_hot_observable(left_msgs)
         r = scheduler.create_hot_observable(right_msgs)
 
         def create():
-            return l.pipe(ops.take_until(r))
+            return left.pipe(ops.take_until(r))
 
         results = scheduler.start(create)
         assert results.messages == [on_completed(210)]
@@ -179,7 +179,7 @@ class TestTakeUntil(unittest.TestCase):
         right_msgs = [on_next(150, 1), on_next(210, 2), on_completed(220)]
         source_not_disposed = [False]
 
-        def action():
+        def action(_):
             source_not_disposed[0] = True
 
         left = scheduler.create_hot_observable(left_msgs).pipe(
@@ -203,7 +203,7 @@ class TestTakeUntil(unittest.TestCase):
         signal_not_disposed = [False]
         left = scheduler.create_hot_observable(left_msgs)
 
-        def action():
+        def action(_):
             signal_not_disposed[0] = True
 
         right = scheduler.create_hot_observable(right_msgs).pipe(

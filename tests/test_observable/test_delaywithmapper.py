@@ -1,6 +1,10 @@
 import unittest
+from typing import NoReturn
 
+from reactivex import Observable, abc
 from reactivex import operators as ops
+from reactivex.disposable import Disposable
+from reactivex.scheduler import ImmediateScheduler
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -17,7 +21,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> NoReturn:
     raise RxException(ex)
 
 
@@ -199,3 +203,37 @@ class TestDelayWithMapper(unittest.TestCase):
         assert results.messages == [on_next(210 + 50, 2)]
         assert xs.subscriptions == [subscribe(200, 300)]
         assert ys.subscriptions == [subscribe(210, 260)]
+
+    def test_delay_with_mapper_forwards_scheduler_to_subscription_delay(
+        self,
+    ) -> None:
+        captured: dict[str, abc.SchedulerBase | None] = {}
+        expected: abc.SchedulerBase = ImmediateScheduler()
+
+        def sub_delay_subscribe(
+            observer: abc.ObserverBase[int],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
+            captured["scheduler"] = scheduler
+            observer.on_completed()
+            return Disposable()
+
+        sub_delay: Observable[int] = Observable(sub_delay_subscribe)
+
+        def source_subscribe(
+            observer: abc.ObserverBase[int],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
+            observer.on_completed()
+            return Disposable()
+
+        source: Observable[int] = Observable(source_subscribe)
+
+        def mapper(_: int) -> Observable[int]:
+            return source
+
+        source.pipe(ops.delay_with_mapper(sub_delay, mapper)).subscribe(
+            scheduler=expected
+        )
+
+        assert captured["scheduler"] is expected

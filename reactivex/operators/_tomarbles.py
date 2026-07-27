@@ -10,19 +10,28 @@ new_thread_scheduler = NewThreadScheduler()
 def to_marbles(
     timespan: RelativeTime = 0.1, scheduler: abc.SchedulerBase | None = None
 ):
+    """Convert an observable sequence into a marble diagram string.
+
+    The marble string uses ``-`` characters for time passing, item values
+    for ``on_next`` events, and ``|`` for ``on_completed``.
+
+    Args:
+        timespan: Duration of each ``-`` character in seconds.
+            Defaults to 0.1 s.
+        scheduler: The scheduler used to run the input sequence on.
+            Defaults to :class:`~reactivex.scheduler.NewThreadScheduler`.
+
+    Returns:
+        A pipeable operator that maps the source observable into an
+        ``Observable[str]`` emitting a single marble string on
+        completion or error.
+
+    Example:
+        >>> import reactivex
+        >>> result = reactivex.from_iterable([1, 2, 3]).pipe(to_marbles())
+    """
+
     def to_marbles(source: Observable[Any]) -> Observable[str]:
-        """Convert an observable sequence into a marble diagram string.
-
-        Args:
-            timespan: [Optional] duration of each character in second.
-                If not specified, defaults to 0.1s.
-            scheduler: [Optional] The scheduler used to run the the input
-                sequence on.
-
-        Returns:
-            Observable stream.
-        """
-
         def subscribe(
             observer: abc.ObserverBase[str],
             scheduler: abc.SchedulerBase | None = None,
@@ -59,7 +68,9 @@ def to_marbles(
                 observer.on_next("".join(n for n in result))
                 observer.on_completed()
 
-            return source.subscribe(on_next, on_error, on_completed)
+            return source.subscribe(
+                on_next, on_error, on_completed, scheduler=scheduler
+            )
 
         return Observable(subscribe)
 
@@ -75,4 +86,4 @@ def stringify(value: Any) -> str:
     return string
 
 
-__all__ = ["stringify"]
+__all__ = ["to_marbles", "stringify"]

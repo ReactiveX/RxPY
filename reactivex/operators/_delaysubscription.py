@@ -1,38 +1,40 @@
-from collections.abc import Callable
 from typing import Any, TypeVar
 
 import reactivex
 from reactivex import Observable, abc, typing
 from reactivex import operators as ops
+from reactivex.internal import curry_flip
 
 _T = TypeVar("_T")
 
 
+@curry_flip
 def delay_subscription_(
+    source: Observable[_T],
     duetime: typing.AbsoluteOrRelativeTime,
     scheduler: abc.SchedulerBase | None = None,
-) -> Callable[[Observable[_T]], Observable[_T]]:
-    def delay_subscription(source: Observable[_T]) -> Observable[_T]:
-        """Time shifts the observable sequence by delaying the subscription.
+) -> Observable[_T]:
+    """Time shifts the observable sequence by delaying the subscription.
 
-        Exampeles.
-            >>> res = source.delay_subscription(5)
+    Examples:
+        >>> source.pipe(delay_subscription(5))
+        >>> delay_subscription(5)(source)
 
-        Args:
-            source: Source subscription to delay.
+    Args:
+        source: Source subscription to delay.
+        duetime: Time to delay subscription.
+        scheduler: Scheduler to use for timing.
 
-        Returns:
-            Time-shifted sequence.
-        """
+    Returns:
+        Time-shifted sequence.
+    """
 
-        def mapper(_: Any) -> Observable[_T]:
-            return reactivex.empty()
+    def mapper(_: Any) -> Observable[_T]:
+        return reactivex.empty()
 
-        return source.pipe(
-            ops.delay_with_mapper(reactivex.timer(duetime, scheduler=scheduler), mapper)
-        )
-
-    return delay_subscription
+    return source.pipe(
+        ops.delay_with_mapper(reactivex.timer(duetime, scheduler=scheduler), mapper)
+    )
 
 
 __all__ = ["delay_subscription_"]

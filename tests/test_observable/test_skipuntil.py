@@ -1,8 +1,9 @@
 import unittest
 
 import reactivex
-from reactivex import Observable
+from reactivex import Observable, abc
 from reactivex import operators as ops
+from reactivex.disposable import Disposable
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -26,11 +27,11 @@ class TestSkipUntil(unittest.TestCase):
             on_completed(250),
         ]
         r_msgs = [on_next(150, 1), on_next(225, 99), on_completed(230)]
-        l = scheduler.create_hot_observable(l_msgs)
+        left = scheduler.create_hot_observable(l_msgs)
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return l.pipe(ops.skip_until(r))
+            return left.pipe(ops.skip_until(r))
 
         results = scheduler.start(create)
         assert results.messages == [on_next(230, 4), on_next(240, 5), on_completed(250)]
@@ -47,11 +48,11 @@ class TestSkipUntil(unittest.TestCase):
             on_completed(250),
         ]
         r_msgs = [on_next(150, 1), on_error(225, ex)]
-        l = scheduler.create_hot_observable(l_msgs)
+        left = scheduler.create_hot_observable(l_msgs)
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return l.pipe(ops.skip_until(r))
+            return left.pipe(ops.skip_until(r))
 
         results = scheduler.start(create)
 
@@ -68,11 +69,11 @@ class TestSkipUntil(unittest.TestCase):
             on_completed(250),
         ]
         r_msgs = [on_next(150, 1), on_completed(225)]
-        l = scheduler.create_hot_observable(l_msgs)
+        left = scheduler.create_hot_observable(l_msgs)
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return l.pipe(ops.skip_until(r))
+            return left.pipe(ops.skip_until(r))
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -80,11 +81,11 @@ class TestSkipUntil(unittest.TestCase):
     def test_skip_until_never_next(self):
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_next(225, 2), on_completed(250)]
-        l = reactivex.never()
+        left = reactivex.never()
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return l.pipe(ops.skip_until(r))
+            return left.pipe(ops.skip_until(r))
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -93,11 +94,11 @@ class TestSkipUntil(unittest.TestCase):
         ex = "ex"
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_error(225, ex)]
-        l = reactivex.never()
+        left = reactivex.never()
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return l.pipe(ops.skip_until(r))
+            return left.pipe(ops.skip_until(r))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(225, ex)]
@@ -112,11 +113,11 @@ class TestSkipUntil(unittest.TestCase):
             on_next(240, 5),
             on_completed(250),
         ]
-        l = scheduler.create_hot_observable(l_msgs)
+        left = scheduler.create_hot_observable(l_msgs)
         r = reactivex.never()
 
         def create():
-            return l.pipe(ops.skip_until(r))
+            return left.pipe(ops.skip_until(r))
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -124,22 +125,22 @@ class TestSkipUntil(unittest.TestCase):
     def test_skip_until_never_empty(self):
         scheduler = TestScheduler()
         r_msgs = [on_next(150, 1), on_completed(225)]
-        l = reactivex.never()
+        left = reactivex.never()
         r = scheduler.create_hot_observable(r_msgs)
 
         def create():
-            return l.pipe(ops.skip_until(r))
+            return left.pipe(ops.skip_until(r))
 
         results = scheduler.start(create)
         assert results.messages == []
 
     def test_skip_until_never_never(self):
         scheduler = TestScheduler()
-        l = reactivex.never()
+        left = reactivex.never()
         r = reactivex.never()
 
         def create():
-            return l.pipe(ops.skip_until(r))
+            return left.pipe(ops.skip_until(r))
 
         results = scheduler.start(create)
         assert results.messages == []
@@ -155,15 +156,19 @@ class TestSkipUntil(unittest.TestCase):
             on_completed(250),
         ]
         disposed = [False]
-        l = scheduler.create_hot_observable(l_msgs)
+        left = scheduler.create_hot_observable(l_msgs)
 
-        def subscribe(observer, scheduler=None):
+        def subscribe(
+            observer: abc.ObserverBase[int],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
             disposed[0] = True
+            return Disposable()
 
         r = Observable(subscribe)
 
         def create():
-            return l.pipe(ops.skip_until(r))
+            return left.pipe(ops.skip_until(r))
 
         results = scheduler.start(create)
         assert results.messages == []

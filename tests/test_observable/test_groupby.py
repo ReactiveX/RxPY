@@ -372,7 +372,6 @@ class TestGroupBy(unittest.TestCase):
 
         def action2(scheduler, state):
             def next(group):
-
                 result = scheduler.create_observer()
                 c["inners"][group.key] = group
                 c["results"][group.key] = result

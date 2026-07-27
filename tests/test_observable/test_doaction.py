@@ -1,6 +1,7 @@
 import unittest
 
 import reactivex
+from reactivex import Observable
 from reactivex import operators as _
 from reactivex.testing import ReactiveTest, TestScheduler
 
@@ -55,7 +56,6 @@ class TestDo(unittest.TestCase):
         def create():
             def action(x):
                 i[0] += 1
-                return i[0]
 
             return xs.pipe(_.do_action(action))
 
@@ -135,10 +135,87 @@ class TestDo(unittest.TestCase):
         assert completed[0]
 
 
+class TestTap(unittest.TestCase):
+    """``tap`` is an alias for ``do_action``."""
+
+    def test_tap_is_do_action(self) -> None:
+        assert _.tap is not _.do_action
+        assert _.tap.__doc__ is not None
+        assert "do_action" in _.tap.__doc__
+
+    def test_tap_should_see_all_values(self) -> None:
+        scheduler = TestScheduler()
+        xs: Observable[int] = scheduler.create_hot_observable(
+            on_next(150, 1),
+            on_next(210, 2),
+            on_next(220, 3),
+            on_next(230, 4),
+            on_next(240, 5),
+            on_completed(250),
+        )
+        count = 0
+        total = 2 + 3 + 4 + 5
+
+        def create() -> Observable[int]:
+            def action(x: int) -> None:
+                nonlocal count, total
+                count += 1
+                total -= x
+
+            return xs.pipe(_.tap(action))
+
+        scheduler.start(create)
+
+        self.assertEqual(4, count)
+        self.assertEqual(0, total)
+
+    def test_tap_next_completed(self) -> None:
+        scheduler = TestScheduler()
+        xs: Observable[int] = scheduler.create_hot_observable(
+            on_next(150, 1), on_next(210, 2), on_completed(250)
+        )
+        seen: list[int] = []
+        completed = False
+
+        def create() -> Observable[int]:
+            def _on_next(x: int) -> None:
+                seen.append(x)
+
+            def _on_completed() -> None:
+                nonlocal completed
+                completed = True
+
+            return xs.pipe(_.tap(on_next=_on_next, on_completed=_on_completed))
+
+        scheduler.start(create)
+
+        self.assertEqual([2], seen)
+        assert completed
+
+    def test_tap_error(self) -> None:
+        ex = Exception("ex")
+        scheduler = TestScheduler()
+        xs: Observable[int] = scheduler.create_hot_observable(
+            on_next(150, 1), on_next(210, 2), on_error(250, ex)
+        )
+        errors: list[Exception] = []
+
+        def create() -> Observable[int]:
+            def _on_error(e: Exception) -> None:
+                errors.append(e)
+
+            return xs.pipe(_.tap(on_error=_on_error))
+
+        results = scheduler.start(create)
+
+        self.assertEqual([ex], errors)
+        assert results.messages == [on_next(210, 2), on_error(250, ex)]
+
+
 # def test_do_next_error(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_error(250, ex))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_error(250, ex))  # noqa: E501
 #     i = [0]
 #     sum = [2 + 3 + 4 + 5]
 #     saw_error = False
@@ -156,7 +233,7 @@ class TestDo(unittest.TestCase):
 
 # def test_do_next_error_not(self):
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))  # noqa: E501
 #     i = [0]
 #     sum = [2 + 3 + 4 + 5]
 #     saw_error = False
@@ -175,7 +252,7 @@ class TestDo(unittest.TestCase):
 
 # def test_do_next_error_completed(self):
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))  # noqa: E501
 #     i = [0]
 #     sum = [2 + 3 + 4 + 5]
 #     saw_error = False
@@ -198,7 +275,7 @@ class TestDo(unittest.TestCase):
 # def test_do_next_error_completed_error(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_error(250, ex))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_error(250, ex))  # noqa: E501
 #     i = [0]
 #     sum = [2 + 3 + 4 + 5]
 #     saw_error = False
@@ -238,7 +315,7 @@ class TestDo(unittest.TestCase):
 # def test_Do_Observer_SomeDataWithError(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_error(250, ex))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_error(250, ex))  # noqa: E501
 #     i = [0]
 #     sum = [2 + 3 + 4 + 5]
 #     saw_error = False
@@ -260,7 +337,7 @@ class TestDo(unittest.TestCase):
 
 # def test_do_observer_some_data_with_error(self):
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_next(220, 3), on_next(230, 4), on_next(240, 5), on_completed(250))  # noqa: E501
 #     i = [0]
 #     sum = [2 + 3 + 4 + 5]
 #     saw_error = False
@@ -283,7 +360,7 @@ class TestDo(unittest.TestCase):
 # def test_do1422_next_next_throws(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))  # noqa: E501
 #     results = scheduler.start(create)
 #         return xs.do_action(function () {
 #             raise Exception(ex)
@@ -294,7 +371,7 @@ class TestDo(unittest.TestCase):
 # def test_do1422_next_completed_next_throws(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))  # noqa: E501
 #     results = scheduler.start(create)
 #         return xs.do_action(function () {
 #             throw ex
@@ -305,7 +382,7 @@ class TestDo(unittest.TestCase):
 # def test_do1422_next_completed_completed_throws(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))  # noqa: E501
 #     results = scheduler.start(create)
 #         return xs.do_action(function () { }, _undefined, function () {
 #             throw ex
@@ -316,7 +393,7 @@ class TestDo(unittest.TestCase):
 # def test_do1422_next_error_next_throws(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))  # noqa: E501
 #     results = scheduler.start(create)
 #         return xs.do_action(function () {
 #             raise Exception(ex)
@@ -341,7 +418,7 @@ class TestDo(unittest.TestCase):
 #     var ex, results, scheduler, xs
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))  # noqa: E501
 #     results = scheduler.start(create)
 #         return xs.do_action(function () {
 #             raise Exception(ex)
@@ -365,7 +442,7 @@ class TestDo(unittest.TestCase):
 # def test_do1422_next_error_completed_completed_throws(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))  # noqa: E501
 #     results = scheduler.start(create)
 #         return xs.do_action(function () { }, function () { }, function () {
 #             raise Exception(ex)
@@ -376,7 +453,7 @@ class TestDo(unittest.TestCase):
 # def test_do1422_observer_next_throws(self):
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))  # noqa: E501
 #     results = scheduler.start(create)
 #         return xs.do_action(Observer.create(function () {
 #             raise Exception(ex)
@@ -401,9 +478,9 @@ class TestDo(unittest.TestCase):
 #     var ex, results, scheduler, xs
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))
+#     xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2), on_completed(250))  # noqa: E501
 #     results = scheduler.start(create)
-#         return xs.do_action(Observer.create(function () { }, function () { }, function () {
+#         return xs.do_action(Observer.create(function () { }, function () { }, function () {  # noqa: E501
 #             raise Exception(ex)
 #         }))
 

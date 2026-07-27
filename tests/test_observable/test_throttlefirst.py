@@ -16,11 +16,6 @@ class RxException(Exception):
     pass
 
 
-# Helper function for raising exceptions within lambdas
-def _raise(ex):
-    raise RxException(ex)
-
-
 class TestThrottleFirst(unittest.TestCase):
     def test_throttle_first_completed(self):
         scheduler = TestScheduler()

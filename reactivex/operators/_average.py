@@ -1,8 +1,8 @@
-from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, TypeVar, cast
 
 from reactivex import Observable, operators, typing
+from reactivex.internal import curry_flip
 
 _T = TypeVar("_T")
 
@@ -13,51 +13,53 @@ class AverageValue:
     count: int
 
 
+@curry_flip
 def average_(
+    source: Observable[_T],
     key_mapper: typing.Mapper[_T, float] | None = None,
-) -> Callable[[Observable[_T]], Observable[float]]:
-    def average(source: Observable[Any]) -> Observable[float]:
-        """Partially applied average operator.
+) -> Observable[float]:
+    """Computes the average of an observable sequence of values.
 
-        Computes the average of an observable sequence of values that
-        are in the sequence or obtained by invoking a transform
-        function on each element of the input sequence if present.
+    Computes the average of an observable sequence of values that
+    are in the sequence or obtained by invoking a transform
+    function on each element of the input sequence if present.
 
-        Examples:
-            >>> res = average(source)
+    Examples:
+        >>> result = source.pipe(average())
+        >>> result = average()(source)
+        >>> result = source.pipe(average(lambda x: x.value))
 
-        Args:
-            source: Source observable to average.
+    Args:
+        source: Source observable to average.
+        key_mapper: Optional mapper to extract numeric values.
 
-        Returns:
-            An observable sequence containing a single element with the
-            average of the sequence of values.
-        """
+    Returns:
+        An observable sequence containing a single element with the
+        average of the sequence of values.
+    """
 
-        key_mapper_: typing.Mapper[_T, float] = key_mapper or (
-            lambda x: float(cast(Any, x))
-        )
+    key_mapper_: typing.Mapper[_T, float] = key_mapper or (
+        lambda x: float(cast(Any, x))
+    )
 
-        def accumulator(prev: AverageValue, cur: float) -> AverageValue:
-            return AverageValue(sum=prev.sum + cur, count=prev.count + 1)
+    def accumulator(prev: AverageValue, cur: float) -> AverageValue:
+        return AverageValue(sum=prev.sum + cur, count=prev.count + 1)
 
-        def mapper(s: AverageValue) -> float:
-            if s.count == 0:
-                raise Exception("The input sequence was empty")
+    def mapper(s: AverageValue) -> float:
+        if s.count == 0:
+            raise Exception("The input sequence was empty")
 
-            return s.sum / float(s.count)
+        return s.sum / float(s.count)
 
-        seed = AverageValue(sum=0, count=0)
+    seed = AverageValue(sum=0, count=0)
 
-        ret = source.pipe(
-            operators.map(key_mapper_),
-            operators.scan(accumulator, seed),
-            operators.last(),
-            operators.map(mapper),
-        )
-        return ret
-
-    return average
+    ret = source.pipe(
+        operators.map(key_mapper_),
+        operators.scan(accumulator, seed),
+        operators.last(),
+        operators.map(mapper),
+    )
+    return ret
 
 
 __all__ = ["average_"]

@@ -13,11 +13,9 @@
 
 import os
 import sys
-from distutils.command.config import config
 
 import guzzle_sphinx_theme
 import tomli
-from dunamai import Version
 
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root)
@@ -29,20 +27,23 @@ sys.path.insert(0, root)
 with open(os.path.join(root, "pyproject.toml"), "rb") as f:
     config = tomli.load(f)
 
-project_meta = config["tool"]["poetry"]
+# Metadata lives in the PEP 621 [project] table (the project migrated off
+# Poetry). authors is a list of {name, email} tables and the homepage moved
+# under [project.urls].
+project_meta = config["project"]
 
-print(project_meta)
 project = project_meta["name"]
-author = project_meta["authors"][0]
+author = project_meta["authors"][0]["name"]
 description = project_meta["description"]
-url = project_meta["homepage"]
+url = project_meta["urls"]["Homepage"]
 title = project + " Documentation"
 
-_version = Version.from_git()
-# The full version, including alpha/beta/rc tags
-release = _version.serialize(metadata=False)
+# The version is declared statically in pyproject.toml. Don't derive it from git
+# tags: Read the Docs clones without tags, so the lookup would fall back to
+# "0.0.0" on the published docs.
+release = project_meta["version"]
 # The short X.Y.Z version
-version = _version.base
+version = release
 
 
 # -- General configuration ---------------------------------------------------

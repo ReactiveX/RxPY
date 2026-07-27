@@ -1,5 +1,4 @@
 import unittest
-from typing import Optional
 
 from reactivex import Observable
 from reactivex import operators as ops
@@ -27,7 +26,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
             on_completed(420),
         )
 
-        def create() -> Observable[Optional[int]]:
+        def create() -> Observable[int | None]:
             return xs.pipe(ops.default_if_empty())
 
         results = scheduler.start(create)

@@ -19,7 +19,6 @@ class TestFinally(unittest.TestCase):
 
         def action():
             invasserte_count[0] += 1
-            return invasserte_count
 
         some_observable = reactivex.empty().pipe(ops.finally_action(action))
 
@@ -36,7 +35,6 @@ class TestFinally(unittest.TestCase):
         def create():
             def action():
                 invasserted[0] = True
-                return invasserted[0]
 
             return xs.pipe(ops.finally_action(action))
 
@@ -55,7 +53,6 @@ class TestFinally(unittest.TestCase):
         def create():
             def action():
                 invasserted[0] = True
-                return invasserted[0]
 
             return xs.pipe(ops.finally_action(action))
 
@@ -78,7 +75,6 @@ class TestFinally(unittest.TestCase):
         def create():
             def action():
                 invasserted[0] = True
-                return invasserted[0]
 
             return xs.pipe(ops.finally_action(action))
 

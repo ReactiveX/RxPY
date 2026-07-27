@@ -1,6 +1,9 @@
 import unittest
 from datetime import timedelta
+from typing import Any
 
+from reactivex import abc
+from reactivex import typing as rx_typing
 from reactivex.disposable import Disposable
 from reactivex.internal.basic import default_now
 from reactivex.scheduler.scheduleditem import ScheduledItem
@@ -10,24 +13,42 @@ from reactivex.scheduler.scheduler import Scheduler
 class ScheduledItemTestScheduler(Scheduler):
     def __init__(self):
         super()
-        self.action = None
-        self.state = None
-        self.disposable = None
+        self.action: Any = None
+        self.state: Any = None
+        self.disposable: abc.DisposableBase | None = None
 
-    def invoke_action(self, action, state):
+    def invoke_action(
+        self,
+        action: abc.ScheduledAction[Any],
+        state: Any = None,
+    ) -> abc.DisposableBase:
         self.action = action
         self.state = state
         self.disposable = super().invoke_action(action, state)
         return self.disposable
 
-    def schedule(self, action, state):
-        pass
+    def schedule(
+        self,
+        action: abc.ScheduledAction[Any],
+        state: Any = None,
+    ) -> abc.DisposableBase:
+        return Disposable()
 
-    def schedule_relative(self, duetime, action, state):
-        pass
+    def schedule_relative(
+        self,
+        duetime: rx_typing.RelativeTime,
+        action: abc.ScheduledAction[Any],
+        state: Any = None,
+    ) -> abc.DisposableBase:
+        return Disposable()
 
-    def schedule_absolute(self, duetime, action, state):
-        pass
+    def schedule_absolute(
+        self,
+        duetime: rx_typing.AbsoluteTime,
+        action: abc.ScheduledAction[Any],
+        state: Any = None,
+    ) -> abc.DisposableBase:
+        return Disposable()
 
 
 class TestScheduledItem(unittest.TestCase):

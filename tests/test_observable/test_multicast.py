@@ -1,5 +1,5 @@
 import unittest
-from typing import Any, List, Optional
+from typing import Any
 
 from reactivex import abc
 from reactivex import operators as ops
@@ -35,9 +35,9 @@ class TestMulticast(unittest.TestCase):
         )
 
         obv = scheduler.create_observer()
-        d1: List[Optional[abc.DisposableBase]] = [None]
-        d2: List[Optional[abc.DisposableBase]] = [None]
-        c: List[Optional[ConnectableObservable[int]]] = [None]
+        d1: list[abc.DisposableBase | None] = [None]
+        d2: list[abc.DisposableBase | None] = [None]
+        c: list[ConnectableObservable[int] | None] = [None]
 
         def action(scheduler: abc.SchedulerBase, state: Any = None):
             c[0] = xs.pipe(ops.multicast(s))
@@ -305,7 +305,6 @@ class TestMulticast(unittest.TestCase):
         c = [None]
         d1 = [None]
         d2 = [None]
-        ex = "ex"
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
             on_next(40, 0),

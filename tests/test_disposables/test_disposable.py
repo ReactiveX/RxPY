@@ -46,7 +46,7 @@ def test_booleandisposable():
 def test_future_disposable_setnone():
     d = SingleAssignmentDisposable()
     d.disposable = None
-    assert d.disposable == None
+    assert d.disposable is None
 
 
 def test_futuredisposable_disposeafterset():
@@ -80,7 +80,7 @@ def test_futuredisposable_disposebeforeset():
     d.dispose()
     assert not disposed[0]
     d.disposable = dd
-    assert d.disposable == None
+    assert d.disposable is None
     assert disposed[0]
     d.dispose()
     assert disposed[0]
@@ -248,7 +248,7 @@ def test_mutabledisposable_replaceafterdispose():
     d1 = Disposable(action1)
     m.disposable = d1
 
-    assert m.disposable == None
+    assert m.disposable is None
     assert disp1[0]
 
     def action2():
@@ -257,7 +257,7 @@ def test_mutabledisposable_replaceafterdispose():
     d2 = Disposable(action2)
     m.disposable = d2
 
-    assert m.disposable == None
+    assert m.disposable is None
     assert disp2[0]
 
 
@@ -275,7 +275,7 @@ def test_mutabledisposable_dispose():
     assert not disp[0]
     m.dispose()
     assert disp[0]
-    assert m.disposable == None
+    assert m.disposable is None
 
 
 def test_refcountdisposable_singlereference():

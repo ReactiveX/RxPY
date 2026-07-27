@@ -32,7 +32,6 @@ class TestQtSchedulerPySide2:
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
     def test_pyside2_schedule_action(self, app):
-
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
         ran = False
@@ -54,7 +53,6 @@ class TestQtSchedulerPySide2:
         assert ran is True
 
     def test_pyside2_schedule_action_due_relative(self, app):
-
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
         starttime = default_now()
@@ -79,7 +77,6 @@ class TestQtSchedulerPySide2:
         assert diff > timedelta(milliseconds=180)
 
     def test_pyside2_schedule_action_due_absolute(self, app):
-
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
         starttime = default_now()
@@ -104,7 +101,6 @@ class TestQtSchedulerPySide2:
         assert diff > timedelta(milliseconds=180)
 
     def test_pyside2_schedule_action_cancel(self, app):
-
         ran = False
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
@@ -127,7 +123,6 @@ class TestQtSchedulerPySide2:
         assert ran is False
 
     def test_pyside2_schedule_action_periodic(self, app):
-
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
         period = 0.050
@@ -152,7 +147,6 @@ class TestQtSchedulerPySide2:
         assert counter == 0
 
     def test_pyside2_schedule_periodic_cancel(self, app):
-
         scheduler = QtScheduler(QtCore)
         gate = threading.Semaphore(0)
         period = 0.05

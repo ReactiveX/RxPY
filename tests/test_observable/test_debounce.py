@@ -1,8 +1,8 @@
 import unittest
+from typing import NoReturn
 
-from reactivex import empty, never
+from reactivex import empty, never, throw
 from reactivex import operators as _
-from reactivex import throw
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -19,7 +19,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> NoReturn:
     raise RxException(ex)
 
 
@@ -360,7 +360,7 @@ class TestDebounce(unittest.TestCase):
         assert xs.subscriptions == [subscribe(200, 460)]
 
     def test_debounce_duration_mapper_throws(self):
-        ex = "ex"
+        ex = Exception("ex")
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(
             on_next(150, 1),
@@ -377,7 +377,7 @@ class TestDebounce(unittest.TestCase):
                         on_next(x * 10, "Ignore"), on_next(x * 10 + 5, "Aargh!")
                     )
                 else:
-                    _raise(ex)
+                    raise ex
 
             return xs.pipe(_.throttle_with_mapper(mapper))
 

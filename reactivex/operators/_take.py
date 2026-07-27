@@ -1,54 +1,57 @@
-from collections.abc import Callable
 from typing import TypeVar
 
 from reactivex import Observable, abc, empty
-from reactivex.internal import ArgumentOutOfRangeException
+from reactivex.internal import ArgumentOutOfRangeException, curry_flip
 
 _T = TypeVar("_T")
 
 
-def take_(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
+@curry_flip
+def take_(source: Observable[_T], count: int) -> Observable[_T]:
+    """Returns a specified number of contiguous elements from the start of
+    an observable sequence.
+
+    Example:
+        >>> result = source.pipe(take(5))
+        >>> result = take(5)(source)
+
+    Args:
+        source: The source observable sequence.
+        count: The number of elements to return.
+
+    Returns:
+        An observable sequence that contains the specified number of
+        elements from the start of the input sequence.
+
+    Raises:
+        ArgumentOutOfRangeException: If count is negative.
+    """
     if count < 0:
         raise ArgumentOutOfRangeException()
 
-    def take(source: Observable[_T]) -> Observable[_T]:
-        """Returns a specified number of contiguous elements from the start of
-        an observable sequence.
+    if not count:
+        return empty()
 
-        >>> take(source)
+    def subscribe(
+        observer: abc.ObserverBase[_T],
+        scheduler: abc.SchedulerBase | None = None,
+    ):
+        remaining = count
 
-        Keyword arguments:
-        count -- The number of elements to return.
+        def on_next(value: _T) -> None:
+            nonlocal remaining
 
-        Returns an observable sequence that contains the specified number of
-        elements from the start of the input sequence.
-        """
+            if remaining > 0:
+                remaining -= 1
+                observer.on_next(value)
+                if not remaining:
+                    observer.on_completed()
 
-        if not count:
-            return empty()
+        return source.subscribe(
+            on_next, observer.on_error, observer.on_completed, scheduler=scheduler
+        )
 
-        def subscribe(
-            observer: abc.ObserverBase[_T],
-            scheduler: abc.SchedulerBase | None = None,
-        ):
-            remaining = count
-
-            def on_next(value: _T) -> None:
-                nonlocal remaining
-
-                if remaining > 0:
-                    remaining -= 1
-                    observer.on_next(value)
-                    if not remaining:
-                        observer.on_completed()
-
-            return source.subscribe(
-                on_next, observer.on_error, observer.on_completed, scheduler=scheduler
-            )
-
-        return Observable(subscribe)
-
-    return take
+    return Observable(subscribe)
 
 
 __all__ = ["take_"]

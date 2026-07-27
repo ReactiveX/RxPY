@@ -1,9 +1,9 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.0
+    rev: v0.15.22
     hooks:
       # Run the linter
-      - id: ruff
+      - id: ruff-check
         args: [--fix]
       # Run the formatter
       - id: ruff-format
@@ -14,10 +14,10 @@ repos:
         language: node
         pass_filenames: false
         types: [python]
-        additional_dependencies: ["pyright@1.1.407"]
+        additional_dependencies: ["pyright@1.1.411"]
     repo: local
   - hooks:
       - id: mypy
         exclude: (^docs/|^examples/|^notebooks/|^tests/|^reactivex/operators/_\w.*\.py$)
     repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.18.2
+    rev: v1.20.2

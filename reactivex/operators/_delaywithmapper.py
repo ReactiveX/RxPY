@@ -95,7 +95,7 @@ def delay_with_mapper_(
                 start()
             else:
                 subscription.disposable = sub_delay.subscribe(
-                    lambda _: start(), observer.on_error, start
+                    lambda _: start(), observer.on_error, start, scheduler=scheduler
                 )
 
             return CompositeDisposable(subscription, delays)

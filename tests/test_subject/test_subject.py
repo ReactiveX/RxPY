@@ -1,3 +1,4 @@
+from reactivex.abc import DisposableBase, SchedulerBase
 from reactivex.subject import Subject
 from reactivex.testing import ReactiveTest, TestScheduler
 
@@ -14,17 +15,12 @@ class RxException(Exception):
     pass
 
 
-# Helper function for raising exceptions within lambdas
-def _raise(ex):
-    raise RxException(ex)
-
-
 def test_infinite():
-    subscription = [None]
-    subscription1 = [None]
-    subscription2 = [None]
-    subscription3 = [None]
-    s = [None]
+    subscription: list[DisposableBase | None] = [None]
+    subscription1: list[DisposableBase | None] = [None]
+    subscription2: list[DisposableBase | None] = [None]
+    subscription3: list[DisposableBase | None] = [None]
+    s: list[Subject[int] | None] = [None]
     scheduler = TestScheduler()
 
     xs = scheduler.create_hot_observable(
@@ -46,52 +42,61 @@ def test_infinite():
     results2 = scheduler.create_observer()
     results3 = scheduler.create_observer()
 
-    def action1(scheduler, state=None):
+    def action1(scheduler: SchedulerBase, state: object = None) -> None:
         s[0] = Subject()
 
     scheduler.schedule_absolute(100, action1)
 
-    def action2(scheduler, state=None):
+    def action2(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription[0] = xs.subscribe(s[0])
 
     scheduler.schedule_absolute(200, action2)
 
-    def action3(scheduler, state=None):
+    def action3(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription[0] is not None
         subscription[0].dispose()
 
     scheduler.schedule_absolute(1000, action3)
 
-    def action4(scheduler, state=None):
+    def action4(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription1[0] = s[0].subscribe(results1)
 
     scheduler.schedule_absolute(300, action4)
 
-    def action5(scheduler, state=None):
+    def action5(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription2[0] = s[0].subscribe(results2)
 
     scheduler.schedule_absolute(400, action5)
 
-    def action6(scheduler, state=None):
+    def action6(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription3[0] = s[0].subscribe(results3)
 
     scheduler.schedule_absolute(900, action6)
 
-    def action7(scheduler, state=None):
+    def action7(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription1[0] is not None
         subscription1[0].dispose()
 
     scheduler.schedule_absolute(600, action7)
 
-    def action8(scheduler, state=None):
+    def action8(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription2[0] is not None
         subscription2[0].dispose()
 
     scheduler.schedule_absolute(700, action8)
 
-    def action9(scheduler, state=None):
+    def action9(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription1[0] is not None
         subscription1[0].dispose()
 
     scheduler.schedule_absolute(800, action9)
 
-    def action10(scheduler, state=None):
+    def action10(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription3[0] is not None
         subscription3[0].dispose()
 
     scheduler.schedule_absolute(950, action10)
@@ -105,11 +110,11 @@ def test_infinite():
 
 def test_finite():
     scheduler = TestScheduler()
-    subscription = [None]
-    subscription1 = [None]
-    subscription2 = [None]
-    subscription3 = [None]
-    s = [None]
+    subscription: list[DisposableBase | None] = [None]
+    subscription1: list[DisposableBase | None] = [None]
+    subscription2: list[DisposableBase | None] = [None]
+    subscription3: list[DisposableBase | None] = [None]
+    s: list[Subject[int] | None] = [None]
 
     xs = scheduler.create_hot_observable(
         on_next(70, 1),
@@ -129,52 +134,61 @@ def test_finite():
     results2 = scheduler.create_observer()
     results3 = scheduler.create_observer()
 
-    def action1(scheduler, state=None):
+    def action1(scheduler: SchedulerBase, state: object = None) -> None:
         s[0] = Subject()
 
     scheduler.schedule_absolute(100, action1)
 
-    def action2(scheduler, state=None):
+    def action2(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription[0] = xs.subscribe(s[0])
 
     scheduler.schedule_absolute(200, action2)
 
-    def action3(scheduler, state=None):
+    def action3(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription[0] is not None
         subscription[0].dispose()
 
     scheduler.schedule_absolute(1000, action3)
 
-    def action4(scheduler, state=None):
+    def action4(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription1[0] = s[0].subscribe(results1)
 
     scheduler.schedule_absolute(300, action4)
 
-    def action5(scheduler, state=None):
+    def action5(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription2[0] = s[0].subscribe(results2)
 
     scheduler.schedule_absolute(400, action5)
 
-    def action6(scheduler, state=None):
+    def action6(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription3[0] = s[0].subscribe(results3)
 
     scheduler.schedule_absolute(900, action6)
 
-    def action7(scheduler, state=None):
+    def action7(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription1[0] is not None
         subscription1[0].dispose()
 
     scheduler.schedule_absolute(600, action7)
 
-    def action8(scheduler, state=None):
+    def action8(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription2[0] is not None
         subscription2[0].dispose()
 
     scheduler.schedule_absolute(700, action8)
 
-    def action9(scheduler, state=None):
+    def action9(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription1[0] is not None
         subscription1[0].dispose()
 
     scheduler.schedule_absolute(800, action9)
 
-    def action10(scheduler, state=None):
+    def action10(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription3[0] is not None
         subscription3[0].dispose()
 
     scheduler.schedule_absolute(950, action10)
@@ -187,11 +201,11 @@ def test_finite():
 
 
 def test_error():
-    s = [None]
-    subscription = [None]
-    subscription1 = [None]
-    subscription2 = [None]
-    subscription3 = [None]
+    s: list[Subject[int] | None] = [None]
+    subscription: list[DisposableBase | None] = [None]
+    subscription1: list[DisposableBase | None] = [None]
+    subscription2: list[DisposableBase | None] = [None]
+    subscription3: list[DisposableBase | None] = [None]
     ex = "ex"
 
     scheduler = TestScheduler()
@@ -214,52 +228,61 @@ def test_error():
     results2 = scheduler.create_observer()
     results3 = scheduler.create_observer()
 
-    def action(scheduler, state=None):
+    def action(scheduler: SchedulerBase, state: object = None) -> None:
         s[0] = Subject()
 
     scheduler.schedule_absolute(100, action)
 
-    def action1(scheduler, state=None):
+    def action1(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription[0] = xs.subscribe(s[0])
 
     scheduler.schedule_absolute(200, action1)
 
-    def action2(scheduler, state=None):
+    def action2(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription[0] is not None
         subscription[0].dispose()
 
     scheduler.schedule_absolute(1000, action2)
 
-    def action3(scheduler, state=None):
+    def action3(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription1[0] = s[0].subscribe(results1)
 
     scheduler.schedule_absolute(300, action3)
 
-    def action4(scheduler, state=None):
+    def action4(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription2[0] = s[0].subscribe(results2)
 
     scheduler.schedule_absolute(400, action4)
 
-    def action5(scheduler, state=None):
+    def action5(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription3[0] = s[0].subscribe(results3)
 
     scheduler.schedule_absolute(900, action5)
 
-    def action6(scheduler, state=None):
+    def action6(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription1[0] is not None
         subscription1[0].dispose()
 
     scheduler.schedule_absolute(600, action6)
 
-    def action7(scheduler, state=None):
+    def action7(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription2[0] is not None
         subscription2[0].dispose()
 
     scheduler.schedule_absolute(700, action7)
 
-    def action8(scheduler, state=None):
+    def action8(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription1[0] is not None
         subscription1[0].dispose()
 
     scheduler.schedule_absolute(800, action8)
 
-    def action9(scheduler, state=None):
+    def action9(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription3[0] is not None
         subscription3[0].dispose()
 
     scheduler.schedule_absolute(950, action9)
@@ -272,11 +295,11 @@ def test_error():
 
 
 def test_canceled():
-    s = [None]
-    subscription = [None]
-    subscription1 = [None]
-    subscription2 = [None]
-    subscription3 = [None]
+    s: list[Subject[int] | None] = [None]
+    subscription: list[DisposableBase | None] = [None]
+    subscription1: list[DisposableBase | None] = [None]
+    subscription2: list[DisposableBase | None] = [None]
+    subscription3: list[DisposableBase | None] = [None]
 
     scheduler = TestScheduler()
     xs = scheduler.create_hot_observable(
@@ -287,52 +310,61 @@ def test_canceled():
     results2 = scheduler.create_observer()
     results3 = scheduler.create_observer()
 
-    def action1(scheduler, state=None):
+    def action1(scheduler: SchedulerBase, state: object = None) -> None:
         s[0] = Subject()
 
     scheduler.schedule_absolute(100, action1)
 
-    def action2(scheduler, state=None):
+    def action2(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription[0] = xs.subscribe(s[0])
 
     scheduler.schedule_absolute(200, action2)
 
-    def action3(scheduler, state=None):
+    def action3(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription[0] is not None
         subscription[0].dispose()
 
     scheduler.schedule_absolute(1000, action3)
 
-    def action4(scheduler, state=None):
+    def action4(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription1[0] = s[0].subscribe(results1)
 
     scheduler.schedule_absolute(300, action4)
 
-    def action5(scheduler, state=None):
+    def action5(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription2[0] = s[0].subscribe(results2)
 
     scheduler.schedule_absolute(400, action5)
 
-    def action6(scheduler, state=None):
+    def action6(scheduler: SchedulerBase, state: object = None) -> None:
+        assert s[0] is not None
         subscription3[0] = s[0].subscribe(results3)
 
     scheduler.schedule_absolute(900, action6)
 
-    def action7(scheduler, state=None):
+    def action7(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription1[0] is not None
         subscription1[0].dispose()
 
     scheduler.schedule_absolute(600, action7)
 
-    def action8(scheduler, state=None):
+    def action8(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription2[0] is not None
         subscription2[0].dispose()
 
     scheduler.schedule_absolute(700, action8)
 
-    def action9(scheduler, state=None):
+    def action9(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription1[0] is not None
         subscription1[0].dispose()
 
     scheduler.schedule_absolute(800, action9)
 
-    def action10(scheduler, state=None):
+    def action10(scheduler: SchedulerBase, state: object = None) -> None:
+        assert subscription3[0] is not None
         subscription3[0].dispose()
 
     scheduler.schedule_absolute(950, action10)

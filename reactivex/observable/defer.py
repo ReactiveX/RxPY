@@ -1,15 +1,16 @@
-from asyncio import Future
 from collections.abc import Callable
 from typing import TypeVar, Union
 
 from reactivex import Observable, abc, from_future, throw
+from reactivex.internal import is_future
 from reactivex.scheduler import ImmediateScheduler
+from reactivex.typing import AnyFuture
 
 _T = TypeVar("_T")
 
 
 def defer_(
-    factory: Callable[[abc.SchedulerBase], Union[Observable[_T], "Future[_T]"]],
+    factory: Callable[[abc.SchedulerBase], Union[Observable[_T], "AnyFuture[_T]"]],
 ) -> Observable[_T]:
     """Returns an observable sequence that invokes the specified factory
     function whenever a new observer subscribes.
@@ -35,7 +36,7 @@ def defer_(
         except Exception as ex:  # By design. pylint: disable=W0703
             return throw(ex).subscribe(observer)
 
-        result = from_future(result) if isinstance(result, Future) else result
+        result = from_future(result) if is_future(result) else result
         return result.subscribe(observer, scheduler=scheduler)
 
     return Observable(subscribe)

@@ -2,14 +2,18 @@ import unittest
 
 import pytest
 
+from reactivex import typing as rx_typing
 from reactivex.internal import ArgumentOutOfRangeException
 from reactivex.internal.constants import DELTA_ZERO, UTC_ZERO
 from reactivex.scheduler import VirtualTimeScheduler
 
 
 class VirtualSchedulerTestScheduler(VirtualTimeScheduler):
-    def add(self, absolute, relative):
-        return absolute + relative
+    @classmethod
+    def add(
+        cls, absolute: rx_typing.AbsoluteTime, relative: rx_typing.RelativeTime
+    ) -> rx_typing.AbsoluteTime:
+        return absolute + relative  # type: ignore[operator]
 
 
 class TestVirtualTimeScheduler(unittest.TestCase):
@@ -24,7 +28,7 @@ class TestVirtualTimeScheduler(unittest.TestCase):
         assert scheduler.now == UTC_ZERO
 
     def test_virtual_now_timedelta(self):
-        scheduler = VirtualSchedulerTestScheduler(DELTA_ZERO)
+        scheduler = VirtualSchedulerTestScheduler(DELTA_ZERO)  # type: ignore[arg-type]
         assert scheduler.clock == DELTA_ZERO
         assert scheduler.now == UTC_ZERO
 
@@ -69,4 +73,4 @@ class TestVirtualTimeScheduler(unittest.TestCase):
         scheduler = VirtualSchedulerTestScheduler()
 
         with pytest.raises(ArgumentOutOfRangeException):
-            scheduler.advance_to(scheduler._clock - 1)
+            scheduler.advance_to(scheduler._clock - 1)  # type: ignore[operator]

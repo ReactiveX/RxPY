@@ -16,7 +16,7 @@ def single_or_default_async_(
         def subscribe(
             observer: abc.ObserverBase[_T],
             scheduler: abc.SchedulerBase | None = None,
-        ):
+        ) -> abc.DisposableBase:
             value = cast(_T, default_value)
             seen_value = False
 

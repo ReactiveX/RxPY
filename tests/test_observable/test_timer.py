@@ -1,6 +1,7 @@
 import unittest
 
 import reactivex
+from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -17,7 +18,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> None:
     raise RxException(ex)
 
 
@@ -30,7 +31,7 @@ class TestTimer(unittest.TestCase):
             return reactivex.timer(duetime=date)
 
         results = scheduler.start(create)
-        assert results.messages == [on_next(250.0, 0), on_completed(250.0)]
+        assert results.messages == [on_next(250, 0), on_completed(250)]
 
     def test_oneshot_timer_date_passed(self):
         scheduler = TestScheduler()
@@ -56,7 +57,7 @@ class TestTimer(unittest.TestCase):
         scheduler = TestScheduler()
         date = scheduler.to_datetime(250.0)
         xs = reactivex.timer(date)
-        xs.subscribe(lambda x: _raise("ex"), scheduler=scheduler)
+        xs.subscribe(lambda x: _raise(Exception("ex")), scheduler=scheduler)
 
         self.assertRaises(RxException, scheduler.start)
 
@@ -99,13 +100,13 @@ class TestTimer(unittest.TestCase):
     def test_oneshot_timer_timespan_observer_throws(self):
         scheduler1 = TestScheduler()
         xs = reactivex.timer(11)
-        xs.subscribe(lambda x: _raise("ex"), scheduler=scheduler1)
+        xs.subscribe(lambda x: _raise(Exception("ex")), scheduler=scheduler1)
 
         self.assertRaises(RxException, scheduler1.start)
 
         scheduler2 = TestScheduler()
         ys = reactivex.timer(1, period=None)
-        ys.subscribe(on_completed=lambda: _raise("ex"), scheduler=scheduler2)
+        ys.subscribe(on_completed=lambda: _raise(Exception("ex")), scheduler=scheduler2)
 
         self.assertRaises(RxException, scheduler2.start)
 
@@ -126,3 +127,25 @@ class TestTimer(unittest.TestCase):
 
         results = scheduler.start(create)
         assert results.messages == [on_next(500, 0), on_next(800, 1)]
+
+    def test_periodic_timer_resubscription_respects_duetime(self):
+        """Regression test for #697: timer with period should respect duetime on
+        each resubscription (e.g. via repeat), not reuse stale absolute time."""
+        scheduler = TestScheduler()
+        source = reactivex.timer(10, 200, scheduler=scheduler)
+
+        results = scheduler.start(
+            lambda: source.pipe(
+                ops.take(2),
+                ops.repeat(),
+            )
+        )
+        assert results.messages == [
+            on_next(210, 0),
+            on_next(410, 1),
+            on_next(420, 0),
+            on_next(620, 1),
+            on_next(630, 0),
+            on_next(830, 1),
+            on_next(840, 0),
+        ]

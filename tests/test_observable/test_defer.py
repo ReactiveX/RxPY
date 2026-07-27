@@ -1,7 +1,9 @@
 import unittest
+from typing import NoReturn
 
 import reactivex
 from reactivex.testing import ReactiveTest, TestScheduler
+from reactivex.testing.coldobservable import ColdObservable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -17,13 +19,13 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> NoReturn:
     raise RxException(ex)
 
 
 class TestDefer(unittest.TestCase):
     def test_defer_complete(self):
-        xs = [None]
+        xs: list[ColdObservable[int] | None] = [None]
         invoked = [0]
         scheduler = TestScheduler()
 
@@ -40,12 +42,13 @@ class TestDefer(unittest.TestCase):
         results = scheduler.start(create)
         assert results.messages == [on_next(300, 200), on_completed(400)]
         assert 1 == invoked[0]
+        assert xs[0] is not None
         assert xs[0].subscriptions == [subscribe(200, 400)]
 
     def test_defer_error(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = [None]
+        xs: list[ColdObservable[int] | None] = [None]
         ex = "ex"
 
         def create():
@@ -62,12 +65,13 @@ class TestDefer(unittest.TestCase):
 
         assert results.messages == [on_next(300, 200), on_error(400, ex)]
         assert 1 == invoked[0]
+        assert xs[0] is not None
         assert xs[0].subscriptions == [subscribe(200, 400)]
 
     def test_defer_dispose(self):
         scheduler = TestScheduler()
         invoked = [0]
-        xs = [None]
+        xs: list[ColdObservable[int] | None] = [None]
 
         def create():
             def defer(scheduler):
@@ -84,6 +88,7 @@ class TestDefer(unittest.TestCase):
         results = scheduler.start(create)
         assert results.messages == [on_next(300, 200), on_next(400, 1)]
         assert 1 == invoked[0]
+        assert xs[0] is not None
         assert xs[0].subscriptions == [subscribe(200, 1000)]
 
     def test_defer_on_error(self):

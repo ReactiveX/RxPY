@@ -108,7 +108,7 @@ class TestWindowWithCount(unittest.TestCase):
         def create():
             def mapper(w, i):
                 def mapping(x):
-                    return "%s %s" % (i, x)
+                    return f"{i} {x}"
 
                 return w.pipe(ops.map(mapping))
 
