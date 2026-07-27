@@ -1,5 +1,5 @@
 ---
-last_commit_released: 10ccc0a3deba0d004a8f9b6079802ffdb73d1edd
+last_commit_released: b286407307ace6670f6f0072a8438bc912165d43
 name: reactivex
 updaters:
   - command: ./scripts/shipit_bump_version.sh {version}
@@ -14,6 +14,20 @@ conventional-commit messages.
 
 PyPI uses PEP 440 (`5.0.0rc1`), while ShipIt records SemVer (`5.0.0-rc.1`) in
 this file; the release script normalizes between them.
+
+## 5.1.0 - 2026-07-27
+
+### 🚀 Features
+
+* *(operators)* Add tap as an alias for do_action (#804) ([95c54ac3](https://github.com/ReactiveX/RxPY/commit/95c54ac3652aed2bf78035c9846cb5867ee58172))
+
+### 🐞 Bug Fixes
+
+* *(gtk)* Call gi.require_version before importing gi.repository (#749) ([2b9e3f33](https://github.com/ReactiveX/RxPY/commit/2b9e3f338246acb7b0037c2a2d9b0882a980ce62))
+* *(operators)* Accept concurrent.futures.Future wherever futures are accepted (#806) ([19da6ac1](https://github.com/ReactiveX/RxPY/commit/19da6ac1487e97bb973fcc4dafc69cee4a1e12a7))
+* *(scheduler)* Use wall clock time for now() in event loop schedulers (#809) ([361951c7](https://github.com/ReactiveX/RxPY/commit/361951c7237ae100f33f81e89144935adb281509))
+
+<strong><small>[View changes on Github](https://github.com/ReactiveX/RxPY/compare/10ccc0a3deba0d004a8f9b6079802ffdb73d1edd..b286407307ace6670f6f0072a8438bc912165d43)</small></strong>
 
 ## 5.0.0 - 2026-07-20
 
