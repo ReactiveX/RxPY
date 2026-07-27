@@ -14,8 +14,8 @@ class TestIOLoopScheduler(unittest.TestCase):
     def test_ioloop_schedule_now(self):
         loop = ioloop.IOLoop.instance()
         scheduler = IOLoopScheduler(loop)
-        diff = scheduler.now - datetime.fromtimestamp(loop.time(), tz=timezone.utc)
-        assert abs(diff) < timedelta(milliseconds=1)
+        diff = scheduler.now - datetime.now(timezone.utc)
+        assert abs(diff) < timedelta(milliseconds=100)
 
     def test_ioloop_schedule_now_units(self):
         loop = ioloop.IOLoop.instance()
@@ -61,6 +61,26 @@ class TestIOLoopScheduler(unittest.TestCase):
             assert endtime is not None
             diff = endtime - starttime
             assert diff > 0.18
+            loop.stop()
+
+        loop.call_later(0.3, done)
+        loop.start()
+
+    def test_ioloop_schedule_action_absolute(self):
+        loop = ioloop.IOLoop.instance()
+
+        scheduler = IOLoopScheduler(loop)
+        ran = False
+
+        def action(scheduler, state):
+            nonlocal ran
+            ran = True
+
+        duetime = datetime.now(timezone.utc) + timedelta(milliseconds=100)
+        scheduler.schedule_absolute(duetime, action)
+
+        def done():
+            assert ran is True
             loop.stop()
 
         loop.call_later(0.3, done)

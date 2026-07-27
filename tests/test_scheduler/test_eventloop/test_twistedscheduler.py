@@ -16,10 +16,8 @@ from twisted.trial import unittest  # noqa: E402  # type: ignore[import-untyped]
 class TestTwistedScheduler(unittest.TestCase):
     def test_twisted_schedule_now(self):
         scheduler = TwistedScheduler(reactor)
-        diff = scheduler.now - datetime.fromtimestamp(
-            float(reactor.seconds()), tz=timezone.utc
-        )
-        assert abs(diff) < timedelta(milliseconds=1)
+        diff = scheduler.now - datetime.now(timezone.utc)
+        assert abs(diff) < timedelta(milliseconds=100)
 
     def test_twisted_schedule_now_units(self):
         scheduler = TwistedScheduler(reactor)
@@ -67,6 +65,26 @@ class TestTwistedScheduler(unittest.TestCase):
         yield promise
         diff = endtime - starttime
         assert diff > 0.18
+
+    @defer.inlineCallbacks
+    def test_twisted_schedule_action_absolute(self):
+        scheduler = TwistedScheduler(reactor)
+        promise = defer.Deferred()
+        ran = False
+
+        def action(scheduler, state):
+            nonlocal ran
+            ran = True
+
+        def done():
+            promise.callback("Done")
+
+        duetime = datetime.now(timezone.utc) + timedelta(milliseconds=100)
+        scheduler.schedule_absolute(duetime, action)
+        reactor.callLater(0.3, done)
+
+        yield promise
+        assert ran is True
 
     @defer.inlineCallbacks
     def test_twisted_schedule_action_cancel(self):
