@@ -267,14 +267,23 @@ choice to create a pool of reusable worker threads.
 
 .. attention::
 
-    The `GIL <https://wiki.python.org/moin/GlobalInterpreterLock>`_ has the potential to 
-    undermine your concurrency  performance in Python versions prior to 3.13, as it prevents 
-    multiple threads from accessing the same line of code simultaneously. Starting with Python 3.13, 
-    the GIL can be disabled via the free-threading mode (enabled with the `--disable-gil` build option),
-    allowing for true multi-threading parallelism. Libraries like `NumPy <http://www.numpy.org/>`_ 
-    can mitigate GIL limitations for parallel intensive computations as they release the GIL during 
-    operations. RxPy may also minimize thread overlap to some degree. Just be sure to test your application
-    with concurrency and ensure there is a performance gain, especially when using free-threading builds.
+    The `GIL <https://wiki.python.org/moin/GlobalInterpreterLock>`_ has the
+    potential to undermine your concurrency performance, as it prevents
+    multiple threads from executing Python bytecode simultaneously. Libraries
+    like `NumPy <http://www.numpy.org/>`_ can mitigate this for parallel
+    intensive computations, as they release the GIL while they work. RxPY may
+    also minimize thread overlap to some degree.
+
+    Since Python 3.13 there is also a `free-threaded build
+    <https://docs.python.org/3/howto/free-threading-python.html>`_ that runs
+    without the GIL entirely, built with ``--disable-gil`` and offered as an
+    option in the official macOS and Windows installers. It was experimental
+    in 3.13 and became officially supported in 3.14 (:pep:`779`). Note that
+    this is a separate interpreter build, not a runtime switch on a normal
+    installation.
+
+    Either way, be sure to test your application with concurrency and confirm
+    there is an actual performance gain.
 
 The :func:`subscribe_on() <reactivex.operators.subscribe_on>` instructs the source
 :class:`Observable <reactivex.Observable>` at the start of the chain which scheduler to
@@ -433,9 +442,10 @@ Both versions complete in about two seconds rather than six.
     parallelism. To bound how many run at once, use :func:`merge()
     <reactivex.operators.merge>` with a ``max_concurrent`` argument.
 
-Remember that the GIL caveat above applies here too: this pattern pays off for
-IO-bound work, or for calls into libraries that release the GIL, more than it
-does for pure-Python computation.
+Remember that the GIL caveat above applies here too: on a regular build this
+pattern pays off for IO-bound work, or for calls into libraries that release
+the GIL, more than it does for pure-Python computation. On a free-threaded
+build, pure-Python work can scale across threads as well.
 
 
 IO Concurrency
