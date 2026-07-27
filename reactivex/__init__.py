@@ -195,6 +195,10 @@ def combine_latest(
 ) -> Observable[tuple[_A, _B, _C, _D]]: ...
 
 
+@overload
+def combine_latest(*__sources: Observable[Any]) -> Observable[tuple[Any, ...]]: ...
+
+
 def combine_latest(*__sources: Observable[Any]) -> Observable[Any]:
     """Merges the specified observable sequences into one observable
     sequence by creating a tuple whenever any of the observable
@@ -217,6 +221,9 @@ def combine_latest(*__sources: Observable[Any]) -> Observable[Any]:
     Returns:
         An observable sequence containing the result of combining elements from
         each source in given sequence.
+
+    Raises:
+        ValueError: If no observable sources are given.
     """
 
     from .observable.combinelatest import combine_latest_
