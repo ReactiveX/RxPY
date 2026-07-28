@@ -1,5 +1,5 @@
 ---
-last_commit_released: b286407307ace6670f6f0072a8438bc912165d43
+last_commit_released: 50e613bc9467af6ae08c528085857bca3a0397f3
 name: reactivex
 updaters:
   - command: ./scripts/shipit_bump_version.sh {version}
@@ -14,6 +14,14 @@ conventional-commit messages.
 
 PyPI uses PEP 440 (`5.0.0rc1`), while ShipIt records SemVer (`5.0.0-rc.1`) in
 this file; the release script normalizes between them.
+
+## 5.1.1 - 2026-07-28
+
+### 🐞 Bug Fixes
+
+* *(operators)* Synchronize window_with_time_or_count (#812) ([50e613bc](https://github.com/ReactiveX/RxPY/commit/50e613bc9467af6ae08c528085857bca3a0397f3))
+
+<strong><small>[View changes on Github](https://github.com/ReactiveX/RxPY/compare/b286407307ace6670f6f0072a8438bc912165d43..50e613bc9467af6ae08c528085857bca3a0397f3)</small></strong>
 
 ## 5.1.0 - 2026-07-27
 
