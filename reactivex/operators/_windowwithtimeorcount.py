@@ -7,7 +7,7 @@ from reactivex.disposable import (
     SerialDisposable,
     SingleAssignmentDisposable,
 )
-from reactivex.internal import add_ref, curry_flip
+from reactivex.internal import add_ref, curry_flip, synchronized
 from reactivex.scheduler import TimeoutScheduler
 from reactivex.subject import Subject
 
@@ -56,6 +56,7 @@ def window_with_time_or_count_(
             m = SingleAssignmentDisposable()
             timer_d.disposable = m
 
+            @synchronized(source.lock)
             def action(scheduler: abc.SchedulerBase, state: Any = None):
                 nonlocal n, s, window_id
                 if _id != window_id:
@@ -74,6 +75,7 @@ def window_with_time_or_count_(
         observer.on_next(add_ref(s, ref_count_disposable))
         create_timer(0)
 
+        @synchronized(source.lock)
         def on_next(x: _T) -> None:
             nonlocal n, s, window_id
             new_window = False
@@ -93,10 +95,12 @@ def window_with_time_or_count_(
             if new_window:
                 create_timer(new_id)
 
+        @synchronized(source.lock)
         def on_error(e: Exception) -> None:
             s.on_error(e)
             observer.on_error(e)
 
+        @synchronized(source.lock)
         def on_completed() -> None:
             s.on_completed()
             observer.on_completed()
