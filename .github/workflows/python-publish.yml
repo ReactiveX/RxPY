@@ -61,7 +61,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
 
       - name: Build package
-        run: uv build
+        run: uv build --no-sources
 
       # Fail loudly on real publish errors (bad token, network, rejected
       # metadata); only a genuine "already exists" is treated as success so

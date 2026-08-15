@@ -4,6 +4,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "05:00"
+      timezone: "Europe/Oslo"
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore"
@@ -18,6 +21,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "05:00"
+      timezone: "Europe/Oslo"
     open-pull-requests-limit: 5
     commit-message:
       prefix: "ci"

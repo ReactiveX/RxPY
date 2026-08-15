@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync
+          uv sync --locked
 
       - name: Code checks
         run: |
@@ -47,7 +47,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync
+          uv sync --locked
 
       - name: Test with pytest
         run: |
@@ -70,7 +70,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync
+          uv sync --locked
 
       - name: Run coverage tests
         run: |
