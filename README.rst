@@ -157,30 +157,31 @@ you are giving to the operator (or not).
 Development
 -----------
 
-This project is managed using `uv <https://docs.astral.sh/uv/>`_. Code is formatted
-using `Ruff <https://github.com/astral-sh/ruff>`_. Code is statically type checked
-using `pyright <https://github.com/microsoft/pyright>`_.
+This project is managed using `uv <https://docs.astral.sh/uv/>`_, with common commands
+defined in `just <https://just.systems/>`_. Code is formatted using
+`Ruff <https://github.com/astral-sh/ruff>`_ and statically type checked using
+`pyright <https://github.com/microsoft/pyright>`_.
 
-After cloning the repository, install dependencies:
+After cloning the repository, install dependencies with the uv-backed Justfile:
 
 .. code:: console
 
-    uv sync
+    just install
 
 Run unit tests:
 
 .. code:: console
 
-    uv run pytest
+    just test
 
-Run type checking:
-
-.. code:: console
-
-    uv run pyright
-
-Run code checks (manually):
+Run all formatting, linting, type checks, and tests:
 
 .. code:: console
 
-    uv run pre-commit run --all-files
+    just check
+
+Build the package:
+
+.. code:: console
+
+    just build

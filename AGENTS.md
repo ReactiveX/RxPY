@@ -40,29 +40,28 @@ docs/                # Sphinx documentation source
 ## Development Commands
 
 ```bash
-# Install dependencies (uses uv)
-uv sync
+# Install dependencies
+just install
 
 # Run all tests
-uv run pytest
+just test
 
-# Run tests in parallel
-uv run pytest -n auto
+# Run a focused or parallel test selection
+just test -- tests/test_observable/test_map.py
+just test -- -n auto
 
-# Run a specific test file
-uv run pytest tests/test_core/
+# Run linting, formatting checks, type checks, and tests
+just check
 
-# Type checking
-uv run pyright
-uv run mypy reactivex
+# Build source and wheel distributions
+just build
 
-# Linting / formatting
-uv run ruff check .
-uv run ruff format .
-
-# Run pre-commit hooks
-uv run pre-commit run --all-files
+# Refresh the uv lockfile within declared dependency bounds
+just update
 ```
+
+The `Justfile` is the canonical command reference. It delegates environment and
+dependency management to `uv`; do not add Poetry configuration or a Poetry lockfile.
 
 ## Architecture
 
@@ -113,3 +112,10 @@ When labelling issues and PRs, use:
 ## Public API Stability
 
 The `reactivex` package follows semantic versioning. Do not rename, remove, or change the signature of any exported symbol without a tracked issue and a major-version bump. Additions and new operators are always welcome.
+
+## Releases
+
+Use Conventional Commit subjects for every commit and squash-merge title. ShipIt reads
+those commits, updates `CHANGELOG.md`, bumps `pyproject.toml`, `reactivex/_version.py`,
+and `uv.lock`, then opens the release PR. Never hand-edit release changelog entries or
+version bumps, and never publish from a feature branch.
