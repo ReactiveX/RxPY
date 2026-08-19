@@ -1,5 +1,12 @@
 # Changes
 
+## Unreleased
+
+- Reimplement `TimeoutScheduler` with a single timer thread and thread-pool
+  dispatch, so pending timeouts no longer each consume an OS thread. Fixes
+  thread exhaustion under heavy `timeout` / time-based operator use without
+  the EventLoopScheduler deadlock and queue-growth issues discussed in #748.
+
 ## 2.0.0-alpha
 
 - Extension methods and extension class methods have been removed. This

@@ -1,25 +1,47 @@
+import heapq
+import logging
+import threading
 from collections.abc import MutableMapping
-from threading import Lock, Timer
+from concurrent.futures import ThreadPoolExecutor
 from typing import TypeVar
 from weakref import WeakKeyDictionary
 
 from reactivex import abc, typing
-from reactivex.disposable import (
-    CompositeDisposable,
-    Disposable,
-    SingleAssignmentDisposable,
-)
+from reactivex.disposable import Disposable
+from reactivex.internal.concurrency import default_thread_factory
+from reactivex.internal.constants import DELTA_ZERO
+from reactivex.internal.priorityqueue import PriorityQueue
 
 from .periodicscheduler import PeriodicScheduler
+from .scheduleditem import ScheduledItem
+
+log = logging.getLogger("Rx")
 
 _TState = TypeVar("_TState")
 
 
 class TimeoutScheduler(PeriodicScheduler):
-    """A scheduler that schedules work via a timed callback."""
+    """A scheduler that schedules work via timed callbacks.
 
-    _lock = Lock()
+    Uses a single dedicated timer thread to track due times and dispatches
+    each fired action onto a thread pool for execution. This avoids spawning
+    one OS thread per pending timeout while keeping user callbacks off the
+    timer thread (so nested or blocking handlers cannot deadlock other
+    timeouts). Cancellation removes the item from the timer queue promptly.
+
+    Prefer :meth:`singleton` (also used by ``TimeoutScheduler()``). Disposing
+    the process-wide singleton is unsupported and will break subsequent
+    timeout-based operators.
+    """
+
+    _lock = threading.Lock()
     _global: MutableMapping[type, "TimeoutScheduler"] = WeakKeyDictionary()
+
+    _thread_factory: typing.StartableFactory
+    _thread: typing.Startable | None
+    _condition: threading.Condition
+    _queue: PriorityQueue[ScheduledItem]
+    _executor: ThreadPoolExecutor
 
     @classmethod
     def singleton(cls) -> "TimeoutScheduler":
@@ -28,6 +50,14 @@ class TimeoutScheduler(PeriodicScheduler):
                 self = TimeoutScheduler._global[cls]
             except KeyError:
                 self = super().__new__(cls)
+                PeriodicScheduler.__init__(self)
+                self._thread_factory = default_thread_factory
+                self._thread = None
+                self._condition = threading.Condition(threading.Lock())
+                self._queue = PriorityQueue()
+                self._executor = ThreadPoolExecutor(
+                    thread_name_prefix=f"{cls.__name__}-worker"
+                )
                 TimeoutScheduler._global[cls] = self
         return self
 
@@ -48,19 +78,7 @@ class TimeoutScheduler(PeriodicScheduler):
             (best effort).
         """
 
-        sad = SingleAssignmentDisposable()
-
-        def interval() -> None:
-            sad.disposable = self.invoke_action(action, state)
-
-        timer = Timer(0, interval)
-        timer.daemon = True
-        timer.start()
-
-        def dispose() -> None:
-            timer.cancel()
-
-        return CompositeDisposable(sad, Disposable(dispose))
+        return self.schedule_absolute(self.now, action, state=state)
 
     def schedule_relative(
         self,
@@ -80,23 +98,8 @@ class TimeoutScheduler(PeriodicScheduler):
             (best effort).
         """
 
-        seconds = self.to_seconds(duetime)
-        if seconds <= 0.0:
-            return self.schedule(action, state)
-
-        sad = SingleAssignmentDisposable()
-
-        def interval() -> None:
-            sad.disposable = self.invoke_action(action, state)
-
-        timer = Timer(seconds, interval)
-        timer.daemon = True
-        timer.start()
-
-        def dispose() -> None:
-            timer.cancel()
-
-        return CompositeDisposable(sad, Disposable(dispose))
+        duetime = max(DELTA_ZERO, self.to_timedelta(duetime))
+        return self.schedule_absolute(self.now + duetime, action, state=state)
 
     def schedule_absolute(
         self,
@@ -116,8 +119,76 @@ class TimeoutScheduler(PeriodicScheduler):
             (best effort).
         """
 
-        duetime = self.to_datetime(duetime)
-        return self.schedule_relative(duetime - self.now, action, state)
+        dt = self.to_datetime(duetime)
+        si: ScheduledItem = ScheduledItem(self, state, action, dt)
+
+        with self._condition:
+            self._queue.enqueue(si)
+            self._condition.notify()
+            self._ensure_thread()
+
+        return Disposable(lambda: self._cancel(si))
+
+    def _cancel(self, item: ScheduledItem) -> None:
+        with self._condition:
+            was_head = bool(self._queue) and self._queue.peek() is item
+            item.cancel()
+            self._remove_by_identity(item)
+            if was_head:
+                self._condition.notify()
+
+    def _remove_by_identity(self, item: ScheduledItem) -> bool:
+        """Remove *item* from the queue by identity.
+
+        :meth:`PriorityQueue.remove` uses ``==``, and
+        :class:`ScheduledItem` equality is due-time only, which is unsafe
+        when multiple timers share a due time.
+        """
+
+        for index, (queued, _) in enumerate(self._queue.items):
+            if queued is item:
+                self._queue.items.pop(index)
+                heapq.heapify(self._queue.items)
+                if not self._queue.items:
+                    self._queue.count = PriorityQueue.MIN_COUNT
+                return True
+        return False
+
+    def _ensure_thread(self) -> None:
+        """Ensures there is a timer thread running. Call under the gate."""
+
+        if not self._thread:
+            thread = self._thread_factory(self._run)
+            self._thread = thread
+            thread.start()
+
+    def _run(self) -> None:
+        """Timer loop: wait for due items and dispatch them to the pool."""
+
+        while True:
+            ready: list[ScheduledItem] = []
+
+            with self._condition:
+                while True:
+                    if not self._queue:
+                        self._thread = None
+                        return
+
+                    time = self.now
+                    item = self._queue.peek()
+                    seconds = (item.duetime - time).total_seconds()
+                    if seconds > 0:
+                        log.debug("timeout: %s", seconds)
+                        self._condition.wait(seconds)
+                        continue
+
+                    while self._queue and self._queue.peek().duetime <= self.now:
+                        ready.append(self._queue.dequeue())
+                    break
+
+            for item in ready:
+                if not item.is_cancelled():
+                    self._executor.submit(item.invoke)
 
 
 __all__ = ["TimeoutScheduler"]
