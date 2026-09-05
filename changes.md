@@ -2,18 +2,17 @@
 
 ## Unreleased
 
-- Reimplement `TimeoutScheduler` with a single timer thread and dispatch onto
-  a pool of reusable daemon threads, so pending timeouts no longer each
-  consume an OS thread. Fixes thread exhaustion under heavy `timeout` /
-  time-based operator use without the EventLoopScheduler deadlock and
-  queue-growth issues discussed in #748.
+- Reimplement `TimeoutScheduler` with a single timer thread that tracks due
+  times, so pending timeouts no longer each consume an OS thread. Fixes
+  thread exhaustion under heavy `timeout` / time-based operator use without
+  the EventLoopScheduler deadlock and queue-growth issues discussed in #748.
 
-  The pool grows on demand instead of queueing behind busy workers, since a
-  scheduled action may block or wait on another timeout scheduled on the same
-  scheduler; idle workers are reused and retire after a minute. As before,
-  scheduled actions run on daemon threads and never delay interpreter
-  shutdown, and an exception raised by an action stays visible -- it is now
-  logged on the `Rx` logger rather than reported via `threading.excepthook`.
+  A fired action still runs on its own thread rather than on the timer
+  thread, since a scheduled action may block or wait on another timeout
+  scheduled on the same scheduler. As before, scheduled actions run on daemon
+  threads and never delay interpreter shutdown, and an exception raised by an
+  action stays visible -- it is now logged on the `Rx` logger rather than
+  reported via `threading.excepthook`.
 
 ## 2.0.0-alpha
 

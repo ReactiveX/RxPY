@@ -166,7 +166,7 @@ class TestTimeoutScheduler(unittest.TestCase):
         assert "Timeout" in str(nested_error[0])
 
     def test_timeout_blocking_handlers_do_not_starve_later_timers(self):
-        """The dispatch pool grows; it must not queue behind busy workers."""
+        """A blocked action must not hold up actions due after it."""
         scheduler = TimeoutScheduler()
         gate = threading.Event()
         started = threading.Semaphore(0)
@@ -250,7 +250,7 @@ class TestTimeoutScheduler(unittest.TestCase):
 
         assert any("boom" in record for record in captured.output)
 
-        # The worker survives and keeps serving later actions.
+        # The timer thread survives and keeps firing later actions.
         fired = threading.Event()
         scheduler.schedule_relative(
             timedelta(milliseconds=10), lambda sc, st: fired.set()
@@ -319,6 +319,6 @@ class TestTimeoutScheduler(unittest.TestCase):
         for d in disposables:
             d.dispose()
 
-        # One timer thread plus a small pool — not one thread per pending item.
+        # Pending items cost a queue entry, not a thread each.
         assert growth < 50
         assert len(scheduler._queue) <= before_queue

@@ -1,7 +1,6 @@
 import heapq
 import logging
 import threading
-from collections import deque
 from collections.abc import MutableMapping
 from typing import TypeVar
 from weakref import WeakKeyDictionary
@@ -30,78 +29,15 @@ _MAX_WAIT = 3600.0
 _PRUNE_THRESHOLD = 16
 
 
-class _DispatchPool:
-    """Runs scheduled actions on reusable daemon threads.
-
-    The pool grows on demand rather than queueing behind busy workers: a
-    scheduled action is user code that may block, or wait on another timeout
-    scheduled on the same scheduler, so a bounded pool would starve or
-    deadlock it. Idle workers are reused, and exit after ``IDLE_TIMEOUT``
-    seconds without work.
-
-    Workers are daemon threads and the pool registers no ``atexit`` hook, so
-    a running action never delays interpreter shutdown. (``ThreadPoolExecutor``
-    joins its workers on exit, and swallows action exceptions into futures
-    nobody reads.)
-    """
-
-    IDLE_TIMEOUT = 60.0
-
-    def __init__(self, name_prefix: str) -> None:
-        self._name_prefix = name_prefix
-        self._condition = threading.Condition(threading.Lock())
-        self._work: deque[typing.Action] = deque()
-        self._idle = 0
-        self._spawned = 0
-
-    def submit(self, work: typing.Action) -> None:
-        """Runs *work* on a worker thread, starting one if all are busy."""
-
-        with self._condition:
-            self._work.append(work)
-            self._condition.notify()
-            if self._idle >= len(self._work):
-                return
-
-            self._spawned += 1
-            name = f"{self._name_prefix}-{self._spawned}"
-
-        thread = threading.Thread(target=self._run, name=name, daemon=True)
-        try:
-            thread.start()
-        except RuntimeError:  # interpreter is shutting down
-            log.debug("could not start %s", name)
-
-    def _run(self) -> None:
-        while True:
-            with self._condition:
-                while not self._work:
-                    self._idle += 1
-                    signalled = self._condition.wait(self.IDLE_TIMEOUT)
-                    self._idle -= 1
-                    if not signalled and not self._work:
-                        return
-
-                work = self._work.popleft()
-
-            try:
-                work()
-            except Exception:  # pylint: disable=broad-except
-                # A Timer thread used to report this through
-                # threading.excepthook. Keep it visible, but keep the worker.
-                log.exception("Unhandled exception in scheduled action")
-
-
 class TimeoutScheduler(PeriodicScheduler):
     """A scheduler that schedules work via timed callbacks.
 
-    Uses a single dedicated timer thread to track due times and dispatches
-    each fired action onto a pool of daemon worker threads. This avoids
-    spawning one OS thread per *pending* timeout -- pending timeouts cost a
-    queue entry -- while keeping user callbacks off the timer thread, so a
-    blocking or nested handler cannot stall other timeouts. The pool grows on
-    demand for exactly that reason. Cancellation removes the item from the
-    timer queue.
+    Uses a single dedicated timer thread to track due times, and runs each
+    fired action on its own daemon thread. This avoids spawning one OS thread
+    per *pending* timeout -- pending timeouts cost a queue entry -- while
+    keeping user callbacks off the timer thread, so a blocking or nested
+    handler cannot stall other timeouts. Cancellation removes the item from
+    the timer queue.
 
     Prefer :meth:`singleton` (also used by ``TimeoutScheduler()``). Disposing
     the process-wide singleton is unsupported and will break subsequent
@@ -111,12 +47,10 @@ class TimeoutScheduler(PeriodicScheduler):
     _lock = threading.Lock()
     _global: MutableMapping[type, "TimeoutScheduler"] = WeakKeyDictionary()
 
-    _thread_factory: typing.StartableFactory
     _thread: typing.Startable | None
     _condition: threading.Condition
     _queue: PriorityQueue[ScheduledItem]
     _cancelled: int
-    _pool: _DispatchPool
 
     @classmethod
     def singleton(cls) -> "TimeoutScheduler":
@@ -126,12 +60,10 @@ class TimeoutScheduler(PeriodicScheduler):
             except KeyError:
                 self = super().__new__(cls)
                 PeriodicScheduler.__init__(self)
-                self._thread_factory = default_thread_factory
                 self._thread = None
                 self._condition = threading.Condition(threading.Lock())
                 self._queue = PriorityQueue()
                 self._cancelled = 0
-                self._pool = _DispatchPool(f"{cls.__name__}-worker")
                 TimeoutScheduler._global[cls] = self
         return self
 
@@ -220,6 +152,12 @@ class TimeoutScheduler(PeriodicScheduler):
                 self._condition.notify()
                 return
 
+            # This count is deliberately approximate, and drifts both ways:
+            # item.cancel() above runs outside the gate, so a concurrent
+            # _prune may have evicted this item before we count it, and the
+            # timer thread may dequeue a cancelled item this counter never
+            # saw. It only steers the heuristic below -- hence the max(0, ...)
+            # guards where it is decremented, and the recount in _prune.
             self._cancelled += 1
             if self._cancelled >= _PRUNE_THRESHOLD and self._cancelled * 2 >= len(
                 self._queue
@@ -243,12 +181,33 @@ class TimeoutScheduler(PeriodicScheduler):
         """Ensures there is a timer thread running. Call under the gate."""
 
         if not self._thread:
-            thread = self._thread_factory(self._run)
+            thread = default_thread_factory(self._run)
             self._thread = thread
             thread.start()
 
+    @staticmethod
+    def _dispatch(item: ScheduledItem) -> None:
+        """Runs a due action on its own daemon thread.
+
+        Threads are daemons, so a running action never delays interpreter
+        shutdown -- as with the ``threading.Timer`` this replaced.
+        """
+
+        def invoke() -> None:
+            try:
+                item.invoke()
+            except Exception:  # pylint: disable=broad-except
+                # A Timer thread used to report this through
+                # threading.excepthook. Keep it visible.
+                log.exception("Unhandled exception in scheduled action")
+
+        try:
+            default_thread_factory(invoke).start()
+        except RuntimeError:  # interpreter is shutting down
+            log.debug("could not dispatch a scheduled action")
+
     def _run(self) -> None:
-        """Timer loop: wait for due items and dispatch them to the pool."""
+        """Timer loop: wait for due items and run them off this thread."""
 
         try:
             while True:
@@ -257,13 +216,10 @@ class TimeoutScheduler(PeriodicScheduler):
                     return
 
                 for item in ready:
-                    if item.is_cancelled():
-                        continue
-                    try:
-                        self._pool.submit(item.invoke)
-                    except Exception:  # pylint: disable=broad-except
-                        # Dispatching one action must not take down the loop.
-                        log.exception("Could not dispatch a scheduled action")
+                    # Re-check: the item may have been cancelled since
+                    # _collect_ready released the gate.
+                    if not item.is_cancelled():
+                        self._dispatch(item)
         except Exception:  # pylint: disable=broad-except
             log.exception("TimeoutScheduler timer thread stopped unexpectedly")
 
@@ -280,38 +236,33 @@ class TimeoutScheduler(PeriodicScheduler):
 
         with self._condition:
             try:
-                return self._collect_ready_core()
+                while True:
+                    while self._queue and self._queue.peek().is_cancelled():
+                        self._queue.dequeue()
+                        self._cancelled = max(0, self._cancelled - 1)
+
+                    if not self._queue:
+                        self._thread = None
+                        return None
+
+                    seconds = (self._queue.peek().duetime - self.now).total_seconds()
+                    if seconds > 0:
+                        log.debug("timeout: %s", seconds)
+                        self._condition.wait(min(seconds, _MAX_WAIT))
+                        continue
+
+                    now = self.now
+                    ready: list[ScheduledItem] = []
+                    while self._queue and self._queue.peek().duetime <= now:
+                        item = self._queue.dequeue()
+                        if item.is_cancelled():
+                            self._cancelled = max(0, self._cancelled - 1)
+                        else:
+                            ready.append(item)
+                    return ready
             except BaseException:
                 self._thread = None
                 raise
-
-    def _collect_ready_core(self) -> list[ScheduledItem] | None:
-        """Body of :meth:`_collect_ready`. Call under the gate."""
-
-        while True:
-            while self._queue and self._queue.peek().is_cancelled():
-                self._queue.dequeue()
-                self._cancelled = max(0, self._cancelled - 1)
-
-            if not self._queue:
-                self._thread = None
-                return None
-
-            seconds = (self._queue.peek().duetime - self.now).total_seconds()
-            if seconds > 0:
-                log.debug("timeout: %s", seconds)
-                self._condition.wait(min(seconds, _MAX_WAIT))
-                continue
-
-            now = self.now
-            ready: list[ScheduledItem] = []
-            while self._queue and self._queue.peek().duetime <= now:
-                item = self._queue.dequeue()
-                if item.is_cancelled():
-                    self._cancelled = max(0, self._cancelled - 1)
-                else:
-                    ready.append(item)
-            return ready
 
 
 __all__ = ["TimeoutScheduler"]
