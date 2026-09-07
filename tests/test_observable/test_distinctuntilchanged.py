@@ -1,4 +1,5 @@
 import unittest
+from typing import NoReturn
 
 import reactivex
 from reactivex import operators as ops
@@ -18,7 +19,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> NoReturn:
     raise RxException(ex)
 
 
@@ -282,7 +283,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(ops.distinct_until_changed(lambda x: _raise(ex)))
+            return xs.pipe(ops.distinct_until_changed(lambda x: _raise(Exception(ex))))
 
         results = scheduler.start(create)
         assert results.messages == [on_error(210, ex)]
@@ -296,7 +297,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
 
         def create():
             return xs.pipe(
-                ops.distinct_until_changed(comparer=lambda x, y: _raise(ex)),
+                ops.distinct_until_changed(comparer=lambda x, y: _raise(Exception(ex))),
             )
 
         results = scheduler.start(create)

@@ -1,10 +1,10 @@
-from asyncio import Future
 from typing import TypeVar, Union
 
 import reactivex
 from reactivex import Observable, abc
 from reactivex.disposable import CompositeDisposable, SingleAssignmentDisposable
-from reactivex.internal import curry_flip
+from reactivex.internal import curry_flip, is_future
+from reactivex.typing import AnyFuture
 
 _T = TypeVar("_T")
 
@@ -38,13 +38,13 @@ def exclusive_(source: Observable[Observable[_T]]) -> Observable[_T]:
 
         g.add(m)
 
-        def on_next(inner_source: Union[Observable[_T], "Future[_T]"]) -> None:
+        def on_next(inner_source: Union[Observable[_T], "AnyFuture[_T]"]) -> None:
             if not has_current[0]:
                 has_current[0] = True
 
                 inner_source = (
                     reactivex.from_future(inner_source)
-                    if isinstance(inner_source, Future)
+                    if is_future(inner_source)
                     else inner_source
                 )
 

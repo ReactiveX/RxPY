@@ -1,4 +1,3 @@
-from asyncio import Future
 from typing import Any, TypeVar, Union
 
 from reactivex import Observable, abc, from_future
@@ -7,14 +6,15 @@ from reactivex.disposable import (
     SerialDisposable,
     SingleAssignmentDisposable,
 )
-from reactivex.internal import curry_flip
+from reactivex.internal import curry_flip, is_future
+from reactivex.typing import AnyFuture
 
 _T = TypeVar("_T")
 
 
 @curry_flip
 def switch_latest_(
-    source: Observable[Union[Observable[_T], "Future[_T]"]],
+    source: Observable[Union[Observable[_T], "AnyFuture[_T]"]],
 ) -> Observable[_T]:
     """Transforms an observable sequence of observable sequences into
     an observable sequence producing values only from the most
@@ -42,7 +42,7 @@ def switch_latest_(
         is_stopped = [False]
         latest = [0]
 
-        def on_next(inner_source: Union[Observable[_T], "Future[_T]"]) -> None:
+        def on_next(inner_source: Union[Observable[_T], "AnyFuture[_T]"]) -> None:
             nonlocal source
 
             d = SingleAssignmentDisposable()
@@ -53,7 +53,7 @@ def switch_latest_(
             inner_subscription.disposable = d
 
             # Check if Future or Observable
-            if isinstance(inner_source, Future):
+            if is_future(inner_source):
                 obs = from_future(inner_source)
             else:
                 obs = inner_source

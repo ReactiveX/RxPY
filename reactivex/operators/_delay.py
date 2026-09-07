@@ -20,7 +20,7 @@ _T = TypeVar("_T")
 
 def observable_delay_timespan(
     source: Observable[_T],
-    duetime: typing.RelativeTime,
+    duetime: typing.AbsoluteOrRelativeTime,
     scheduler: abc.SchedulerBase | None = None,
 ) -> Observable[_T]:
     def subscribe(
@@ -119,7 +119,7 @@ def observable_delay_timespan(
 @curry_flip
 def delay_(
     source: Observable[_T],
-    duetime: typing.RelativeTime,
+    duetime: typing.AbsoluteOrRelativeTime,
     scheduler: abc.SchedulerBase | None = None,
 ) -> Observable[_T]:
     """Time shifts the observable sequence.

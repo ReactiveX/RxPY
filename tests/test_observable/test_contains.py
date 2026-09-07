@@ -108,7 +108,7 @@ class TestContains(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_next(210, 2))
 
         def create():
-            def comparer(a, b):
+            def comparer(a: int, b: int) -> bool:
                 raise Exception(ex)
 
             return xs.pipe(ops.contains(42, comparer))

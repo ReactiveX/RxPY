@@ -1,6 +1,9 @@
 import unittest
 
+from reactivex import Observable, abc
 from reactivex import operators as ops
+from reactivex.disposable import Disposable
+from reactivex.scheduler import ImmediateScheduler
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -134,3 +137,20 @@ class TestPairwise(unittest.TestCase):
         assert results.messages == [on_next(240, (4, 3))]
 
         assert xs.subscriptions == [subscribe(200, 280)]
+
+    def test_pairwise_forwards_scheduler_to_source(self) -> None:
+        captured: dict[str, abc.SchedulerBase | None] = {}
+        expected: abc.SchedulerBase = ImmediateScheduler()
+
+        def source_subscribe(
+            observer: abc.ObserverBase[int],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
+            captured["scheduler"] = scheduler
+            observer.on_completed()
+            return Disposable()
+
+        source: Observable[int] = Observable(source_subscribe)
+        source.pipe(ops.pairwise()).subscribe(scheduler=expected)
+
+        assert captured["scheduler"] is expected

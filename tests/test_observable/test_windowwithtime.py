@@ -33,10 +33,10 @@ class TestWindowWithTime(unittest.TestCase):
         def create():
             def mapper(ys, i):
                 def proj(y):
-                    return "%s %s" % (i, y)
+                    return f"{i} {y}"
 
                 return ys.pipe(
-                    ops.map(proj), ops.concat(reactivex.return_value("%s end" % i))
+                    ops.map(proj), ops.concat(reactivex.return_value(f"{i} end"))
                 )
 
             return xs.pipe(
@@ -81,10 +81,10 @@ class TestWindowWithTime(unittest.TestCase):
         def create():
             def mapper(ys, i):
                 def proj(y):
-                    return "%s %s" % (i, y)
+                    return f"{i} {y}"
 
                 return ys.pipe(
-                    ops.map(proj), ops.concat(reactivex.return_value("%s end" % i))
+                    ops.map(proj), ops.concat(reactivex.return_value(f"{i} end"))
                 )
 
             return xs.pipe(
@@ -137,7 +137,7 @@ class TestWindowWithTime(unittest.TestCase):
 
         def create():
             def mapper(w, i):
-                return w.pipe(ops.map(lambda x: "%s %s" % (i, x)))
+                return w.pipe(ops.map(lambda x: f"{i} {x}"))
 
             return xs.pipe(
                 ops.window_with_time(100, 70), ops.map_indexed(mapper), ops.merge_all()
@@ -179,7 +179,7 @@ class TestWindowWithTime(unittest.TestCase):
 
         def create():
             def mapper(w, i):
-                return w.pipe(ops.map(lambda x: "%s %s" % (i, x)))
+                return w.pipe(ops.map(lambda x: f"{i} {x}"))
 
             return xs.pipe(
                 ops.window_with_time(100, 70), ops.map_indexed(mapper), ops.merge_all()
@@ -220,7 +220,7 @@ class TestWindowWithTime(unittest.TestCase):
 
         def create():
             def mapper(w, i):
-                return w.pipe(ops.map(lambda x: "%s %s" % (i, x)))
+                return w.pipe(ops.map(lambda x: f"{i} {x}"))
 
             return xs.pipe(
                 ops.window_with_time(100, 70), ops.map_indexed(mapper), ops.merge_all()
@@ -255,7 +255,7 @@ class TestWindowWithTime(unittest.TestCase):
 
         def create():
             def mapper(w, i):
-                return w.pipe(ops.map(lambda x: "%s %s" % (i, x)))
+                return w.pipe(ops.map(lambda x: f"{i} {x}"))
 
             return xs.pipe(
                 ops.window_with_time(100), ops.map_indexed(mapper), ops.merge_all()

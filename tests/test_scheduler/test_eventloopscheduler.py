@@ -1,7 +1,7 @@
 import os
 import threading
 import unittest
-from datetime import timedelta
+from datetime import datetime, timedelta
 from time import sleep
 
 import pytest
@@ -132,7 +132,7 @@ class TestEventLoopScheduler(unittest.TestCase):
         scheduler = EventLoopScheduler(exit_if_empty=True)
         gate = threading.Semaphore(0)
         starttime = default_now()
-        endtime = None
+        endtime: datetime | None = None
 
         def action(scheduler, state):
             nonlocal endtime
@@ -144,6 +144,7 @@ class TestEventLoopScheduler(unittest.TestCase):
         # There is no guarantee that the event-loop thread ends before the
         # test thread is re-scheduled, give it some time to always run.
         sleep(0.1)
+        assert endtime is not None
         diff = endtime - starttime
         assert diff > timedelta(milliseconds=180)
         assert scheduler._has_thread() is False
@@ -152,7 +153,7 @@ class TestEventLoopScheduler(unittest.TestCase):
         scheduler = EventLoopScheduler(exit_if_empty=True)
         gate = threading.Semaphore(0)
         starttime = default_now()
-        endtime = None
+        endtime: datetime | None = None
 
         def action(scheduler, state):
             nonlocal endtime
@@ -164,6 +165,7 @@ class TestEventLoopScheduler(unittest.TestCase):
         # There is no guarantee that the event-loop thread ends before the
         # test thread is re-scheduled, give it some time to always run.
         sleep(0.1)
+        assert endtime is not None
         diff = endtime - starttime
         assert diff < timedelta(milliseconds=180)
         assert scheduler._has_thread() is False
@@ -241,12 +243,12 @@ class TestEventLoopScheduler(unittest.TestCase):
 
         ran = False
 
-        def action(scheduler, state):
+        def action(state: None) -> None:
             nonlocal ran
             ran = True
 
         with pytest.raises(DisposedException):
-            scheduler.schedule_periodic(0.1, action)
+            scheduler.schedule_periodic(0.1, action)  # type: ignore[arg-type]
 
         assert ran is False
         assert scheduler._has_thread() is False

@@ -22,6 +22,12 @@ class Scheduler(abc.SchedulerBase):
         scheduled on a scheduler will adhere to the time denoted by this
         property.
 
+        This is the current wall clock time in UTC, so absolute duetimes
+        are ordinary ``datetime.now(timezone.utc)`` values. Schedulers
+        driven by an event loop with its own (typically monotonic) clock
+        still report wall clock time here, so that scheduling relative to
+        it stays compatible across schedulers.
+
         Returns:
              The scheduler's current time, as a datetime instance.
         """

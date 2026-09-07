@@ -15,9 +15,8 @@ class TestEventletScheduler(unittest.TestCase):
     @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_eventlet_schedule_now(self):
         scheduler = EventletScheduler(eventlet)
-        hub = eventlet.hubs.get_hub()
-        diff = scheduler.now - datetime.fromtimestamp(hub.clock(), tz=timezone.utc)
-        assert abs(diff) < timedelta(milliseconds=1)
+        diff = scheduler.now - datetime.now(timezone.utc)
+        assert abs(diff) < timedelta(milliseconds=100)
 
     @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_eventlet_schedule_now_units(self):
@@ -55,6 +54,20 @@ class TestEventletScheduler(unittest.TestCase):
         assert endtime is not None
         diff = endtime - starttime
         assert diff > timedelta(seconds=0.18)
+
+    def test_eventlet_schedule_action_absolute(self):
+        scheduler = EventletScheduler(eventlet)
+        ran = False
+
+        def action(scheduler, state):
+            nonlocal ran
+            ran = True
+
+        duetime = datetime.now(timezone.utc) + timedelta(milliseconds=100)
+        scheduler.schedule_absolute(duetime, action)
+
+        eventlet.sleep(0.3)
+        assert ran is True
 
     def test_eventlet_schedule_action_cancel(self):
         scheduler = EventletScheduler(eventlet)

@@ -8,7 +8,7 @@ from .exceptions import (
     SequenceContainsNoElementsError,
 )
 from .priorityqueue import PriorityQueue
-from .utils import NotSet, add_ref, alias, infinite
+from .utils import NotSet, add_ref, alias, infinite, is_future
 
 __all__ = [
     "add_ref",
@@ -19,6 +19,7 @@ __all__ = [
     "default_comparer",
     "default_error",
     "infinite",
+    "is_future",
     "noop",
     "NotSet",
     "SequenceContainsNoElementsError",

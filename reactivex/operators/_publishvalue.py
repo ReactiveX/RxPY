@@ -17,6 +17,28 @@ def publish_value_(
     Callable[[Observable[_T1]], ConnectableObservable[_T1]]
     | Callable[[Observable[_T1]], Observable[_T2]]
 ):
+    """Returns an observable sequence that is the result of invoking the
+    mapper on a connectable observable sequence that shares a single
+    subscription to the underlying sequence and starts with *initial_value*.
+
+    This operator is a specialization of :func:`multicast` using a
+    :class:`~reactivex.subject.BehaviorSubject`.
+
+    Args:
+        initial_value: The value received by observers upon subscription
+            before the source emits its first element.
+        mapper: [Optional] Selector function which can use the multicasted
+            source sequence as many times as needed, without causing multiple
+            subscriptions to the source sequence.
+
+    Returns:
+        When *mapper* is omitted: a
+        :class:`~reactivex.ConnectableObservable` backed by a
+        :class:`~reactivex.subject.BehaviorSubject` seeded with
+        *initial_value*.  When *mapper* is provided: an observable
+        sequence that contains the elements of a sequence produced by
+        multicasting the source sequence within the mapper function.
+    """
     if mapper:
 
         def subject_factory(

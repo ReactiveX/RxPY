@@ -21,7 +21,7 @@ class TestImmediateScheduler(unittest.TestCase):
         assert scheduler[0] is scheduler[1]
 
         gate = [threading.Semaphore(0), threading.Semaphore(0)]
-        scheduler = [None, None]
+        scheduler: list[ImmediateScheduler | None] = [None, None]
 
         def run(idx):
             scheduler[idx] = ImmediateScheduler()

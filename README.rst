@@ -28,7 +28,7 @@ ReactiveX for Python v5
 For v3.X please go to the `v3 branch
 <https://github.com/ReactiveX/RxPY/tree/release/v3.2.x>`_.
 
-ReactiveX for Python v4.x runs on `Python <http://www.python.org/>`_ 3.9 or above. To
+ReactiveX for Python v5.x runs on `Python <http://www.python.org/>`_ 3.10 or above. To
 install:
 
 .. code:: console
@@ -104,7 +104,7 @@ Read the `documentation
 the principles of ReactiveX and get the complete reference of the available
 operators.
 
-If you need to migrate code from RxPY v1.x or v3.x, read the `migration
+If you need to migrate code from RxPY v1.x, v3.x, or v4.x, read the `migration
 <https://rxpy.readthedocs.io/en/latest/migration.html>`_ section.
 
 There is also a list of third party documentation available `here
@@ -123,7 +123,7 @@ Differences from .NET and RxJS
 
 ReactiveX for Python is a fairly complete implementation of
 `Rx <http://reactivex.io/>`_ with more than
-`120 operators <https://rxpy.readthedocs.io/en/latest/operators.html>`_, and
+`150 operators <https://rxpy.readthedocs.io/en/latest/operators.html>`_, and
 over `1300 passing unit-tests <https://coveralls.io/github/ReactiveX/RxPY>`_. RxPY
 is mostly a direct port of RxJS, but also borrows a bit from Rx.NET and RxJava in
 terms of threading and blocking operators.
@@ -157,30 +157,31 @@ you are giving to the operator (or not).
 Development
 -----------
 
-This project is managed using `uv <https://docs.astral.sh/uv/>`_. Code is formatted
-using `Ruff <https://github.com/astral-sh/ruff>`_. Code is statically type checked
-using `pyright <https://github.com/microsoft/pyright>`_.
+This project is managed using `uv <https://docs.astral.sh/uv/>`_, with common commands
+defined in `just <https://just.systems/>`_. Code is formatted using
+`Ruff <https://github.com/astral-sh/ruff>`_ and statically type checked using
+`pyright <https://github.com/microsoft/pyright>`_.
 
-After cloning the repository, install dependencies:
+After cloning the repository, install dependencies with the uv-backed Justfile:
 
 .. code:: console
 
-    uv sync
+    just install
 
 Run unit tests:
 
 .. code:: console
 
-    uv run pytest
+    just test
 
-Run type checking:
-
-.. code:: console
-
-    uv run pyright
-
-Run code checks (manually):
+Run all formatting, linting, type checks, and tests:
 
 .. code:: console
 
-    uv run pre-commit run --all-files
+    just check
+
+Build the package:
+
+.. code:: console
+
+    just build

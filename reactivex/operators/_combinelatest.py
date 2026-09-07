@@ -1,4 +1,4 @@
-from typing import Any, cast
+from typing import Any
 
 import reactivex
 from reactivex import Observable
@@ -29,10 +29,7 @@ def combine_latest_(
 
     sources: tuple[Observable[Any], ...] = (source, *others)
 
-    ret: Observable[tuple[Any, ...]] = cast(
-        Observable[tuple[Any, ...]], reactivex.combine_latest(*sources)
-    )
-    return ret
+    return reactivex.combine_latest(*sources)
 
 
 __all__ = ["combine_latest_"]

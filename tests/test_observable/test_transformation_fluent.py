@@ -4,10 +4,9 @@ This module tests the transformation operators fluent syntax from Transformation
 ensuring they produce identical results to the pipe-based functional syntax.
 """
 
-from typing import Callable
-
 import reactivex as rx
-from reactivex import Observable, operators as ops
+from reactivex import Observable
+from reactivex import operators as ops
 
 
 class TestMapMethodChaining:
@@ -16,7 +15,9 @@ class TestMapMethodChaining:
     def test_map_equivalence(self) -> None:
         """Verify fluent and functional styles are equivalent."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
-        mapper: Callable[[int], int] = lambda x: x * 2
+
+        def mapper(x: int) -> int:
+            return x * 2
 
         # Fluent style
         fluent_result: Observable[int] = source.map(mapper)
@@ -65,7 +66,9 @@ class TestReduceMethodChaining:
     def test_reduce_equivalence(self) -> None:
         """Verify fluent and functional styles are equivalent."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
-        accumulator: Callable[[int, int], int] = lambda acc, x: acc + x
+
+        def accumulator(acc: int, x: int) -> int:
+            return acc + x
 
         # Fluent style
         fluent_result: Observable[int] = source.reduce(accumulator)
@@ -85,7 +88,9 @@ class TestReduceMethodChaining:
     def test_reduce_with_seed(self) -> None:
         """Test reduce with an initial seed value."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
-        accumulator: Callable[[int, int], int] = lambda acc, x: acc + x
+
+        def accumulator(acc: int, x: int) -> int:
+            return acc + x
 
         result: Observable[int] = source.reduce(accumulator, 10)
 
@@ -97,7 +102,9 @@ class TestReduceMethodChaining:
     def test_reduce_type_transformation(self) -> None:
         """Test reduce with type transformation (int to str)."""
         source: Observable[int] = rx.of(1, 2, 3)
-        accumulator: Callable[[str, int], str] = lambda acc, x: acc + str(x)
+
+        def accumulator(acc: str, x: int) -> str:
+            return acc + str(x)
 
         result: Observable[str] = source.reduce(accumulator, "")
 
@@ -113,7 +120,9 @@ class TestScanMethodChaining:
     def test_scan_equivalence(self) -> None:
         """Verify fluent and functional styles are equivalent."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
-        accumulator: Callable[[int, int], int] = lambda acc, x: acc + x
+
+        def accumulator(acc: int, x: int) -> int:
+            return acc + x
 
         # Fluent style
         fluent_result: Observable[int] = source.scan(accumulator)
@@ -133,7 +142,9 @@ class TestScanMethodChaining:
     def test_scan_with_seed(self) -> None:
         """Test scan with an initial seed value."""
         source: Observable[int] = rx.of(1, 2, 3, 4, 5)
-        accumulator: Callable[[int, int], int] = lambda acc, x: acc + x
+
+        def accumulator(acc: int, x: int) -> int:
+            return acc + x
 
         result: Observable[int] = source.scan(accumulator, 0)
 
@@ -145,7 +156,9 @@ class TestScanMethodChaining:
     def test_scan_type_transformation(self) -> None:
         """Test scan with type transformation (int to list)."""
         source: Observable[int] = rx.of(1, 2, 3)
-        accumulator: Callable[[list[int], int], list[int]] = lambda acc, x: acc + [x]
+
+        def accumulator(acc: list[int], x: int) -> list[int]:
+            return acc + [x]
 
         result: Observable[list[int]] = source.scan(accumulator, [])
 

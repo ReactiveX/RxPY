@@ -44,7 +44,7 @@ class TestPluckAttr(unittest.TestCase):
         scheduler = TestScheduler()
 
         class DummyClass:
-            def __init__(self, prop):
+            def __init__(self, prop: int) -> None:
                 self.prop = prop
 
         xs = scheduler.create_hot_observable(

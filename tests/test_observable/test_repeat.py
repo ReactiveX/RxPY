@@ -18,7 +18,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> None:
     raise RxException(ex)
 
 
@@ -143,21 +143,23 @@ class TestRepeat(unittest.TestCase):
     def test_repeat_observable_throws(self):
         scheduler1 = TestScheduler()
         xs = reactivex.return_value(11).pipe(ops.repeat())
-        xs.subscribe(lambda x: _raise("ex"), scheduler=scheduler1)
+        xs.subscribe(lambda x: _raise(Exception("ex")), scheduler=scheduler1)
 
         with self.assertRaises(RxException):
             scheduler1.start()
 
         scheduler2 = TestScheduler()
         ys = reactivex.throw("ex").pipe(ops.repeat())
-        ys.subscribe(lambda ex: _raise("ex"), scheduler=scheduler2)
+        ys.subscribe(lambda ex: _raise(Exception("ex")), scheduler=scheduler2)
 
         with self.assertRaises(Exception):
             scheduler2.start()
 
         scheduler3 = TestScheduler()
         zs = reactivex.return_value(1).pipe(ops.repeat())
-        d = zs.subscribe(on_completed=lambda: _raise("ex"), scheduler=scheduler3)
+        d = zs.subscribe(
+            on_completed=lambda: _raise(Exception("ex")), scheduler=scheduler3
+        )
 
         scheduler3.schedule_absolute(210, lambda sc, st: d.dispose())
         scheduler3.start()
@@ -236,14 +238,14 @@ class TestRepeat(unittest.TestCase):
     def test_repeat_observable_repeat_count_throws(self):
         scheduler1 = TestScheduler()
         xs = reactivex.return_value(1).pipe(ops.repeat(3))
-        xs.subscribe(lambda x: _raise("ex"), scheduler=scheduler1)
+        xs.subscribe(lambda x: _raise(Exception("ex")), scheduler=scheduler1)
 
         with self.assertRaises(RxException):
             scheduler1.start()
 
         scheduler2 = TestScheduler()
         ys = reactivex.throw("ex1").pipe(ops.repeat(3))
-        ys.subscribe(on_error=lambda ex: _raise("ex2"), scheduler=scheduler2)
+        ys.subscribe(on_error=lambda ex: _raise(Exception("ex2")), scheduler=scheduler2)
 
         with self.assertRaises(RxException):
             scheduler2.start()

@@ -1,18 +1,20 @@
-from asyncio import Future
 from collections.abc import Callable
 from typing import TypeVar, Union
 
 import reactivex
 from reactivex import Observable, abc
 from reactivex.disposable import SerialDisposable, SingleAssignmentDisposable
-from reactivex.internal import curry_flip
+from reactivex.internal import curry_flip, is_future
+from reactivex.typing import AnyFuture
 
 _T = TypeVar("_T")
 
 
 def catch_handler(
     source: Observable[_T],
-    handler: Callable[[Exception, Observable[_T]], Union[Observable[_T], "Future[_T]"]],
+    handler: Callable[
+        [Exception, Observable[_T]], Union[Observable[_T], "AnyFuture[_T]"]
+    ],
 ) -> Observable[_T]:
     def subscribe(
         observer: abc.ObserverBase[_T], scheduler: abc.SchedulerBase | None = None
@@ -29,9 +31,7 @@ def catch_handler(
                 observer.on_error(ex)
                 return
 
-            result = (
-                reactivex.from_future(result) if isinstance(result, Future) else result
-            )
+            result = reactivex.from_future(result) if is_future(result) else result
             d = SingleAssignmentDisposable()
             subscription.disposable = d
             d.disposable = result.subscribe(observer, scheduler=scheduler)

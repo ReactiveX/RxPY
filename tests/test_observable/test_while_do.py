@@ -1,7 +1,9 @@
 import unittest
 
 import reactivex
+from reactivex import abc
 from reactivex import operators as ops
+from reactivex.disposable import Disposable
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -102,10 +104,13 @@ class TestWhile(unittest.TestCase):
                 n[0] += 1
                 return n[0] < 100
 
-            def subscribe(o, scheduler=None):
+            def subscribe(
+                o: abc.ObserverBase[int],
+                scheduler: abc.SchedulerBase | None = None,
+            ) -> abc.DisposableBase:
                 o.on_next(1)
                 o.on_completed()
-                return lambda: None
+                return Disposable()
 
             return reactivex.create(subscribe).pipe(ops.while_do(predicate))
 

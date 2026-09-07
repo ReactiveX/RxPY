@@ -1,8 +1,10 @@
 import asyncio
 import unittest
+from typing import cast
 
 import reactivex
 import reactivex.operators as ops
+from reactivex import Observable
 from reactivex.internal.exceptions import SequenceContainsNoElementsError
 from reactivex.subject import Subject
 from reactivex.testing import ReactiveTest
@@ -102,7 +104,7 @@ class TestToFuture(unittest.TestCase):
         async def using_sub():
             # Since the subject never completes, this await statement
             # will never be complete either. We wait forever.
-            await reactivex.using(lambda: sub, lambda s: s)
+            await reactivex.using(lambda: sub, lambda s: cast(Observable[int], s))
 
         async def go():
             await asyncio.wait_for(using_sub(), 0.1)

@@ -5,7 +5,8 @@ ensuring they produce identical results to the pipe-based functional syntax.
 """
 
 import reactivex as rx
-from reactivex import Observable, operators as ops
+from reactivex import Observable
+from reactivex import operators as ops
 
 
 class TestMergeMethodChaining:
@@ -164,7 +165,8 @@ class TestJoinMethodChaining:
         right: Observable[int] = rx.of(4, 5, 6)
 
         # Use rx.never() for duration to keep windows open
-        duration_mapper = lambda _: rx.never()
+        def duration_mapper(_):
+            return rx.never()
 
         fluent_result: Observable[tuple[int, int]] = left.join(
             right, duration_mapper, duration_mapper
@@ -192,7 +194,8 @@ class TestGroupJoinMethodChaining:
         right: Observable[int] = rx.of(4, 5)
 
         # Use rx.never() for duration to keep windows open
-        duration_mapper = lambda _: rx.never()
+        def duration_mapper(_):
+            return rx.never()
 
         fluent_result: Observable[tuple[int, Observable[int]]] = left.group_join(
             right, duration_mapper, duration_mapper
