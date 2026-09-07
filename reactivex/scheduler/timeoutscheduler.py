@@ -1,5 +1,6 @@
 import heapq
 import logging
+import sys
 import threading
 from collections.abc import MutableMapping
 from typing import TypeVar
@@ -7,7 +8,6 @@ from weakref import WeakKeyDictionary
 
 from reactivex import abc, typing
 from reactivex.disposable import Disposable
-from reactivex.internal.concurrency import default_thread_factory
 from reactivex.internal.constants import DELTA_ZERO
 from reactivex.internal.priorityqueue import PriorityQueue
 
@@ -130,7 +130,8 @@ class TimeoutScheduler(PeriodicScheduler):
 
         with self._condition:
             self._queue.enqueue(si)
-            self._condition.notify()
+            if self._queue.peek() is si:
+                self._condition.notify()
             self._ensure_thread()
 
         return Disposable(lambda: self._cancel(si))
@@ -181,9 +182,17 @@ class TimeoutScheduler(PeriodicScheduler):
         """Ensures there is a timer thread running. Call under the gate."""
 
         if not self._thread:
-            thread = default_thread_factory(self._run)
+            thread = threading.Thread(
+                target=self._run, daemon=True, name="RxTimeoutTimer"
+            )
             self._thread = thread
-            thread.start()
+            started = False
+            try:
+                thread.start()
+                started = True
+            finally:
+                if not started:
+                    self._thread = None
 
     @staticmethod
     def _dispatch(item: ScheduledItem) -> None:
@@ -194,6 +203,8 @@ class TimeoutScheduler(PeriodicScheduler):
         """
 
         def invoke() -> None:
+            if item.is_cancelled():
+                return
             try:
                 item.invoke()
             except Exception:  # pylint: disable=broad-except
@@ -202,9 +213,16 @@ class TimeoutScheduler(PeriodicScheduler):
                 log.exception("Unhandled exception in scheduled action")
 
         try:
-            default_thread_factory(invoke).start()
-        except RuntimeError:  # interpreter is shutting down
-            log.debug("could not dispatch a scheduled action")
+            threading.Thread(target=invoke, daemon=True, name="RxTimeout").start()
+        except RuntimeError:
+            if sys.is_finalizing():
+                # Nothing left to run the action on, and nobody left to tell.
+                log.debug("interpreter is shutting down; dropped an action")
+            else:
+                # Out of OS threads. The action is lost, and whoever was
+                # waiting on it -- a timeout's on_error, say -- is never
+                # notified, so this must not be a debug-level event.
+                log.exception("could not dispatch a scheduled action; dropped it")
 
     def _run(self) -> None:
         """Timer loop: wait for due items and run them off this thread."""
@@ -222,47 +240,47 @@ class TimeoutScheduler(PeriodicScheduler):
                         self._dispatch(item)
         except Exception:  # pylint: disable=broad-except
             log.exception("TimeoutScheduler timer thread stopped unexpectedly")
+        finally:
+            with self._condition:
+                if self._thread is threading.current_thread():
+                    self._thread = None
 
     def _collect_ready(self) -> list[ScheduledItem] | None:
         """Waits until items are due and returns them.
 
         Returns None once the queue has drained, meaning the timer thread
         should stop. ``_thread`` is cleared under the same lock acquisition
-        that observed the empty queue -- on the way out of a failure too, so
-        that ``_ensure_thread`` never mistakes a dead thread for a live one
-        and stops firing timeouts altogether. Either way a concurrent
-        ``schedule_*`` sees a live thread or starts a new one.
+        that observed the empty queue, so a concurrent ``schedule_*`` either
+        sees a live thread or starts a new one. Exceptional exit is handled
+        by ``_run``.
         """
 
         with self._condition:
-            try:
-                while True:
-                    while self._queue and self._queue.peek().is_cancelled():
-                        self._queue.dequeue()
-                        self._cancelled = max(0, self._cancelled - 1)
+            while True:
+                while self._queue and self._queue.peek().is_cancelled():
+                    self._queue.dequeue()
+                    self._cancelled = max(0, self._cancelled - 1)
 
-                    if not self._queue:
+                if not self._queue:
+                    if self._thread is threading.current_thread():
                         self._thread = None
-                        return None
+                    return None
 
-                    seconds = (self._queue.peek().duetime - self.now).total_seconds()
-                    if seconds > 0:
-                        log.debug("timeout: %s", seconds)
-                        self._condition.wait(min(seconds, _MAX_WAIT))
-                        continue
+                seconds = (self._queue.peek().duetime - self.now).total_seconds()
+                if seconds > 0:
+                    log.debug("timeout: %s", seconds)
+                    self._condition.wait(min(seconds, _MAX_WAIT))
+                    continue
 
-                    now = self.now
-                    ready: list[ScheduledItem] = []
-                    while self._queue and self._queue.peek().duetime <= now:
-                        item = self._queue.dequeue()
-                        if item.is_cancelled():
-                            self._cancelled = max(0, self._cancelled - 1)
-                        else:
-                            ready.append(item)
-                    return ready
-            except BaseException:
-                self._thread = None
-                raise
+                now = self.now
+                ready: list[ScheduledItem] = []
+                while self._queue and self._queue.peek().duetime <= now:
+                    item = self._queue.dequeue()
+                    if item.is_cancelled():
+                        self._cancelled = max(0, self._cancelled - 1)
+                    else:
+                        ready.append(item)
+                return ready
 
 
 __all__ = ["TimeoutScheduler"]

@@ -102,7 +102,7 @@ class TestTimeoutScheduler(unittest.TestCase):
         d = scheduler.schedule_relative(timedelta(milliseconds=300), action)
         d.dispose()
 
-        sleep(0.1)
+        sleep(0.4)
         assert ran is False
 
     def test_timeout_cancel_evicts_queue(self):
@@ -145,7 +145,7 @@ class TestTimeoutScheduler(unittest.TestCase):
         assert len(scheduler._queue) - before <= 32
 
     def test_timeout_nested_blocking_handler_does_not_deadlock(self):
-        """User/fallback work runs on the pool, not the timer thread."""
+        """User/fallback work runs off the timer thread."""
         sched = TimeoutScheduler.singleton()
         done = threading.Event()
         nested_error = []
@@ -233,6 +233,38 @@ class TestTimeoutScheduler(unittest.TestCase):
             assert fired.wait(5) is True
         finally:
             far.dispose()
+
+    def test_timeout_timer_thread_crash_is_recovered(self):
+        """A dead timer thread must not silence the process-wide singleton."""
+        scheduler = TimeoutScheduler()
+        original = TimeoutScheduler._collect_ready
+        crashed = threading.Event()
+
+        def crash_once(self):
+            if not crashed.is_set():
+                crashed.set()
+                raise ValueError("synthetic timer-thread failure")
+            return original(self)
+
+        with self.assertLogs("Rx", level="ERROR"):
+            TimeoutScheduler._collect_ready = crash_once
+            try:
+                scheduler.schedule_relative(
+                    timedelta(milliseconds=10), lambda sc, st: None
+                )
+                assert crashed.wait(5) is True
+                sleep(0.1)
+                # The pointer must not outlive the thread, or nothing would
+                # ever start a replacement.
+                assert scheduler._thread is None
+            finally:
+                TimeoutScheduler._collect_ready = original
+
+        fired = threading.Event()
+        scheduler.schedule_relative(
+            timedelta(milliseconds=10), lambda sc, st: fired.set()
+        )
+        assert fired.wait(5) is True
 
     def test_timeout_action_exception_is_reported(self):
         """Exceptions used to reach threading.excepthook; keep them visible."""

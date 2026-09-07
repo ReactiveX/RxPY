@@ -9,10 +9,11 @@
 
   A fired action still runs on its own thread rather than on the timer
   thread, since a scheduled action may block or wait on another timeout
-  scheduled on the same scheduler. As before, scheduled actions run on daemon
-  threads and never delay interpreter shutdown, and an exception raised by an
-  action stays visible -- it is now logged on the `Rx` logger rather than
-  reported via `threading.excepthook`.
+  scheduled on the same scheduler. A burst of due actions can therefore
+  still spawn many daemon threads -- just not while they are pending.
+  As before, scheduled actions never delay interpreter shutdown, and an
+  exception raised by an action stays visible -- it is now logged on the
+  `Rx` logger rather than reported via `threading.excepthook`.
 
 ## 2.0.0-alpha
 
