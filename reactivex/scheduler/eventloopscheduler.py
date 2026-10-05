@@ -138,13 +138,21 @@ class EventLoopScheduler(PeriodicScheduler, abc.DisposableBase):
     def _has_thread(self) -> bool:
         """Checks if there is an event loop thread running."""
         with self._condition:
-            return not self._is_disposed and self._thread is not None
+            return not self._is_disposed and self._is_thread_alive()
+
+    def _is_thread_alive(self) -> bool:
+        thread = self._thread
+        if thread is None:
+            return False
+        if isinstance(thread, threading.Thread):
+            return thread.is_alive()
+        return True
 
     def _ensure_thread(self) -> None:
         """Ensures there is an event loop thread running. Should be
         called under the gate."""
 
-        if not self._thread:
+        if not self._is_thread_alive():
             thread = self._thread_factory(self.run)
             self._thread = thread
             thread.start()

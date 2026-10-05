@@ -89,3 +89,19 @@ class TestThreadPoolScheduler(unittest.TestCase):
 
         sleep(0.1)
         assert ran is False
+
+    def test_schedule_action_nested(self):
+        evt = threading.Event()
+        nt = thread_pool_scheduler
+        result = []
+
+        def action(scheduler, state):
+            result.append(state)
+            if state < 3:
+                scheduler.schedule(action, state + 1)
+            else:
+                evt.set()
+
+        nt.schedule(action, 0)
+        evt.wait(1)
+        assert result == [0, 1, 2, 3]

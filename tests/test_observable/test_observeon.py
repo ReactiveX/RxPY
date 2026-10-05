@@ -96,3 +96,52 @@ class TestObserveOn(unittest.TestCase):
         )
 
         assert expected_subscribe_scheduler == actual_subscribe_scheduler
+
+    def test_observe_on_observer_throws(self):
+        scheduler = TestScheduler()
+        ex = Exception("ex")
+        xs = scheduler.create_hot_observable(
+            on_next(210, 1), on_next(220, 2), on_completed(230)
+        )
+        results = scheduler.create_observer()
+        errors = []
+
+        def on_next_throw(value):
+            raise ex
+
+        def action(scheduler, state):
+            source = xs.pipe(ops.observe_on(scheduler))
+            source.subscribe(on_next_throw, errors.append)
+            source.subscribe(results)
+
+        scheduler.schedule_absolute(ReactiveTest.subscribed, action)
+        scheduler.start()
+
+        assert errors == [ex]
+        assert results.messages == [
+            on_next(210, 1),
+            on_next(220, 2),
+            on_completed(230),
+        ]
+        assert xs.subscriptions == [subscribe(200, 210), subscribe(200, 230)]
+
+    def test_observe_on_observer_throws_without_on_error(self):
+        scheduler = TestScheduler()
+        ex = Exception("ex")
+        xs = scheduler.create_hot_observable(on_next(210, 1), on_next(220, 2))
+
+        def on_next_throw(value):
+            raise ex
+
+        def action(scheduler, state):
+            xs.pipe(ops.observe_on(scheduler)).subscribe(on_next_throw)
+
+        scheduler.schedule_absolute(ReactiveTest.subscribed, action)
+
+        with self.assertLogs("Rx", level="ERROR") as logs:
+            scheduler.start()
+
+        assert len(logs.records) == 1
+        assert logs.records[0].exc_info is not None
+        assert logs.records[0].exc_info[1] is ex
+        assert xs.subscriptions == [subscribe(200, 210)]
