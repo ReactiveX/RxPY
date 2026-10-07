@@ -1,3 +1,4 @@
+import logging
 import threading
 from typing import Any, TypeVar
 
@@ -5,6 +6,8 @@ from reactivex import abc, typing
 from reactivex.disposable import SerialDisposable
 
 from .observer import Observer
+
+log = logging.getLogger("Rx")
 
 _T_in = TypeVar("_T_in", contravariant=True)
 
@@ -68,11 +71,16 @@ class ScheduledObserver(Observer[_T_in]):
 
         try:
             work()
-        except Exception:
+        except Exception as e:
             with self.lock:
                 parent.queue = []
                 parent.has_faulted = True
-            raise
+            try:
+                parent.observer.on_error(e)
+            except Exception:
+                # Raising here would kill the scheduler thread, so log instead.
+                log.exception("Unhandled exception in scheduled observer")
+            return
 
         self.scheduler.schedule(self.run)
 
