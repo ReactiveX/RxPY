@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from time import sleep
 
 import pytest
@@ -14,7 +14,7 @@ class TestIOLoopScheduler(unittest.TestCase):
     def test_ioloop_schedule_now(self):
         loop = ioloop.IOLoop.instance()
         scheduler = IOLoopScheduler(loop)
-        diff = scheduler.now - datetime.now(timezone.utc)
+        diff = scheduler.now - datetime.now(UTC)
         assert abs(diff) < timedelta(milliseconds=100)
 
     def test_ioloop_schedule_now_units(self):
@@ -76,7 +76,7 @@ class TestIOLoopScheduler(unittest.TestCase):
             nonlocal ran
             ran = True
 
-        duetime = datetime.now(timezone.utc) + timedelta(milliseconds=100)
+        duetime = datetime.now(UTC) + timedelta(milliseconds=100)
         scheduler.schedule_absolute(duetime, action)
 
         def done():

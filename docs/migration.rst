@@ -1,5 +1,12 @@
 .. _migration:
 
+Python Version Support
+======================
+
+The next release requires Python 3.11 or newer and adds support for Python 3.15.
+Python 3.10 is no longer supported. Upgrade to Python 3.11 or newer before
+upgrading RxPY, or remain on RxPY v5 while using Python 3.10.
+
 Migration v5
 ============
 

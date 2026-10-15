@@ -2,7 +2,7 @@ import asyncio
 import os
 import threading
 import unittest
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -17,7 +17,7 @@ class TestAsyncIOThreadSafeScheduler(unittest.TestCase):
         loop = asyncio.new_event_loop()
         try:
             scheduler = AsyncIOThreadSafeScheduler(loop)
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
             diff = scheduler.now - now
             assert abs(diff) < timedelta(
                 milliseconds=100

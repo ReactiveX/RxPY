@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any, NoReturn, TypeVar
 
 _T = TypeVar("_T")
@@ -14,7 +14,7 @@ def identity(x: _T) -> _T:
 
 
 def default_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def default_comparer(x: _T, y: _T) -> bool:

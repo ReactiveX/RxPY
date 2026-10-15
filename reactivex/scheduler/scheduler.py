@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TypeVar
 
 from reactivex import abc, typing
@@ -151,7 +151,7 @@ class Scheduler(abc.SchedulerBase):
         if isinstance(value, timedelta):
             value = UTC_ZERO + value
         elif not isinstance(value, datetime):
-            value = datetime.fromtimestamp((value), tz=timezone.utc)
+            value = datetime.fromtimestamp((value), tz=UTC)
 
         return value
 

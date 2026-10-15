@@ -15,7 +15,7 @@ RxPY is [ReactiveX](http://reactivex.io) for Python — a library for composing 
 
 - **Repository**: https://github.com/ReactiveX/RxPY
 - **Documentation**: https://rxpy.readthedocs.io/en/latest/
-- **Python**: 3.10–3.14
+- **Python**: 3.11–3.15
 
 ## Repository Layout
 

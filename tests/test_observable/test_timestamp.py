@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import reactivex
 from reactivex import operators as ops
@@ -17,7 +17,7 @@ created = ReactiveTest.created
 class Timestamp:
     def __init__(self, value, timestamp):
         if isinstance(timestamp, datetime):
-            timestamp = timestamp - datetime.fromtimestamp(0, tz=timezone.utc)
+            timestamp = timestamp - datetime.fromtimestamp(0, tz=UTC)
             timestamp = int(
                 timestamp.seconds
             )  # FIXME: Must fix when tests run at fraction of seconds.
