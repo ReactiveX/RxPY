@@ -197,7 +197,7 @@ Use granular exclude patterns that get removed as files are fixed:
 ```toml
 [tool.ruff]
 line-length = 88
-target-version = "py310"
+target-version = "py311"
 exclude = [
     ".git",
     "__pycache__",
@@ -239,7 +239,7 @@ exclude = [
 ]
 reportImportCycles = false
 reportMissingImports = false
-pythonVersion = "3.10"
+pythonVersion = "3.11"
 typeCheckingMode = "strict"
 ```
 

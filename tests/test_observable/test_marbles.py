@@ -334,7 +334,7 @@ class TestFromMarble(unittest.TestCase):
         expected = [
             ReactiveTest.on_next(200.1, "ab"),
             ReactiveTest.on_next(200.6, "c"),
-            ReactiveTest.on_next(200.8, str(12.5)),
+            ReactiveTest.on_next(200.8, 12.5),
             ReactiveTest.on_next(200.8, "def"),
             ReactiveTest.on_next(202.0, 6),
             ReactiveTest.on_completed(202.0),
@@ -524,7 +524,7 @@ class TestHot(unittest.TestCase):
         expected = [
             ReactiveTest.on_next(200.1, "ab"),
             ReactiveTest.on_next(200.6, "c"),
-            ReactiveTest.on_next(200.8, str(12.5)),
+            ReactiveTest.on_next(200.8, 12.5),
             ReactiveTest.on_next(200.8, "def"),
             ReactiveTest.on_next(202.0, 6),
             ReactiveTest.on_completed(202.0),

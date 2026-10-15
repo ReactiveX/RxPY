@@ -3,7 +3,7 @@ name = "reactivex"
 version = "5.1.0"
 description = "ReactiveX (Rx) for Python"
 authors = [{ name = "Dag Brattli", email = "dag@brattli.net" }]
-requires-python = ">= 3.10, < 4.0"
+requires-python = ">= 3.11, < 4.0"
 readme = "README.rst"
 license = "MIT"
 classifiers = [
@@ -13,11 +13,11 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -63,7 +63,7 @@ build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 88
-target-version = "py310"
+target-version = "py311"
 exclude = [
     ".git",
     "__pycache__",
@@ -91,7 +91,7 @@ convention = "google"
 known-first-party = ["reactivex"]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 follow_imports = "silent"
 files = ["reactivex"]
 disallow_any_generics = true
@@ -111,5 +111,5 @@ exclude = [
 ]
 reportImportCycles = false
 reportMissingImports = false
-pythonVersion = "3.10"
+pythonVersion = "3.11"
 typeCheckingMode = "strict"

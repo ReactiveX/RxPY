@@ -1,6 +1,6 @@
 import os
 import unittest
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from time import sleep
 
 import pytest
@@ -15,7 +15,7 @@ class TestEventletScheduler(unittest.TestCase):
     @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
     def test_eventlet_schedule_now(self):
         scheduler = EventletScheduler(eventlet)
-        diff = scheduler.now - datetime.now(timezone.utc)
+        diff = scheduler.now - datetime.now(UTC)
         assert abs(diff) < timedelta(milliseconds=100)
 
     @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
@@ -63,7 +63,7 @@ class TestEventletScheduler(unittest.TestCase):
             nonlocal ran
             ran = True
 
-        duetime = datetime.now(timezone.utc) + timedelta(milliseconds=100)
+        duetime = datetime.now(UTC) + timedelta(milliseconds=100)
         scheduler.schedule_absolute(duetime, action)
 
         eventlet.sleep(0.3)

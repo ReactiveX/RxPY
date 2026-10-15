@@ -27,7 +27,7 @@ class TimeInterval:
     def __str__(self):
         return f"{self.value}@{self.interval}"
 
-    def equals(self, other):
+    def __eq__(self, other):
         return other.interval == self.interval and other.value == self.value
 
 

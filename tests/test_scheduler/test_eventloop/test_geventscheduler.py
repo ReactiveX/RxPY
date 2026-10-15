@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -11,7 +11,7 @@ gevent = pytest.importorskip("gevent")
 class TestGEventScheduler(unittest.TestCase):
     def test_gevent_schedule_now(self):
         scheduler = GEventScheduler(gevent)
-        diff = scheduler.now - datetime.now(timezone.utc)
+        diff = scheduler.now - datetime.now(UTC)
         assert abs(diff) < timedelta(milliseconds=100)
 
     def test_gevent_schedule_now_units(self):
@@ -58,7 +58,7 @@ class TestGEventScheduler(unittest.TestCase):
             nonlocal ran
             ran = True
 
-        duetime = datetime.now(timezone.utc) + timedelta(milliseconds=100)
+        duetime = datetime.now(UTC) + timedelta(milliseconds=100)
         scheduler.schedule_absolute(duetime, action)
 
         gevent.sleep(0.3)

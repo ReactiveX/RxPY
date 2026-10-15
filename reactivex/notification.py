@@ -96,6 +96,9 @@ class Notification(Generic[_T]):
         """Indicates whether this instance and a specified object are
         equal."""
 
+        if isinstance(self, OnNext) and isinstance(other, OnNext):
+            return self.value == other.value
+
         other_string = "" if not other else str(other)
         return str(self) == other_string
 

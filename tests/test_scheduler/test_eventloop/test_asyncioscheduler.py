@@ -1,7 +1,7 @@
 import asyncio
 import os
 import unittest
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import pytest
@@ -18,7 +18,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
         loop = asyncio.new_event_loop()
         try:
             scheduler = AsyncIOScheduler(loop)
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
             diff = scheduler.now - now
             assert abs(diff) < timedelta(
                 milliseconds=100
@@ -99,7 +99,7 @@ class TestAsyncIOScheduler(unittest.TestCase):
                     nonlocal ran
                     ran = True
 
-                duetime = datetime.now(timezone.utc) + timedelta(milliseconds=100)
+                duetime = datetime.now(UTC) + timedelta(milliseconds=100)
                 scheduler.schedule_absolute(duetime, action)
 
                 await asyncio.sleep(0.3)
