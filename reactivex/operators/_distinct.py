@@ -75,7 +75,13 @@ def distinct_(
                     observer.on_error(ex)
                     return
 
-            if hashset.push(key):
+            try:
+                is_new = hashset.push(key)
+            except Exception as ex:
+                observer.on_error(ex)
+                return
+
+            if is_new:
                 observer.on_next(x)
 
         return source.subscribe(
