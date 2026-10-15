@@ -38,12 +38,27 @@ def take_until_(
         observer: abc.ObserverBase[_T],
         scheduler: abc.SchedulerBase | None = None,
     ) -> abc.DisposableBase:
+        stopped = False
+
         def on_completed(_: _T) -> None:
+            nonlocal stopped
+            stopped = True
             observer.on_completed()
+
+        def on_error(error: Exception) -> None:
+            nonlocal stopped
+            stopped = True
+            observer.on_error(error)
+
+        other_subscription = obs.subscribe(
+            on_completed, on_error, noop, scheduler=scheduler
+        )
+        if stopped:
+            return other_subscription
 
         return CompositeDisposable(
             source.subscribe(observer, scheduler=scheduler),
-            obs.subscribe(on_completed, observer.on_error, noop, scheduler=scheduler),
+            other_subscription,
         )
 
     return Observable(subscribe)
