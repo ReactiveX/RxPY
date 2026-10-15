@@ -1,4 +1,7 @@
+from decimal import Decimal
 from typing import Any, cast
+
+import pytest
 
 from reactivex.abc import ObserverBase
 from reactivex.notification import OnCompleted, OnError, OnNext
@@ -34,6 +37,30 @@ def test_on_next_equality() -> None:
     assert not n3.equals(n1)
     assert not n1.equals(n4)
     assert not n4.equals(n1)
+
+
+@pytest.mark.parametrize(
+    "left, right, expected",
+    [
+        (1.0, "1.0", False),
+        (1, 1.0, True),
+        (None, "None", False),
+        (None, None, True),
+        (2**53, 2**53 + 1, False),
+        (Decimal(0), Decimal("0.0"), True),
+        ({"a": 42, "b": 5}, {"b": 5, "a": 42}, True),
+    ],
+)
+def test_on_next_equality_uses_values(
+    left: object, right: object, expected: bool
+) -> None:
+    n1 = OnNext(left)
+    n2 = OnNext(right)
+    assert n1.equals(n2) is expected
+    assert n2.equals(n1) is expected
+    assert (n1 == n2) is expected
+    assert (n2 == n1) is expected
+    assert (on_next(300, left) == on_next(300, right)) is expected
 
 
 def test_on_next_tostring() -> None:

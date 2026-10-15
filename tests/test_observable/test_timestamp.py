@@ -28,7 +28,7 @@ class Timestamp:
     def __str__(self):
         return f"{self.value}@{self.timestamp}"
 
-    def equals(self, other):
+    def __eq__(self, other):
         return other.timestamp == self.timestamp and other.value == self.value
 
 
