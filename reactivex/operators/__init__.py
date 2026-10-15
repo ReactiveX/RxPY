@@ -3097,7 +3097,7 @@ def starmap() -> Callable[[Observable[_T]], Observable[_T]]: ...
 @overload
 def starmap(
     mapper: Callable[[Unpack[_Ts]], _T],
-) -> Callable[[Observable[tuple[Unpack[_Ts]]]], Observable[_T]]: ...
+) -> Callable[[Observable[tuple[*_Ts]]], Observable[_T]]: ...
 
 
 def starmap(
@@ -3140,7 +3140,7 @@ def starmap(
 
         return compose(map(identity_fn))
 
-    def starred(values: tuple[Unpack[_Ts]]) -> _T:
+    def starred(values: tuple[*_Ts]) -> _T:
         return mapper(*values)
 
     return compose(map(starred))
@@ -3148,7 +3148,7 @@ def starmap(
 
 def starmap_indexed(
     mapper: Callable[[Unpack[_Ts], int], _T],
-) -> Callable[[Observable[tuple[Unpack[_Ts], int]]], Observable[_T]]:
+) -> Callable[[Observable[tuple[*_Ts, int]]], Observable[_T]]:
     """Variant of :func:`starmap` which accepts an indexed mapper.
 
     Note: This operator expects the input to already be indexed as flat tuples
@@ -3175,7 +3175,7 @@ def starmap_indexed(
         of the source.
     """
 
-    def starred(indexed_values: tuple[Unpack[_Ts], int]) -> _T:
+    def starred(indexed_values: tuple[*_Ts, int]) -> _T:
         return mapper(*indexed_values)
 
     return compose(map(starred))

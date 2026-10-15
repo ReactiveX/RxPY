@@ -416,7 +416,7 @@ class TransformationMixin(Generic[_T]):
 
     @overload
     def starmap(
-        self: TransformationMixin[tuple[Unpack[_Ts]]],
+        self: TransformationMixin[tuple[*_Ts]],
         mapper: Callable[[Unpack[_Ts]], _B],
     ) -> Observable[_B]:
         """Typed overload with variadic generics."""
@@ -459,7 +459,7 @@ class TransformationMixin(Generic[_T]):
 
     @overload
     def starmap_indexed(
-        self: TransformationMixin[tuple[Unpack[_Ts]]],
+        self: TransformationMixin[tuple[*_Ts]],
         mapper_indexed: Callable[[Unpack[_Ts], int], _B],
     ) -> Observable[_B]: ...
 

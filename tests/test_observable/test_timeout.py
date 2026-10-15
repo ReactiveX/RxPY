@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import NoReturn
 
 from reactivex import operators as ops
@@ -242,9 +242,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(100, -1))
 
         def create():
-            return xs.pipe(
-                ops.timeout(datetime.fromtimestamp(400, tz=timezone.utc), ys)
-            )
+            return xs.pipe(ops.timeout(datetime.fromtimestamp(400, tz=UTC), ys))
 
         results = scheduler.start(create)
 
@@ -258,9 +256,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(100, -1))
 
         def create():
-            return xs.pipe(
-                ops.timeout(datetime.fromtimestamp(400, tz=timezone.utc), ys)
-            )
+            return xs.pipe(ops.timeout(datetime.fromtimestamp(400, tz=UTC), ys))
 
         results = scheduler.start(create)
 
@@ -275,9 +271,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(100, -1))
 
         def create():
-            return xs.pipe(
-                ops.timeout(datetime.fromtimestamp(400, tz=timezone.utc), ys)
-            )
+            return xs.pipe(ops.timeout(datetime.fromtimestamp(400, tz=UTC), ys))
 
         results = scheduler.start(create)
 
@@ -293,9 +287,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable(on_next(100, -1))
 
         def create():
-            return xs.pipe(
-                ops.timeout(datetime.fromtimestamp(400, tz=timezone.utc), ys)
-            )
+            return xs.pipe(ops.timeout(datetime.fromtimestamp(400, tz=UTC), ys))
 
         results = scheduler.start(create)
 
@@ -311,9 +303,7 @@ class TestTimeout(unittest.TestCase):
         ys = scheduler.create_cold_observable()
 
         def create():
-            return xs.pipe(
-                ops.timeout(datetime.fromtimestamp(400, tz=timezone.utc), ys)
-            )
+            return xs.pipe(ops.timeout(datetime.fromtimestamp(400, tz=UTC), ys))
 
         results = scheduler.start(create)
 
