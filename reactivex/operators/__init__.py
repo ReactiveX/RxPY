@@ -482,8 +482,8 @@ def concat_map(
         :alt: concat_map
 
         ---1------------2-----3----------------------------|
-        [        concat_map(i: 10*i---10*i---10*i|)        ]
-        ---10---10---10-20---20---(20,30)---30---30--------|
+        [                   concat_map(i: 10*i)                ]
+        ---10---10---10-20---20---20,30---30---30--------|
 
     Examples:
         >>> op = concat_map(lambda i: reactivex.of(i, i * 2))
@@ -3183,7 +3183,8 @@ def starmap_indexed(
     """Variant of :func:`starmap` which accepts an indexed mapper.
 
     Note: This operator expects the input to already be indexed as flat tuples
-    of (*values, index), which is what map_indexed provides via zip_with_iterable.
+    of ``(*values, index)``, which is what map_indexed provides via
+    zip_with_iterable.
 
     .. marble::
         :alt: starmap_indexed
@@ -3346,7 +3347,7 @@ def switch_map(
         :alt: switch_map
 
         ---a----------b-------c---------|
-        [   switch_map(x: x---x---x|)   ]
+        [       switch_map(x: x)      ]
         ---a---a---a--b---b---c---c---c-|
 
     Examples:
@@ -3386,7 +3387,7 @@ def switch_map_indexed(
         :alt: switch_map
 
         ---a----------b-------c---------------------|
-        [ switch_map_indexed(x,i: x*i---x*i---x*i|) ]
+        [        switch_map_indexed(x,i: x*i)       ]
         ---a---a---a--bb---bb-ccc---ccc---ccc-------|
 
     Examples:
