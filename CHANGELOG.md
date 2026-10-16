@@ -1,5 +1,5 @@
 ---
-last_commit_released: b286407307ace6670f6f0072a8438bc912165d43
+last_commit_released: d009aa11b192f98662d544567997fd96a70af7fd
 name: reactivex
 updaters:
   - command: ./scripts/shipit_bump_version.sh {version}
@@ -14,6 +14,27 @@ conventional-commit messages.
 
 PyPI uses PEP 440 (`5.0.0rc1`), while ShipIt records SemVer (`5.0.0-rc.1`) in
 this file; the release script normalizes between them.
+
+## 6.0.0 - 2026-10-16
+
+### 🏗️ Breaking changes
+
+* Drop Python 3.10 and support Python 3.15 (#836) ([3a3a1da5](https://github.com/ReactiveX/RxPY/commit/3a3a1da5197fab721eb29f47b1f83be0109518ca))
+
+### 🚀 Features
+
+* *(operators)* Add concat_all and complete operator index (#837) ([89d8b298](https://github.com/ReactiveX/RxPY/commit/89d8b298e812d7db083c87245db3d0580216a38b))
+
+### 🐞 Bug Fixes
+
+* *(docs)* Restore Read the Docs build (#838) ([9595a7b3](https://github.com/ReactiveX/RxPY/commit/9595a7b3990171e5c771d659c6140df091202329))
+* *(notification)* Compare OnNext payloads by value (#831) ([591396ac](https://github.com/ReactiveX/RxPY/commit/591396ac86380b2af4c968294cecbcae16e17099))
+* *(operators)* Synchronize window_with_time_or_count (#812) ([50e613bc](https://github.com/ReactiveX/RxPY/commit/50e613bc9467af6ae08c528085857bca3a0397f3))
+* *(operators)* Route distinct comparer failures to on_error (#833) ([42d3698d](https://github.com/ReactiveX/RxPY/commit/42d3698df4b729dda74eeeb7105f6222c13c3d6a))
+* *(operators)* Preserve None values in skip_last (#835) ([34d125f3](https://github.com/ReactiveX/RxPY/commit/34d125f300998ca80d7832249701560adfa2e9d8))
+* *(operators)* Preserve fallback scheduler after timeout completion (#834) ([2d0321ae](https://github.com/ReactiveX/RxPY/commit/2d0321ae1da20f73f0b9e30ddf134f996b835761))
+
+<strong><small>[View changes on Github](https://github.com/ReactiveX/RxPY/compare/b286407307ace6670f6f0072a8438bc912165d43..d009aa11b192f98662d544567997fd96a70af7fd)</small></strong>
 
 ## 5.1.0 - 2026-07-27
 
