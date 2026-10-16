@@ -1,5 +1,9 @@
 import unittest
+from typing import NoReturn
 
+import pytest
+
+import reactivex
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
 
@@ -17,7 +21,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> NoReturn:
     raise RxException(ex)
 
 
@@ -204,3 +208,39 @@ class TestTimeoutWithSelector(unittest.TestCase):
             subscribe(350, 420),
             subscribe(420, 450),
         ]
+
+
+@pytest.mark.parametrize("timeout_completes", [False, True])
+@pytest.mark.parametrize("first_timeout", [False, True])
+def test_timeout_fallback_preserves_scheduler(
+    timeout_completes: bool, first_timeout: bool
+) -> None:
+    scheduler = TestScheduler()
+    source = scheduler.create_hot_observable(
+        on_next(210, 1), on_next(300, 2), on_completed(400)
+    )
+    timeout = scheduler.create_cold_observable(
+        on_completed(5) if timeout_completes else on_next(5, 0)
+    )
+    fallback = reactivex.defer(
+        lambda scheduler: reactivex.timer(10, scheduler=scheduler)
+    )
+
+    results = scheduler.start(
+        lambda: source.pipe(
+            ops.timeout_with_mapper(
+                timeout if first_timeout else reactivex.never(),
+                lambda _: timeout,
+                fallback,
+            )
+        )
+    )
+
+    timeout_at = 205 if first_timeout else 215
+    expected = [] if first_timeout else [on_next(210, 1)]
+    expected += [on_next(timeout_at + 10, 0), on_completed(timeout_at + 10)]
+    assert results.messages == expected
+    assert source.subscriptions == [subscribe(200, timeout_at)]
+    assert timeout.subscriptions == [
+        subscribe(200 if first_timeout else 210, timeout_at)
+    ]

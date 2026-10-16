@@ -49,7 +49,9 @@ def pairwise_(source: Observable[_T]) -> Observable[tuple[_T, _T]]:
             if pair:
                 observer.on_next(pair)
 
-        return source.subscribe(on_next, observer.on_error, observer.on_completed)
+        return source.subscribe(
+            on_next, observer.on_error, observer.on_completed, scheduler=scheduler
+        )
 
     return Observable(subscribe)
 

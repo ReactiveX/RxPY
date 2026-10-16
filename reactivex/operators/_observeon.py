@@ -20,6 +20,21 @@ def observe_on_(
     side-effects that require to be run on a scheduler, use
     subscribe_on.
 
+    Note that this does not process items in parallel. Notifications
+    are delivered one at a time, so this changes which thread the
+    callbacks run on, not how many of them run at once. To parallelize
+    the items of a sequence, give each item its own subscription with
+    flat_map and merge the results, for example::
+
+        source.pipe(
+            ops.flat_map(
+                lambda value: reactivex.just(value).pipe(
+                    ops.subscribe_on(scheduler),
+                    ops.map(long_running_function),
+                )
+            )
+        )
+
     Examples:
         >>> res = source.pipe(observe_on(scheduler))
         >>> res = observe_on(scheduler)(source)

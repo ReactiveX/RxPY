@@ -12,14 +12,17 @@ def sleep(tm: float) -> float:
     return tm
 
 
-def output(result: str) -> None:
+def output(result: float) -> None:
     print("%d seconds" % result)
 
 
-with concurrent.futures.ProcessPoolExecutor(5) as executor:
-    reactivex.from_(seconds).pipe(
-        ops.flat_map(lambda s: executor.submit(sleep, s))
-    ).subscribe(output)
+# The __main__ guard is required by ProcessPoolExecutor for any start method
+# that does not fork, e.g. "spawn" (Windows, macOS) and "forkserver".
+if __name__ == "__main__":
+    with concurrent.futures.ProcessPoolExecutor(5) as executor:
+        reactivex.from_(seconds).pipe(
+            ops.flat_map(lambda s: executor.submit(sleep, s))
+        ).subscribe(output)
 
 # 1 seconds
 # 2 seconds

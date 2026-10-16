@@ -1,9 +1,9 @@
-from asyncio import Future
 from typing import TypeVar
 
 from reactivex import Observable, abc, from_future
 from reactivex.disposable import CompositeDisposable
-from reactivex.internal import curry_flip, noop
+from reactivex.internal import curry_flip, is_future, noop
+from reactivex.typing import AnyFuture
 
 _T = TypeVar("_T")
 
@@ -11,7 +11,7 @@ _T = TypeVar("_T")
 @curry_flip
 def take_until_(
     source: Observable[_T],
-    other: Observable[_T] | Future[_T],
+    other: Observable[_T] | "AnyFuture[_T]",
 ) -> Observable[_T]:
     """Returns the values from the source observable sequence until
     the other observable sequence produces a value.
@@ -29,7 +29,7 @@ def take_until_(
         sequence up to the point the other sequence interrupted
         further propagation.
     """
-    if isinstance(other, Future):
+    if is_future(other):
         obs: Observable[_T] = from_future(other)
     else:
         obs = other

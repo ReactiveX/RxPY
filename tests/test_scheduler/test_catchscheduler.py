@@ -1,6 +1,7 @@
 import unittest
 from datetime import timedelta
 
+from reactivex import typing as rx_typing
 from reactivex.scheduler import CatchScheduler, VirtualTimeScheduler
 
 
@@ -13,8 +14,11 @@ class CatchSchedulerTestScheduler(VirtualTimeScheduler):
         super().__init__(initial_clock)
         self.exc = None
 
-    def add(self, absolute, relative):
-        return absolute + relative
+    @classmethod
+    def add(
+        cls, absolute: rx_typing.AbsoluteTime, relative: rx_typing.RelativeTime
+    ) -> rx_typing.AbsoluteTime:
+        return absolute + relative  # type: ignore[operator]
 
     def _wrap(self, action):
         def _action(scheduler, state=None):

@@ -1,4 +1,5 @@
 import unittest
+from typing import NoReturn
 
 import reactivex
 from reactivex.testing import MockDisposable, ReactiveTest, TestScheduler
@@ -17,7 +18,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> NoReturn:
     raise RxException(ex)
 
 
@@ -165,7 +166,7 @@ class TestUsing(unittest.TestCase):
         def create():
             def create_resource():
                 dispose_invoked[0] += 1
-                raise _raise(ex)
+                _raise(Exception(ex))
 
             def create_observable(d):
                 create_invoked[0] += 1
@@ -194,7 +195,7 @@ class TestUsing(unittest.TestCase):
 
             def create_observable(d):
                 create_invoked[0] += 1
-                _raise(ex)
+                _raise(Exception(ex))
 
             return reactivex.using(create_resource, create_observable)
 

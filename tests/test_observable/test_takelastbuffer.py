@@ -189,7 +189,7 @@ class TestTakeLastBuffer(unittest.TestCase):
 #     var ex, res, scheduler, xs
 #     ex = 'ex'
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(250, 3), on_next(270, 4), on_next(310, 5), on_next(360, 6), on_next(380, 7), on_next(410, 8), on_next(590, 9), on_error(650, ex))
+#     xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(250, 3), on_next(270, 4), on_next(310, 5), on_next(360, 6), on_next(380, 7), on_next(410, 8), on_next(590, 9), on_error(650, ex))  # noqa: E501
 #     res = scheduler.start(create)
 #         return xs.pipe(ops.take_last_buffer(3))
 
@@ -199,7 +199,7 @@ class TestTakeLastBuffer(unittest.TestCase):
 # def test_Take_last_buffer_Three_Disposed():
 #     var res, scheduler, xs
 #     scheduler = TestScheduler()
-#     xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(250, 3), on_next(270, 4), on_next(310, 5), on_next(360, 6), on_next(380, 7), on_next(410, 8), on_next(590, 9))
+#     xs = scheduler.create_hot_observable(on_next(180, 1), on_next(210, 2), on_next(250, 3), on_next(270, 4), on_next(310, 5), on_next(360, 6), on_next(380, 7), on_next(410, 8), on_next(590, 9))  # noqa: E501
 #     res = scheduler.start(create)
 #         return xs.pipe(ops.take_last_buffer(3))
 

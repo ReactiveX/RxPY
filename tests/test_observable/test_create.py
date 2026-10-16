@@ -1,6 +1,8 @@
 import unittest
+from typing import NoReturn
 
 import reactivex
+from reactivex.disposable import Disposable
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -17,7 +19,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: str) -> NoReturn:
     raise RxException(ex)
 
 
@@ -29,7 +31,7 @@ class TestCreate(unittest.TestCase):
             def subscribe(o, scheduler=None):
                 o.on_next(1)
                 o.on_next(2)
-                return lambda: None
+                return Disposable()
 
             return reactivex.create(subscribe)
 
@@ -43,9 +45,9 @@ class TestCreate(unittest.TestCase):
             def subscribe(o, scheduler=None):
                 o.on_completed()
                 o.on_next(100)
-                o.on_error("ex")
+                o.on_error(Exception("ex"))
                 o.on_completed()
-                return lambda: None
+                return Disposable()
 
             return reactivex.create(subscribe)
 
@@ -58,11 +60,11 @@ class TestCreate(unittest.TestCase):
 
         def _create():
             def subscribe(o, scheduler=None):
-                o.on_error(ex)
+                o.on_error(Exception(ex))
                 o.on_next(100)
-                o.on_error("foo")
+                o.on_error(Exception("foo"))
                 o.on_completed()
-                return lambda: None
+                return Disposable()
 
             return reactivex.create(subscribe)
 
@@ -109,7 +111,7 @@ class TestCreate(unittest.TestCase):
                 def dispose():
                     is_stopped[0] = True
 
-                return dispose
+                return Disposable(dispose)
 
             return reactivex.create(subscribe)
 
@@ -124,21 +126,21 @@ class TestCreate(unittest.TestCase):
     def test_create_observer_throws(self):
         def subscribe(o, scheduler=None):
             o.on_next(1)
-            return lambda: None
+            return Disposable()
 
         with self.assertRaises(RxException):
             reactivex.create(subscribe).subscribe(lambda x: _raise("ex"))
 
         def subscribe2(o, scheduler=None):
-            o.on_error("exception")
-            return lambda: None
+            o.on_error(Exception("exception"))
+            return Disposable()
 
         with self.assertRaises(RxException):
             reactivex.create(subscribe2).subscribe(on_error=lambda ex: _raise("ex"))
 
         def subscribe3(o, scheduler=None):
             o.on_completed()
-            return lambda: None
+            return Disposable()
 
         with self.assertRaises(RxException):
             reactivex.create(subscribe3).subscribe(on_completed=lambda: _raise("ex"))

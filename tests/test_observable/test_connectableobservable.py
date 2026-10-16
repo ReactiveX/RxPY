@@ -18,7 +18,7 @@ created = ReactiveTest.created
 
 class MySubject(Observable, ObserverBase):
     def __init__(self):
-        super(MySubject, self).__init__()
+        super().__init__()
 
         self.dispose_on_map = {}
         self.subscribe_count = 0
@@ -82,7 +82,7 @@ class TestConnectableObservable(unittest.TestCase):
         subject = MySubject()
 
         conn = ConnectableObservable(xs, subject)
-        disconnect = conn.connect(scheduler)
+        conn.connect(scheduler)
 
         res = scheduler.start(lambda: conn)
 

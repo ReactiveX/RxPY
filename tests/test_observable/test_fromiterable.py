@@ -1,4 +1,5 @@
 import unittest
+from typing import NoReturn
 
 import reactivex
 from reactivex.testing import ReactiveTest, TestScheduler
@@ -17,7 +18,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> NoReturn:
     raise RxException(ex)
 
 
@@ -71,4 +72,6 @@ class TestFromIterable(unittest.TestCase):
 
     def test_observer_throws(self):
         with self.assertRaises(RxException):
-            reactivex.from_iterable([1, 2, 3]).subscribe(lambda x: _raise("ex"))
+            reactivex.from_iterable([1, 2, 3]).subscribe(
+                lambda x: _raise(Exception("ex"))
+            )

@@ -22,7 +22,7 @@ class TestFlatMapAsync(unittest.TestCase):
             nonlocal actual_next
             actual_next = i
 
-        def on_error(ex):
+        def on_error(ex: Exception) -> None:
             print("Error", ex)
 
         async def test_flat_map():

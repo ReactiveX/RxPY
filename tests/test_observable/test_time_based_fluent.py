@@ -5,7 +5,8 @@ ensuring they produce identical results to the pipe-based functional syntax.
 """
 
 import reactivex as rx
-from reactivex import Observable, operators as ops
+from reactivex import Observable
+from reactivex import operators as ops
 from reactivex.scheduler import ImmediateScheduler
 
 

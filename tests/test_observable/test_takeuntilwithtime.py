@@ -1,5 +1,6 @@
 import unittest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import NoReturn
 
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
@@ -18,7 +19,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> NoReturn:
     raise RxException(ex)
 
 
@@ -30,9 +31,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(
-                ops.take_until_with_time(datetime.fromtimestamp(0, tz=timezone.utc))
-            )
+            return xs.pipe(ops.take_until_with_time(datetime.fromtimestamp(0, tz=UTC)))
 
         res = scheduler.start(create)
 
@@ -46,7 +45,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         )
 
         def create():
-            dt = datetime.fromtimestamp(250, tz=timezone.utc)
+            dt = datetime.fromtimestamp(250, tz=UTC)
             return xs.pipe(ops.take_until_with_time(dt))
 
         res = scheduler.start(create)
@@ -60,7 +59,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_error(210, ex))
 
         def create():
-            dt = datetime.fromtimestamp(250, tz=timezone.utc)
+            dt = datetime.fromtimestamp(250, tz=UTC)
             return xs.pipe(ops.take_until_with_time(dt))
 
         res = scheduler.start(create)
@@ -73,7 +72,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
         xs = scheduler.create_hot_observable()
 
         def create():
-            dt = datetime.fromtimestamp(250, tz=timezone.utc)
+            dt = datetime.fromtimestamp(250, tz=UTC)
             return xs.pipe(ops.take_until_with_time(dt))
 
         res = scheduler.start(create)
@@ -94,8 +93,8 @@ class TestTakeUntilWithTime(unittest.TestCase):
         )
 
         def create():
-            dt235 = datetime.fromtimestamp(235, tz=timezone.utc)
-            dt255 = datetime.fromtimestamp(255, tz=timezone.utc)
+            dt235 = datetime.fromtimestamp(235, tz=UTC)
+            dt255 = datetime.fromtimestamp(255, tz=UTC)
             return xs.pipe(
                 ops.take_until_with_time(dt255),
                 ops.take_until_with_time(dt235),
@@ -124,8 +123,8 @@ class TestTakeUntilWithTime(unittest.TestCase):
         )
 
         def create():
-            dt235 = datetime.fromtimestamp(235, tz=timezone.utc)
-            dt255 = datetime.fromtimestamp(255, tz=timezone.utc)
+            dt235 = datetime.fromtimestamp(235, tz=UTC)
+            dt255 = datetime.fromtimestamp(255, tz=UTC)
             return xs.pipe(
                 ops.take_until_with_time(dt235),
                 ops.take_until_with_time(dt255),

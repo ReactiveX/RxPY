@@ -17,7 +17,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> None:
     raise RxException(ex)
 
 
@@ -45,7 +45,10 @@ class TestEmpty(unittest.TestCase):
         scheduler = TestScheduler()
         xs = empty()
         xs.subscribe(
-            lambda x: None, lambda ex: None, lambda: _raise("ex"), scheduler=scheduler
+            lambda x: None,
+            lambda ex: None,
+            lambda: _raise(Exception("ex")),
+            scheduler=scheduler,
         )
 
         with self.assertRaises(RxException):

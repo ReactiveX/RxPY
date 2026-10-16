@@ -1,6 +1,7 @@
 import logging
 import unittest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import NoReturn
 
 from reactivex.operators import delay
 from reactivex.testing import ReactiveTest, TestScheduler
@@ -23,7 +24,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> NoReturn:
     raise RxException(ex)
 
 
@@ -62,7 +63,7 @@ class TestDelay(unittest.TestCase):
         )
 
         def create():
-            dt = datetime.fromtimestamp(300.0, tz=timezone.utc)
+            dt = datetime.fromtimestamp(300.0, tz=UTC)
             return xs.pipe(delay(dt))
 
         results = scheduler.start(create)
@@ -107,7 +108,7 @@ class TestDelay(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(delay(datetime.fromtimestamp(250, tz=timezone.utc)))
+            return xs.pipe(delay(datetime.fromtimestamp(250, tz=UTC)))
 
         results = scheduler.start(create)
 
@@ -153,7 +154,7 @@ class TestDelay(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(delay(datetime.fromtimestamp(350, tz=timezone.utc)))
+            return xs.pipe(delay(datetime.fromtimestamp(350, tz=UTC)))
 
         results = scheduler.start(create)
 
@@ -201,7 +202,7 @@ class TestDelay(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(delay(datetime.fromtimestamp(250, tz=timezone.utc)))
+            return xs.pipe(delay(datetime.fromtimestamp(250, tz=UTC)))
 
         results = scheduler.start(create)
 
@@ -244,7 +245,7 @@ class TestDelay(unittest.TestCase):
         )
 
         def create():
-            return xs.pipe(delay(datetime.fromtimestamp(350, tz=timezone.utc)))
+            return xs.pipe(delay(datetime.fromtimestamp(350, tz=UTC)))
 
         results = scheduler.start(create)
 

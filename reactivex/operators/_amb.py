@@ -1,9 +1,9 @@
-from asyncio import Future
 from typing import TypeVar, Union
 
 from reactivex import Observable, abc, from_future
 from reactivex.disposable import CompositeDisposable, SingleAssignmentDisposable
-from reactivex.internal import curry_flip
+from reactivex.internal import curry_flip, is_future
+from reactivex.typing import AnyFuture
 
 _T = TypeVar("_T")
 
@@ -11,7 +11,7 @@ _T = TypeVar("_T")
 @curry_flip
 def amb_(
     left_source: Observable[_T],
-    right_source: Union[Observable[_T], "Future[_T]"],
+    right_source: Union[Observable[_T], "AnyFuture[_T]"],
 ) -> Observable[_T]:
     """Propagates the observable sequence that reacts first.
 
@@ -27,7 +27,7 @@ def amb_(
         An observable sequence that surfaces either of the given sequences,
         whichever reacted first.
     """
-    if isinstance(right_source, Future):
+    if is_future(right_source):
         obs: Observable[_T] = from_future(right_source)
     else:
         obs = right_source

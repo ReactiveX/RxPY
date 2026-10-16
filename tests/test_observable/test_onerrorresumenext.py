@@ -160,7 +160,7 @@ class TestOnErrorResumeNext(unittest.TestCase):
         msgs1 = [on_next(150, 1), on_next(210, 2), on_next(220, 3), on_error(230, "ex")]
         o1 = scheduler.create_hot_observable(msgs1)
 
-        def factory(ex: Exception):
+        def factory(ex: Exception | None):
             assert str(ex) == "ex"
             msgs2 = [on_next(240, 4), on_completed(250)]
             o2 = scheduler.create_hot_observable(msgs2)

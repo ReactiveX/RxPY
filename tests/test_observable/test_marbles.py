@@ -2,8 +2,11 @@ import datetime
 import unittest
 
 import reactivex
-from reactivex import notification
+from reactivex import Observable, abc, notification
+from reactivex import operators as ops
+from reactivex.disposable import Disposable
 from reactivex.observable.marbles import parse
+from reactivex.scheduler import ImmediateScheduler
 from reactivex.testing import TestScheduler
 from reactivex.testing.reactivetest import ReactiveTest
 
@@ -331,7 +334,7 @@ class TestFromMarble(unittest.TestCase):
         expected = [
             ReactiveTest.on_next(200.1, "ab"),
             ReactiveTest.on_next(200.6, "c"),
-            ReactiveTest.on_next(200.8, str(12.5)),
+            ReactiveTest.on_next(200.8, 12.5),
             ReactiveTest.on_next(200.8, "def"),
             ReactiveTest.on_next(202.0, 6),
             ReactiveTest.on_completed(202.0),
@@ -521,7 +524,7 @@ class TestHot(unittest.TestCase):
         expected = [
             ReactiveTest.on_next(200.1, "ab"),
             ReactiveTest.on_next(200.6, "c"),
-            ReactiveTest.on_next(200.8, str(12.5)),
+            ReactiveTest.on_next(200.8, 12.5),
             ReactiveTest.on_next(200.8, "def"),
             ReactiveTest.on_next(202.0, 6),
             ReactiveTest.on_completed(202.0),
@@ -578,3 +581,22 @@ class TestHot(unittest.TestCase):
             ReactiveTest.on_completed(300.7),
         ]
         assert results == expected
+
+
+class TestToMarbles(unittest.TestCase):
+    def test_to_marbles_forwards_scheduler_to_source(self) -> None:
+        captured: dict[str, abc.SchedulerBase | None] = {}
+        expected: abc.SchedulerBase = ImmediateScheduler()
+
+        def source_subscribe(
+            observer: abc.ObserverBase[int],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
+            captured["scheduler"] = scheduler
+            observer.on_completed()
+            return Disposable()
+
+        source: Observable[int] = Observable(source_subscribe)
+        source.pipe(ops.to_marbles()).subscribe(scheduler=expected)
+
+        assert captured["scheduler"] is expected

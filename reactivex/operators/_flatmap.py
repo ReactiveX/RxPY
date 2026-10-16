@@ -1,11 +1,10 @@
-from asyncio import Future
 from typing import Any, TypeVar, Union, cast
 
 from reactivex import Observable, from_, from_future
 from reactivex import operators as ops
-from reactivex.internal import curry_flip
+from reactivex.internal import curry_flip, is_future
 from reactivex.internal.basic import identity
-from reactivex.typing import Mapper, MapperIndexed
+from reactivex.typing import AnyFuture, Mapper, MapperIndexed
 
 _T1 = TypeVar("_T1")
 _T2 = TypeVar("_T2")
@@ -24,8 +23,8 @@ def _flat_map_internal(
             if mapper_indexed
             else identity
         )
-        if isinstance(mapper_result, Future):
-            result: Observable[Any] = from_future(cast("Future[Any]", mapper_result))
+        if is_future(mapper_result):
+            result: Observable[Any] = from_future(mapper_result)
         elif isinstance(mapper_result, Observable):
             result = cast(Observable[Any], mapper_result)
         else:
@@ -41,7 +40,7 @@ def _flat_map_internal(
 @curry_flip
 def flat_map_(
     source: Observable[_T1],
-    mapper: Mapper[_T1, Observable[_T2]] | None = None,
+    mapper: Mapper[_T1, Union[Observable[_T2], "AnyFuture[_T2]"]] | None = None,
 ) -> Observable[_T2]:
     """Projects each element of an observable sequence to an observable
     sequence and merges the resulting observable sequences into one
@@ -102,7 +101,7 @@ def flat_map_indexed_(
 @curry_flip
 def flat_map_latest_(
     source: Observable[_T1],
-    mapper: Mapper[_T1, Union[Observable[_T2], "Future[_T2]"]],
+    mapper: Mapper[_T1, Union[Observable[_T2], "AnyFuture[_T2]"]],
 ) -> Observable[_T2]:
     """Projects each element of an observable sequence into a new
     sequence of observable sequences by incorporating the element's

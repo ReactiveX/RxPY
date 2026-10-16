@@ -2,6 +2,7 @@ import unittest
 
 import reactivex
 from reactivex import operators as ops
+from reactivex.notification import OnError
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -88,7 +89,7 @@ class TestReduce(unittest.TestCase):
 
         res = scheduler.start(create=create).messages
         assert len(res) == 1
-        assert res[0].value.kind == "E" and res[0].value.exception is not None
+        assert isinstance(res[0].value, OnError) and res[0].value.exception is not None
         assert res[0].time == 250
 
     def test_reduce_without_seed_return(self):

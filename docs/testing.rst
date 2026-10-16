@@ -48,6 +48,7 @@ or with full control, you can easily test various situations and combinations
 .. _in_sequence_or_throw:
 
 .. code:: python
+
     # setting up aliases for more concise code
     on_next = ReactiveTest.on_next
     on_error = ReactiveTest.on_error

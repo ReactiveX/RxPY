@@ -1,4 +1,5 @@
 import unittest
+from typing import NoReturn
 
 import reactivex
 from reactivex.testing import ReactiveTest, TestScheduler
@@ -17,7 +18,7 @@ class RxException(Exception):
 
 
 # Helper function for raising exceptions within lambdas
-def _raise(ex):
+def _raise(ex: Exception) -> NoReturn:
     raise RxException(ex)
 
 
@@ -45,7 +46,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
 
         def create():
             return reactivex.generate_with_relative_time(
-                0, lambda x: _raise(ex), lambda x: x + 1, lambda x: x + 1
+                0, lambda x: _raise(Exception(ex)), lambda x: x + 1, lambda x: x + 1
             )
 
         results = scheduler.start(create)
@@ -57,7 +58,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
 
         def create():
             return reactivex.generate_with_relative_time(
-                0, lambda x: True, lambda x: _raise(ex), lambda x: x + 1
+                0, lambda x: True, lambda x: _raise(Exception(ex)), lambda x: x + 1
             )
 
         results = scheduler.start(create)
@@ -69,7 +70,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
 
         def create():
             return reactivex.generate_with_relative_time(
-                0, lambda x: True, lambda x: x + 1, lambda x: _raise(ex)
+                0, lambda x: True, lambda x: x + 1, lambda x: _raise(Exception(ex))
             )
 
         results = scheduler.start(create)
@@ -109,7 +110,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
 
         def create():
             return reactivex.generate_with_relative_time(
-                0, lambda x: _raise(ex), lambda x: x + 1, lambda x: x + 1
+                0, lambda x: _raise(Exception(ex)), lambda x: x + 1, lambda x: x + 1
             )
 
         results = scheduler.start(create)
@@ -121,7 +122,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
 
         def create():
             return reactivex.generate_with_relative_time(
-                0, lambda x: True, lambda x: _raise(ex), lambda x: x + 1
+                0, lambda x: True, lambda x: _raise(Exception(ex)), lambda x: x + 1
             )
 
         results = scheduler.start(create)
@@ -133,7 +134,7 @@ class TestGenerateWithRelativeTime(unittest.TestCase):
 
         def create():
             return reactivex.generate_with_relative_time(
-                0, lambda x: True, lambda x: x + 1, lambda x: _raise(ex)
+                0, lambda x: True, lambda x: x + 1, lambda x: _raise(Exception(ex))
             )
 
         results = scheduler.start(create)

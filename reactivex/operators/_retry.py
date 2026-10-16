@@ -1,7 +1,7 @@
 from typing import TypeVar
 
 import reactivex
-from reactivex import Observable
+from reactivex import Observable, abc
 from reactivex.internal import curry_flip
 from reactivex.internal.utils import infinite
 
@@ -16,6 +16,10 @@ def retry_(
     """Repeats the source observable sequence the specified number of
     times or until it successfully terminates. If the retry count is
     not specified, it retries indefinitely.
+
+    The retry budget is per-subscription, so combining ``retry(n)`` with
+    ``repeat()`` works as expected: each resubscription by ``repeat()``
+    starts with a fresh retry allowance.
 
     Examples:
         >>> result = source.pipe(retry())
@@ -32,12 +36,21 @@ def retry_(
         sequence repeatedly until it terminates successfully.
     """
 
-    if retry_count is None:
-        gen = infinite()
-    else:
-        gen = range(retry_count)
+    def subscribe(
+        observer: abc.ObserverBase[_T], scheduler_: abc.SchedulerBase | None = None
+    ) -> abc.DisposableBase:
+        # Create a fresh generator on every subscription so that the retry
+        # budget is not shared across resubscriptions (e.g. via repeat()).
+        if retry_count is None:
+            gen = infinite()
+        else:
+            gen = range(retry_count)
 
-    return reactivex.catch_with_iterable(source for _ in gen)
+        return reactivex.catch_with_iterable(source for _ in gen).subscribe(
+            observer, scheduler=scheduler_
+        )
+
+    return Observable(subscribe)
 
 
 __all__ = ["retry_"]

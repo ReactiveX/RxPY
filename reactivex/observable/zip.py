@@ -1,10 +1,9 @@
-from asyncio import Future
 from threading import RLock
-from typing import Any, cast
+from typing import Any
 
 from reactivex import Observable, abc, from_future
 from reactivex.disposable import CompositeDisposable, SingleAssignmentDisposable
-from reactivex.internal import synchronized
+from reactivex.internal import is_future, synchronized
 
 
 def zip_(*args: Observable[Any]) -> Observable[tuple[Any, ...]]:
@@ -66,9 +65,8 @@ def zip_(*args: Observable[Any]) -> Observable[tuple[Any, ...]]:
 
         def func(i: int) -> None:
             source: Observable[Any] = sources[i]
-            if isinstance(source, Future):
-                source_ = cast(Future[Any], source)
-                source = from_future(source_)
+            if is_future(source):
+                source = from_future(source)
 
             sad = SingleAssignmentDisposable()
 

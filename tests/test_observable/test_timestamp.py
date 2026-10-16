@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import reactivex
 from reactivex import operators as ops
@@ -14,10 +14,10 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class Timestamp(object):
+class Timestamp:
     def __init__(self, value, timestamp):
         if isinstance(timestamp, datetime):
-            timestamp = timestamp - datetime.fromtimestamp(0, tz=timezone.utc)
+            timestamp = timestamp - datetime.fromtimestamp(0, tz=UTC)
             timestamp = int(
                 timestamp.seconds
             )  # FIXME: Must fix when tests run at fraction of seconds.
@@ -26,9 +26,9 @@ class Timestamp(object):
         self.timestamp = timestamp
 
     def __str__(self):
-        return "%s@%s" % (self.value, self.timestamp)
+        return f"{self.value}@{self.timestamp}"
 
-    def equals(self, other):
+    def __eq__(self, other):
         return other.timestamp == self.timestamp and other.value == self.value
 
 

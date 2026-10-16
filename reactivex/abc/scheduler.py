@@ -28,6 +28,11 @@ class SchedulerBase(ABC):
         scheduled on a scheduler will adhere to the time denoted by this
         property.
 
+        Except for virtual-time schedulers, this is the current wall clock
+        time in UTC. Absolute duetimes passed to :meth:`schedule_absolute`
+        (and to time-based operators) are thus ordinary
+        ``datetime.now(timezone.utc)`` values.
+
         Returns:
              The scheduler's current time, as a datetime instance.
         """

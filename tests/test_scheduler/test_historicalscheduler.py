@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from reactivex.internal.constants import UTC_ZERO
 from reactivex.scheduler import HistoricalScheduler
@@ -7,7 +7,7 @@ from reactivex.scheduler import HistoricalScheduler
 
 def assert_equals(first, second):
     if len(first) != len(second):
-        print("len(%d) != len(%d)" % (len(first), len(second)))
+        print(f"len({len(first)}) != len({len(second)})")
         assert False
 
     for i in range(len(first)):
@@ -20,9 +20,7 @@ def assert_equals(first, second):
 
 
 def time(days):
-    dt = datetime(
-        year=1979, month=10, day=31, hour=4, minute=30, second=15, tzinfo=timezone.utc
-    )
+    dt = datetime(year=1979, month=10, day=31, hour=4, minute=30, second=15, tzinfo=UTC)
     dt = dt + timedelta(days=days)
     return dt
 
@@ -31,7 +29,7 @@ def from_days(days):
     return timedelta(days=days)
 
 
-class Timestamped(object):
+class Timestamped:
     def __init__(self, value, timestamp):
         self.value = value
         self.timestamp = timestamp
@@ -43,7 +41,7 @@ class Timestamped(object):
         return other.value == self.value and other.timestamp == self.timestamp
 
     def __str__(self):
-        return "(%s, %s)" % (self.value, self.timestamp)
+        return f"({self.value}, {self.timestamp})"
 
     def __repr__(self):
         return str(self)

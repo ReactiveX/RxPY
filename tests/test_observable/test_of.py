@@ -48,7 +48,7 @@ class TestOf(unittest.TestCase):
         scheduler = TestScheduler()
 
         def create():
-            return reactivex.of(scheduler=scheduler)
+            return reactivex.of(scheduler=scheduler)  # type: ignore[call-arg]
 
         results = scheduler.start(create=create)
 

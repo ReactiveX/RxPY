@@ -14,13 +14,13 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class TimeSpan(object):
+class TimeSpan:
     @classmethod
     def from_ticks(cls, value):
         return value
 
 
-class TimeInterval(object):
+class TimeInterval:
     def __init__(self, value, interval):
         if isinstance(interval, timedelta):
             interval = int(interval.microseconds / 1000)
@@ -29,7 +29,7 @@ class TimeInterval(object):
         self.interval = interval
 
     def __str__(self):
-        return "%s@%s" % (self.value, self.interval)
+        return f"{self.value}@{self.interval}"
 
     def equals(self, other):
         return other.interval == self.interval and other.value == self.value
@@ -38,9 +38,9 @@ class TimeInterval(object):
         return self.value.get_hash_code() ^ self.interval.get_hash_code()
 
 
-def new_timer(l, t, scheduler):
+def new_timer(timers, t, scheduler):
     timer = scheduler.create_cold_observable(on_next(t, 0), on_completed(t))
-    l.append(timer)
+    timers.append(timer)
     return timer
 
 
@@ -82,7 +82,7 @@ class TestGroup_join(unittest.TestCase):
         def create():
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(
@@ -160,7 +160,7 @@ class TestGroup_join(unittest.TestCase):
         def create():
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(
@@ -233,7 +233,7 @@ class TestGroup_join(unittest.TestCase):
         def create():
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(
@@ -306,7 +306,7 @@ class TestGroup_join(unittest.TestCase):
         def create():
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(
@@ -374,7 +374,7 @@ class TestGroup_join(unittest.TestCase):
         def create():
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(
@@ -443,7 +443,7 @@ class TestGroup_join(unittest.TestCase):
         def create():
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(
@@ -499,7 +499,7 @@ class TestGroup_join(unittest.TestCase):
         def create():
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(
@@ -530,7 +530,7 @@ class TestGroup_join(unittest.TestCase):
         def create():
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(
@@ -576,7 +576,7 @@ class TestGroup_join(unittest.TestCase):
         def create():
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(
@@ -631,7 +631,7 @@ class TestGroup_join(unittest.TestCase):
         def create():
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(
@@ -684,7 +684,7 @@ class TestGroup_join(unittest.TestCase):
         def create():
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(
@@ -748,7 +748,7 @@ class TestGroup_join(unittest.TestCase):
         def create():
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(
@@ -819,7 +819,7 @@ class TestGroup_join(unittest.TestCase):
         def create():
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(
@@ -896,7 +896,7 @@ class TestGroup_join(unittest.TestCase):
 
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(
@@ -949,7 +949,7 @@ class TestGroup_join(unittest.TestCase):
 
             def mapper(x_yy):
                 x, yy = x_yy
-                return yy.pipe(ops.map(lambda y: "{}{}".format(x.value, y.value)))
+                return yy.pipe(ops.map(lambda y: f"{x.value}{y.value}"))
 
             return xs.pipe(
                 ops.group_join(

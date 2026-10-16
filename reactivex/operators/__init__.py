@@ -1,7 +1,7 @@
 # pylint: disable=too-many-lines,redefined-builtin,import-outside-toplevel
 
 
-from asyncio import Future
+import asyncio
 from collections.abc import Callable, Iterable
 from typing import (
     TYPE_CHECKING,
@@ -74,7 +74,9 @@ def all(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[bool]
     return all_(predicate)
 
 
-def amb(right_source: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
+def amb(
+    right_source: Union[Observable[_T], "typing.AnyFuture[_T]"],
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Propagates the observable sequence that reacts first.
 
     .. marble::
@@ -482,6 +484,25 @@ def concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T
     return concat_(*sources)
 
 
+def concat_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
+    """Flatten an observable of observables in source order.
+
+    Each inner observable is subscribed to only after the previous one
+    completes. Inner observables waiting for their turn are buffered.
+    Equivalent to ``merge(max_concurrent=1)`` for an observable of observables.
+
+    Example:
+        >>> op = concat_all()
+
+    Returns:
+        An operator function that emits all values from each inner observable
+        before subscribing to the next one.
+    """
+    from ._concatall import concat_all_
+
+    return concat_all_()
+
+
 def concat_map(
     project: Mapper[_T1, Observable[_T2]],
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
@@ -500,11 +521,11 @@ def concat_map(
         :alt: concat_map
 
         ---1------------2-----3----------------------------|
-        [        concat_map(i: 10*i---10*i---10*i|)        ]
-        ---10---10---10-20---20---(20,30)---30---30--------|
+        [                   concat_map(i: 10*i)                ]
+        ---10---10---10-20---20---20,30---30---30--------|
 
     Examples:
-        >>> op = concat(lambda i: reactivex.timer(1.0).pipe(take(3)))
+        >>> op = concat_map(lambda i: reactivex.of(i, i * 2))
 
     Args:
         project: Projecting function which takes the outer observable value
@@ -746,7 +767,8 @@ def dematerialize() -> Callable[[Observable[Notification[_T]]], Observable[_T]]:
 
 
 def delay(
-    duetime: typing.RelativeTime, scheduler: abc.SchedulerBase | None = None
+    duetime: typing.AbsoluteOrRelativeTime,
+    scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """The delay operator.
 
@@ -1303,6 +1325,18 @@ def flat_map(
 ) -> Callable[[Observable[_T1]], Observable[_T2]]: ...
 
 
+@overload
+def flat_map(
+    mapper: "typing.AnyFuture[_T2] | None" = None,
+) -> Callable[[Observable[Any]], Observable[_T2]]: ...
+
+
+@overload
+def flat_map(
+    mapper: Mapper[_T1, "typing.AnyFuture[_T2]"] | None = None,
+) -> Callable[[Observable[_T1]], Observable[_T2]]: ...
+
+
 def flat_map(
     mapper: Any | None = None,
 ) -> Callable[[Observable[Any]], Observable[Any]]:
@@ -1417,7 +1451,7 @@ def flat_map_indexed(
 
 
 def flat_map_latest(
-    mapper: Mapper[_T1, Union[Observable[_T2], "Future[_T2]"]],
+    mapper: Mapper[_T1, Union[Observable[_T2], "typing.AnyFuture[_T2]"]],
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
     """Projects each element of an observable sequence into a new
     sequence of observable sequences by incorporating the element's
@@ -1952,7 +1986,9 @@ def merge(
     return merge_(*sources, max_concurrent=max_concurrent)
 
 
-def merge_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
+def merge_all() -> Callable[
+    [Observable[Union[Observable[_T], "typing.AnyFuture[_T]"]]], Observable[_T]
+]:
     """The merge_all operator.
 
     Merges an observable sequence of observable sequences into an
@@ -2772,6 +2808,18 @@ def single_or_default(
 def single_or_default_async(
     has_default: bool = False, default_value: _T = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
+    """Emit the only source item, or a default when the source is empty.
+
+    An empty source raises an error when ``has_default`` is false. A source
+    with more than one item always raises an error.
+
+    Args:
+        has_default: Whether to emit ``default_value`` for an empty source.
+        default_value: Value to emit when the source is empty.
+
+    Returns:
+        An operator function that emits one item or terminates with an error.
+    """
     from ._singleordefault import single_or_default_async_
 
     return single_or_default_async_(has_default, default_value)
@@ -2868,7 +2916,7 @@ def skip_last_with_time(
 
 
 def skip_until(
-    other: Union[Observable[Any], "Future[Any]"],
+    other: Union[Observable[Any], "typing.AnyFuture[Any]"],
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the values from the source observable sequence only
     after the other observable sequence produces a value.
@@ -3119,7 +3167,7 @@ def starmap() -> Callable[[Observable[_T]], Observable[_T]]: ...
 @overload
 def starmap(
     mapper: Callable[[Unpack[_Ts]], _T],
-) -> Callable[[Observable[tuple[Unpack[_Ts]]]], Observable[_T]]: ...
+) -> Callable[[Observable[tuple[*_Ts]]], Observable[_T]]: ...
 
 
 def starmap(
@@ -3162,7 +3210,7 @@ def starmap(
 
         return compose(map(identity_fn))
 
-    def starred(values: tuple[Unpack[_Ts]]) -> _T:
+    def starred(values: tuple[*_Ts]) -> _T:
         return mapper(*values)
 
     return compose(map(starred))
@@ -3170,11 +3218,12 @@ def starmap(
 
 def starmap_indexed(
     mapper: Callable[[Unpack[_Ts], int], _T],
-) -> Callable[[Observable[tuple[Unpack[_Ts], int]]], Observable[_T]]:
+) -> Callable[[Observable[tuple[*_Ts, int]]], Observable[_T]]:
     """Variant of :func:`starmap` which accepts an indexed mapper.
 
     Note: This operator expects the input to already be indexed as flat tuples
-    of (*values, index), which is what map_indexed provides via zip_with_iterable.
+    of ``(*values, index)``, which is what map_indexed provides via
+    zip_with_iterable.
 
     .. marble::
         :alt: starmap_indexed
@@ -3197,7 +3246,7 @@ def starmap_indexed(
         of the source.
     """
 
-    def starred(indexed_values: tuple[Unpack[_Ts], int]) -> _T:
+    def starred(indexed_values: tuple[*_Ts, int]) -> _T:
         return mapper(*indexed_values)
 
     return compose(map(starred))
@@ -3296,9 +3345,9 @@ def sum(
     return sum_(key_mapper)
 
 
-def switch_latest() -> (
-    Callable[[Observable[Union[Observable[_T], "Future[_T]"]]], Observable[_T]]
-):
+def switch_latest() -> Callable[
+    [Observable[Union[Observable[_T], "typing.AnyFuture[_T]"]]], Observable[_T]
+]:
     """The switch_latest operator.
 
     Transforms an observable sequence of observable sequences into an
@@ -3337,7 +3386,7 @@ def switch_map(
         :alt: switch_map
 
         ---a----------b-------c---------|
-        [   switch_map(x: x---x---x|)   ]
+        [       switch_map(x: x)      ]
         ---a---a---a--b---b---c---c---c-|
 
     Examples:
@@ -3377,7 +3426,7 @@ def switch_map_indexed(
         :alt: switch_map
 
         ---a----------b-------c---------------------|
-        [ switch_map_indexed(x,i: x*i---x*i---x*i|) ]
+        [        switch_map_indexed(x,i: x*i)       ]
         ---a---a---a--bb---bb-ccc---ccc---ccc-------|
 
     Examples:
@@ -3537,7 +3586,9 @@ def take_last_with_time(
     return take_last_with_time_(duration, scheduler=scheduler)
 
 
-def take_until(other: Observable[Any]) -> Callable[[Observable[_T]], Observable[_T]]:
+def take_until(
+    other: Union[Observable[Any], "typing.AnyFuture[Any]"],
+) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the values from the source observable sequence until the
     other observable sequence produces a value.
 
@@ -3703,6 +3754,47 @@ def take_with_time(
     return take_with_time_(duration, scheduler=scheduler)
 
 
+def tap(
+    on_next: typing.OnNext[_T] | None = None,
+    on_error: typing.OnError | None = None,
+    on_completed: typing.OnCompleted | None = None,
+) -> Callable[[Observable[_T]], Observable[_T]]:
+    """Alias for :func:`do_action`.
+
+    Invokes an action for each element in the observable sequence and
+    invokes an action on graceful or exceptional termination of the
+    observable sequence. This method can be used for debugging,
+    logging, etc. of query behavior by intercepting the message stream
+    to run arbitrary actions for messages on the pipeline.
+
+    .. marble::
+        :alt: tap
+
+        ----1---2---3---4---|
+        [   tap(i: foo())   ]
+        ----1---2---3---4---|
+
+    Examples:
+        >>> tap(send)
+        >>> tap(on_next, on_error)
+        >>> tap(on_next, on_error, on_completed)
+
+    Args:
+        on_next: [Optional] Action to invoke for each element in the
+            observable sequence.
+        on_error: [Optional] Action to invoke on exceptional
+            termination of the observable sequence.
+        on_completed: [Optional] Action to invoke on graceful
+            termination of the observable sequence.
+
+    Returns:
+        An operator function that takes the source observable an
+        returns the source sequence with the side-effecting behavior
+        applied.
+    """
+    return do_action(on_next, on_error, on_completed)
+
+
 def throttle_first(
     window_duration: typing.RelativeTime, scheduler: abc.SchedulerBase | None = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
@@ -3777,7 +3869,7 @@ def timestamp(
 
 def timeout(
     duetime: typing.AbsoluteOrRelativeTime,
-    other: Observable[_T] | None = None,
+    other: Union[Observable[_T], "typing.AnyFuture[_T]"] | None = None,
     scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[_T]]:
     """Returns the source observable sequence or the other observable
@@ -3906,8 +3998,8 @@ def to_dict(
 
 
 def to_future(
-    future_ctor: Callable[[], "Future[_T]"] | None = None,
-) -> Callable[[Observable[_T]], "Future[_T]"]:
+    future_ctor: Callable[[], "asyncio.Future[_T]"] | None = None,
+) -> Callable[[Observable[_T]], "asyncio.Future[_T]"]:
     """Converts an existing observable sequence to a Future.
 
     Example:
@@ -4142,6 +4234,17 @@ def window_with_time(
     timeshift: typing.RelativeTime | None = None,
     scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
+    """Divide source items into windows based on time intervals.
+
+    Args:
+        timespan: Duration of each window.
+        timeshift: Time between the start of successive windows. Defaults to
+            ``timespan`` when omitted.
+        scheduler: Scheduler used to open and close windows.
+
+    Returns:
+        An operator function that emits Observables containing source items.
+    """
     from ._windowwithtime import window_with_time_
 
     return window_with_time_(timespan, timeshift, scheduler)
@@ -4152,6 +4255,16 @@ def window_with_time_or_count(
     count: int,
     scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
+    """Close each window when its time or item count limit is reached.
+
+    Args:
+        timespan: Maximum duration of each window.
+        count: Maximum number of items in each window.
+        scheduler: Scheduler used to close windows by time.
+
+    Returns:
+        An operator function that emits Observables containing source items.
+    """
     from ._windowwithtimeorcount import window_with_time_or_count_
 
     return window_with_time_or_count_(timespan, count, scheduler)
@@ -4267,6 +4380,8 @@ __all__ = [
     "catch",
     "combine_latest",
     "concat",
+    "concat_all",
+    "concat_map",
     "contains",
     "count",
     "debounce",
@@ -4351,6 +4466,8 @@ __all__ = [
     "subscribe_on",
     "sum",
     "switch_latest",
+    "switch_map",
+    "switch_map_indexed",
     "take",
     "take_last",
     "take_last_buffer",
@@ -4360,6 +4477,7 @@ __all__ = [
     "take_while",
     "take_while_indexed",
     "take_with_time",
+    "tap",
     "throttle_first",
     "throttle_with_mapper",
     "timestamp",
