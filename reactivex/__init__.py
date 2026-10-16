@@ -231,41 +231,37 @@ def combine_latest(*__sources: Observable[Any]) -> Observable[Any]:
     return combine_latest_(*__sources)
 
 
-def combine_throttle(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
-    """Merges the specified observable sequences into one observable
-    sequence by creating a result whenever all of the
-    observable sequences have produced an element at a corresponding
-    index. Faster observables, that emits events more frequently, are
-    throttled, so that they match speed of slower observables.
-    Speed of emitting items matches speed of slowest source observable.
-    It is somewhat similar to :func:`reactivex.zip` operator, returns tuple,
-    but items of faster observables are dropped, so that only latest values are
-    at each index.
-    It is also similar to :func:`reactivex.combine_latest`, but emits new item
-    only when all sources produce new item. Only latest items are included in
-    resulting tuple, others are dropped, similar to :func:`reactivex.with_latest_from`.
+def zip_latest(*sources: Observable[Any]) -> Observable[tuple[Any, ...]]:
+    """Zip the latest pending value from each source.
+
+    Emit a tuple after every source has emitted a new value since the previous
+    tuple. Faster sources replace their pending values rather than queueing them.
+    If a source completes with a pending value, that value can form one final
+    tuple; otherwise the result completes immediately. Errors propagate at once.
 
     .. marble::
-        :alt: combine_throttle
+        :alt: zip_latest
 
         --1---2-3--------4---|
         -a-------b--c-d------|
-        [ combine_throttle() ]
+        [   zip_latest()   ]
         --1,a----3,b-----4,d-|
 
     Example:
-        >>> res = combine_throttle(obs1, obs2)
+        >>> result = reactivex.zip_latest(obs1, obs2)
 
     Args:
-        args: Observable sources to combine.
+        sources: Observable sources to combine.
 
     Returns:
-        An observable sequence containing the result of combining
-        elements of the sources as tuple.
-    """
-    from .observable.combinethrottle import combine_throttle_
+        An observable sequence of tuples containing the latest pending values.
 
-    return combine_throttle_(*args)
+    Raises:
+        ValueError: If no observable sources are given.
+    """
+    from .observable.ziplatest import zip_latest_
+
+    return zip_latest_(*sources)
 
 
 def concat(*sources: Observable[_T]) -> Observable[_T]:
@@ -1341,7 +1337,6 @@ __all__ = [
     "catch_with_iterable",
     "create",
     "combine_latest",
-    "combine_throttle",
     "compose",
     "concat",
     "concat_with_iterable",
@@ -1374,5 +1369,6 @@ __all__ = [
     "using",
     "with_latest_from",
     "zip",
+    "zip_latest",
     "__version__",
 ]

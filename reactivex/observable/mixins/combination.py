@@ -131,6 +131,35 @@ class CombinationMixin(Generic[_T]):
 
         return self._as_observable().pipe(ops.zip(*sources))
 
+    def zip_latest(self, *sources: Observable[Any]) -> Observable[tuple[Any, ...]]:
+        """Pair the latest pending value from every source in each round.
+
+        Faster sources replace pending values until each source has emitted
+        since the previous tuple.
+
+        Examples:
+            Fluent style:
+            >>> result = source.zip_latest(other)
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source.pipe(ops.zip_latest(other))
+
+        Args:
+            *sources: Observable sequences to combine with the source.
+
+        Returns:
+            An observable sequence of tuples containing the latest pending values.
+
+        See Also:
+            - :func:`zip_latest <reactivex.operators.zip_latest>`
+            - :meth:`zip`
+            - :meth:`combine_latest`
+        """
+        from reactivex import operators as ops
+
+        return self._as_observable().pipe(ops.zip_latest(*sources))
+
     def combine_latest(self, *sources: Observable[Any]) -> Observable[Any]:
         """Combine latest values from observables.
 
