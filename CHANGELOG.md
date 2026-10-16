@@ -1,5 +1,5 @@
 ---
-last_commit_released: d009aa11b192f98662d544567997fd96a70af7fd
+last_commit_released: 92b8293cfee1d70268ceeef9cfc2b28fcd7c0152
 name: reactivex
 updaters:
   - command: ./scripts/shipit_bump_version.sh {version}
@@ -14,6 +14,14 @@ conventional-commit messages.
 
 PyPI uses PEP 440 (`5.0.0rc1`), while ShipIt records SemVer (`5.0.0-rc.1`) in
 this file; the release script normalizes between them.
+
+## 6.1.0 - 2026-10-16
+
+### 🚀 Features
+
+* *(operators)* Add zip_latest (#711) ([92b8293c](https://github.com/ReactiveX/RxPY/commit/92b8293cfee1d70268ceeef9cfc2b28fcd7c0152))
+
+<strong><small>[View changes on Github](https://github.com/ReactiveX/RxPY/compare/d009aa11b192f98662d544567997fd96a70af7fd..92b8293cfee1d70268ceeef9cfc2b28fcd7c0152)</small></strong>
 
 ## 6.0.0 - 2026-10-16
 
