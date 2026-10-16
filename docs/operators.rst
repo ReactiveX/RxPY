@@ -7,71 +7,6 @@ These tables list the pipeable operators in :mod:`reactivex.operators`.
 See the :doc:`operator API reference <reference_operators>` for signatures
 and detailed descriptions.
 
-Working with time
------------------
-
-Time-based operators affect different parts of an Observable's timeline:
-
-.. list-table::
-   :header-rows: 1
-   :widths: 25 75
-
-   * - Goal
-     - Operators
-   * - Shift notifications
-     - :func:`delay <reactivex.operators.delay>` postpones each item and
-       completion by a fixed duration. :func:`delay_with_mapper
-       <reactivex.operators.delay_with_mapper>` chooses a delay for each item
-       using an Observable and can also delay subscription.
-   * - Postpone subscription
-     - :func:`delay_subscription <reactivex.operators.delay_subscription>`
-       waits before subscribing to the source. For a cold source, this also
-       moves when its items are produced.
-   * - Select items by time
-     - :func:`debounce <reactivex.operators.debounce>` emits an item only if
-       no newer item arrives during its quiet period;
-       :func:`throttle_first <reactivex.operators.throttle_first>` takes the
-       first item in each time window; :func:`sample
-       <reactivex.operators.sample>` emits the latest item at sampling times.
-   * - Detect inactivity
-     - :func:`timeout <reactivex.operators.timeout>` errors or switches to
-       another Observable if the next item takes too long.
-   * - Measure time
-     - :func:`timestamp <reactivex.operators.timestamp>` attaches a timestamp
-       to each item; :func:`time_interval
-       <reactivex.operators.time_interval>` measures the time between items.
-
-The difference between shifting notifications and postponing subscription is
-visible in a virtual-time test. Both operations below produce the same output
-times for a cold Observable, but they subscribe to the source at different
-times. ``TestScheduler.start`` subscribes at virtual time 200 by default.
-
-.. code-block:: python
-
-   from reactivex import operators as ops
-   from reactivex.testing import ReactiveTest, TestScheduler
-
-   def run(operator):
-       scheduler = TestScheduler()
-       source = scheduler.create_cold_observable(
-           ReactiveTest.on_next(10, "A"),
-           ReactiveTest.on_completed(20),
-       )
-       result = scheduler.start(
-           lambda: source.pipe(operator(20, scheduler=scheduler))
-       )
-       return result.messages, source.subscriptions
-
-   shifted, shifted_subscriptions = run(ops.delay)
-   postponed, postponed_subscriptions = run(ops.delay_subscription)
-
-   assert shifted == postponed == [
-       ReactiveTest.on_next(230, "A"),
-       ReactiveTest.on_completed(240),
-   ]
-   assert shifted_subscriptions == [ReactiveTest.subscribe(200, 220)]
-   assert postponed_subscriptions == [ReactiveTest.subscribe(220, 240)]
-
 Creating Observables
 ---------------------
 
@@ -292,6 +227,34 @@ Combining Observables
      - Pair source items with items from an iterable.
    * - :func:`zip_with_list <reactivex.operators.zip_with_list>`
      - Alias for zip_with_iterable.
+
+Working with Time
+-----------------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 65
+
+   * - Operator
+     - Description
+   * - :func:`debounce <reactivex.operators.debounce>`
+     - Emit an item only after no newer item arrives during a specified period.
+   * - :func:`delay <reactivex.operators.delay>`
+     - Shift source items and completion forward by a fixed duration.
+   * - :func:`delay_subscription <reactivex.operators.delay_subscription>`
+     - Wait before subscribing to the source Observable.
+   * - :func:`delay_with_mapper <reactivex.operators.delay_with_mapper>`
+     - Delay each item using an Observable selected by a mapper; optionally delay subscription too.
+   * - :func:`sample <reactivex.operators.sample>`
+     - Emit the latest source item at sampling times.
+   * - :func:`throttle_first <reactivex.operators.throttle_first>`
+     - Emit the first item in each time window.
+   * - :func:`time_interval <reactivex.operators.time_interval>`
+     - Measure the time between source items.
+   * - :func:`timeout <reactivex.operators.timeout>`
+     - Signal an error or switch to another Observable when an item takes too long.
+   * - :func:`timestamp <reactivex.operators.timestamp>`
+     - Attach a timestamp to each source item.
 
 Error Handling
 ---------------
