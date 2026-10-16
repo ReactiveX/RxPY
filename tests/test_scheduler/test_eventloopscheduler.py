@@ -280,3 +280,28 @@ class TestEventLoopScheduler(unittest.TestCase):
         gate.acquire()
         assert scheduler._has_thread() is True
         scheduler.dispose()
+
+    def test_is_thread_alive_detects_dead_thread(self):
+        scheduler = EventLoopScheduler()
+
+        dead = threading.Thread(target=lambda: None, daemon=True)
+        dead.start()
+        dead.join()
+
+        gate = threading.Event()
+        alive = threading.Thread(target=gate.wait, daemon=True)
+        alive.start()
+
+        with scheduler._condition:
+            scheduler._thread = dead
+            assert scheduler._is_thread_alive() is False
+
+            scheduler._thread = None
+            assert scheduler._is_thread_alive() is False
+
+            scheduler._thread = alive
+            assert scheduler._is_thread_alive() is True
+
+        gate.set()
+        alive.join()
+        scheduler.dispose()

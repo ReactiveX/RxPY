@@ -141,6 +141,9 @@ class EventLoopScheduler(PeriodicScheduler, abc.DisposableBase):
             return not self._is_disposed and self._is_thread_alive()
 
     def _is_thread_alive(self) -> bool:
+        """Checks if the event loop thread exists and has not died.
+        Should be called under the gate."""
+
         thread = self._thread
         if thread is None:
             return False
