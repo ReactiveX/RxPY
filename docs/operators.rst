@@ -223,6 +223,8 @@ Combining Observables
      - Combine each source item with the latest values from other Observables.
    * - :func:`zip <reactivex.operators.zip>`
      - Combine the emissions of multiple Observables together via a specified function and emit single items for each combination based on the results of this function.
+   * - :func:`zip_latest <reactivex.operators.zip_latest>`
+     - Pair the latest pending value from each Observable after every source has emitted since the previous tuple, replacing older pending values.
    * - :func:`zip_with_iterable <reactivex.operators.zip_with_iterable>`
      - Pair source items with items from an iterable.
    * - :func:`zip_with_list <reactivex.operators.zip_with_list>`

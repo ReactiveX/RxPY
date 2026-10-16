@@ -129,6 +129,21 @@ class TestConcatAllMethodChaining:
         assert fluent_values == pipe_values == [1, 2, 3, 4]
 
 
+class TestZipLatestMethodChaining:
+    """Tests for zip_latest() method."""
+
+    def test_zip_latest_equivalence(self) -> None:
+        first = rx.of(1, 2)
+        second = rx.of("a", "b")
+        fluent_values: list[tuple[object, ...]] = []
+        pipe_values: list[tuple[object, ...]] = []
+
+        first.zip_latest(second).subscribe(fluent_values.append)
+        first.pipe(ops.zip_latest(second)).subscribe(pipe_values.append)
+
+        assert fluent_values == pipe_values == [(2, "a")]
+
+
 class TestMergeAllMethodChaining:
     """Tests for merge_all() method."""
 

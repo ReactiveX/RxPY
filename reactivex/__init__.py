@@ -231,6 +231,39 @@ def combine_latest(*__sources: Observable[Any]) -> Observable[Any]:
     return combine_latest_(*__sources)
 
 
+def zip_latest(*sources: Observable[Any]) -> Observable[tuple[Any, ...]]:
+    """Zip the latest pending value from each source.
+
+    Emit a tuple after every source has emitted a new value since the previous
+    tuple. Faster sources replace their pending values rather than queueing them.
+    If a source completes with a pending value, that value can form one final
+    tuple; otherwise the result completes immediately. Errors propagate at once.
+
+    .. marble::
+        :alt: zip_latest
+
+        --1---2-3--------4---|
+        -a-------b--c-d------|
+        [   zip_latest()   ]
+        --1,a----3,b-----4,d-|
+
+    Example:
+        >>> result = reactivex.zip_latest(obs1, obs2)
+
+    Args:
+        sources: Observable sources to combine.
+
+    Returns:
+        An observable sequence of tuples containing the latest pending values.
+
+    Raises:
+        ValueError: If no observable sources are given.
+    """
+    from .observable.ziplatest import zip_latest_
+
+    return zip_latest_(*sources)
+
+
 def concat(*sources: Observable[_T]) -> Observable[_T]:
     """Concatenates all of the specified observable sequences.
 
@@ -1336,5 +1369,6 @@ __all__ = [
     "using",
     "with_latest_from",
     "zip",
+    "zip_latest",
     "__version__",
 ]

@@ -421,6 +421,36 @@ def combine_latest(
     return combine_latest_(*others)
 
 
+def zip_latest(
+    *others: Observable[Any],
+) -> Callable[[Observable[Any]], Observable[tuple[Any, ...]]]:
+    """Zip the latest pending value from the source and each other observable.
+
+    Emit after every observable has produced a new value since the previous
+    tuple. Faster observables replace pending values rather than queueing them.
+
+    .. marble::
+        :alt: zip_latest
+
+        --1---2-3--------4---|
+        -a-------b--c-d------|
+        [   zip_latest()   ]
+        --1,a----3,b-----4,d-|
+
+    Example:
+        >>> result = obs1.pipe(zip_latest(obs2))
+
+    Args:
+        others: Observable sources to combine with the source.
+
+    Returns:
+        An operator that emits tuples of the latest pending values.
+    """
+    from ._ziplatest import zip_latest_
+
+    return zip_latest_(*others)
+
+
 def concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T]]:
     """Concatenates all the observable sequences.
 
@@ -4460,6 +4490,7 @@ __all__ = [
     "window_with_time_or_count",
     "with_latest_from",
     "zip",
+    "zip_latest",
     "zip_with_list",
     "zip_with_iterable",
     "zip_with_list",
