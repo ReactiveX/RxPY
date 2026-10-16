@@ -37,14 +37,13 @@ def skip_last_(source: Observable[_T], count: int) -> Observable[_T]:
         q: list[_T] = []
 
         def on_next(value: _T) -> None:
-            front = None
             with source.lock:
                 q.append(value)
-                if len(q) > count:
-                    front = q.pop(0)
+                if len(q) <= count:
+                    return
+                front = q.pop(0)
 
-            if front is not None:
-                observer.on_next(front)
+            observer.on_next(front)
 
         return source.subscribe(
             on_next, observer.on_error, observer.on_completed, scheduler=scheduler

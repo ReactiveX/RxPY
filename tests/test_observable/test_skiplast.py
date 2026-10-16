@@ -1,5 +1,8 @@
 import unittest
 
+import pytest
+
+import reactivex
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
 
@@ -294,3 +297,31 @@ class TestSkipLast(unittest.TestCase):
             on_next(590, 6),
         ]
         assert xs.subscriptions == [subscribe(200, 1000)]
+
+
+@pytest.mark.parametrize("count", [0, 1, 2, 4])
+@pytest.mark.parametrize("ends_with_error", [False, True])
+def test_skip_last_preserves_none_values(count: int, ends_with_error: bool) -> None:
+    scheduler = TestScheduler()
+    error = ValueError("source failed")
+    values = [None, 1, None, 2]
+    terminal = on_error(300, error) if ends_with_error else on_completed(300)
+    source = scheduler.create_hot_observable(
+        *(on_next(210 + i * 10, value) for i, value in enumerate(values)),
+        terminal,
+    )
+
+    results = scheduler.start(lambda: source.pipe(ops.skip_last(count)))
+
+    assert results.messages == [
+        *(on_next(210 + (i + count) * 10, values[i]) for i in range(4 - count)),
+        terminal,
+    ]
+    assert source.subscriptions == [subscribe(200, 300)]
+
+
+def test_skip_last_preserves_none_on_each_subscription() -> None:
+    result = reactivex.of(None, 1, None, 2).pipe(ops.skip_last(1), ops.to_list())
+
+    assert result.run() == [None, 1, None]
+    assert result.run() == [None, 1, None]
