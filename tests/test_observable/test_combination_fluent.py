@@ -113,6 +113,22 @@ class TestAmbMethodChaining:
         assert fluent_values == pipe_values == [1, 2, 3]
 
 
+class TestConcatAllMethodChaining:
+    """Tests for concat_all() method."""
+
+    def test_concat_all_equivalence(self) -> None:
+        """Verify concat_all fluent and functional styles are equivalent."""
+        source: Observable[Observable[int]] = rx.of(rx.of(1, 2), rx.of(3, 4))
+
+        fluent_values: list[int] = []
+        pipe_values: list[int] = []
+
+        source.concat_all().subscribe(on_next=fluent_values.append)
+        source.pipe(ops.concat_all()).subscribe(on_next=pipe_values.append)
+
+        assert fluent_values == pipe_values == [1, 2, 3, 4]
+
+
 class TestMergeAllMethodChaining:
     """Tests for merge_all() method."""
 

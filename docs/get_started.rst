@@ -442,6 +442,14 @@ Both versions complete in about two seconds rather than six.
     parallelism. To bound how many run at once, use :func:`merge()
     <reactivex.operators.merge>` with a ``max_concurrent`` argument.
 
+For an Observable that already emits Observables, use :func:`merge_all()
+<reactivex.operators.merge_all>` to subscribe to the inner sequences as they
+arrive, or :func:`concat_all() <reactivex.operators.concat_all>` to subscribe
+to them one at a time in source order. ``concat_all()`` is equivalent to
+``merge(max_concurrent=1)`` for an Observable of Observables, and
+``concat_map(project)`` is equivalent to ``map(project)`` followed by
+``concat_all()``.
+
 Remember that the GIL caveat above applies here too: on a regular build this
 pattern pays off for IO-bound work, or for calls into libraries that release
 the GIL, more than it does for pure-Python computation. On a free-threaded

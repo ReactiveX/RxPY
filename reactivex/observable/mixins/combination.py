@@ -314,6 +314,34 @@ class CombinationMixin(Generic[_T]):
 
         return self._as_observable().pipe(ops.amb(right_source))
 
+    def concat_all(self) -> Observable[Any]:
+        """Flatten inner observables in source order.
+
+        Subscribe to each inner observable after the previous one completes.
+
+        Examples:
+            Fluent style:
+            >>> result = source_of_sources.concat_all()
+
+            Equivalent pipe style:
+            >>> from reactivex import operators as ops
+            >>> result = source_of_sources.pipe(ops.concat_all())
+
+        Returns:
+            An observable sequence containing each inner sequence in order.
+
+        See Also:
+            - :func:`concat_all <reactivex.operators.concat_all>`
+            - :meth:`concat_map`
+            - :meth:`merge_all`
+        """
+        from reactivex import operators as ops
+
+        op: Callable[[Observable[Any]], Observable[Any]] = cast(
+            "Callable[[Observable[Any]], Observable[Any]]", ops.concat_all()
+        )
+        return self._as_observable().pipe(op)
+
     def merge_all(self) -> Observable[Any]:
         """Merge all inner observables.
 
