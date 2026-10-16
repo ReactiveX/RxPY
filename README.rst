@@ -22,11 +22,8 @@ The ReactiveX for Python (RxPY)
 *A library for composing asynchronous and event-based programs using observable
 collections and query operator functions in Python*
 
-ReactiveX for Python v5
------------------------
-
-For v3.X please go to the `v3 branch
-<https://github.com/ReactiveX/RxPY/tree/release/v3.2.x>`_.
+Installation
+------------
 
 ReactiveX for Python runs on `Python <http://www.python.org/>`_ 3.11 or above. To
 install:
