@@ -445,6 +445,25 @@ def concat(*sources: Observable[_T]) -> Callable[[Observable[_T]], Observable[_T
     return concat_(*sources)
 
 
+def concat_all() -> Callable[[Observable[Observable[_T]]], Observable[_T]]:
+    """Flatten an observable of observables in source order.
+
+    Each inner observable is subscribed to only after the previous one
+    completes. Inner observables waiting for their turn are buffered.
+    Equivalent to ``merge(max_concurrent=1)`` for an observable of observables.
+
+    Example:
+        >>> op = concat_all()
+
+    Returns:
+        An operator function that emits all values from each inner observable
+        before subscribing to the next one.
+    """
+    from ._concatall import concat_all_
+
+    return concat_all_()
+
+
 def concat_map(
     project: Mapper[_T1, Observable[_T2]],
 ) -> Callable[[Observable[_T1]], Observable[_T2]]:
@@ -467,7 +486,7 @@ def concat_map(
         ---10---10---10-20---20---(20,30)---30---30--------|
 
     Examples:
-        >>> op = concat(lambda i: reactivex.timer(1.0).pipe(take(3)))
+        >>> op = concat_map(lambda i: reactivex.of(i, i * 2))
 
     Args:
         project: Projecting function which takes the outer observable value
@@ -2750,6 +2769,18 @@ def single_or_default(
 def single_or_default_async(
     has_default: bool = False, default_value: _T = None
 ) -> Callable[[Observable[_T]], Observable[_T]]:
+    """Emit the only source item, or a default when the source is empty.
+
+    An empty source raises an error when ``has_default`` is false. A source
+    with more than one item always raises an error.
+
+    Args:
+        has_default: Whether to emit ``default_value`` for an empty source.
+        default_value: Value to emit when the source is empty.
+
+    Returns:
+        An operator function that emits one item or terminates with an error.
+    """
     from ._singleordefault import single_or_default_async_
 
     return single_or_default_async_(has_default, default_value)
@@ -4163,6 +4194,17 @@ def window_with_time(
     timeshift: typing.RelativeTime | None = None,
     scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
+    """Divide source items into windows based on time intervals.
+
+    Args:
+        timespan: Duration of each window.
+        timeshift: Time between the start of successive windows. Defaults to
+            ``timespan`` when omitted.
+        scheduler: Scheduler used to open and close windows.
+
+    Returns:
+        An operator function that emits Observables containing source items.
+    """
     from ._windowwithtime import window_with_time_
 
     return window_with_time_(timespan, timeshift, scheduler)
@@ -4173,6 +4215,16 @@ def window_with_time_or_count(
     count: int,
     scheduler: abc.SchedulerBase | None = None,
 ) -> Callable[[Observable[_T]], Observable[Observable[_T]]]:
+    """Close each window when its time or item count limit is reached.
+
+    Args:
+        timespan: Maximum duration of each window.
+        count: Maximum number of items in each window.
+        scheduler: Scheduler used to close windows by time.
+
+    Returns:
+        An operator function that emits Observables containing source items.
+    """
     from ._windowwithtimeorcount import window_with_time_or_count_
 
     return window_with_time_or_count_(timespan, count, scheduler)
@@ -4288,6 +4340,8 @@ __all__ = [
     "catch",
     "combine_latest",
     "concat",
+    "concat_all",
+    "concat_map",
     "contains",
     "count",
     "debounce",
@@ -4372,6 +4426,8 @@ __all__ = [
     "subscribe_on",
     "sum",
     "switch_latest",
+    "switch_map",
+    "switch_map_indexed",
     "take",
     "take_last",
     "take_last_buffer",
