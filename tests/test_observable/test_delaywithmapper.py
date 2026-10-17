@@ -237,3 +237,52 @@ class TestDelayWithMapper(unittest.TestCase):
         )
 
         assert captured["scheduler"] is expected
+
+    def test_delay_with_mapper_synchronous_value_and_completion(self):
+        self.check_synchronous_duration([0])
+
+    def test_delay_with_mapper_synchronous_multiple_values(self):
+        self.check_synchronous_duration([0, 1, 2])
+
+    def test_delay_with_mapper_synchronous_empty_duration(self):
+        self.check_synchronous_duration([])
+
+    def check_synchronous_duration(self, signals):
+        from reactivex import from_iterable
+
+        scheduler = TestScheduler()
+        source = scheduler.create_hot_observable(
+            on_next(210, None), on_next(220, "second"), on_completed(230)
+        )
+        result = scheduler.start(
+            lambda: source.pipe(
+                ops.delay_with_mapper(
+                    lambda _: from_iterable(signals, scheduler=ImmediateScheduler())
+                )
+            )
+        )
+
+        assert result.messages == [
+            on_next(210, None),
+            on_next(220, "second"),
+            on_completed(230),
+        ]
+        assert source.subscriptions == [subscribe(200, 230)]
+
+    def test_delay_with_mapper_ignores_error_after_synchronous_signal(self):
+        scheduler = TestScheduler()
+        source = scheduler.create_hot_observable(on_next(210, 1), on_completed(220))
+
+        def duration_subscribe(observer, scheduler=None):
+            observer.on_next(0)
+            observer.on_error(RuntimeError("after release"))
+            return Disposable()
+
+        result = scheduler.start(
+            lambda: source.pipe(
+                ops.delay_with_mapper(lambda _: Observable(duration_subscribe))
+            )
+        )
+
+        assert result.messages == [on_next(210, 1), on_completed(220)]
+        assert source.subscriptions == [subscribe(200, 220)]
