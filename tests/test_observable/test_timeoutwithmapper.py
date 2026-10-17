@@ -5,6 +5,8 @@ import pytest
 
 import reactivex
 from reactivex import operators as ops
+from reactivex.scheduler import ImmediateScheduler
+from reactivex.subject import Subject
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -244,3 +246,74 @@ def test_timeout_fallback_preserves_scheduler(
     assert timeout.subscriptions == [
         subscribe(200 if first_timeout else 210, timeout_at)
     ]
+
+
+@pytest.mark.parametrize("timeout_values", [[], [0], [0, 1]])
+@pytest.mark.parametrize("first_timeout", [False, True])
+def test_synchronous_timeout_keeps_fallback_active(
+    timeout_values: list[int], first_timeout: bool
+) -> None:
+    scheduler = TestScheduler()
+    source = reactivex.from_iterable([1, 2, 3], scheduler=ImmediateScheduler())
+    timeout = reactivex.from_iterable(timeout_values, scheduler=ImmediateScheduler())
+    fallback = scheduler.create_cold_observable(on_next(10, 42), on_completed(20))
+    mapped_values: list[int] = []
+
+    def duration(value: int) -> reactivex.Observable[int]:
+        mapped_values.append(value)
+        return timeout
+
+    results = scheduler.start(
+        lambda: source.pipe(
+            ops.timeout_with_mapper(
+                timeout if first_timeout else reactivex.never(),
+                duration,
+                fallback,
+            )
+        )
+    )
+
+    expected = [] if first_timeout else [on_next(200, 1)]
+    expected += [on_next(210, 42), on_completed(220)]
+    assert results.messages == expected
+    assert fallback.subscriptions == [subscribe(200, 220)]
+    assert mapped_values == ([] if first_timeout else [1])
+
+
+@pytest.mark.parametrize("timeout_completes", [False, True])
+@pytest.mark.parametrize("source_errors", [False, True])
+def test_timeout_ignores_source_notifications_during_fallback_subscription(
+    timeout_completes: bool, source_errors: bool
+) -> None:
+    scheduler = TestScheduler()
+    source: Subject[int] = Subject()
+    timeout = scheduler.create_cold_observable(
+        on_completed(5) if timeout_completes else on_next(5, 0)
+    )
+    fallback = scheduler.create_cold_observable(on_next(10, 42), on_completed(20))
+    source_error = RuntimeError("source error after timeout")
+
+    def create_fallback(_scheduler):
+        # The source subscription is still being replaced when this runs.
+        source.on_next(99)
+        if source_errors:
+            source.on_error(source_error)
+        else:
+            source.on_completed()
+        return fallback
+
+    scheduler.schedule_absolute(210, lambda *_: source.on_next(1))
+    results = scheduler.start(
+        lambda: source.pipe(
+            ops.timeout_with_mapper(
+                reactivex.never(),
+                lambda _: timeout,
+                reactivex.defer(create_fallback),
+            )
+        )
+    )
+
+    assert results.messages == [on_next(210, 1), on_next(225, 42), on_completed(235)]
+    assert timeout.subscriptions == [subscribe(210, 215)]
+    assert fallback.subscriptions == [subscribe(215, 235)]
+    assert not source.observers
