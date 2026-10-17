@@ -652,6 +652,48 @@ class TestWindow(unittest.TestCase):
 
         assert ys.subscriptions == [subscribe(200, 400)]
 
+    def test_window_when_initial_mapper_error_terminates_inner(self):
+        self.check_window_when_mapper_error(1)
+
+    def test_window_when_later_mapper_error_terminates_inner(self):
+        self.check_window_when_mapper_error(2)
+
+    def check_window_when_mapper_error(self, fail_on):
+        scheduler = TestScheduler()
+        error = RuntimeError("closing mapper failed")
+        source = scheduler.create_hot_observable(
+            on_next(210, 1), on_next(230, 2), on_completed(300)
+        )
+        calls = 0
+        windows = []
+
+        def closing_mapper():
+            nonlocal calls
+            calls += 1
+            if calls == fail_on:
+                raise error
+            return scheduler.create_cold_observable(on_next(20, None))
+
+        def record_window(window):
+            observer = scheduler.create_observer()
+            windows.append(observer)
+            window.subscribe(observer, scheduler=scheduler)
+
+        result = scheduler.start(
+            lambda: source.pipe(
+                ops.window_when(closing_mapper),
+                ops.do_action(record_window),
+                ops.ignore_elements(),
+            )
+        )
+
+        time = 200 if fail_on == 1 else 220
+        assert result.messages == [on_error(time, error)]
+        assert windows[-1].messages == [on_error(time, error)]
+        if fail_on == 2:
+            assert windows[0].messages == [on_next(210, 1), on_completed(220)]
+        assert source.subscriptions == [subscribe(200, time)]
+
 
 if __name__ == "__main__":
     unittest.main()
