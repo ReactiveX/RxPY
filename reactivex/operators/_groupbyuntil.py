@@ -73,6 +73,7 @@ def group_by_until_(
             observer: abc.ObserverBase[GroupedObservable[_TKey, _TValue]],
             scheduler: abc.SchedulerBase | None = None,
         ) -> abc.DisposableBase:
+            # Snapshot writers when notifying: terminal handlers can expire groups.
             writers: OrderedDict[_TKey, Subject[_TValue]] = OrderedDict()
             group_disposable = CompositeDisposable()
             ref_count_disposable = RefCountDisposable(group_disposable)
@@ -84,7 +85,7 @@ def group_by_until_(
                 try:
                     key = key_mapper(x)
                 except Exception as e:
-                    for wrt in writers.values():
+                    for wrt in list(writers.values()):
                         wrt.on_error(e)
 
                     observer.on_error(e)
@@ -96,7 +97,7 @@ def group_by_until_(
                     try:
                         writer = subject_mapper_()
                     except Exception as e:
-                        for wrt in writers.values():
+                        for wrt in list(writers.values()):
                             wrt.on_error(e)
 
                         observer.on_error(e)
@@ -115,7 +116,7 @@ def group_by_until_(
                     try:
                         duration = duration_mapper(duration_group)
                     except Exception as e:
-                        for wrt in writers.values():
+                        for wrt in list(writers.values()):
                             wrt.on_error(e)
 
                         observer.on_error(e)
@@ -136,7 +137,7 @@ def group_by_until_(
                         pass
 
                     def on_error(exn: Exception) -> None:
-                        for wrt in writers.values():
+                        for wrt in list(writers.values()):
                             wrt.on_error(exn)
                         observer.on_error(exn)
 
@@ -150,7 +151,7 @@ def group_by_until_(
                 try:
                     element = element_mapper_(x)
                 except Exception as error:
-                    for wrt in writers.values():
+                    for wrt in list(writers.values()):
                         wrt.on_error(error)
 
                     observer.on_error(error)
@@ -159,13 +160,13 @@ def group_by_until_(
                 writer.on_next(element)
 
             def on_error(ex: Exception) -> None:
-                for wrt in writers.values():
+                for wrt in list(writers.values()):
                     wrt.on_error(ex)
 
                 observer.on_error(ex)
 
             def on_completed() -> None:
-                for wrt in writers.values():
+                for wrt in list(writers.values()):
                     wrt.on_completed()
 
                 observer.on_completed()
