@@ -55,8 +55,8 @@ def debounce_(
 
             def action(scheduler: abc.SchedulerBase, state: Any = None) -> None:
                 if has_value[0] and _id[0] == current_id:
+                    has_value[0] = False
                     observer.on_next(value[0])
-                has_value[0] = False
 
             d.disposable = _scheduler.schedule_relative(duetime, action)
 
@@ -132,17 +132,17 @@ def throttle_with_mapper_(
             def on_next(x: Any) -> None:
                 nonlocal has_value
                 if has_value and _id[0] == current_id:
+                    has_value = False
                     observer.on_next(value)
 
-                has_value = False
                 d.dispose()
 
             def on_completed() -> None:
                 nonlocal has_value
                 if has_value and _id[0] == current_id:
+                    has_value = False
                     observer.on_next(value)
 
-                has_value = False
                 d.dispose()
 
             d.disposable = throttle.subscribe(
