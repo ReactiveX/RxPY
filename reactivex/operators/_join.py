@@ -71,7 +71,7 @@ def join_(
                     noop, observer.on_error, lambda: expire(), scheduler=scheduler
                 )
 
-                for val in right_map.values():
+                for val in list(right_map.values()):
                     result = (value, val)
                     observer.on_next(result)
 
@@ -117,7 +117,7 @@ def join_(
                     noop, observer.on_error, lambda: expire(), scheduler=scheduler
                 )
 
-                for val in left_map.values():
+                for val in list(left_map.values()):
                     result = (val, value)
                     observer.on_next(result)
 

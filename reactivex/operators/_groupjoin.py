@@ -70,7 +70,7 @@ def group_join_(
                     result = (value, add_ref(subject, rcd))
                 except Exception as e:
                     log.error(f"*** Exception: {e}")
-                    for left_value in left_map.values():
+                    for left_value in list(left_map.values()):
                         left_value.on_error(e)
 
                     observer.on_error(e)
@@ -78,7 +78,7 @@ def group_join_(
 
                 observer.on_next(result)
 
-                for right_value in right_map.values():
+                for right_value in list(right_map.values()):
                     subject.on_next(right_value)
 
                 md = SingleAssignmentDisposable()
@@ -94,14 +94,14 @@ def group_join_(
                 try:
                     duration = left_duration_mapper(value)
                 except Exception as e:
-                    for left_value in left_map.values():
+                    for left_value in list(left_map.values()):
                         left_value.on_error(e)
 
                     observer.on_error(e)
                     return
 
                 def on_error(error: Exception) -> Any:
-                    for left_value in left_map.values():
+                    for left_value in list(left_map.values()):
                         left_value.on_error(error)
 
                     observer.on_error(error)
@@ -111,7 +111,7 @@ def group_join_(
                 )
 
             def on_error_left(error: Exception) -> None:
-                for left_value in left_map.values():
+                for left_value in list(left_map.values()):
                     left_value.on_error(error)
 
                 observer.on_error(error)
@@ -141,7 +141,7 @@ def group_join_(
                 try:
                     duration = right_duration_mapper(value)
                 except Exception as e:
-                    for left_value in left_map.values():
+                    for left_value in list(left_map.values()):
                         left_value.on_error(e)
 
                     observer.on_error(e)
@@ -149,7 +149,7 @@ def group_join_(
 
                 def on_error(error: Exception):
                     with left.lock:
-                        for left_value in left_map.values():
+                        for left_value in list(left_map.values()):
                             left_value.on_error(error)
 
                         observer.on_error(error)
@@ -159,11 +159,11 @@ def group_join_(
                 )
 
                 with left.lock:
-                    for left_value in left_map.values():
+                    for left_value in list(left_map.values()):
                         left_value.on_next(value)
 
             def on_error_right(error: Exception) -> None:
-                for left_value in left_map.values():
+                for left_value in list(left_map.values()):
                     left_value.on_error(error)
 
                 observer.on_error(error)
