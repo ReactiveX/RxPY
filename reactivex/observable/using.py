@@ -41,12 +41,15 @@ def using_(
 
             source = observable_factory(resource)
         except Exception as exception:  # pylint: disable=broad-except
-            d = reactivex.throw(exception).subscribe(observer, scheduler=scheduler)
-            return CompositeDisposable(d, disp)
+            source = reactivex.throw(exception)
 
-        return CompositeDisposable(
-            source.subscribe(observer, scheduler=scheduler), disp
-        )
+        try:
+            return CompositeDisposable(
+                source.subscribe(observer, scheduler=scheduler), disp
+            )
+        except Exception:
+            disp.dispose()
+            raise
 
     return Observable(subscribe)
 
