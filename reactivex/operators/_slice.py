@@ -1,7 +1,7 @@
 from sys import maxsize
 from typing import Any, TypeVar
 
-from reactivex import Observable
+from reactivex import Observable, abc, defer
 from reactivex import operators as ops
 from reactivex.internal import curry_flip
 
@@ -55,6 +55,30 @@ def slice_(
     _stop: int = maxsize if stop is None else stop
     _step: int = 1 if step is None else step
 
+    if _step < 0:
+        # Reversing events is not supported
+        raise TypeError("Negative step not supported.")
+
+    if _start < 0 and stop is not None and _stop > 0:
+
+        def factory(_: abc.SchedulerBase) -> Observable[_T]:
+            # Keep source indices until the tail is known. Taking the positive
+            # stop first would make the negative start relative to that prefix.
+            tail = source.pipe(
+                ops.map_indexed(lambda value, index: (value, index)),
+                ops.take_last(-_start),
+                ops.take_while(lambda item: item[1] < _stop),
+                ops.map(lambda item: item[0]),
+            )
+            if _step > 1:
+                return tail.pipe(
+                    ops.filter_indexed(lambda value, index: index % _step == 0)
+                )
+            return tail
+
+        # The generated indices must restart for each subscription.
+        return defer(factory)
+
     pipeline: list[Any] = []
 
     if _stop >= 0:
@@ -70,9 +94,6 @@ def slice_(
 
     if _step > 1:
         pipeline.append(ops.filter_indexed(lambda x, i: i % _step == 0))
-    elif _step < 0:
-        # Reversing events is not supported
-        raise TypeError("Negative step not supported.")
 
     return source.pipe(*pipeline)
 
