@@ -58,17 +58,14 @@ def zip_with_iterable_(
     """
 
     first = source
-    second = iter(seq)
 
     def subscribe(
         observer: abc.ObserverBase[tuple[_T, _TOther]],
         scheduler: abc.SchedulerBase | None = None,
     ):
-        index = 0
+        second = iter(seq)
 
         def on_next(left: _T) -> None:
-            nonlocal index
-
             try:
                 right = next(second)
             except StopIteration:
