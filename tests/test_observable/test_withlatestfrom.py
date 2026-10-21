@@ -2,6 +2,7 @@ import unittest
 
 import reactivex
 from reactivex import operators as ops
+from reactivex.subject import Subject
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -504,6 +505,82 @@ class TestWithLatestFrom(unittest.TestCase):
             on_next(230, 3 + 5),
             on_completed(235),
         ]
+
+
+class TestWithLatestFromEquality(unittest.TestCase):
+    def test_with_latest_from_does_not_compare_values(self):
+        class Uncomparable:
+            def __eq__(self, other):
+                raise ValueError("Value equality must not be used for readiness")
+
+        source = Subject()
+        child = Subject()
+        value = Uncomparable()
+        results = []
+        errors = []
+        source.pipe(ops.with_latest_from(child)).subscribe(
+            results.append, errors.append
+        )
+        child.on_next(value)
+        source.on_next(1)
+
+        assert len(results) == 1
+        assert results[0][0] == 1
+        assert results[0][1] is value
+        assert errors == []
+
+    def test_with_latest_from_preserves_values_equal_to_anything(self):
+        class AlwaysEqual:
+            def __eq__(self, other):
+                return True
+
+        source = Subject()
+        child = Subject()
+        value = AlwaysEqual()
+        results = []
+        reactivex.with_latest_from(source, child).subscribe(results.append)
+        child.on_next(value)
+        source.on_next(1)
+        source.on_next(2)
+
+        assert len(results) == 2
+        assert [result[0] for result in results] == [1, 2]
+        assert all(result[1] is value for result in results)
+
+    def test_with_latest_from_waits_for_all_children_with_uncomparable_values(self):
+        class Uncomparable:
+            def __eq__(self, other):
+                raise ValueError("Value equality must not be used for readiness")
+
+        source = Subject()
+        first = Subject()
+        second = Subject()
+        value = Uncomparable()
+        results = []
+        completed = []
+        reactivex.with_latest_from(source, first, second).subscribe(
+            results.append, on_completed=lambda: completed.append(True)
+        )
+        first.on_next(value)
+        source.on_next(1)
+        assert results == []
+        second.on_next(None)
+        source.on_next(2)
+        first.on_completed()
+        source.on_next(3)
+        source.on_completed()
+
+        assert len(results) == 2
+        assert [result[0] for result in results] == [2, 3]
+        assert all(result[1] is value and result[2] is None for result in results)
+        assert completed == [True]
+
+    def test_with_latest_from_no_children(self):
+        results = []
+        reactivex.from_iterable([None, 0, 1]).pipe(ops.with_latest_from()).subscribe(
+            results.append
+        )
+        assert results == [(None,), (0,), (1,)]
 
 
 if __name__ == "__main__":
