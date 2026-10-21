@@ -1,3 +1,4 @@
+from collections import deque
 from typing import TypeVar, Union
 
 import reactivex
@@ -46,7 +47,23 @@ def merge_(
         is_stopped = [False]
         queue: list[Observable[_T]] = []
 
-        def subscribe(xs: Observable[_T]):
+        pending_subscriptions: deque[Observable[_T]] = deque()
+        is_subscribing = False
+
+        def subscribe(xs: Observable[_T]) -> None:
+            nonlocal is_subscribing
+            pending_subscriptions.append(xs)
+            if is_subscribing:
+                return
+
+            is_subscribing = True
+            try:
+                while pending_subscriptions and not group.is_disposed:
+                    subscribe_inner(pending_subscriptions.popleft())
+            finally:
+                is_subscribing = False
+
+        def subscribe_inner(xs: Observable[_T]):
             subscription = SingleAssignmentDisposable()
             group.add(subscription)
 
@@ -71,7 +88,7 @@ def merge_(
             assert max_concurrent
             if active_count[0] < max_concurrent:
                 active_count[0] += 1
-                subscribe(inner_source)
+                subscribe_inner(inner_source)
             else:
                 queue.append(inner_source)
 
