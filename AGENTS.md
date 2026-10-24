@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file provides guidance for AI agents (Repo Assist, Copilot, etc.) working in this repository.
+This file provides guidance for AI agents working in this repository.
 
 ## ⛔ DO NOT MODIFY CHANGELOG.md
 
