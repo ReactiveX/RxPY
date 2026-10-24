@@ -55,7 +55,7 @@ def sequence_equal_(
                 if len(qr) > 0:
                     v = qr.pop(0)
                     try:
-                        equal = comparer_(v, x)
+                        equal = comparer_(x, v)
                     except Exception as e:
                         observer.on_error(e)
                         return
