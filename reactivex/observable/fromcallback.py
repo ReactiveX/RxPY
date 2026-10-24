@@ -24,8 +24,6 @@ def from_callback_(
     """
 
     def function(*args: Any) -> Observable[Any]:
-        arguments = list(args)
-
         def subscribe(
             observer: abc.ObserverBase[Any],
             scheduler: abc.SchedulerBase | None = None,
@@ -46,10 +44,9 @@ def from_callback_(
                     else:
                         observer.on_next(results)
 
-                    observer.on_completed()
+                observer.on_completed()
 
-            arguments.append(handler)
-            func(*arguments)
+            func(*args, handler)
             return Disposable()
 
         return Observable(subscribe)
