@@ -2,6 +2,7 @@ from collections.abc import Callable
 from typing import Any, TypeVar, cast
 
 from reactivex import Observable, abc, typing
+from reactivex import operators as ops
 from reactivex.disposable import (
     CompositeDisposable,
     SerialDisposable,
@@ -68,18 +69,15 @@ def delay_with_mapper_(
                     d = SingleAssignmentDisposable()
                     delays.add(d)
 
-                    def on_next(_: Any) -> None:
-                        observer.on_next(x)
-                        delays.remove(d)
-                        done()
-
                     def on_completed() -> None:
                         observer.on_next(x)
                         delays.remove(d)
                         done()
 
-                    d.disposable = delay.subscribe(
-                        on_next, observer.on_error, on_completed, scheduler=scheduler
+                    d.disposable = delay.pipe(ops.take(1)).subscribe(
+                        on_error=observer.on_error,
+                        on_completed=on_completed,
+                        scheduler=scheduler,
                     )
 
                 def on_completed() -> None:
