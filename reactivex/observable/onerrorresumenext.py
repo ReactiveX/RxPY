@@ -31,11 +31,11 @@ def on_error_resume_next_(
         even if a sequence terminates exceptionally.
     """
 
-    sources_ = iter(sources)
-
     def subscribe(
         observer: abc.ObserverBase[_T], scheduler: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
+        sources_ = iter(sources)
+
         scheduler = scheduler or CurrentThreadScheduler.singleton()
 
         subscription = SerialDisposable()

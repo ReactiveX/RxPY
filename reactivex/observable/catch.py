@@ -30,11 +30,11 @@ def catch_with_iterable_(sources: Iterable[Observable[_T]]) -> Observable[_T]:
         successfully.
     """
 
-    sources_ = iter(sources)
-
     def subscribe(
         observer: abc.ObserverBase[_T], scheduler_: abc.SchedulerBase | None = None
     ) -> abc.DisposableBase:
+        sources_ = iter(sources)
+
         _scheduler = scheduler_ or CurrentThreadScheduler.singleton()
 
         subscription = SerialDisposable()
