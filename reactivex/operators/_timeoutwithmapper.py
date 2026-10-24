@@ -63,8 +63,12 @@ def timeout_with_mapper_(
             def set_timer(timeout: Observable[Any]) -> None:
                 my_id = _id[0]
 
-                def timer_wins():
-                    return _id[0] == my_id
+                def timer_wins() -> bool:
+                    nonlocal switched
+                    if not switched and _id[0] == my_id:
+                        switched = True
+                        return True
+                    return False
 
                 d = SingleAssignmentDisposable()
                 timer.disposable = d
