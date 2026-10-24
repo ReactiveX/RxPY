@@ -36,7 +36,7 @@ def with_latest_from_(
 
             def on_next(value: Any) -> None:
                 with parent.lock:
-                    if NO_VALUE not in values:
+                    if all(value is not NO_VALUE for value in values):
                         result = (value,) + tuple(values)
                         observer.on_next(result)
 
