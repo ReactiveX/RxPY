@@ -153,7 +153,7 @@ def window_when_(
             try:
                 window_close = closing_mapper()
             except Exception as exception:
-                observer.on_error(exception)
+                on_error(exception)
                 return
 
             def on_completed():
