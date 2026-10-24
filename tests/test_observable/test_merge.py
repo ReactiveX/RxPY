@@ -865,3 +865,106 @@ class TestMerge(unittest.TestCase):
             on_completed(360),
         ]
         assert xs.subscriptions == [subscribe(200, 360)]
+
+
+def test_merge_many_synchronous_queued_sources():
+    from reactivex.subject import Subject
+
+    source = Subject()
+    first = Subject()
+    results = []
+    errors = []
+    completed = []
+    source.pipe(ops.merge(max_concurrent=1)).subscribe(
+        results.append, errors.append, lambda: completed.append(True)
+    )
+    source.on_next(first)
+    for _ in range(2000):
+        source.on_next(reactivex.empty())
+    source.on_next(reactivex.just(42))
+    source.on_completed()
+
+    first.on_completed()
+
+    assert results == [42]
+    assert errors == []
+    assert completed == [True]
+
+
+def test_merge_synchronous_queued_error_stops_drain():
+    from reactivex.subject import Subject
+
+    source = Subject()
+    first = Subject()
+    error = RuntimeError("queued failure")
+    errors = []
+    completed = []
+    subscriptions = []
+    source.pipe(ops.merge(max_concurrent=1)).subscribe(
+        on_error=errors.append, on_completed=lambda: completed.append(True)
+    )
+    source.on_next(first)
+    for _ in range(2000):
+        source.on_next(reactivex.empty())
+    source.on_next(reactivex.throw(error))
+    source.on_next(reactivex.create(lambda *_: subscriptions.append(True)))
+    source.on_completed()
+
+    first.on_completed()
+
+    assert errors == [error]
+    assert completed == []
+    assert subscriptions == []
+
+
+def test_merge_synchronous_queued_disposal_stops_drain():
+    from reactivex.subject import Subject
+
+    source = Subject()
+    first = Subject()
+    results = []
+    subscriptions = []
+
+    def on_next(value):
+        results.append(value)
+        subscription.dispose()
+
+    subscription = source.pipe(ops.merge(max_concurrent=1)).subscribe(on_next)
+    source.on_next(first)
+    for _ in range(2000):
+        source.on_next(reactivex.empty())
+    source.on_next(reactivex.just(42))
+    source.on_next(reactivex.create(lambda *_: subscriptions.append(True)))
+    source.on_completed()
+
+    first.on_completed()
+
+    assert results == [42]
+    assert subscriptions == []
+
+
+def test_merge_reentrant_source_uses_free_slot_immediately():
+    from reactivex.subject import Subject
+
+    source = Subject()
+    results = []
+
+    def emit(observer, scheduler=None):
+        observer.on_next(1)
+        observer.on_next(3)
+        observer.on_completed()
+
+    def emit_reentrant(observer, scheduler=None):
+        observer.on_next(2)
+        observer.on_completed()
+
+    def on_next(value):
+        results.append(value)
+        if value == 1:
+            source.on_next(reactivex.create(emit_reentrant))
+
+    source.pipe(ops.merge(max_concurrent=2)).subscribe(on_next)
+    source.on_next(reactivex.create(emit))
+    source.on_completed()
+
+    assert results == [1, 2, 3]
