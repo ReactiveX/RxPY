@@ -1,5 +1,5 @@
 ---
-last_commit_released: d009aa11b192f98662d544567997fd96a70af7fd
+last_commit_released: 44f68588f7f1b7b04ee9c55b83c7b3ef8aaa96b5
 name: reactivex
 updaters:
   - command: ./scripts/shipit_bump_version.sh {version}
@@ -14,6 +14,31 @@ conventional-commit messages.
 
 PyPI uses PEP 440 (`5.0.0rc1`), while ShipIt records SemVer (`5.0.0-rc.1`) in
 this file; the release script normalizes between them.
+
+## 6.1.0 - 2026-10-24
+
+### 🚀 Features
+
+* *(operators)* Add zip_latest (#711) ([92b8293c](https://github.com/ReactiveX/RxPY/commit/92b8293cfee1d70268ceeef9cfc2b28fcd7c0152))
+
+### 🐞 Bug Fixes
+
+* Use identity for with_latest_from readiness (#856) ([8283fced](https://github.com/ReactiveX/RxPY/commit/8283fcede9bbf61c1b0f8f1152438d848df3546b))
+* Drain bounded merge subscriptions without recursion (#857) ([ff5ddae9](https://github.com/ReactiveX/RxPY/commit/ff5ddae92e9ae8e8b90d05189598045b5004be58))
+* *(observable)* Release using resources when subscription raises (#851) ([aba9634c](https://github.com/ReactiveX/RxPY/commit/aba9634c5b5304db6ed2b405ea3a3db6666c597b))
+* *(observable)* Isolate and complete callback subscriptions (#852) ([808cca54](https://github.com/ReactiveX/RxPY/commit/808cca547b9ff56fd2201ef1f36a069b80410f78))
+* *(observable)* Isolate recovery source iterators per subscription (#849) ([4aa2dc92](https://github.com/ReactiveX/RxPY/commit/4aa2dc92035c31d190c05dcca703c254e6bfd6e3))
+* *(operators)* Terminate window on closing mapper failure (#843) ([8d10d7e5](https://github.com/ReactiveX/RxPY/commit/8d10d7e5e69ae11a7b46ba629be38e0821c418be))
+* *(operators)* Snapshot groups during terminal fanout (#844) ([0f6d183a](https://github.com/ReactiveX/RxPY/commit/0f6d183a7f82e7ff36cb2d7ce64a412753c26fac))
+* *(operators)* Keep sequence comparer arguments in source order (#854) ([668b59ee](https://github.com/ReactiveX/RxPY/commit/668b59ee5defbc6117ff8d38ce87fa2ec276a0a0))
+* *(operators)* Create zip iterable iterator per subscription (#855) ([c987a150](https://github.com/ReactiveX/RxPY/commit/c987a150d4dfa33f7ebf6c7ce653df675bdb45d0))
+* *(operators)* Preserve pending debounce values during reentrant delivery (#847) ([aa3de73e](https://github.com/ReactiveX/RxPY/commit/aa3de73ee73d74b9f7cbea902da9cad356f75374))
+* *(operators)* Latch timeout before subscribing to fallback (#846) ([2d59bab1](https://github.com/ReactiveX/RxPY/commit/2d59bab16057c6688ade39eac387f26e64affe5a))
+* *(operators)* Snapshot join recipients before callback fanout (#848) ([6957eba5](https://github.com/ReactiveX/RxPY/commit/6957eba505150a009766a0ca2c7c976843d8dc6b))
+* *(operators)* Release each mapped delay only once (#845) ([2a509d91](https://github.com/ReactiveX/RxPY/commit/2a509d916e84e8ec281c049df46e6e7d4c5c7f64))
+* *(operators)* Preserve source-relative mixed slice bounds (#853) ([717d0f34](https://github.com/ReactiveX/RxPY/commit/717d0f347455b2893b143e00ef0da73896ec351b))
+
+<strong><small>[View changes on Github](https://github.com/ReactiveX/RxPY/compare/d009aa11b192f98662d544567997fd96a70af7fd..44f68588f7f1b7b04ee9c55b83c7b3ef8aaa96b5)</small></strong>
 
 ## 6.0.0 - 2026-10-16
 
