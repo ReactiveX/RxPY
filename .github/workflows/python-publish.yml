@@ -25,7 +25,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '9.x'
+          dotnet-version: '10.x'
 
       # ShipIt's command updater (scripts/shipit_bump_version.sh) runs `uv lock`
       # to keep uv.lock's recorded project version in step with pyproject.toml.

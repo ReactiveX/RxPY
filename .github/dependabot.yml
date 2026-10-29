@@ -1,4 +1,6 @@
 version: 2
+# The tool-only .config/dotnet-tools.json is updated by update-dotnet-tools.yml.
+# Dependabot's NuGet updater requires a .NET project file.
 updates:
   - package-ecosystem: "uv"
     directory: "/"
