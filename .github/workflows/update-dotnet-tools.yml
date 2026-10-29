@@ -1,0 +1,37 @@
+name: Update .NET tools
+
+on:
+  schedule:
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.x'
+
+      - name: Update ShipIt
+        run: dotnet tool update easybuild.shipit --local --tool-manifest .config/dotnet-tools.json
+
+      - name: Restore .NET tools
+        run: dotnet tool restore
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          add-paths: .config/dotnet-tools.json
+          branch: update-dotnet-tools
+          delete-branch: true
+          commit-message: 'chore(deps): update EasyBuild.ShipIt'
+          title: 'chore(deps): update EasyBuild.ShipIt'
+          body: 'Updates the pinned EasyBuild.ShipIt .NET tool to the latest stable version.'
