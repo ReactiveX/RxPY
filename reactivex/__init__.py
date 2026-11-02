@@ -411,8 +411,7 @@ def for_in(
         sequences.
     """
 
-    mapped: Iterable[Observable[_T2]] = map(mapper, values)
-    return concat_with_iterable(mapped)
+    return defer(lambda _: concat_with_iterable(map(mapper, values)))
 
 
 @overload
