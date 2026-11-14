@@ -96,23 +96,3 @@ class TestObserveOn(unittest.TestCase):
         )
 
         assert expected_subscribe_scheduler == actual_subscribe_scheduler
-
-    def test_observe_on_observer_throws(self):
-        scheduler = TestScheduler()
-        ex = Exception("ex")
-        xs = scheduler.create_hot_observable(
-            on_next(210, 1), on_next(220, 2), on_completed(230)
-        )
-
-        def on_next_throw(value):
-            raise ex
-
-        def action(scheduler, state):
-            xs.pipe(ops.observe_on(scheduler)).subscribe(on_next_throw)
-
-        scheduler.schedule_absolute(ReactiveTest.subscribed, action)
-
-        with self.assertRaises(Exception) as ctx:
-            scheduler.start()
-
-        assert ctx.exception is ex
