@@ -1,3 +1,4 @@
+import contextlib
 import os
 import threading
 import unittest
@@ -252,3 +253,30 @@ class TestEventLoopScheduler(unittest.TestCase):
 
         assert ran is False
         assert scheduler._has_thread() is False
+
+    def test_event_loop_restarts_dead_thread(self):
+        def thread_factory(target):
+            def run():
+                # Let the thread die without raising into the test runner.
+                with contextlib.suppress(Exception):
+                    target()
+
+            return threading.Thread(target=run, daemon=True)
+
+        scheduler = EventLoopScheduler(thread_factory=thread_factory)
+        gate = threading.Semaphore(0)
+
+        def crash(scheduler, state):
+            raise Exception("ex")
+
+        scheduler.schedule(crash)
+        scheduler._thread.join()
+        assert scheduler._has_thread() is False
+
+        def action(scheduler, state):
+            gate.release()
+
+        scheduler.schedule(action)
+        gate.acquire()
+        assert scheduler._has_thread() is True
+        scheduler.dispose()
