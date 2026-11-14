@@ -35,14 +35,17 @@ def from_iterable_(
         def action(_: abc.SchedulerBase, __: Any = None) -> None:
             nonlocal disposed
 
-            try:
-                while not disposed:
+            while not disposed:
+                try:
                     value = next(iterator)
-                    observer.on_next(value)
-            except StopIteration:
-                observer.on_completed()
-            except Exception as error:  # pylint: disable=broad-except
-                observer.on_error(error)
+                except StopIteration:
+                    observer.on_completed()
+                    break
+                except Exception as error:  # pylint: disable=broad-except
+                    observer.on_error(error)
+                    break
+
+                observer.on_next(value)
 
         def dispose() -> None:
             nonlocal disposed
