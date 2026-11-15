@@ -1,5 +1,5 @@
 ---
-last_commit_released: 44f68588f7f1b7b04ee9c55b83c7b3ef8aaa96b5
+last_commit_released: f73bd11c64c997ddc7265ea54ee7f9e1d562eff6
 name: reactivex
 updaters:
   - command: ./scripts/shipit_bump_version.sh {version}
@@ -14,6 +14,15 @@ conventional-commit messages.
 
 PyPI uses PEP 440 (`5.0.0rc1`), while ShipIt records SemVer (`5.0.0-rc.1`) in
 this file; the release script normalizes between them.
+
+## 6.1.1 - 2026-11-15
+
+### 🐞 Bug Fixes
+
+* Restart dead EventLoopScheduler thread (#828) ([f73bd11c](https://github.com/ReactiveX/RxPY/commit/f73bd11c64c997ddc7265ea54ee7f9e1d562eff6))
+* *(from_iterable)* Do not swallow exceptions thrown by downstream observers (#869) ([e4574be1](https://github.com/ReactiveX/RxPY/commit/e4574be1ff572bef32defe521a2a526c5ee689e0))
+
+<strong><small>[View changes on Github](https://github.com/ReactiveX/RxPY/compare/44f68588f7f1b7b04ee9c55b83c7b3ef8aaa96b5..f73bd11c64c997ddc7265ea54ee7f9e1d562eff6)</small></strong>
 
 ## 6.1.0 - 2026-10-24
 

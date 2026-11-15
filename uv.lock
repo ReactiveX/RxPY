@@ -840,7 +840,7 @@ wheels = [
 
 [[package]]
 name = "reactivex"
-version = "6.1.0"
+version = "6.1.1"
 source = { editable = "." }
 default-groups = ["test"]
 dependencies = [
