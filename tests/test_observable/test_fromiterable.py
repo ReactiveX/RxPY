@@ -2,6 +2,7 @@ import unittest
 from typing import NoReturn
 
 import reactivex
+from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -75,3 +76,24 @@ class TestFromIterable(unittest.TestCase):
             reactivex.from_iterable([1, 2, 3]).subscribe(
                 lambda x: _raise(Exception("ex"))
             )
+
+    def test_operator_throws_without_on_error(self):
+        with self.assertRaises(RxException):
+            reactivex.from_iterable([1, 2, 3]).pipe(
+                ops.map(lambda x: _raise(Exception("ex")))
+            ).subscribe(lambda x: None)
+
+    def test_iterator_throws(self):
+        def failing_gen():
+            yield 1
+            raise RxException("iter error")
+
+        received: list[int] = []
+        errors: list[Exception] = []
+        reactivex.from_iterable(failing_gen()).subscribe(
+            on_next=received.append,
+            on_error=errors.append,
+        )
+        assert received == [1]
+        assert len(errors) == 1
+        assert isinstance(errors[0], RxException)
