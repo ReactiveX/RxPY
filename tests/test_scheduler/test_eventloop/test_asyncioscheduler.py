@@ -27,11 +27,11 @@ class TestAsyncIOScheduler(unittest.TestCase):
             loop.close()
 
     @pytest.mark.skipif(CI, reason="Test is flaky in GitHub Actions")
-    def test_asyncio_schedule_now_units(self):
+    def test_asyncio_schedule_now_units(self) -> None:
         loop = asyncio.new_event_loop()
         try:
 
-            async def go():
+            async def go() -> None:
                 scheduler = AsyncIOScheduler(loop)
                 diff = scheduler.now
                 await asyncio.sleep(0.1)
@@ -42,15 +42,15 @@ class TestAsyncIOScheduler(unittest.TestCase):
         finally:
             loop.close()
 
-    def test_asyncio_schedule_action(self):
+    def test_asyncio_schedule_action(self) -> None:
         loop = asyncio.new_event_loop()
         try:
 
-            async def go():
+            async def go() -> None:
                 scheduler = AsyncIOScheduler(loop)
                 ran = False
 
-                def action(scheduler: abc.SchedulerBase, state: Any):
+                def action(scheduler: abc.SchedulerBase, state: Any) -> None:
                     nonlocal ran
                     ran = True
 
@@ -63,16 +63,16 @@ class TestAsyncIOScheduler(unittest.TestCase):
         finally:
             loop.close()
 
-    def test_asyncio_schedule_action_due(self):
+    def test_asyncio_schedule_action_due(self) -> None:
         loop = asyncio.new_event_loop()
         try:
 
-            async def go():
+            async def go() -> None:
                 scheduler = AsyncIOScheduler(loop)
                 starttime = loop.time()
                 endtime = None
 
-                def action(scheduler, state):
+                def action(scheduler: abc.SchedulerBase, state: Any) -> None:
                     nonlocal endtime
                     endtime = loop.time()
 
@@ -109,15 +109,15 @@ class TestAsyncIOScheduler(unittest.TestCase):
         finally:
             loop.close()
 
-    def test_asyncio_schedule_action_cancel(self):
+    def test_asyncio_schedule_action_cancel(self) -> None:
         loop = asyncio.new_event_loop()
         try:
 
-            async def go():
+            async def go() -> None:
                 ran = False
                 scheduler = AsyncIOScheduler(loop)
 
-                def action(scheduler, state):
+                def action(scheduler: abc.SchedulerBase, state: Any) -> None:
                     nonlocal ran
                     ran = True
 

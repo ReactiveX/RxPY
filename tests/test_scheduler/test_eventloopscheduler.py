@@ -2,11 +2,14 @@ import contextlib
 import os
 import threading
 import unittest
+from collections.abc import Callable
 from datetime import datetime, timedelta
 from time import sleep
+from typing import Any
 
 import pytest
 
+from reactivex import abc
 from reactivex.internal import DisposedException
 from reactivex.internal.basic import default_now
 from reactivex.scheduler import EventLoopScheduler
@@ -15,25 +18,25 @@ CI = os.getenv("CI") is not None
 
 
 class TestEventLoopScheduler(unittest.TestCase):
-    def test_event_loop_now(self):
+    def test_event_loop_now(self) -> None:
         scheduler = EventLoopScheduler()
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=5)
 
     @pytest.mark.skipif(CI, reason="Flaky test in GitHub Actions")
-    def test_event_loop_now_units(self):
+    def test_event_loop_now_units(self) -> None:
         scheduler = EventLoopScheduler()
         diff = scheduler.now
         sleep(1.1)
         diff = scheduler.now - diff
         assert timedelta(milliseconds=1000) < diff < timedelta(milliseconds=1300)
 
-    def test_event_loop_schedule_action(self):
+    def test_event_loop_schedule_action(self) -> None:
         scheduler = EventLoopScheduler(exit_if_empty=True)
         ran = False
         gate = threading.Semaphore(0)
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal ran
             ran = True
             gate.release()
@@ -44,14 +47,14 @@ class TestEventLoopScheduler(unittest.TestCase):
         # There is no guarantee that the event-loop thread ends before the
         # test thread is re-scheduled, give it some time to always run.
         sleep(0.1)
-        assert scheduler._has_thread() is False
+        assert scheduler._has_thread() is False  # pyright: ignore[reportPrivateUsage]
 
-    def test_event_loop_different_thread(self):
+    def test_event_loop_different_thread(self) -> None:
         thread_id = None
         scheduler = EventLoopScheduler(exit_if_empty=True)
         gate = threading.Semaphore(0)
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal thread_id
             thread_id = threading.current_thread().ident
             gate.release()
@@ -62,16 +65,16 @@ class TestEventLoopScheduler(unittest.TestCase):
         # test thread is re-scheduled, give it some time to always run.
         sleep(0.1)
         assert thread_id != threading.current_thread().ident
-        assert scheduler._has_thread() is False
+        assert scheduler._has_thread() is False  # pyright: ignore[reportPrivateUsage]
 
-    def test_event_loop_schedule_ordered_actions(self):
+    def test_event_loop_schedule_ordered_actions(self) -> None:
         scheduler = EventLoopScheduler(exit_if_empty=True)
         gate = threading.Semaphore(0)
-        result = []
+        result: list[int] = []
 
         scheduler.schedule(lambda s, t: result.append(1))
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             result.append(2)
             gate.release()
 
@@ -81,14 +84,14 @@ class TestEventLoopScheduler(unittest.TestCase):
         # test thread is re-scheduled, give it some time to always run.
         sleep(0.1)
         assert result == [1, 2]
-        assert scheduler._has_thread() is False
+        assert scheduler._has_thread() is False  # pyright: ignore[reportPrivateUsage]
 
-    def test_event_loop_schedule_ordered_actions_due(self):
+    def test_event_loop_schedule_ordered_actions_due(self) -> None:
         scheduler = EventLoopScheduler(exit_if_empty=True)
         gate = threading.Semaphore(0)
-        result = []
+        result: list[int] = []
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             result.append(3)
             gate.release()
 
@@ -101,22 +104,22 @@ class TestEventLoopScheduler(unittest.TestCase):
         # test thread is re-scheduled, give it some time to always run.
         sleep(0.1)
         assert result == [1, 2, 3]
-        assert scheduler._has_thread() is False
+        assert scheduler._has_thread() is False  # pyright: ignore[reportPrivateUsage]
 
-    def test_event_loop_schedule_ordered_actions_due_mixed(self):
+    def test_event_loop_schedule_ordered_actions_due_mixed(self) -> None:
         scheduler = EventLoopScheduler(exit_if_empty=True)
         gate = threading.Semaphore(0)
-        result = []
+        result: list[int] = []
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             result.append(1)
             scheduler.schedule_relative(0.2, action3)
             scheduler.schedule(action2)
 
-        def action2(scheduler, state):
+        def action2(scheduler: abc.SchedulerBase, state: Any) -> None:
             result.append(2)
 
-        def action3(scheduler, state):
+        def action3(scheduler: abc.SchedulerBase, state: Any) -> None:
             result.append(3)
             gate.release()
 
@@ -127,15 +130,15 @@ class TestEventLoopScheduler(unittest.TestCase):
         # test thread is re-scheduled, give it some time to always run.
         sleep(0.1)
         assert result == [1, 2, 3]
-        assert scheduler._has_thread() is False
+        assert scheduler._has_thread() is False  # pyright: ignore[reportPrivateUsage]
 
-    def test_event_loop_schedule_action_relative_due(self):
+    def test_event_loop_schedule_action_relative_due(self) -> None:
         scheduler = EventLoopScheduler(exit_if_empty=True)
         gate = threading.Semaphore(0)
         starttime = default_now()
         endtime: datetime | None = None
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal endtime
             endtime = default_now()
             gate.release()
@@ -148,15 +151,15 @@ class TestEventLoopScheduler(unittest.TestCase):
         assert endtime is not None
         diff = endtime - starttime
         assert diff > timedelta(milliseconds=180)
-        assert scheduler._has_thread() is False
+        assert scheduler._has_thread() is False  # pyright: ignore[reportPrivateUsage]
 
-    def test_event_loop_schedule_action_absolute_due(self):
+    def test_event_loop_schedule_action_absolute_due(self) -> None:
         scheduler = EventLoopScheduler(exit_if_empty=True)
         gate = threading.Semaphore(0)
         starttime = default_now()
         endtime: datetime | None = None
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal endtime
             endtime = default_now()
             gate.release()
@@ -169,48 +172,49 @@ class TestEventLoopScheduler(unittest.TestCase):
         assert endtime is not None
         diff = endtime - starttime
         assert diff < timedelta(milliseconds=180)
-        assert scheduler._has_thread() is False
+        assert scheduler._has_thread() is False  # pyright: ignore[reportPrivateUsage]
 
-    def test_eventloop_schedule_action_periodic(self):
+    def test_eventloop_schedule_action_periodic(self) -> None:
         scheduler = EventLoopScheduler(exit_if_empty=False)
         gate = threading.Semaphore(0)
         period = 0.05
         counter = 3
 
-        def action(state):
+        def action(state: int | None) -> int | None:
             nonlocal counter
             if state:
                 counter -= 1
                 return state - 1
             if counter == 0:
                 gate.release()
+            return None
 
         disp = scheduler.schedule_periodic(period, action, counter)
 
-        def dispose(scheduler, state):
+        def dispose(scheduler: abc.SchedulerBase, state: Any) -> None:
             disp.dispose()
             gate.release()
 
         gate.acquire()
         assert counter == 0
-        assert scheduler._has_thread() is True
+        assert scheduler._has_thread() is True  # pyright: ignore[reportPrivateUsage]
         scheduler.schedule(dispose)
 
         gate.acquire()
-        assert scheduler._has_thread() is True
+        assert scheduler._has_thread() is True  # pyright: ignore[reportPrivateUsage]
         sleep(period)
         scheduler.dispose()
         sleep(period)
-        assert scheduler._has_thread() is False
+        assert scheduler._has_thread() is False  # pyright: ignore[reportPrivateUsage]
 
-    def test_eventloop_schedule_dispose(self):
+    def test_eventloop_schedule_dispose(self) -> None:
         scheduler = EventLoopScheduler(exit_if_empty=False)
 
         scheduler.dispose()
 
         ran = False
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal ran
             ran = True
 
@@ -218,16 +222,16 @@ class TestEventLoopScheduler(unittest.TestCase):
             scheduler.schedule(action)
 
         assert ran is False
-        assert scheduler._has_thread() is False
+        assert scheduler._has_thread() is False  # pyright: ignore[reportPrivateUsage]
 
-    def test_eventloop_schedule_absolute_dispose(self):
+    def test_eventloop_schedule_absolute_dispose(self) -> None:
         scheduler = EventLoopScheduler(exit_if_empty=False)
 
         scheduler.dispose()
 
         ran = False
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal ran
             ran = True
 
@@ -235,9 +239,9 @@ class TestEventLoopScheduler(unittest.TestCase):
             scheduler.schedule_absolute(scheduler.now, action)
 
         assert ran is False
-        assert scheduler._has_thread() is False
+        assert scheduler._has_thread() is False  # pyright: ignore[reportPrivateUsage]
 
-    def test_eventloop_schedule_periodic_dispose_error(self):
+    def test_eventloop_schedule_periodic_dispose_error(self) -> None:
         scheduler = EventLoopScheduler(exit_if_empty=False)
 
         scheduler.dispose()
@@ -252,11 +256,11 @@ class TestEventLoopScheduler(unittest.TestCase):
             scheduler.schedule_periodic(0.1, action)  # type: ignore[arg-type]
 
         assert ran is False
-        assert scheduler._has_thread() is False
+        assert scheduler._has_thread() is False  # pyright: ignore[reportPrivateUsage]
 
-    def test_event_loop_restarts_dead_thread(self):
-        def thread_factory(target):
-            def run():
+    def test_event_loop_restarts_dead_thread(self) -> None:
+        def thread_factory(target: Callable[..., None]) -> threading.Thread:
+            def run() -> None:
                 # Let the thread die without raising into the test runner.
                 with contextlib.suppress(Exception):
                     target()
@@ -266,17 +270,19 @@ class TestEventLoopScheduler(unittest.TestCase):
         scheduler = EventLoopScheduler(thread_factory=thread_factory)
         gate = threading.Semaphore(0)
 
-        def crash(scheduler, state):
+        def crash(scheduler: abc.SchedulerBase, state: Any) -> None:
             raise Exception("ex")
 
         scheduler.schedule(crash)
-        scheduler._thread.join()
-        assert scheduler._has_thread() is False
+        thread = scheduler._thread  # pyright: ignore[reportPrivateUsage]
+        assert isinstance(thread, threading.Thread)
+        thread.join()
+        assert scheduler._has_thread() is False  # pyright: ignore[reportPrivateUsage]
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             gate.release()
 
         scheduler.schedule(action)
         gate.acquire()
-        assert scheduler._has_thread() is True
+        assert scheduler._has_thread() is True  # pyright: ignore[reportPrivateUsage]
         scheduler.dispose()
