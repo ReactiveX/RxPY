@@ -1,7 +1,10 @@
 import unittest
 
 import reactivex
+from reactivex import abc
 from reactivex import operators as ops
+from reactivex.disposable import Disposable
+from reactivex.notification import OnCompleted, OnError, OnNext
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -37,7 +40,11 @@ class TestAsObservable(unittest.TestCase):
 
         results = scheduler.start(create).messages
         self.assertEqual(1, len(results))
-        assert results[0].value.kind == "C" and results[0].time == 250
+        assert (
+            isinstance(results[0].value, OnCompleted)
+            and results[0].value.kind == "C"
+            and results[0].time == 250
+        )
 
     def test_as_observable_on_error(self):
         ex = "ex"
@@ -50,7 +57,8 @@ class TestAsObservable(unittest.TestCase):
         results = scheduler.start(create).messages
         self.assertEqual(1, len(results))
         assert (
-            results[0].value.kind == "E"
+            isinstance(results[0].value, OnError)
+            and results[0].value.kind == "E"
             and str(results[0].value.exception) == ex
             and results[0].time == 250
         )
@@ -67,26 +75,31 @@ class TestAsObservable(unittest.TestCase):
         results = scheduler.start(create).messages
         self.assertEqual(2, len(results))
         assert (
-            results[0].value.kind == "N"
+            isinstance(results[0].value, OnNext)
+            and results[0].value.kind == "N"
             and results[0].value.value == 2
             and results[0].time == 220
         )
-        assert results[1].value.kind == "C" and results[1].time == 250
+        assert (
+            isinstance(results[1].value, OnCompleted)
+            and results[1].value.kind == "C"
+            and results[1].time == 250
+        )
 
     def test_as_observable_isnoteager(self):
         scheduler = TestScheduler()
         subscribed = [False]
 
-        def subscribe(obs, scheduler=None):
+        def subscribe(
+            obs: abc.ObserverBase[int],
+            _scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
             subscribed[0] = True
             disp = scheduler.create_hot_observable(
                 on_next(150, 1), on_next(220, 2), on_completed(250)
             ).subscribe(obs)
 
-            def func():
-                return disp.dispose()
-
-            return func
+            return Disposable(disp.dispose)
 
         xs = reactivex.create(subscribe)
         xs.pipe(ops.as_observable())
