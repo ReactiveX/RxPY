@@ -1,7 +1,8 @@
 import unittest
-from typing import NoReturn
+from typing import Any
 
 from reactivex import operators as ops
+from reactivex.notification import Notification
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -13,16 +14,7 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class RxException(Exception):
-    pass
-
-
-# Helper function for raising exceptions within lambdas
-def _raise(ex: Exception) -> NoReturn:
-    raise RxException(ex)
-
-
-def sequence_equal(arr1, arr2):
+def sequence_equal(arr1: list[Any], arr2: list[Any]) -> bool:
     if len(arr1) != len(arr2):
         return False
 
@@ -104,6 +96,8 @@ class TestBufferWithCount(unittest.TestCase):
 
         results = scheduler.start(create).messages
         assert 2 == len(results)
+        assert isinstance(results[0].value, Notification)
+        assert isinstance(results[1].value, Notification)
         assert (
             sequence_equal(results[0].value.value, [2, 3, 4, 5])
             and results[0].time == 250
@@ -126,6 +120,9 @@ class TestBufferWithCount(unittest.TestCase):
 
         results = scheduler.start(create).messages
         self.assertEqual(3, len(results))
+        assert isinstance(results[0].value, Notification)
+        assert isinstance(results[1].value, Notification)
+        assert isinstance(results[2].value, Notification)
         assert sequence_equal(results[0].value.value, [2, 3]) and results[0].time == 220
         assert sequence_equal(results[1].value.value, [4, 5]) and results[1].time == 240
         assert results[2].value.kind == "C" and results[2].time == 250
@@ -146,6 +143,9 @@ class TestBufferWithCount(unittest.TestCase):
 
         results = scheduler.start(create).messages
         self.assertEqual(3, len(results))
+        assert isinstance(results[0].value, Notification)
+        assert isinstance(results[1].value, Notification)
+        assert isinstance(results[2].value, Notification)
         assert (
             sequence_equal(results[0].value.value, [2, 3, 4]) and results[0].time == 230
         )
@@ -168,6 +168,7 @@ class TestBufferWithCount(unittest.TestCase):
 
         results = scheduler.start(create).messages
         self.assertEqual(1, len(results))
+        assert isinstance(results[0].value, Notification)
         assert results[0].value.kind == "E" and results[0].time == 250
 
     def test_buffer_count_skip_less(self):
@@ -186,6 +187,11 @@ class TestBufferWithCount(unittest.TestCase):
 
         results = scheduler.start(create).messages
         self.assertEqual(5, len(results))
+        assert isinstance(results[0].value, Notification)
+        assert isinstance(results[1].value, Notification)
+        assert isinstance(results[2].value, Notification)
+        assert isinstance(results[3].value, Notification)
+        assert isinstance(results[4].value, Notification)
         assert (
             sequence_equal(results[0].value.value, [2, 3, 4]) and results[0].time == 230
         )
@@ -212,6 +218,9 @@ class TestBufferWithCount(unittest.TestCase):
 
         results = scheduler.start(create).messages
         self.assertEqual(3, len(results))
+        assert isinstance(results[0].value, Notification)
+        assert isinstance(results[1].value, Notification)
+        assert isinstance(results[2].value, Notification)
         assert sequence_equal(results[0].value.value, [2, 3]) and results[0].time == 220
         assert sequence_equal(results[1].value.value, [5]) and results[1].time == 250
         assert results[2].value.kind == "C" and results[2].time == 250
