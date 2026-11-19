@@ -1,31 +1,33 @@
 import unittest
 from datetime import UTC, datetime, timedelta
+from typing import Any
 
 import pytest
 
+from reactivex import abc
 from reactivex.scheduler.eventloop import GEventScheduler
 
 gevent = pytest.importorskip("gevent")
 
 
 class TestGEventScheduler(unittest.TestCase):
-    def test_gevent_schedule_now(self):
+    def test_gevent_schedule_now(self) -> None:
         scheduler = GEventScheduler(gevent)
         diff = scheduler.now - datetime.now(UTC)
         assert abs(diff) < timedelta(milliseconds=100)
 
-    def test_gevent_schedule_now_units(self):
+    def test_gevent_schedule_now_units(self) -> None:
         scheduler = GEventScheduler(gevent)
         diff = scheduler.now
         gevent.sleep(0.1)
         diff = scheduler.now - diff
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
-    def test_gevent_schedule_action(self):
+    def test_gevent_schedule_action(self) -> None:
         scheduler = GEventScheduler(gevent)
         ran = False
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal ran
             ran = True
 
@@ -34,12 +36,12 @@ class TestGEventScheduler(unittest.TestCase):
         gevent.sleep(0.1)
         assert ran is True
 
-    def test_gevent_schedule_action_due(self):
+    def test_gevent_schedule_action_due(self) -> None:
         scheduler = GEventScheduler(gevent)
         starttime = datetime.now()
         endtime = None
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal endtime
             endtime = datetime.now()
 
@@ -50,11 +52,11 @@ class TestGEventScheduler(unittest.TestCase):
         diff = endtime - starttime
         assert diff > timedelta(seconds=0.18)
 
-    def test_gevent_schedule_action_absolute(self):
+    def test_gevent_schedule_action_absolute(self) -> None:
         scheduler = GEventScheduler(gevent)
         ran = False
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal ran
             ran = True
 
@@ -64,11 +66,11 @@ class TestGEventScheduler(unittest.TestCase):
         gevent.sleep(0.3)
         assert ran is True
 
-    def test_gevent_schedule_action_cancel(self):
+    def test_gevent_schedule_action_cancel(self) -> None:
         scheduler = GEventScheduler(gevent)
         ran = False
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal ran
             ran = True
 
