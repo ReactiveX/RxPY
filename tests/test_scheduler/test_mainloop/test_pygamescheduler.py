@@ -1,33 +1,35 @@
 import unittest
-from datetime import timedelta
+from datetime import datetime, timedelta
 from time import sleep
+from typing import Any
 
 import pytest
 
+from reactivex import abc
 from reactivex.internal.basic import default_now
 from reactivex.scheduler.mainloop import PyGameScheduler
 
-pygame = pytest.importorskip("pygame")
+pygame: Any = pytest.importorskip("pygame")
 
 
 class TestPyGameScheduler(unittest.TestCase):
-    def test_pygame_schedule_now(self):
+    def test_pygame_schedule_now(self) -> None:
         scheduler = PyGameScheduler(pygame)
         diff = scheduler.now - default_now()
         assert abs(diff) < timedelta(milliseconds=1)
 
-    def test_pygame_schedule_now_units(self):
+    def test_pygame_schedule_now_units(self) -> None:
         scheduler = PyGameScheduler(pygame)
         diff = scheduler.now
         sleep(0.1)
         diff = scheduler.now - diff
         assert timedelta(milliseconds=80) < diff < timedelta(milliseconds=180)
 
-    def test_pygame_schedule_action(self):
+    def test_pygame_schedule_action(self) -> None:
         scheduler = PyGameScheduler(pygame)
         ran = False
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal ran
             ran = True
 
@@ -36,12 +38,12 @@ class TestPyGameScheduler(unittest.TestCase):
 
         assert ran is True
 
-    def test_pygame_schedule_action_due_relative(self):
+    def test_pygame_schedule_action_due_relative(self) -> None:
         scheduler = PyGameScheduler(pygame)
         starttime = default_now()
-        endtime = None
+        endtime: datetime | None = None
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal endtime
             endtime = default_now()
 
@@ -58,12 +60,12 @@ class TestPyGameScheduler(unittest.TestCase):
         diff = endtime - starttime
         assert diff > timedelta(milliseconds=180)
 
-    def test_pygame_schedule_action_due_absolute(self):
+    def test_pygame_schedule_action_due_absolute(self) -> None:
         scheduler = PyGameScheduler(pygame)
         starttime = default_now()
-        endtime = None
+        endtime: datetime | None = None
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal endtime
             endtime = default_now()
 
@@ -80,11 +82,11 @@ class TestPyGameScheduler(unittest.TestCase):
         diff = endtime - starttime
         assert diff > timedelta(milliseconds=180)
 
-    def test_pygame_schedule_action_cancel(self):
+    def test_pygame_schedule_action_cancel(self) -> None:
         scheduler = PyGameScheduler(pygame)
         ran = False
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             nonlocal ran
             ran = True
 
