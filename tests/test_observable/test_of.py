@@ -1,6 +1,8 @@
 import unittest
+from typing import Any
 
 import reactivex
+from reactivex import Observable
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -14,23 +16,24 @@ created = ReactiveTest.created
 
 class TestOf(unittest.TestCase):
     def test_of(self):
-        results = []
+        results: list[int] = []
 
         reactivex.of(1, 2, 3, 4, 5).subscribe(results.append)
 
         assert str([1, 2, 3, 4, 5]) == str(results)
 
     def test_of_empty(self):
-        results = []
+        results: list[Any] = []
 
-        reactivex.of().subscribe(results.append)
+        obs: Observable[Any] = reactivex.of()
+        obs.subscribe(results.append)
 
         assert len(results) == 0
 
     def teest_of_with_scheduler(self):
         scheduler = TestScheduler()
 
-        def create():
+        def create() -> Observable[Any]:
             return reactivex.of(1, 2, 3, 4, 5)
 
         results = scheduler.start(create=create)
@@ -47,7 +50,7 @@ class TestOf(unittest.TestCase):
     def teest_of_with_scheduler_empty(self):
         scheduler = TestScheduler()
 
-        def create():
+        def create() -> Observable[Any]:
             return reactivex.of(scheduler=scheduler)  # type: ignore[call-arg]
 
         results = scheduler.start(create=create)
