@@ -1,8 +1,10 @@
 import unittest
-from typing import NoReturn
+from typing import Any, NoReturn
 
 import reactivex
+from reactivex import Observable, abc
 from reactivex.testing import MockDisposable, ReactiveTest, TestScheduler
+from reactivex.testing.coldobservable import ColdObservable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -24,9 +26,9 @@ def _raise(ex: Exception) -> NoReturn:
 
 class TestUsing(unittest.TestCase):
     def test_using_null(self):
-        disp = [None]
-        xs = [None]
-        _d = [None]
+        disp: list[MockDisposable | None] = [None]
+        xs: list[ColdObservable[Any] | None] = [None]
+        _d: list[abc.DisposableBase | None] = [None]
 
         scheduler = TestScheduler()
         dispose_invoked = [0]
@@ -38,7 +40,7 @@ class TestUsing(unittest.TestCase):
                 disp[0] = None
                 return disp[0]
 
-            def create_observable(d):
+            def create_observable(d: abc.DisposableBase | None) -> Observable[Any]:
                 _d[0] = d
                 create_invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
@@ -54,13 +56,14 @@ class TestUsing(unittest.TestCase):
         assert results.messages == [on_next(300, 200), on_completed(400)]
         assert 1 == create_invoked[0]
         assert 1 == dispose_invoked[0]
+        assert xs[0] is not None
         assert xs[0].subscriptions == [subscribe(200, 400)]
         assert disp[0] is None
 
     def test_using_complete(self):
-        disp = [None]
-        xs = [None]
-        _d = [None]
+        disp: list[MockDisposable | None] = [None]
+        xs: list[ColdObservable[Any] | None] = [None]
+        _d: list[abc.DisposableBase | None] = [None]
         scheduler = TestScheduler()
         dispose_invoked = [0]
         create_invoked = [0]
@@ -71,7 +74,7 @@ class TestUsing(unittest.TestCase):
                 disp[0] = MockDisposable(scheduler)
                 return disp[0]
 
-            def create_observable(d):
+            def create_observable(d: abc.DisposableBase | None) -> Observable[Any]:
                 _d[0] = d
                 create_invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
@@ -87,7 +90,9 @@ class TestUsing(unittest.TestCase):
         assert results.messages == [on_next(300, 200), on_completed(400)]
         assert create_invoked[0] == 1
         assert dispose_invoked[0] == 1
+        assert xs[0] is not None
         assert xs[0].subscriptions == [subscribe(200, 400)]
+        assert disp[0] is not None
         disp[0].disposes = [200, 400]
 
     def test_using_error(self):
@@ -95,9 +100,9 @@ class TestUsing(unittest.TestCase):
         dispose_invoked = [0]
         create_invoked = [0]
         ex = "ex"
-        disp = [None]
-        xs = [None]
-        _d = [None]
+        disp: list[MockDisposable | None] = [None]
+        xs: list[ColdObservable[Any] | None] = [None]
+        _d: list[abc.DisposableBase | None] = [None]
 
         def create():
             def create_resource():
@@ -105,7 +110,7 @@ class TestUsing(unittest.TestCase):
                 disp[0] = MockDisposable(scheduler)
                 return disp[0]
 
-            def create_observable(d):
+            def create_observable(d: abc.DisposableBase | None) -> Observable[Any]:
                 _d[0] = d
                 create_invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
@@ -121,13 +126,15 @@ class TestUsing(unittest.TestCase):
         assert results.messages == [on_next(300, 200), on_error(400, ex)]
         assert create_invoked[0] == 1
         assert dispose_invoked[0] == 1
+        assert xs[0] is not None
         assert xs[0].subscriptions == [subscribe(200, 400)]
+        assert disp[0] is not None
         assert disp[0].disposes == [200, 400]
 
     def test_using_dispose(self):
-        disp = [None]
-        xs = [None]
-        _d = [None]
+        disp: list[MockDisposable | None] = [None]
+        xs: list[ColdObservable[Any] | None] = [None]
+        _d: list[abc.DisposableBase | None] = [None]
         scheduler = TestScheduler()
         dispose_invoked = [0]
         create_invoked = [0]
@@ -138,7 +145,7 @@ class TestUsing(unittest.TestCase):
                 disp[0] = MockDisposable(scheduler)
                 return disp[0]
 
-            def create_observable(d):
+            def create_observable(d: abc.DisposableBase | None) -> Observable[Any]:
                 _d[0] = d
                 create_invoked[0] += 1
                 xs[0] = scheduler.create_cold_observable(
@@ -154,7 +161,9 @@ class TestUsing(unittest.TestCase):
         assert results.messages == [on_next(300, 200)]
         assert 1 == create_invoked[0]
         assert 1 == dispose_invoked[0]
+        assert xs[0] is not None
         assert xs[0].subscriptions == [subscribe(200, 1000)]
+        assert disp[0] is not None
         assert disp[0].disposes == [200, 1000]
 
     def test_using_throw_resource_mapper(self):
@@ -168,7 +177,7 @@ class TestUsing(unittest.TestCase):
                 dispose_invoked[0] += 1
                 _raise(Exception(ex))
 
-            def create_observable(d):
+            def create_observable(d: abc.DisposableBase | None) -> Observable[Any]:
                 create_invoked[0] += 1
                 return reactivex.never()
 
@@ -184,7 +193,7 @@ class TestUsing(unittest.TestCase):
         scheduler = TestScheduler()
         dispose_invoked = [0]
         create_invoked = [0]
-        disp = [None]
+        disp: list[MockDisposable | None] = [None]
         ex = "ex"
 
         def create():
@@ -193,7 +202,7 @@ class TestUsing(unittest.TestCase):
                 disp[0] = MockDisposable(scheduler)
                 return disp[0]
 
-            def create_observable(d):
+            def create_observable(d: abc.DisposableBase | None) -> Observable[Any]:
                 create_invoked[0] += 1
                 _raise(Exception(ex))
 
@@ -204,4 +213,5 @@ class TestUsing(unittest.TestCase):
         assert results.messages == [on_error(200, ex)]
         assert create_invoked[0] == 1
         assert dispose_invoked[0] == 1
+        assert disp[0] is not None
         assert disp[0].disposes == [200, 200]

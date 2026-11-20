@@ -1,3 +1,5 @@
+from typing import NoReturn
+
 import pytest
 
 import reactivex
@@ -21,7 +23,7 @@ def test_using_disposes_resource_when_subscription_raises(stage: str) -> None:
     resource = CountingResource()
     error = RuntimeError("subscription failed")
 
-    def fail(*args: object) -> None:
+    def fail(*args: object) -> NoReturn:
         raise error
 
     def factory(value: abc.DisposableBase | None) -> Observable[int]:
@@ -53,7 +55,7 @@ def test_using_disposes_resource_when_error_handler_raises(
     resource = CountingResource()
     source_error = ValueError("source failed")
     observer_error = RuntimeError("observer failed")
-    errors = []
+    errors: list[Exception] = []
 
     def factory(value: abc.DisposableBase | None) -> Observable[int]:
         if factory_raises:
@@ -76,7 +78,7 @@ def test_using_disposes_resource_when_error_handler_raises(
 def test_using_handled_error_disposes_resource_once(factory_raises: bool) -> None:
     resource = CountingResource()
     error = RuntimeError("source failed")
-    errors = []
+    errors: list[Exception] = []
 
     def factory(value: abc.DisposableBase | None) -> Observable[int]:
         if factory_raises:
