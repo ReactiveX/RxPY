@@ -1,9 +1,11 @@
 import unittest
-from typing import NoReturn
+from typing import Any, NoReturn
 
 import reactivex
+from reactivex import abc
 from reactivex.disposable import SerialDisposable
 from reactivex.testing import ReactiveTest, TestScheduler
+from reactivex.testing.mockobserver import MockObserver
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -46,21 +48,21 @@ class TestReturnValue(unittest.TestCase):
         scheduler = TestScheduler()
         d = SerialDisposable()
         xs = reactivex.return_value(42)
-        results = scheduler.create_observer()
+        results: MockObserver[int] = scheduler.create_observer()
 
-        def action(scheduler, state):
-            def on_next(x):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> abc.DisposableBase:
+            def on_next_cb(x: int) -> None:
                 d.dispose()
                 results.on_next(x)
 
-            def on_error(e):
+            def on_error_cb(e: Exception) -> None:
                 results.on_error(e)
 
-            def on_completed():
+            def on_completed_cb() -> None:
                 results.on_completed()
 
             d.disposable = xs.subscribe(
-                on_next, on_error, on_completed, scheduler=scheduler
+                on_next_cb, on_error_cb, on_completed_cb, scheduler=scheduler
             )
             return d.disposable
 
