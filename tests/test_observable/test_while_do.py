@@ -1,4 +1,5 @@
 import unittest
+from typing import Any
 
 import reactivex
 from reactivex import abc
@@ -100,7 +101,7 @@ class TestWhile(unittest.TestCase):
         n = [0]
 
         def create():
-            def predicate(x):
+            def predicate(x: Any) -> bool:
                 n[0] += 1
                 return n[0] < 100
 
@@ -132,7 +133,7 @@ class TestWhile(unittest.TestCase):
         n = [0]
 
         def create():
-            def predicate(x):
+            def predicate(x: Any) -> bool:
                 n[0] += 1
                 return n[0] < 3
 
@@ -166,7 +167,7 @@ class TestWhile(unittest.TestCase):
         ex = "ex"
 
         def create():
-            def predicate(x):
+            def predicate(x: Any) -> bool:
                 n[0] += 1
                 if n[0] < 3:
                     return True

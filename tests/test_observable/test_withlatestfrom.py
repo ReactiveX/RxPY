@@ -510,14 +510,14 @@ class TestWithLatestFrom(unittest.TestCase):
 class TestWithLatestFromEquality(unittest.TestCase):
     def test_with_latest_from_does_not_compare_values(self):
         class Uncomparable:
-            def __eq__(self, other):
+            def __eq__(self, other: object) -> bool:
                 raise ValueError("Value equality must not be used for readiness")
 
-        source = Subject()
-        child = Subject()
+        source: Subject[int] = Subject()
+        child: Subject[Uncomparable] = Subject()
         value = Uncomparable()
-        results = []
-        errors = []
+        results: list[tuple[int, Uncomparable]] = []
+        errors: list[Exception] = []
         source.pipe(ops.with_latest_from(child)).subscribe(
             results.append, errors.append
         )
@@ -531,13 +531,13 @@ class TestWithLatestFromEquality(unittest.TestCase):
 
     def test_with_latest_from_preserves_values_equal_to_anything(self):
         class AlwaysEqual:
-            def __eq__(self, other):
+            def __eq__(self, other: object) -> bool:
                 return True
 
-        source = Subject()
-        child = Subject()
+        source: Subject[int] = Subject()
+        child: Subject[AlwaysEqual] = Subject()
         value = AlwaysEqual()
-        results = []
+        results: list[tuple[int, AlwaysEqual]] = []
         reactivex.with_latest_from(source, child).subscribe(results.append)
         child.on_next(value)
         source.on_next(1)
@@ -549,15 +549,15 @@ class TestWithLatestFromEquality(unittest.TestCase):
 
     def test_with_latest_from_waits_for_all_children_with_uncomparable_values(self):
         class Uncomparable:
-            def __eq__(self, other):
+            def __eq__(self, other: object) -> bool:
                 raise ValueError("Value equality must not be used for readiness")
 
-        source = Subject()
-        first = Subject()
-        second = Subject()
+        source: Subject[int] = Subject()
+        first: Subject[Uncomparable] = Subject()
+        second: Subject[None] = Subject()
         value = Uncomparable()
-        results = []
-        completed = []
+        results: list[tuple[int, Uncomparable, None]] = []
+        completed: list[bool] = []
         reactivex.with_latest_from(source, first, second).subscribe(
             results.append, on_completed=lambda: completed.append(True)
         )
@@ -576,7 +576,7 @@ class TestWithLatestFromEquality(unittest.TestCase):
         assert completed == [True]
 
     def test_with_latest_from_no_children(self):
-        results = []
+        results: list[tuple[int | None]] = []
         reactivex.from_iterable([None, 0, 1]).pipe(ops.with_latest_from()).subscribe(
             results.append
         )
