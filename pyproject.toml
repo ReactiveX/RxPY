@@ -105,9 +105,7 @@ asyncio_mode = "strict"
 include = ["reactivex", "tests"]
 exclude = [
     # Stage 1 complete, Stage 2 complete (test_subject done), Stage 3 complete (test_scheduler done)
-    # test_observable still has strict-mode pyright errors (test_blocking, test_a*, test_b* done)
-    "tests/test_observable/test_c*.py",
-    "tests/test_observable/test_d*.py",
+    # test_observable still has strict-mode pyright errors (test_blocking, test_a*-test_d* done)
     "tests/test_observable/test_e*.py",
     "tests/test_observable/test_f*.py",
     "tests/test_observable/test_g*.py",

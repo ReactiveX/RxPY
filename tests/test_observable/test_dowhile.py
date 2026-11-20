@@ -1,5 +1,7 @@
 import unittest
+from typing import Any
 
+from reactivex import Observable
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
 
@@ -102,7 +104,7 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
         n = [0]
 
         def create():
-            def condition(x):
+            def condition(x: Observable[Any]) -> bool:
                 n[0] += 1
                 return n[0] < 3
 
@@ -144,7 +146,7 @@ class TestDoWhile(ReactiveTest, unittest.TestCase):
         n = [0]
 
         def create():
-            def condition(x):
+            def condition(x: Observable[Any]) -> bool:
                 n[0] += 1
                 if n[0] < 3:
                     return True

@@ -4,6 +4,8 @@ This module tests the combination operators fluent syntax from CombinationMixin,
 ensuring they produce identical results to the pipe-based functional syntax.
 """
 
+from typing import Any
+
 import reactivex as rx
 from reactivex import Observable
 from reactivex import operators as ops
@@ -196,7 +198,7 @@ class TestJoinMethodChaining:
         right: Observable[int] = rx.of(4, 5, 6)
 
         # Use rx.never() for duration to keep windows open
-        def duration_mapper(_):
+        def duration_mapper(_: int) -> Observable[Any]:
             return rx.never()
 
         fluent_result: Observable[tuple[int, int]] = left.join(
@@ -225,7 +227,7 @@ class TestGroupJoinMethodChaining:
         right: Observable[int] = rx.of(4, 5)
 
         # Use rx.never() for duration to keep windows open
-        def duration_mapper(_):
+        def duration_mapper(_: int) -> Observable[Any]:
             return rx.never()
 
         fluent_result: Observable[tuple[int, Observable[int]]] = left.group_join(

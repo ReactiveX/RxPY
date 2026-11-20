@@ -29,10 +29,9 @@ class TestDo(unittest.TestCase):
         sum = [2 + 3 + 4 + 5]
 
         def create():
-            def action(x):
+            def action(x: int) -> None:
                 i[0] += 1
                 sum[0] -= x
-                return sum[0]
 
             return xs.pipe(_.do_action(action))
 
@@ -54,7 +53,7 @@ class TestDo(unittest.TestCase):
         i = [0]
 
         def create():
-            def action(x):
+            def action(x: int) -> None:
                 i[0] += 1
 
             return xs.pipe(_.do_action(action))
@@ -78,11 +77,11 @@ class TestDo(unittest.TestCase):
         completed = [False]
 
         def create():
-            def on_next(x):
+            def on_next(x: int) -> None:
                 i[0] += 1
                 sum[0] -= x
 
-            def on_completed():
+            def on_completed() -> None:
                 completed[0] = True
 
             return xs.pipe(_.do_action(on_next=on_next, on_completed=on_completed))
@@ -101,10 +100,10 @@ class TestDo(unittest.TestCase):
         def create():
             nonlocal completed
 
-            def on_next(x):
+            def on_next(x: int) -> None:
                 i[0] += 1
 
-            def on_completed():
+            def on_completed() -> None:
                 nonlocal completed
                 completed = True
 

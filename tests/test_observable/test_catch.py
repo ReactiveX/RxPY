@@ -1,6 +1,8 @@
 import unittest
+from typing import Any, NoReturn
 
 import reactivex
+from reactivex import Observable
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
 
@@ -154,7 +156,7 @@ class TestCatch(unittest.TestCase):
         o2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            def handler(e, source):
+            def handler(e: Exception, source: Observable[int]) -> Observable[int]:
                 handler_called[0] = True
                 return o2
 
@@ -177,7 +179,7 @@ class TestCatch(unittest.TestCase):
         o2 = scheduler.create_hot_observable(msgs2)
 
         def create():
-            def handler(e, source):
+            def handler(e: Exception, source: Observable[Any]) -> Observable[int]:
                 handler_called[0] = True
                 return o2
 
@@ -197,7 +199,7 @@ class TestCatch(unittest.TestCase):
         o1 = scheduler.create_hot_observable(msgs1)
 
         def create():
-            def handler(e, source):
+            def handler(e: Exception, source: Observable[int]) -> NoReturn:
                 handler_called[0] = True
                 raise Exception(ex2)
 
@@ -225,11 +227,11 @@ class TestCatch(unittest.TestCase):
         o3 = scheduler.create_hot_observable(msgs3)
 
         def create():
-            def handler1(e, source):
+            def handler1(e: Exception, source: Observable[int]) -> Observable[int]:
                 first_handler_called[0] = True
                 return o2
 
-            def handler2(e, source):
+            def handler2(e: Exception, source: Observable[int]) -> Observable[int]:
                 second_handler_called[0] = True
                 return o3
 
@@ -255,12 +257,12 @@ class TestCatch(unittest.TestCase):
         o3 = scheduler.create_hot_observable(msgs3)
 
         def create():
-            def handler1(e, source):
+            def handler1(e: Exception, source: Observable[int]) -> Observable[int]:
                 first_handler_called[0] = True
                 assert str(e) == ex
                 return o2
 
-            def handler2(e, source):
+            def handler2(e: Exception, source: Observable[int]) -> Observable[int]:
                 second_handler_called[0] = True
                 assert str(e) == ex2
                 return o3

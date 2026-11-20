@@ -7,19 +7,23 @@ from reactivex.testing import TestScheduler
 
 
 @pytest.mark.parametrize("kind", ["time", "duration_next", "duration_completed"])
-def test_debounce_keeps_value_emitted_reentrantly(kind):
+def test_debounce_keeps_value_emitted_reentrantly(kind: str) -> None:
     scheduler = TestScheduler()
-    source = Subject()
-    durations = [Subject(), Subject()]
-    received = []
-    completed = []
+    source: Subject[int] = Subject()
+    durations: list[Subject[None]] = [Subject(), Subject()]
+    received: list[tuple[int, int]] = []
+    completed: list[bool] = []
+
+    def duration_mapper(value: int) -> reactivex.Observable[None]:
+        return durations[value - 1]
+
     operator = (
         ops.debounce(10, scheduler=scheduler)
         if kind == "time"
-        else ops.throttle_with_mapper(lambda value: durations[value - 1])
+        else ops.throttle_with_mapper(duration_mapper)
     )
 
-    def on_next(value):
+    def on_next(value: int) -> None:
         received.append((scheduler.clock, value))
         if value == 1:
             source.on_next(2)
@@ -46,19 +50,19 @@ def test_debounce_keeps_value_emitted_reentrantly(kind):
 
 
 @pytest.mark.parametrize("kind", ["time", "duration_next", "duration_completed"])
-def test_debounce_reentrant_completion_does_not_repeat_emitted_value(kind):
+def test_debounce_reentrant_completion_does_not_repeat_emitted_value(kind: str) -> None:
     scheduler = TestScheduler()
-    source = Subject()
-    duration = Subject()
-    received = []
-    completed = []
+    source: Subject[int] = Subject()
+    duration: Subject[None] = Subject()
+    received: list[int] = []
+    completed: list[bool] = []
     operator = (
         ops.debounce(10, scheduler=scheduler)
         if kind == "time"
         else ops.throttle_with_mapper(lambda _: duration)
     )
 
-    def on_next(value):
+    def on_next(value: int) -> None:
         received.append(value)
         source.on_completed()
 
@@ -76,11 +80,11 @@ def test_debounce_reentrant_completion_does_not_repeat_emitted_value(kind):
     assert completed == [True]
 
 
-def test_throttle_synchronous_duration_reentrant_value():
-    source = Subject()
-    received = []
+def test_throttle_synchronous_duration_reentrant_value() -> None:
+    source: Subject[int] = Subject()
+    received: list[int] = []
 
-    def on_next(value):
+    def on_next(value: int) -> None:
         received.append(value)
         if value == 1:
             source.on_next(2)
