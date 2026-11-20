@@ -1,5 +1,4 @@
 import unittest
-from typing import NoReturn
 
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
@@ -15,11 +14,6 @@ created = ReactiveTest.created
 
 class RxException(Exception):
     pass
-
-
-# Helper function for raising exceptions within lambdas
-def _raise(ex: Exception) -> NoReturn:
-    raise RxException(ex)
 
 
 class TestSingleOrDefault(unittest.TestCase):
@@ -60,7 +54,7 @@ class TestSingleOrDefault(unittest.TestCase):
 
         res = scheduler.start(create=create)
 
-        def predicate(e):
+        def predicate(e: Exception | None) -> bool:
             return e is not None
 
         # assert res.messages == [on_error(220, predicate)]
@@ -92,14 +86,14 @@ class TestSingleOrDefault(unittest.TestCase):
         )
 
         def create():
-            def predicate(x):
+            def predicate(x: int) -> bool:
                 return x % 2 == 1
 
             return xs.pipe(ops.single_or_default(predicate, 0))
 
         res = scheduler.start(create=create)
 
-        def predicate(e):
+        def predicate(e: Exception | None) -> bool:
             return e is not None
 
         assert [on_error(240, predicate)] == res.messages
@@ -110,7 +104,7 @@ class TestSingleOrDefault(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_completed(250))
 
         def create():
-            def predicate(x):
+            def predicate(x: int) -> bool:
                 return x % 2 == 1
 
             return xs.pipe(ops.single_or_default(predicate, 0))
@@ -132,7 +126,7 @@ class TestSingleOrDefault(unittest.TestCase):
         )
 
         def create():
-            def predicate(x):
+            def predicate(x: int) -> bool:
                 return x == 4
 
             return xs.pipe(ops.single_or_default(predicate, 0))
@@ -154,7 +148,7 @@ class TestSingleOrDefault(unittest.TestCase):
         )
 
         def create():
-            def predicate(x):
+            def predicate(x: int) -> bool:
                 return x > 10
 
             return xs.pipe(ops.single_or_default(predicate, 0))
@@ -170,7 +164,7 @@ class TestSingleOrDefault(unittest.TestCase):
         xs = scheduler.create_hot_observable(on_next(150, 1), on_error(210, ex))
 
         def create():
-            def predicate(x):
+            def predicate(x: int) -> bool:
                 return x > 10
 
             return xs.pipe(ops.single_or_default(predicate, 0))
@@ -193,7 +187,7 @@ class TestSingleOrDefault(unittest.TestCase):
         )
 
         def create():
-            def predicate(x):
+            def predicate(x: int) -> bool:
                 if x < 4:
                     return False
                 else:
