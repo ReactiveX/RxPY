@@ -1,6 +1,8 @@
 import unittest
+from typing import Any
 
 import reactivex
+from reactivex import abc
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -94,7 +96,7 @@ class TestIf_then(unittest.TestCase):
             on_next(110, 1), on_next(220, 2), on_next(330, 3), on_completed(440)
         )
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             b[0] = True
 
         scheduler.schedule_absolute(150, action)
@@ -118,7 +120,7 @@ class TestIf_then(unittest.TestCase):
             on_next(110, 1), on_next(220, 2), on_next(330, 3), on_error(440, ex)
         )
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             b[0] = True
 
         scheduler.schedule_absolute(150, action)
@@ -141,7 +143,7 @@ class TestIf_then(unittest.TestCase):
             on_next(110, 1), on_next(220, 2), on_next(330, 3)
         )
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             b[0] = True
 
         scheduler.schedule_absolute(150, action)
@@ -164,7 +166,7 @@ class TestIf_then(unittest.TestCase):
             on_next(110, 1), on_next(220, 2), on_next(330, 3), on_error(440, "ex")
         )
 
-        def action(scheduler, state):
+        def action(scheduler: abc.SchedulerBase, state: Any) -> None:
             b[0] = False
 
         scheduler.schedule_absolute(150, action)
