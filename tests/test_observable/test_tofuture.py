@@ -99,7 +99,7 @@ class TestToFuture(unittest.TestCase):
 
     def test_dispose_on_cancel(self):
         loop = asyncio.new_event_loop()
-        sub = Subject()
+        sub: Subject[int] = Subject()
 
         async def using_sub():
             # Since the subject never completes, this await statement

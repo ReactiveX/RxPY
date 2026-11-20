@@ -74,7 +74,7 @@ class TestToDict(unittest.TestCase):
         )
 
         def create():
-            def key_mapper(x):
+            def key_mapper(x: int) -> int:
                 if x < 4:
                     return x * 2
                 else:
@@ -102,7 +102,7 @@ class TestToDict(unittest.TestCase):
             on_completed(600),
         )
 
-        def value_mapper(x):
+        def value_mapper(x: int) -> int:
             if x < 4:
                 return x * 4
             else:

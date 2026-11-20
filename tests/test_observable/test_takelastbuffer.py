@@ -33,7 +33,7 @@ class TestTakeLastBuffer(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        def predicate(lst):
+        def predicate(lst: list[int]) -> bool:
             return len(lst) == 0
 
         assert [on_next(650, predicate), on_completed(650)] == res.messages
@@ -105,7 +105,7 @@ class TestTakeLastBuffer(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        def predicate(lst):
+        def predicate(lst: list[int]) -> bool:
             return lst == [9]
 
         assert [on_next(650, predicate), on_completed(650)] == res.messages
@@ -178,7 +178,7 @@ class TestTakeLastBuffer(unittest.TestCase):
 
         res = scheduler.start(create)
 
-        def predicate(lst):
+        def predicate(lst: list[int]) -> bool:
             return lst == [7, 8, 9]
 
         assert [on_next(650, predicate), on_completed(650)] == res.messages
