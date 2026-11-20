@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 
 import reactivex
 from reactivex import operators as ops
+from reactivex.operators._timestamp import Timestamp as TimestampValue
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -15,20 +16,22 @@ created = ReactiveTest.created
 
 
 class Timestamp:
-    def __init__(self, value, timestamp):
+    def __init__(self, value: int, timestamp: int | datetime) -> None:
         if isinstance(timestamp, datetime):
-            timestamp = timestamp - datetime.fromtimestamp(0, tz=UTC)
+            delta = timestamp - datetime.fromtimestamp(0, tz=UTC)
             timestamp = int(
-                timestamp.seconds
+                delta.seconds
             )  # FIXME: Must fix when tests run at fraction of seconds.
 
         self.value = value
         self.timestamp = timestamp
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.value}@{self.timestamp}"
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Timestamp):
+            return False
         return other.timestamp == self.timestamp and other.value == self.value
 
 
@@ -46,7 +49,7 @@ class TestTimeInterval(unittest.TestCase):
         )
 
         def create():
-            def mapper(x):
+            def mapper(x: TimestampValue[int]) -> Timestamp:
                 return Timestamp(x.value, x.timestamp)
 
             return xs.pipe(

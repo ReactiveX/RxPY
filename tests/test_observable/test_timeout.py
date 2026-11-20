@@ -1,9 +1,9 @@
 import unittest
 from datetime import UTC, datetime
-from typing import NoReturn
 
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
+from reactivex.testing.coldobservable import ColdObservable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -16,11 +16,6 @@ created = ReactiveTest.created
 
 class RxException(Exception):
     pass
-
-
-# Helper function for raising exceptions within lambdas
-def _raise(ex: Exception) -> NoReturn:
-    raise RxException(ex)
 
 
 class TestTimeout(unittest.TestCase):
@@ -140,7 +135,7 @@ class TestTimeout(unittest.TestCase):
             on_next(430, 5),
             on_completed(500),
         )
-        ys = scheduler.create_cold_observable()
+        ys: ColdObservable[int] = scheduler.create_cold_observable()
 
         def create():
             return xs.pipe(ops.timeout(100, ys))
@@ -300,7 +295,7 @@ class TestTimeout(unittest.TestCase):
         xs = scheduler.create_hot_observable(
             on_next(310, 1), on_next(350, 2), on_next(420, 3), on_completed(450)
         )
-        ys = scheduler.create_cold_observable()
+        ys: ColdObservable[int] = scheduler.create_cold_observable()
 
         def create():
             return xs.pipe(ops.timeout(datetime.fromtimestamp(400, tz=UTC), ys))

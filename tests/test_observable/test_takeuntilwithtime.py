@@ -1,9 +1,9 @@
 import unittest
 from datetime import UTC, datetime
-from typing import NoReturn
 
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
+from reactivex.testing.hotobservable import HotObservable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -16,11 +16,6 @@ created = ReactiveTest.created
 
 class RxException(Exception):
     pass
-
-
-# Helper function for raising exceptions within lambdas
-def _raise(ex: Exception) -> NoReturn:
-    raise RxException(ex)
 
 
 class TestTakeUntilWithTime(unittest.TestCase):
@@ -69,7 +64,7 @@ class TestTakeUntilWithTime(unittest.TestCase):
 
     def test_takeuntil_never(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable()
+        xs: HotObservable[int] = scheduler.create_hot_observable()
 
         def create():
             dt = datetime.fromtimestamp(250, tz=UTC)
