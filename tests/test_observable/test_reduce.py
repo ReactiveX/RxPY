@@ -84,8 +84,11 @@ class TestReduce(unittest.TestCase):
         msgs = [on_next(150, 1), on_completed(250)]
         xs = scheduler.create_hot_observable(msgs)
 
+        def _add(acc: int, x: int) -> int:
+            return acc + x
+
         def create():
-            return xs.pipe(ops.reduce(accumulator=lambda acc, x: acc + x))
+            return xs.pipe(ops.reduce(accumulator=_add))
 
         res = scheduler.start(create=create).messages
         assert len(res) == 1
@@ -96,8 +99,11 @@ class TestReduce(unittest.TestCase):
         scheduler = TestScheduler()
         msgs = [on_next(150, 1), on_next(210, 24), on_completed(250)]
 
+        def _add(acc: int, x: int) -> int:
+            return acc + x
+
         def create():
-            return xs.pipe(ops.reduce(accumulator=lambda acc, x: acc + x))
+            return xs.pipe(ops.reduce(accumulator=_add))
 
         xs = scheduler.create_hot_observable(msgs)
         res = scheduler.start(create=create).messages
@@ -109,8 +115,11 @@ class TestReduce(unittest.TestCase):
         msgs = [on_next(150, 1), on_error(210, ex)]
         xs = scheduler.create_hot_observable(msgs)
 
+        def _add(acc: int, x: int) -> int:
+            return acc + x
+
         def create():
-            return xs.pipe(ops.reduce(lambda acc, x: acc + x))
+            return xs.pipe(ops.reduce(_add))
 
         res = scheduler.start(create=create).messages
         assert res == [on_error(210, ex)]
@@ -120,8 +129,11 @@ class TestReduce(unittest.TestCase):
         msgs = [on_next(150, 1)]
         xs = scheduler.create_hot_observable(msgs)
 
+        def _add(acc: int, x: int) -> int:
+            return acc + x
+
         def create():
-            return xs.pipe(ops.reduce(lambda acc, x: acc + x))
+            return xs.pipe(ops.reduce(_add))
 
         res = scheduler.start(create=create).messages
         assert res == []
@@ -139,8 +151,11 @@ class TestReduce(unittest.TestCase):
         ]
         xs = scheduler.create_hot_observable(msgs)
 
+        def _add(acc: int, x: int) -> int:
+            return acc + x
+
         def create():
-            return xs.pipe(ops.reduce(lambda acc, x: acc + x))
+            return xs.pipe(ops.reduce(_add))
 
         res = scheduler.start(create=create).messages
         assert res == [on_next(260, 10), on_completed(260)]

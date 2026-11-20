@@ -118,7 +118,7 @@ exclude = [
     "tests/test_observable/test_n*.py",
     "tests/test_observable/test_o*.py",
     "tests/test_observable/test_p*.py",
-    "tests/test_observable/test_r*.py",
+    "tests/test_observable/test_replay.py",
     "tests/test_observable/test_s*.py",
     "tests/test_observable/test_t*.py",
     "tests/test_observable/test_u*.py",

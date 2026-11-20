@@ -4,6 +4,7 @@ from typing import Any, NoReturn
 import pytest
 
 import reactivex
+from reactivex import abc
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
 
@@ -181,7 +182,7 @@ class TestRetry(unittest.TestCase):
             on_error=lambda ex: _raise(Exception("ex")), scheduler=scheduler2
         )
 
-        def dispose(_, __):
+        def dispose(_: abc.SchedulerBase, __: Any) -> None:
             d.dispose()
 
         scheduler2.schedule_absolute(0, dispose)
@@ -194,9 +195,12 @@ class TestRetry(unittest.TestCase):
         with pytest.raises(RxException):
             scheduler3.start()
 
-        xss = reactivex.create(lambda o, s: _raise(Exception("ex"))).pipe(
-            ops.retry(100)
-        )
+        def fail_subscribe(
+            o: abc.ObserverBase[Any], s: abc.SchedulerBase | None = None
+        ) -> NoReturn:
+            _raise(Exception("ex"))
+
+        xss = reactivex.create(fail_subscribe).pipe(ops.retry(100))
         with pytest.raises(Exception):
             xss.subscribe()
 
