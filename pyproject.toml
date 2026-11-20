@@ -123,7 +123,7 @@ exclude = [
     "tests/test_observable/test_t*.py",
     "tests/test_observable/test_u*.py",
     "tests/test_observable/test_w*.py",
-    "tests/test_observable/test_z*.py",
+    "tests/test_observable/test_zip.py",
 ]
 reportImportCycles = false
 reportMissingImports = false
