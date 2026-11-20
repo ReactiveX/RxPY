@@ -1,5 +1,6 @@
 import unittest
 
+from reactivex import abc
 from reactivex import create as rx_create
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
@@ -74,14 +75,18 @@ class TestSubscribeOn(unittest.TestCase):
 
     def test_subscribe_on_scheduler_forwarding(self):
         scheduler = TestScheduler()
-        forwarded_sheduler = None
+        forwarded_sheduler: abc.SchedulerBase | None = None
 
         def source():
-            def subscribe(observer, _scheduler):
+            def subscribe(
+                observer: abc.ObserverBase[int],
+                _scheduler: abc.SchedulerBase | None = None,
+            ) -> abc.DisposableBase:
                 nonlocal forwarded_sheduler
                 forwarded_sheduler = _scheduler
+                assert _scheduler is not None
 
-                def action_on_completed(_, __):
+                def action_on_completed(_: abc.SchedulerBase, __: object) -> None:
                     observer.on_completed()
 
                 return _scheduler.schedule_absolute(250, action_on_completed)

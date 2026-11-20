@@ -1,9 +1,10 @@
 import pytest
 
 import reactivex
-from reactivex import Observable
+from reactivex import Observable, abc
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
+from reactivex.testing.mockobserver import MockObserver
 
 
 @pytest.mark.parametrize("syntax", ["pipe", "fluent", "subscript"])
@@ -32,8 +33,8 @@ def test_slice_matches_list_bounds(
         result = source.slice(start, stop, step)
     else:
         result = source[start:stop:step]
-    actual = []
-    completed = []
+    actual: list[int] = []
+    completed: list[bool] = []
     result.subscribe(actual.append, on_completed=lambda: completed.append(True))
     assert actual == values[start:stop:step]
     assert completed == [True]
@@ -78,7 +79,7 @@ def test_slice_mixed_bounds_forwards_error_after_stop_index() -> None:
 
 
 def test_slice_mixed_bounds_resets_indices_on_repeat() -> None:
-    values = []
+    values: list[int] = []
     reactivex.from_iterable(range(10))[-5:8].pipe(ops.repeat(2)).subscribe(
         values.append
     )
@@ -92,12 +93,13 @@ def test_slice_mixed_bounds_overlapping_subscriptions() -> None:
         ReactiveTest.on_completed(120),
     )
     sliced = source[-5:8]
-    first = scheduler.create_observer()
-    second = scheduler.create_observer()
+    first: MockObserver[int] = scheduler.create_observer()
+    second: MockObserver[int] = scheduler.create_observer()
     sliced.subscribe(first, scheduler=scheduler)
-    scheduler.schedule_relative(
-        10, lambda *_: sliced.subscribe(second, scheduler=scheduler)
-    )
+    def subscribe_second(_: abc.SchedulerBase, __: object) -> abc.DisposableBase:
+        return sliced.subscribe(second, scheduler=scheduler)
+
+    scheduler.schedule_relative(10, subscribe_second)
     scheduler.start()
     assert first.messages == [
         ReactiveTest.on_next(120, 5),
@@ -114,7 +116,7 @@ def test_slice_mixed_bounds_overlapping_subscriptions() -> None:
 
 
 def test_slice_mixed_bounds_preserves_none_values() -> None:
-    values = []
+    values: list[int | None] = []
     reactivex.from_iterable([0, 1, None, 3, 4])[-3:4].subscribe(values.append)
     assert values == [None, 3]
 
@@ -125,8 +127,8 @@ def test_slice_mixed_bounds_rejects_negative_step() -> None:
 
 
 def test_slice_mixed_bounds_empty_source() -> None:
-    values = []
-    completed = []
+    values: list[int] = []
+    completed: list[bool] = []
     source: Observable[int] = reactivex.empty()
     source[-5:8].subscribe(values.append, on_completed=lambda: completed.append(True))
     assert values == []

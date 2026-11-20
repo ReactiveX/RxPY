@@ -2,6 +2,7 @@ import unittest
 
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
+from reactivex.testing.hotobservable import HotObservable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -70,7 +71,7 @@ class TestSkipWithTime(unittest.TestCase):
 
     def test_skip_never(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable()
+        xs: HotObservable[int] = scheduler.create_hot_observable()
 
         def create():
             return xs.pipe(ops.skip_with_time(50))
