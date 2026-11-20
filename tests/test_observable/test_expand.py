@@ -1,8 +1,9 @@
 import unittest
-from typing import NoReturn
 
+from reactivex import Observable
 from reactivex import operators as ops
 from reactivex.testing import ReactiveTest, TestScheduler
+from reactivex.testing.hotobservable import HotObservable
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -17,18 +18,13 @@ class RxException(Exception):
     pass
 
 
-# Helper function for raising exceptions within lambdas
-def _raise(ex: Exception) -> NoReturn:
-    raise RxException(ex)
-
-
 class TestExpand(unittest.TestCase):
     def test_expand_empty(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable(on_completed(300))
+        xs: HotObservable[int] = scheduler.create_hot_observable(on_completed(300))
 
-        def create():
-            def mapper(x):
+        def create() -> Observable[int]:
+            def mapper(x: int) -> Observable[int]:
                 return scheduler.create_cold_observable(
                     on_next(100, 1), on_next(200, 2), on_completed(300)
                 )
@@ -43,10 +39,10 @@ class TestExpand(unittest.TestCase):
     def test_expand_error(self):
         scheduler = TestScheduler()
         ex = "ex"
-        xs = scheduler.create_hot_observable(on_error(300, ex))
+        xs: HotObservable[int] = scheduler.create_hot_observable(on_error(300, ex))
 
-        def create():
-            def mapper(x):
+        def create() -> Observable[int]:
+            def mapper(x: int) -> Observable[int]:
                 return scheduler.create_cold_observable(
                     on_next(100 + x, 2 * x),
                     on_next(200 + x, 3 * x),
@@ -62,10 +58,10 @@ class TestExpand(unittest.TestCase):
 
     def test_expand_never(self):
         scheduler = TestScheduler()
-        xs = scheduler.create_hot_observable()
+        xs: HotObservable[int] = scheduler.create_hot_observable()
 
-        def create():
-            def mapper(x):
+        def create() -> Observable[int]:
+            def mapper(x: int) -> Observable[int]:
                 return scheduler.create_cold_observable(
                     on_next(100 + x, 2 * x),
                     on_next(200 + x, 3 * x),
@@ -85,8 +81,8 @@ class TestExpand(unittest.TestCase):
             on_next(550, 1), on_next(850, 2), on_completed(950)
         )
 
-        def create():
-            def mapper(x):
+        def create() -> Observable[int]:
+            def mapper(x: int) -> Observable[int]:
                 return scheduler.create_cold_observable(
                     on_next(100, 2 * x), on_next(200, 3 * x), on_completed(300)
                 )
@@ -120,8 +116,8 @@ class TestExpand(unittest.TestCase):
             on_next(550, 1), on_next(850, 2), on_completed(950)
         )
 
-        def create():
-            def mapper(x):
+        def create() -> Observable[int]:
+            def mapper(x: int) -> Observable[int]:
                 raise Exception(ex)
 
             return xs.pipe(ops.expand(mapper))

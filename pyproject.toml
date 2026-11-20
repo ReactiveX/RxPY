@@ -108,7 +108,6 @@ exclude = [
     # test_observable still has strict-mode pyright errors (test_blocking, test_a*, test_b* done)
     "tests/test_observable/test_c*.py",
     "tests/test_observable/test_d*.py",
-    "tests/test_observable/test_e*.py",
     "tests/test_observable/test_f*.py",
     "tests/test_observable/test_g*.py",
     "tests/test_observable/test_i*.py",
