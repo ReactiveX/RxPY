@@ -15,15 +15,6 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class RxException(Exception):
-    pass
-
-
-# Helper function for raising exceptions within lambdas
-def _raise(error: str):
-    raise RxException(error)
-
-
 class TestConcat(unittest.TestCase):
     def test_concat_empty_empty(self):
         scheduler = TestScheduler()

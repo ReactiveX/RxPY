@@ -1,10 +1,10 @@
 import math
 import unittest
-from typing import NoReturn
 
 import pytest
 
 from reactivex import operators as ops
+from reactivex.notification import OnError
 from reactivex.subject import Subject
 from reactivex.testing import ReactiveTest, TestScheduler
 
@@ -15,15 +15,6 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
-
-
-class RxException(Exception):
-    pass
-
-
-# Helper function for raising exceptions within lambdas
-def _raise(ex: Exception) -> NoReturn:
-    raise RxException(ex)
 
 
 class TestDistinctUntilChanged(unittest.TestCase):
@@ -89,7 +80,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         )
 
         def create():
-            def key_mapper(x):
+            def key_mapper(x: int) -> float:
                 return x / 2
 
             return xs.pipe(ops.distinct(key_mapper))
@@ -118,7 +109,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         )
 
         def create():
-            def key_mapper(x):
+            def key_mapper(x: int) -> int:
                 return math.floor(x / 2.0)
 
             return xs.pipe(ops.distinct(key_mapper))
@@ -146,7 +137,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         )
 
         def create():
-            def key_mapper(x):
+            def key_mapper(x: int) -> int:
                 if not x:
                     raise Exception(ex)
                 else:
@@ -172,6 +163,7 @@ class TestDistinctUntilChanged(unittest.TestCase):
         results = scheduler.start(lambda: xs.pipe(ops.distinct(comparer=comparer)))
 
         assert results.messages == [on_next(210, 1), on_error(220, error)]
+        assert isinstance(results.messages[-1].value, OnError)
         assert results.messages[-1].value.exception is error
         assert xs.subscriptions == [subscribe(200, 220)]
 

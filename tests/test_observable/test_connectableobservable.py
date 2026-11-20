@@ -1,11 +1,15 @@
 import unittest
+from typing import Any, Generic, TypeVar
 
 import reactivex
-from reactivex import ConnectableObservable, Observable
+from reactivex import ConnectableObservable, Observable, abc
 from reactivex import operators as ops
-from reactivex.abc import ObserverBase
+from reactivex.abc import DisposableBase, ObserverBase, SchedulerBase, SubjectBase
+from reactivex.disposable import Disposable
 from reactivex.subject import Subject
 from reactivex.testing import ReactiveTest, TestScheduler
+
+_T = TypeVar("_T")
 
 on_next = ReactiveTest.on_next
 on_completed = ReactiveTest.on_completed
@@ -16,20 +20,25 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class MySubject(Observable, ObserverBase):
-    def __init__(self):
+class MySubject(Observable[_T], SubjectBase[_T], Generic[_T]):
+    def __init__(self) -> None:
         super().__init__()
 
-        self.dispose_on_map = {}
+        self.dispose_on_map: dict[_T, DisposableBase] = {}
         self.subscribe_count = 0
         self.disposed = False
+        self.observer: ObserverBase[_T]
 
-    def _subscribe_core(self, observer, scheduler=None):
+    def _subscribe_core(
+        self,
+        observer: ObserverBase[_T],
+        scheduler: SchedulerBase | None = None,
+    ) -> DisposableBase:
         self.subscribe_count += 1
         self.observer = observer
 
-        class Duck:
-            def __init__(self, this):
+        class Duck(DisposableBase):
+            def __init__(self, this: MySubject[_T]) -> None:
                 self.this = this
 
             def dispose(self) -> None:
@@ -37,18 +46,18 @@ class MySubject(Observable, ObserverBase):
 
         return Duck(self)
 
-    def dispose_on(self, value, disposable):
+    def dispose_on(self, value: _T, disposable: DisposableBase) -> None:
         self.dispose_on_map[value] = disposable
 
-    def on_next(self, value):
+    def on_next(self, value: _T) -> None:
         self.observer.on_next(value)
         if value in self.dispose_on_map:
             self.dispose_on_map[value].dispose()
 
-    def on_error(self, error):
+    def on_error(self, error: Exception) -> None:
         self.observer.on_error(error)
 
-    def on_completed(self):
+    def on_completed(self) -> None:
         self.observer.on_completed()
 
 
@@ -56,10 +65,10 @@ class TestConnectableObservable(unittest.TestCase):
     def test_connectable_observable_creation(self):
         y = [0]
 
-        s2 = Subject()
+        s2: Subject[int] = Subject()
         co2 = ConnectableObservable(reactivex.return_value(1), s2)
 
-        def on_next(x):
+        def on_next(x: int) -> None:
             y[0] = x
 
         co2.subscribe(on_next=on_next)
@@ -79,7 +88,7 @@ class TestConnectableObservable(unittest.TestCase):
             on_completed(250),
         )
 
-        subject = MySubject()
+        subject: MySubject[int] = MySubject()
 
         conn = ConnectableObservable(xs, subject)
         conn.connect(scheduler)
@@ -105,7 +114,7 @@ class TestConnectableObservable(unittest.TestCase):
             on_completed(250),
         )
 
-        subject = MySubject()
+        subject: MySubject[int] = MySubject()
 
         conn = ConnectableObservable(xs, subject)
 
@@ -124,10 +133,11 @@ class TestConnectableObservable(unittest.TestCase):
             on_completed(250),
         )
 
-        subject = MySubject()
+        subject: MySubject[int] = MySubject()
 
         conn = ConnectableObservable(xs, subject)
         disconnect = conn.connect(scheduler)
+        assert disconnect is not None
         disconnect.dispose()
 
         res = scheduler.start(lambda: conn)
@@ -145,10 +155,12 @@ class TestConnectableObservable(unittest.TestCase):
             on_completed(250),
         )
 
-        subject = MySubject()
+        subject: MySubject[int] = MySubject()
 
         conn = ConnectableObservable(xs, subject)
-        subject.dispose_on(3, conn.connect())
+        connection = conn.connect()
+        assert connection is not None
+        subject.dispose_on(3, connection)
 
         res = scheduler.start(lambda: conn)
 
@@ -170,67 +182,75 @@ class TestConnectableObservable(unittest.TestCase):
             on_completed(300),
         )
 
-        subject = Subject()
+        subject: Subject[int] = Subject()
 
         conn = xs.pipe(ops.multicast(subject))
 
-        c1 = [None]
+        c1: list[DisposableBase | None] = [None]
 
-        def action10(scheduler, state):
+        def action10(scheduler: abc.SchedulerBase, state: Any) -> None:
             c1[0] = conn.connect(scheduler)
 
         scheduler.schedule_absolute(225, action10)
 
-        def action11(scheduler, state):
+        def action11(scheduler: abc.SchedulerBase, state: Any) -> None:
+            assert c1[0] is not None
             c1[0].dispose()
 
         scheduler.schedule_absolute(241, action11)
 
-        def action12(scheduler, state):
+        def action12(scheduler: abc.SchedulerBase, state: Any) -> None:
+            assert c1[0] is not None
             c1[0].dispose()  # idempotency test
 
         scheduler.schedule_absolute(245, action12)
 
-        def action13(scheduler, state):
+        def action13(scheduler: abc.SchedulerBase, state: Any) -> None:
+            assert c1[0] is not None
             c1[0].dispose()  # idempotency test
 
         scheduler.schedule_absolute(251, action13)
 
-        def action14(scheduler, state):
+        def action14(scheduler: abc.SchedulerBase, state: Any) -> None:
+            assert c1[0] is not None
             c1[0].dispose()  # idempotency test
 
         scheduler.schedule_absolute(260, action14)
 
-        c2 = [None]
+        c2: list[DisposableBase | None] = [None]
 
-        def action20(scheduler, state):
+        def action20(scheduler: abc.SchedulerBase, state: Any) -> None:
             c2[0] = conn.connect(scheduler)
 
         scheduler.schedule_absolute(249, action20)
 
-        def action21(scheduler, state):
+        def action21(scheduler: abc.SchedulerBase, state: Any) -> None:
+            assert c2[0] is not None
             c2[0].dispose()
 
         scheduler.schedule_absolute(255, action21)
 
-        def action22(scheduler, state):
+        def action22(scheduler: abc.SchedulerBase, state: Any) -> None:
+            assert c2[0] is not None
             c2[0].dispose()  # idempotency test
 
         scheduler.schedule_absolute(265, action22)
 
-        def action23(scheduler, state):
+        def action23(scheduler: abc.SchedulerBase, state: Any) -> None:
+            assert c2[0] is not None
             c2[0].dispose()  # idempotency test
 
         scheduler.schedule_absolute(280, action23)
 
-        c3 = [None]
+        c3: list[DisposableBase | None] = [None]
 
-        def action30(scheduler, state):
+        def action30(scheduler: abc.SchedulerBase, state: Any) -> None:
             c3[0] = conn.connect(scheduler)
 
         scheduler.schedule_absolute(275, action30)
 
-        def action31(scheduler, state):
+        def action31(scheduler: abc.SchedulerBase, state: Any) -> None:
+            assert c3[0] is not None
             c3[0].dispose()
 
         scheduler.schedule_absolute(295, action31)
@@ -253,14 +273,17 @@ class TestConnectableObservable(unittest.TestCase):
 
     def test_connectable_observable_forward_scheduler(self):
         scheduler = TestScheduler()
-        subscribe_scheduler = "unknown"
+        subscribe_scheduler: Any = "unknown"
 
-        def subscribe(observer, scheduler=None):
+        def subscribe(
+            observer: ObserverBase[int], scheduler: SchedulerBase | None = None
+        ) -> DisposableBase:
             nonlocal subscribe_scheduler
             subscribe_scheduler = scheduler
+            return Disposable()
 
         xs = reactivex.create(subscribe)
-        subject = MySubject()
+        subject: MySubject[int] = MySubject()
 
         conn = ConnectableObservable(xs, subject)
         conn.connect(scheduler)

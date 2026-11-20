@@ -1,7 +1,6 @@
 import logging
 import unittest
 from datetime import UTC, datetime
-from typing import NoReturn
 
 from reactivex.operators import delay
 from reactivex.testing import ReactiveTest, TestScheduler
@@ -17,15 +16,6 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
-
-
-class RxException(Exception):
-    pass
-
-
-# Helper function for raising exceptions within lambdas
-def _raise(ex: Exception) -> NoReturn:
-    raise RxException(ex)
 
 
 class TestDelay(unittest.TestCase):

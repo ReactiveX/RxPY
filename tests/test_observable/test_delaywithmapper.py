@@ -1,5 +1,5 @@
 import unittest
-from typing import NoReturn
+from typing import Any, cast
 
 from reactivex import Observable, abc
 from reactivex import operators as ops
@@ -14,15 +14,6 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
-
-
-class RxException(Exception):
-    pass
-
-
-# Helper function for raising exceptions within lambdas
-def _raise(ex: Exception) -> NoReturn:
-    raise RxException(ex)
 
 
 class TestDelayWithMapper(unittest.TestCase):
@@ -40,7 +31,7 @@ class TestDelayWithMapper(unittest.TestCase):
         )
 
         def create():
-            def mapper(x):
+            def mapper(x: int) -> Observable[Any]:
                 return scheduler.create_cold_observable(on_next(x, "!"))
 
             return xs.pipe(ops.delay_with_mapper(mapper))
@@ -247,12 +238,14 @@ class TestDelayWithMapper(unittest.TestCase):
     def test_delay_with_mapper_synchronous_empty_duration(self):
         self.check_synchronous_duration([])
 
-    def check_synchronous_duration(self, signals):
+    def check_synchronous_duration(self, signals: list[int]) -> None:
         from reactivex import from_iterable
 
         scheduler = TestScheduler()
         source = scheduler.create_hot_observable(
-            on_next(210, None), on_next(220, "second"), on_completed(230)
+            on_next(210, cast(str | None, None)),
+            on_next(220, "second"),
+            on_completed(230),
         )
         result = scheduler.start(
             lambda: source.pipe(
@@ -273,7 +266,10 @@ class TestDelayWithMapper(unittest.TestCase):
         scheduler = TestScheduler()
         source = scheduler.create_hot_observable(on_next(210, 1), on_completed(220))
 
-        def duration_subscribe(observer, scheduler=None):
+        def duration_subscribe(
+            observer: abc.ObserverBase[int],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
             observer.on_next(0)
             observer.on_error(RuntimeError("after release"))
             return Disposable()

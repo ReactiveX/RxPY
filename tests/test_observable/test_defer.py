@@ -1,7 +1,8 @@
 import unittest
-from typing import NoReturn
+from typing import Any, NoReturn
 
 import reactivex
+from reactivex import Observable, abc
 from reactivex.testing import ReactiveTest, TestScheduler
 from reactivex.testing.coldobservable import ColdObservable
 
@@ -14,28 +15,20 @@ disposed = ReactiveTest.disposed
 created = ReactiveTest.created
 
 
-class RxException(Exception):
-    pass
-
-
-# Helper function for raising exceptions within lambdas
-def _raise(ex: Exception) -> NoReturn:
-    raise RxException(ex)
-
-
 class TestDefer(unittest.TestCase):
     def test_defer_complete(self):
         xs: list[ColdObservable[int] | None] = [None]
         invoked = [0]
         scheduler = TestScheduler()
 
-        def create():
-            def defer(scheduler):
+        def create() -> reactivex.Observable[Any]:
+            def defer(_scheduler: abc.SchedulerBase) -> Observable[int]:
                 invoked[0] += 1
-                xs[0] = scheduler.create_cold_observable(
+                obs = scheduler.create_cold_observable(
                     on_next(100, scheduler.clock), on_completed(200)
                 )
-                return xs[0]
+                xs[0] = obs
+                return obs
 
             return reactivex.defer(defer)
 
@@ -51,13 +44,14 @@ class TestDefer(unittest.TestCase):
         xs: list[ColdObservable[int] | None] = [None]
         ex = "ex"
 
-        def create():
-            def defer(scheduler):
+        def create() -> reactivex.Observable[Any]:
+            def defer(_scheduler: abc.SchedulerBase) -> Observable[int]:
                 invoked[0] += 1
-                xs[0] = scheduler.create_cold_observable(
+                obs = scheduler.create_cold_observable(
                     on_next(100, scheduler.clock), on_error(200, ex)
                 )
-                return xs[0]
+                xs[0] = obs
+                return obs
 
             return reactivex.defer(defer)
 
@@ -73,15 +67,16 @@ class TestDefer(unittest.TestCase):
         invoked = [0]
         xs: list[ColdObservable[int] | None] = [None]
 
-        def create():
-            def defer(scheduler):
+        def create() -> reactivex.Observable[Any]:
+            def defer(_scheduler: abc.SchedulerBase) -> Observable[int]:
                 invoked[0] += 1
-                xs[0] = scheduler.create_cold_observable(
+                obs = scheduler.create_cold_observable(
                     on_next(100, scheduler.clock),
                     on_next(200, invoked[0]),
                     on_next(1100, 1000),
                 )
-                return xs[0]
+                xs[0] = obs
+                return obs
 
             return reactivex.defer(defer)
 
@@ -96,8 +91,8 @@ class TestDefer(unittest.TestCase):
         invoked = [0]
         ex = "ex"
 
-        def create():
-            def defer(scheduler):
+        def create() -> reactivex.Observable[Any]:
+            def defer(_scheduler: abc.SchedulerBase) -> NoReturn:
                 invoked[0] += 1
                 raise Exception(ex)
 

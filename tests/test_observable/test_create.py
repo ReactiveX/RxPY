@@ -1,7 +1,8 @@
 import unittest
-from typing import NoReturn
+from typing import Any, NoReturn
 
 import reactivex
+from reactivex import abc
 from reactivex.disposable import Disposable
 from reactivex.testing import ReactiveTest, TestScheduler
 
@@ -28,7 +29,9 @@ class TestCreate(unittest.TestCase):
         scheduler = TestScheduler()
 
         def _create():
-            def subscribe(o, scheduler=None):
+            def subscribe(
+                o: abc.ObserverBase[int], scheduler: abc.SchedulerBase | None = None
+            ) -> abc.DisposableBase:
                 o.on_next(1)
                 o.on_next(2)
                 return Disposable()
@@ -42,7 +45,9 @@ class TestCreate(unittest.TestCase):
         scheduler = TestScheduler()
 
         def _create():
-            def subscribe(o, scheduler=None):
+            def subscribe(
+                o: abc.ObserverBase[int], scheduler: abc.SchedulerBase | None = None
+            ) -> abc.DisposableBase:
                 o.on_completed()
                 o.on_next(100)
                 o.on_error(Exception("ex"))
@@ -59,7 +64,9 @@ class TestCreate(unittest.TestCase):
         ex = "ex"
 
         def _create():
-            def subscribe(o, scheduler=None):
+            def subscribe(
+                o: abc.ObserverBase[int], scheduler: abc.SchedulerBase | None = None
+            ) -> abc.DisposableBase:
                 o.on_error(Exception(ex))
                 o.on_next(100)
                 o.on_error(Exception("foo"))
@@ -72,43 +79,51 @@ class TestCreate(unittest.TestCase):
         assert results.messages == [on_error(200, ex)]
 
     def test_create_exception(self):
+        def subscribe(
+            o: abc.ObserverBase[Any], s: abc.SchedulerBase | None = None
+        ) -> abc.DisposableBase:
+            _raise("ex")
+
         with self.assertRaises(RxException):
-            reactivex.create(lambda o, s: _raise("ex")).subscribe()
+            reactivex.create(subscribe).subscribe()
 
     def test_create_dispose(self):
         scheduler = TestScheduler()
 
         def _create():
-            def subscribe(o, scheduler=None):
+            def subscribe(
+                o: abc.ObserverBase[int], scheduler: abc.SchedulerBase | None = None
+            ) -> abc.DisposableBase:
+                assert scheduler is not None
                 is_stopped = [False]
                 o.on_next(1)
                 o.on_next(2)
 
-                def action1(scheduler, state):
+                def action1(scheduler: abc.SchedulerBase, state: Any) -> None:
                     if not is_stopped[0]:
-                        return o.on_next(3)
+                        o.on_next(3)
 
                 scheduler.schedule_relative(600, action1)
 
-                def action2(scheduler, state):
+                def action2(scheduler: abc.SchedulerBase, state: Any) -> None:
                     if not is_stopped[0]:
-                        return o.on_next(4)
+                        o.on_next(4)
 
                 scheduler.schedule_relative(700, action2)
 
-                def action3(scheduler, state):
+                def action3(scheduler: abc.SchedulerBase, state: Any) -> None:
                     if not is_stopped[0]:
-                        return o.on_next(5)
+                        o.on_next(5)
 
                 scheduler.schedule_relative(900, action3)
 
-                def action4(scheduler, state):
+                def action4(scheduler: abc.SchedulerBase, state: Any) -> None:
                     if not is_stopped[0]:
-                        return o.on_next(6)
+                        o.on_next(6)
 
                 scheduler.schedule_relative(1100, action4)
 
-                def dispose():
+                def dispose() -> None:
                     is_stopped[0] = True
 
                 return Disposable(dispose)
@@ -124,21 +139,27 @@ class TestCreate(unittest.TestCase):
         ]
 
     def test_create_observer_throws(self):
-        def subscribe(o, scheduler=None):
+        def subscribe(
+            o: abc.ObserverBase[int], scheduler: abc.SchedulerBase | None = None
+        ) -> abc.DisposableBase:
             o.on_next(1)
             return Disposable()
 
         with self.assertRaises(RxException):
             reactivex.create(subscribe).subscribe(lambda x: _raise("ex"))
 
-        def subscribe2(o, scheduler=None):
+        def subscribe2(
+            o: abc.ObserverBase[int], scheduler: abc.SchedulerBase | None = None
+        ) -> abc.DisposableBase:
             o.on_error(Exception("exception"))
             return Disposable()
 
         with self.assertRaises(RxException):
             reactivex.create(subscribe2).subscribe(on_error=lambda ex: _raise("ex"))
 
-        def subscribe3(o, scheduler=None):
+        def subscribe3(
+            o: abc.ObserverBase[int], scheduler: abc.SchedulerBase | None = None
+        ) -> abc.DisposableBase:
             o.on_completed()
             return Disposable()
 

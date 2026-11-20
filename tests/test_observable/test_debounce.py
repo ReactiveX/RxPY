@@ -1,7 +1,7 @@
 import unittest
-from typing import NoReturn
+from typing import Any
 
-from reactivex import empty, never, throw
+from reactivex import Observable, empty, never, throw
 from reactivex import operators as _
 from reactivex.testing import ReactiveTest, TestScheduler
 
@@ -12,15 +12,6 @@ subscribe = ReactiveTest.subscribe
 subscribed = ReactiveTest.subscribed
 disposed = ReactiveTest.disposed
 created = ReactiveTest.created
-
-
-class RxException(Exception):
-    pass
-
-
-# Helper function for raising exceptions within lambdas
-def _raise(ex: Exception) -> NoReturn:
-    raise RxException(ex)
 
 
 class TestDebounce(unittest.TestCase):
@@ -198,7 +189,7 @@ class TestDebounce(unittest.TestCase):
         ]
 
         def create():
-            def mapper(x):
+            def mapper(x: int) -> Observable[Any]:
                 return ys[x]
 
             return xs.pipe(_.throttle_with_mapper(mapper))
@@ -240,7 +231,7 @@ class TestDebounce(unittest.TestCase):
         ]
 
         def create():
-            def mapper(x):
+            def mapper(x: int) -> Observable[Any]:
                 return ys[x]
 
             return xs.pipe(_.throttle_with_mapper(mapper))
@@ -280,7 +271,7 @@ class TestDebounce(unittest.TestCase):
         ]
 
         def create():
-            def mapper(x):
+            def mapper(x: int) -> Observable[Any]:
                 return ys[x]
 
             return xs.pipe(_.throttle_with_mapper(mapper))
@@ -312,7 +303,7 @@ class TestDebounce(unittest.TestCase):
         ex = "ex"
 
         def create():
-            def mapper(x):
+            def mapper(x: int) -> Observable[Any]:
                 if x < 4:
                     return scheduler.create_cold_observable(
                         on_next(x * 10, "Ignore"), on_next(x * 10 + 5, "Aargh!")
@@ -343,7 +334,7 @@ class TestDebounce(unittest.TestCase):
         )
 
         def create():
-            def mapper(x):
+            def mapper(x: int) -> Observable[Any]:
                 return scheduler.create_cold_observable(
                     on_next(x * 10, "Ignore"), on_next(x * 10 + 5, "Aargh!")
                 )
@@ -371,7 +362,7 @@ class TestDebounce(unittest.TestCase):
         )
 
         def create():
-            def mapper(x):
+            def mapper(x: int) -> Observable[Any]:
                 if x < 4:
                     return scheduler.create_cold_observable(
                         on_next(x * 10, "Ignore"), on_next(x * 10 + 5, "Aargh!")
@@ -401,7 +392,7 @@ class TestDebounce(unittest.TestCase):
         )
 
         def create():
-            def mapper(x):
+            def mapper(x: int) -> Observable[Any]:
                 return scheduler.create_cold_observable(on_completed(x * 10))
 
             return xs.pipe(_.throttle_with_mapper(mapper))
@@ -429,7 +420,7 @@ class TestDebounce(unittest.TestCase):
         )
 
         def create():
-            def mapper(x):
+            def mapper(x: int) -> Observable[Any]:
                 return scheduler.create_cold_observable(on_completed(x * 10))
 
             return xs.pipe(_.throttle_with_mapper(mapper))
