@@ -20,14 +20,14 @@ class TestStart(unittest.TestCase):
         success = [False]
 
         async def go():
-            def func():
-                future = Future()
+            def func() -> Future[int]:
+                future: Future[int] = Future()
                 future.set_result(42)
                 return future
 
             source = reactivex.start_async(func)
 
-            def on_next(x):
+            def on_next(x: int) -> None:
                 success[0] = 42 == x
 
             source.subscribe(on_next)
@@ -40,14 +40,14 @@ class TestStart(unittest.TestCase):
         success = [False]
 
         async def go():
-            def func():
-                future = Future()
+            def func() -> Future[int]:
+                future: Future[int] = Future()
                 future.set_exception(Exception(str(42)))
                 return future
 
             source = reactivex.start_async(func)
 
-            def on_error(ex):
+            def on_error(ex: Exception) -> None:
                 success[0] = str(42) == str(ex)
 
             source.subscribe(on_error=on_error)
