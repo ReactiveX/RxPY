@@ -1,8 +1,11 @@
 import unittest
 from datetime import timedelta
+from typing import cast
 
 import reactivex
+from reactivex import Observable
 from reactivex import operators as ops
+from reactivex.operators._timeinterval import TimeInterval as TimeIntervalValue
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -15,7 +18,7 @@ created = ReactiveTest.created
 
 
 class TimeInterval:
-    def __init__(self, value, interval):
+    def __init__(self, value: int, interval: int | timedelta) -> None:
         if isinstance(interval, timedelta):
             interval = int(
                 interval.seconds
@@ -24,10 +27,12 @@ class TimeInterval:
         self.value = value
         self.interval = interval
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.value}@{self.interval}"
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, TimeInterval):
+            return False
         return other.interval == self.interval and other.value == self.value
 
 
@@ -45,7 +50,7 @@ class TestTimeInterval(unittest.TestCase):
         )
 
         def create():
-            def mapper(x):
+            def mapper(x: TimeIntervalValue[int]) -> TimeInterval:
                 return TimeInterval(x.value, x.interval)
 
             return xs.pipe(
@@ -95,12 +100,15 @@ class TestTimeInterval(unittest.TestCase):
         import datetime
         import time
 
-        xs = reactivex.of(1, 2).pipe(
-            ops.time_interval(),
-            ops.pluck_attr("interval"),
+        xs = cast(
+            Observable[timedelta],
+            reactivex.of(1, 2).pipe(
+                ops.time_interval(),
+                ops.pluck_attr("interval"),
+            ),
         )
 
-        items = []
+        items: list[timedelta] = []
         xs.subscribe(items.append)
         time.sleep(0.1)
         self.assertEqual(len(items), 2)
