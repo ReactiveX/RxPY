@@ -1,6 +1,7 @@
 import unittest
 
 import reactivex
+from reactivex import abc
 from reactivex import operators as ops
 from reactivex.observable.observable import Observable
 from reactivex.testing import ReactiveTest, TestScheduler
@@ -305,7 +306,10 @@ class TestZipLatest(unittest.TestCase):
     def test_zip_latest_empty_source_skips_later_subscriptions(self) -> None:
         subscribed_to_second: list[bool] = []
 
-        def second_subscribe(observer, scheduler=None):
+        def second_subscribe(
+            observer: abc.ObserverBase[object],
+            scheduler: abc.SchedulerBase | None = None,
+        ) -> abc.DisposableBase:
             subscribed_to_second.append(True)
             return reactivex.empty().subscribe(observer, scheduler=scheduler)
 

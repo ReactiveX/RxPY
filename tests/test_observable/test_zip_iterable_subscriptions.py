@@ -1,3 +1,5 @@
+from collections.abc import Iterable, Iterator
+
 import pytest
 
 import reactivex
@@ -6,18 +8,20 @@ from reactivex.subject import Subject
 
 
 @pytest.mark.parametrize("values", [[10, 20], (10, 20), range(10, 30, 10)])
-def test_zip_iterable_repeated_subscriptions(values):
+def test_zip_iterable_repeated_subscriptions(values: Iterable[int]) -> None:
     zipped = reactivex.of(1, 2).pipe(ops.zip_with_iterable(values))
-    first, second = [], []
+    first: list[tuple[int, int]] = []
+    second: list[tuple[int, int]] = []
     zipped.subscribe(first.append)
     zipped.subscribe(second.append)
     assert first == second == [(1, 10), (2, 20)]
 
 
-def test_zip_iterable_overlapping_subscriptions():
-    source = Subject()
+def test_zip_iterable_overlapping_subscriptions() -> None:
+    source: Subject[int] = Subject()
     zipped = source.pipe(ops.zip_with_iterable([10, 20]))
-    first, second = [], []
+    first: list[tuple[int, int]] = []
+    second: list[tuple[int, int]] = []
     a = zipped.subscribe(first.append)
     source.on_next(1)
     b = zipped.subscribe(second.append)
@@ -29,19 +33,19 @@ def test_zip_iterable_overlapping_subscriptions():
     assert second == [(2, 10), (3, 20)]
 
 
-def test_zip_iterable_repeat():
-    values = []
+def test_zip_iterable_repeat() -> None:
+    values: list[tuple[int, int]] = []
     reactivex.of(1, 2).pipe(ops.zip_with_iterable([10, 20]), ops.repeat(2)).subscribe(
         values.append
     )
     assert values == [(1, 10), (2, 20)] * 2
 
 
-def test_zip_iterable_evaluates_iterable_lazily_per_subscription():
-    iterations = []
+def test_zip_iterable_evaluates_iterable_lazily_per_subscription() -> None:
+    iterations: list[bool] = []
 
     class Values:
-        def __iter__(self):
+        def __iter__(self) -> Iterator[int]:
             iterations.append(True)
             return iter([10])
 
@@ -52,22 +56,22 @@ def test_zip_iterable_evaluates_iterable_lazily_per_subscription():
     assert iterations == [True, True]
 
 
-def test_zip_iterable_preserves_one_shot_iterator_behavior():
+def test_zip_iterable_preserves_one_shot_iterator_behavior() -> None:
     zipped = reactivex.just(1).pipe(ops.zip_with_iterable(iter([10, 20])))
-    values = []
+    values: list[tuple[int, int]] = []
     zipped.subscribe(values.append)
     zipped.subscribe(values.append)
     assert values == [(1, 10), (1, 20)]
 
 
-def test_zip_iterable_failed_iteration_is_reported_to_subscriber():
+def test_zip_iterable_failed_iteration_is_reported_to_subscriber() -> None:
     error = ValueError("cannot iterate")
 
     class Values:
-        def __iter__(self):
+        def __iter__(self) -> Iterator[int]:
             raise error
 
     zipped = reactivex.just(1).pipe(ops.zip_with_iterable(Values()))
-    errors = []
+    errors: list[Exception] = []
     zipped.subscribe(on_error=errors.append)
     assert errors == [error]
