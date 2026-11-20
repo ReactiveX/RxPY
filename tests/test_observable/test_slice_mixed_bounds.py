@@ -96,6 +96,7 @@ def test_slice_mixed_bounds_overlapping_subscriptions() -> None:
     first: MockObserver[int] = scheduler.create_observer()
     second: MockObserver[int] = scheduler.create_observer()
     sliced.subscribe(first, scheduler=scheduler)
+
     def subscribe_second(_: abc.SchedulerBase, __: object) -> abc.DisposableBase:
         return sliced.subscribe(second, scheduler=scheduler)
 
