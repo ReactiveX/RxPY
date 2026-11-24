@@ -70,6 +70,8 @@ def zip_with_iterable_(
                 right = next(second)
             except StopIteration:
                 observer.on_completed()
+            except Exception as error:
+                observer.on_error(error)
             else:
                 result = (left, right)
                 observer.on_next(result)
