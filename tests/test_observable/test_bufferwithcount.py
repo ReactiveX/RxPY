@@ -3,6 +3,7 @@ from typing import Any
 
 from reactivex import operators as ops
 from reactivex.notification import Notification
+from reactivex.subject import Subject
 from reactivex.testing import ReactiveTest, TestScheduler
 
 on_next = ReactiveTest.on_next
@@ -25,6 +26,49 @@ def sequence_equal(arr1: list[Any], arr2: list[Any]) -> bool:
 
 
 class TestBufferWithCount(unittest.TestCase):
+    def test_buffer_with_count_reentrant_value(self) -> None:
+        for skip, expected in [
+            (1, [[1, 2], [2, 99], [99, 3], [3]]),
+            (2, [[1, 2], [99, 3]]),
+            (3, [[1, 2], [3]]),
+        ]:
+            with self.subTest(skip=skip):
+                source: Subject[int] = Subject()
+                buffers: list[list[int]] = []
+
+                def receive(buffer: list[int]) -> None:
+                    buffers.append(buffer)
+                    if len(buffers) == 1:
+                        source.on_next(99)
+
+                source.pipe(ops.buffer_with_count(2, skip)).subscribe(receive)
+                source.on_next(1)
+                source.on_next(2)
+                source.on_next(3)
+                source.on_completed()
+
+                assert buffers == expected
+
+    def test_buffer_with_count_reentrant_completion(self) -> None:
+        source: Subject[int] = Subject()
+        buffers: list[list[int]] = []
+        completed: list[bool] = []
+
+        def receive(buffer: list[int]) -> None:
+            buffers.append(buffer)
+            if len(buffers) == 1:
+                source.on_next(3)
+                source.on_completed()
+
+        source.pipe(ops.buffer_with_count(2)).subscribe(
+            receive, on_completed=lambda: completed.append(True)
+        )
+        source.on_next(1)
+        source.on_next(2)
+
+        assert buffers == [[1, 2], [3]]
+        assert completed == [True]
+
     def test_buffer_with_count_basic(self):
         scheduler = TestScheduler()
         xs = scheduler.create_hot_observable(

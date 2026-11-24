@@ -1,9 +1,11 @@
 import logging
+from collections import deque
 from typing import TypeVar
 
 from reactivex import Observable, abc
 from reactivex.disposable import RefCountDisposable, SingleAssignmentDisposable
 from reactivex.internal import ArgumentOutOfRangeException, add_ref, curry_flip
+from reactivex.notification import Notification, OnCompleted, OnError, OnNext
 from reactivex.subject import Subject
 
 log = logging.getLogger("Rx")
@@ -52,6 +54,8 @@ def window_with_count_(
         refCountDisposable = RefCountDisposable(m)
         n = [0]
         q: list[Subject[_T]] = []
+        pending: deque[Notification[_T]] = deque()
+        draining = False
 
         def create_window():
             s: Subject[_T] = Subject()
@@ -83,8 +87,23 @@ def window_with_count_(
                 q.pop(0).on_completed()
             observer.on_completed()
 
+        def enqueue(notification: Notification[_T]) -> None:
+            nonlocal draining
+            pending.append(notification)
+            if draining:
+                return
+            draining = True
+            try:
+                while pending:
+                    pending.popleft().accept(on_next, on_error, on_completed)
+            finally:
+                draining = False
+
         m.disposable = source.subscribe(
-            on_next, on_error, on_completed, scheduler=scheduler
+            lambda value: enqueue(OnNext(value)),
+            lambda error: enqueue(OnError(error)),
+            lambda: enqueue(OnCompleted()),
+            scheduler=scheduler,
         )
         return refCountDisposable
 
